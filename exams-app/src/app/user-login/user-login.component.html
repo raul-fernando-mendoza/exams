@@ -1,0 +1,27 @@
+<p>user-login works!</p>
+<div class="card my-5">
+    <div class="card-body">
+      <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Roles</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.username }}</td>
+            <td>{{ user.password }}</td>
+            <td>   
+                <table class="table table-bordered table-striped">
+                    <tr *ngFor="let r of user.authorities">
+                        <td>{{ r.authority }}</td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
