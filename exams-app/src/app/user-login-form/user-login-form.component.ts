@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { User } from '../user';
+import { UserDetails } from '../UserDetails';
 import { UserLoginService } from '../user-login.service';
  
 @Component({
@@ -29,7 +29,7 @@ export class UserLoginFormComponent implements OnInit {
       var users =  data;
 
       if( users.length > 0 && users[0] ){
-        var user:User= users[0];
+        var user:UserDetails= users[0];
         localStorage.setItem('exams.app', JSON.stringify(user));
         alert( "welcome" + user.username);
         this.gotoWelcomeUser();

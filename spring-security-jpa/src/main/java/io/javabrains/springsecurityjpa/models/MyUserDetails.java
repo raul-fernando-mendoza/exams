@@ -13,8 +13,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MyUserDetails implements UserDetails {
-
-    private String userName;
+	private Integer userId;
+	private String userName;
     private String password;
     private boolean active;
     private List<GrantedAuthority> authorities;
@@ -23,7 +23,8 @@ public class MyUserDetails implements UserDetails {
 
 
 	public MyUserDetails(User user) {
-        this.userName = user.getUserName();
+		this.userId = user.getId();
+        this.userName = user.getUsername();
         this.password = user.getPassword();
         this.active = user.isActive();
         
@@ -40,7 +41,15 @@ public class MyUserDetails implements UserDetails {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
     }
+	
+    public Integer getUserId() {
+		return userId;
+	}
 
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

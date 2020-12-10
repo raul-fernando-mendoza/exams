@@ -41,14 +41,14 @@ public class LoginRestController {
 		log.info("login for user {}", username);
 		log.info("password for user {}", password);
 		
-		Optional<User> optionalUser = userRepository.findByUserName(username);
+		Optional<User> optionalUser = userRepository.findByUsername(username);
 		MyUserDetails userDetails = null;
 		
 		log.info("login for user found {}",optionalUser.isPresent());
 		
 		if( optionalUser.isPresent() ) {
 			
-			log.debug("Login user found:" + optionalUser.get().getUserName() + " " + optionalUser.get().getPassword());
+			log.debug("Login user found:" + optionalUser.get().getUsername() + " " + optionalUser.get().getPassword());
 			
 			if ( password.equals(optionalUser.get().getPassword()) ) {
 				
