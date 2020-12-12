@@ -4,10 +4,8 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { UserLoginComponent } from './user-login/user-login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UserLoginService } from './user-login.service';
-import { UserLoginFormComponent } from './user-login-form/user-login-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { AddressFormComponent } from './address-form/address-form.component';
@@ -39,8 +37,6 @@ import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pend
 @NgModule({
   declarations: [
     AppComponent,
-    UserLoginComponent,
-    UserLoginFormComponent,
     AddressFormComponent,
     NavigationComponent,
     MytableComponent,
@@ -49,7 +45,6 @@ import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pend
     DragDropComponent,
     LoginFormComponent,
     ExamenesPendientesComponent
-    ,CdkStepperModule
   ],
   imports: [
     BrowserModule,

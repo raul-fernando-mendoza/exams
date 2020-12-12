@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { UserLoginCredentials } from './UserLoginCredentials';
+import { UserDetails } from './UserDetails';
 import { Observable } from 'rxjs';
 
 
@@ -18,16 +18,16 @@ export class UserLoginService {
     this.currentUserUrl = this.baseUrl +  "currentUserService";
     this.logoutUrl = this.baseUrl + "logoutService";
   }
-  public login(userName:string,password:string): Observable<UserLoginCredentials> {
+  public login(userName:string,password:string): Observable<UserDetails[]> {
     const params = new HttpParams()
       .set('username', userName)
       .set('password', password);     
-    return this.http.get<UserLoginCredentials>( this.usersUrl, {params});
+    return this.http.get<UserDetails[]>( this.usersUrl, {params});
   }  
-  public currentUser(token:string): Observable<UserLoginCredentials[]> {
+  public currentUser(token:string): Observable<UserDetails[]> {
     const params = new HttpParams()
       .set('token', token);    
-    return this.http.get<UserLoginCredentials[]>(this.currentUserUrl, {params});
+    return this.http.get<UserDetails[]>(this.currentUserUrl, {params});
   }  
   public logout(): Observable<string[]> {
     return this.http.get<string[]>(this.logoutUrl);

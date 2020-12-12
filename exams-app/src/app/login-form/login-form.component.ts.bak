@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { UserLoginCredentials } from '../UserLoginCredentials';
+import { UserDetails } from '../UserDetails';
 
 @Component({
   selector: 'app-login-form',
@@ -29,8 +29,8 @@ export class LoginFormComponent {
       
       var users =  data;
 
-      if( data ){
-        var user:UserLoginCredentials= users[0];
+      if( users.length > 0 && users[0] ){
+        var user:UserDetails= users[0];
         localStorage.setItem('exams.app', JSON.stringify(user));
         this.gotoWelcomeUser();
       }
