@@ -6,10 +6,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class TokenGrant {
-	MyUserDetails user;
+	UserLoginCredentials user;
 	UUID uuid;
 	Calendar c;
-	public TokenGrant(UUID uuid, MyUserDetails user) {
+	public TokenGrant(UUID uuid, UserLoginCredentials user) {
 		this.uuid = uuid;
 		this.user = user;
 		this.c = Calendar.getInstance();
@@ -21,7 +21,7 @@ public class TokenGrant {
 	public UUID getUUID() {
 		return uuid;
 	}
-	public MyUserDetails getUser() {
+	public UserLoginCredentials getUser() {
 		return user;
 	}
 }

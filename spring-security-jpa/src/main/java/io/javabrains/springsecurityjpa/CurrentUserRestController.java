@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.javabrains.springsecurityjpa.models.MyUserDetails;
+import io.javabrains.springsecurityjpa.models.UserLoginCredentials;
 
 @RestController
 public class CurrentUserRestController{
@@ -17,23 +17,20 @@ public class CurrentUserRestController{
 	        LoggerFactory.getLogger(CurrentUserRestController.class);	
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/currentUserService")
-    public static MyUserDetails[] getCurrentUser(@RequestParam(name="token", required=true, defaultValue="") String token) {
-		MyUserDetails users[] = new MyUserDetails[0];
+    public static UserLoginCredentials getCurrentUser(@RequestParam(name="token", required=true, defaultValue="") String token) {
+		UserLoginCredentials user = null;
 		log.info("currentUser called with token:{}", token);
 		try {
 			UUID uuid = UUID.fromString(token);
-			MyUserDetails user = TokenPool.getUser(uuid);
-			if(user != null) {
-				users = new MyUserDetails[1];
-				users[0] = user;
-			}
+			user = TokenPool.getUser(uuid);
+			
 			
 		}
 		catch( IllegalArgumentException  e) {
 			log.error("token ilegal");
-			return new MyUserDetails[0];
+			return null;
 		}
-    	return users;
+    	return user;
     }
 
 }

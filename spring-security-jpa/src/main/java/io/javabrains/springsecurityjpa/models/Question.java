@@ -9,35 +9,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "question")
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     private int id;
-    private String question_name;
-    private String question_description;
-    private Double grade;
-	public Double getGrade() {
-		return grade;
-	}
-	public void setGrade(Double grade) {
-		this.grade = grade;
-	}
+    private String Label;
+    private String Description;
+    private double grade;
+    
+    @Id
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getQuestion_name() {
-		return question_name;
+
+	public String getLabel() {
+		return Label;
 	}
-	public void setQuestion_name(String question_name) {
-		this.question_name = question_name;
+	public void setLabel(String label) {
+		Label = label;
 	}
-	public String getQuestion_description() {
-		return question_description;
+	public String getDescription() {
+		return Description;
 	}
-	public void setQuestion_description(String question_description) {
-		this.question_description = question_description;
+	public void setDescription(String description) {
+		Description = description;
 	}
+	public double getGrade() {
+		return grade;
+	}
+	public void setGrade(double grade) {
+		this.grade = grade;
+	}
+
     
 }

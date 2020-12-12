@@ -1,6 +1,8 @@
 package io.javabrains.springsecurityjpa;
 
 import io.javabrains.springsecurityjpa.models.User;
+import io.javabrains.springsecurityjpa.models.UserLoginCredentials;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,42 +34,44 @@ public class LoginRestController {
     @Autowired
     UserRepository userRepository;
     
+
+    
 	static final Logger log = 
 	        LoggerFactory.getLogger(LoginRestController.class);	
 
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/loginService")
-	public MyUserDetails[] login(@RequestParam(name="username", required=true, defaultValue="") String username, @RequestParam(name="password", required=true, defaultValue="") String password, Model model) {
+	public UserLoginCredentials login(@RequestParam(name="username", required=true, defaultValue="") String username, @RequestParam(name="password", required=true, defaultValue="") String password, Model model) {
 		log.info("login for user {}", username);
 		log.info("password for user {}", password);
 		
 		Optional<User> optionalUser = userRepository.findByUsername(username);
-		MyUserDetails userDetails = null;
+		UserLoginCredentials user = null;
 		
 		log.info("login for user found {}",optionalUser.isPresent());
 		
 		if( optionalUser.isPresent() ) {
-			
 			log.debug("Login user found:" + optionalUser.get().getUsername() + " " + optionalUser.get().getPassword());
 			
-			if ( password.equals(optionalUser.get().getPassword()) ) {
-				
-				User user = optionalUser.get();
+			User userdb = optionalUser.get();
 			
-				userDetails = new MyUserDetails(user);
+			if ( password.equals(userdb.getPassword()) ) {
 				
-				UUID uuid = TokenPool.createToken();
+				user = new UserLoginCredentials();
 				
-				userDetails.setToken(uuid);
-				TokenPool.storeToken(uuid, userDetails);
+				user.setUsername(userdb.getUsername());
+			
+				UUID token = TokenPool.createToken();
+				user.setToken(token.toString());
+				
+				ArrayList<String> arr = new ArrayList<String>();
+				for( Role r : userdb.getRoles() ) {
+					arr.add(r.getRoleName());
+				}
+				
+				user.setRoles(arr);
+				TokenPool.storeToken(token, user);
 	
-			    Authentication authentication =
-			            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-			    
-			    SecurityContextHolder.getContext().setAuthentication(authentication);
-			    
-			    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			    log.info("new principal {}", principal);
 			        
 			}
 			else {
@@ -80,9 +84,7 @@ public class LoginRestController {
 			SecurityContextHolder.getContext().setAuthentication(null);
 			log.warn( "login username incorrect" );
 		}
-		MyUserDetails userArray[] = new MyUserDetails[1];
-		userArray[0] = userDetails;
-		return userArray;
+		return user;
     }
 	
 	@CrossOrigin(origins = "http://localhost:4200")

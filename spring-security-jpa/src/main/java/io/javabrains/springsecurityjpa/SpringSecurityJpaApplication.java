@@ -8,8 +8,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import io.javabrains.springsecurityjpa.models.Role;
-import io.javabrains.springsecurityjpa.models.Test;
-import io.javabrains.springsecurityjpa.models.TestApplication;
+import io.javabrains.springsecurityjpa.models.Exam;
 import io.javabrains.springsecurityjpa.models.Question;
 
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
 //chnage application.properties an use spring.jpa.hibernate.ddl-auto=create-drop to recreate the hibernate tables.
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackageClasses = {UserRepository.class, ThingRepository.class, Role.class, Question.class,  Test.class, TestApplication.class } )
+@EnableJpaRepositories(basePackageClasses = {UserRepository.class, ThingRepository.class, Role.class, Question.class,  Exam.class } )
 public class SpringSecurityJpaApplication extends SpringBootServletInitializer{
 
 	static final Logger log = 

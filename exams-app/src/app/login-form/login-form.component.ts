@@ -27,10 +27,8 @@ export class LoginFormComponent {
     this.userLoginService.login(this.username, this.password).subscribe(data => {
       console.log( "User login submit" + data );
       
-      var users =  data;
-
       if( data ){
-        var user:UserLoginCredentials= users[0];
+        var user:UserLoginCredentials= data;
         localStorage.setItem('exams.app', JSON.stringify(user));
         this.gotoWelcomeUser();
       }
