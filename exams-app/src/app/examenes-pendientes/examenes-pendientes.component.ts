@@ -45,7 +45,7 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
     
     var user:UserLoginCredentials = JSON.parse(localStorage.getItem('exams.app'));
     if( user ){
-      alert("user:" + user);
+      
 
       this.examService.Exams(user.token).subscribe(data => {
         console.log( "Exams:" + data );
@@ -73,6 +73,12 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
     this.router.navigate(['/loginForm']);
   } 
   handleRowClick(row){
-    alert(row.id)
+    
+    this.gotoExamApplication(row.id);
   } 
+  gotoExamApplication(examid: number) {
+    alert(examid);
+    this.router.navigate(['/ExamApplication',{exam_id:examid}]);
+  } 
+
 }

@@ -8,7 +8,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { UserLoginService } from './user-login.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
-import { AddressFormComponent } from './address-form/address-form.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -33,18 +32,22 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pendientes.component';
+import { ExamApplicationComponent } from './exam-application/exam-application.component';
+import { AddressFormComponent } from './address-form/address-form.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AddressFormComponent,
     NavigationComponent,
     MytableComponent,
     DashboardComponent,
     TreeComponent,
     DragDropComponent,
     LoginFormComponent,
-    ExamenesPendientesComponent
+    ExamenesPendientesComponent,
+    ExamApplicationComponent,
+    AddressFormComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +73,8 @@ import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pend
     MatGridListModule,
     MatMenuModule,
     MatTreeModule,
-    DragDropModule
+    DragDropModule,
+    MatCheckboxModule
   ],
   providers: [UserLoginService],
   bootstrap: [AppComponent]
