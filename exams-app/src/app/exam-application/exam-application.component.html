@@ -1,4 +1,4 @@
-<form [formGroup]="addressForm" novalidate (ngSubmit)="onSubmit()">
+<form [formGroup]="posicionesForm" novalidate (ngSubmit)="onSubmit()">
   <mat-card class="shipping-card">
     <mat-card-header>
       <mat-card-title>Examen:{{exam_id}}</mat-card-title>
@@ -7,22 +7,20 @@
     </mat-card-header>
     <mat-card-content>
 
-      <div formArrayName="questions">
-        <div *ngFor="let question of questions.controls; let i=index">
-          <div [formGroupName]="i">
-            {{i}}
 
-            <mat-checkbox formControlName="id">
-              id:{{question.id}} label: {{question.label}}              
-            </mat-checkbox>
-            <mat-checkbox formControlName="label">
-              id:{{question.id}} label: {{question.label}}              
-            </mat-checkbox>
+    <mat-grid-list *ngFor="let p of db_posiciones; let i=index" [cols]="7"  rowHeight="2em" [formGroup]="posicionesArray.at(i)" >
+     <!-- formArrayName="posiciones"-->
+      <mat-grid-tile>{{p.label}}</mat-grid-tile>
+      
+      <mat-grid-tile><mat-checkbox formControlName="movimiento"></mat-checkbox></mat-grid-tile>
+      <mat-grid-tile><mat-checkbox formControlName="pies"></mat-checkbox></mat-grid-tile>  
+      <mat-grid-tile><mat-checkbox formControlName="shimmi"></mat-checkbox></mat-grid-tile>  
+      <mat-grid-tile><mat-checkbox formControlName="palomas"></mat-checkbox></mat-grid-tile>  
+      <mat-grid-tile><mat-checkbox formControlName="porDebra"></mat-checkbox></mat-grid-tile>  
+      <mat-grid-tile><mat-checkbox formControlName="craneo"></mat-checkbox></mat-grid-tile>     
+       
+    </mat-grid-list>  
 
-          </div>
-          
-        </div>
-      </div>
 
     </mat-card-content>
     
@@ -30,10 +28,6 @@
       <button mat-raised-button color="primary" type="submit">Submit</button>
     </mat-card-actions>
 
-
-    <p>
-      <button type="button" (click)="addQuestion()">Add</button>
-    </p>
   </mat-card>
  
 </form>
