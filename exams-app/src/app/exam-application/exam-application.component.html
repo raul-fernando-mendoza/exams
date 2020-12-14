@@ -1,22 +1,29 @@
 <form [formGroup]="posicionesForm" novalidate (ngSubmit)="onSubmit()">
   <mat-card class="shipping-card">
     <mat-card-header>
-      <mat-card-title>Examen:{{exam_id}}</mat-card-title>
-      <mat-card-title>pregunta:</mat-card-title>
-      <mat-card-title>Description:</mat-card-title>
-      numero de preguntas: {{ db_posiciones.length }}
+      <mat-card-title>Ejecicio #1    id:{{exam_id}}</mat-card-title>
+      <mat-card-title>Con Musica:</mat-card-title>
+      <mat-card-title>Alumna Renata:</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-
+      <mat-grid-list cols="7" rowHeight="2em">
+        <mat-grid-tile style.background="lightblue"></mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">movimiento</mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">pies</mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">shimmi</mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">palomas</mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">pordebra</mat-grid-tile>
+        <mat-grid-tile style.background="lightblue">craneo</mat-grid-tile>
+      </mat-grid-list>    
     <div formArrayName="posicionesArray">
-      <mat-grid-list *ngFor="let p of db_posiciones; let i=index" [cols]="7"  rowHeight="2em" [formGroup]="posicionesArray.at(i)" >
+      <mat-grid-list *ngFor="let p of db_posiciones; let i=index" cols="7"  rowHeight="2em" [formGroup]="posicionesArray.at(i)" >
         <mat-grid-tile>{{p.label}}</mat-grid-tile>
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'movimiento',i,$event.checked)"></mat-checkbox></mat-grid-tile>
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'pies',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'shimmi',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'palomas',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'pordebra',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
-        <mat-grid-tile><mat-checkbox (change)="onChange(p.label,'craneo',i,$event.checked)"></mat-checkbox></mat-grid-tile>     
+        <mat-grid-tile><mat-checkbox formControlName="movimiento" (change)="onChange(p.label,'movimiento',i,$event.checked)"></mat-checkbox></mat-grid-tile>
+        <mat-grid-tile><mat-checkbox formControlName="pies" (change)="onChange(p.label,'pies',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
+        <mat-grid-tile><mat-checkbox formControlName="shimmi" (change)="onChange(p.label,'shimmi',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
+        <mat-grid-tile><mat-checkbox formControlName="palomas" (change)="onChange(p.label,'palomas',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
+        <mat-grid-tile><mat-checkbox formControlName="pordebra" (change)="onChange(p.label,'pordebra',i,$event.checked)"></mat-checkbox></mat-grid-tile>  
+        <mat-grid-tile><mat-checkbox formControlName="craneo" (change)="onChange(p.label,'craneo',i,$event.checked)"></mat-checkbox></mat-grid-tile>     
         
       </mat-grid-list>  
     </div>  

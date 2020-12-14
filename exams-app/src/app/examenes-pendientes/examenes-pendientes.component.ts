@@ -77,7 +77,7 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
     this.gotoExamApplication(row.id);
   } 
   gotoExamApplication(examid: number) {
-    alert(examid);
+    //alert(examid);
     this.router.navigate(['/ExamApplication',{exam_id:examid}]);
   } 
 

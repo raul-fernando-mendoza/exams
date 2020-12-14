@@ -33,7 +33,7 @@ export class ExamApplicationComponent {
     pies:number, 
     shimmi:number, 
     palomas:number,
-    portDebra:number,
+    pordebra:number,
     craneo:number ): FormGroup {
 
     var group = this.fb.group({
@@ -43,7 +43,7 @@ export class ExamApplicationComponent {
       pies: new FormControl(pies),
       shimmi: new FormControl(shimmi),
       palomas: new FormControl(palomas),
-      portDebra: new FormControl(portDebra),
+      pordebra: new FormControl(pordebra),
       craneo: new FormControl(craneo)
     });
     return group;
@@ -54,22 +54,52 @@ export class ExamApplicationComponent {
       
     {
       id:1,
-      label:"movimiento 1",
+      label:"1 1 1/2",
       movimiento: 1,
       pies: 0,
       shimmi: 1,
       palomas: 0,
-      portDebra: 1,
+      pordebra: 1,
       craneo: 0     
     },
     {
       id:2,
-      label:"movimiento 2",
+      label:"2 1 1/2",
       movimiento: 0,
       pies: 1,
       shimmi: 0,
       palomas: 1,
-      portDebra: 0,
+      pordebra: 0,
+      craneo: 1  
+    },
+    {
+      id:2,
+      label:"3 1 1/2",
+      movimiento: 0,
+      pies: 1,
+      shimmi: 0,
+      palomas: 1,
+      pordebra: 0,
+      craneo: 1  
+    },
+    {
+      id:2,
+      label:"4 1 1/2",
+      movimiento: 0,
+      pies: 1,
+      shimmi: 0,
+      palomas: 1,
+      pordebra: 0,
+      craneo: 1  
+    },
+    {
+      id:2,
+      label:"4 1 1/2",
+      movimiento: 0,
+      pies: 1,
+      shimmi: 0,
+      palomas: 1,
+      pordebra: 0,
       craneo: 1  
     }
   ];     
@@ -87,7 +117,7 @@ export class ExamApplicationComponent {
         p.pies,
         p.shimmi,
         p.palomas,
-        p.portDebra,
+        p.pordebra,
         p.craneo          
         )
       )
@@ -112,7 +142,7 @@ export class ExamApplicationComponent {
   }
 
   onChange(label:string, column:string, index:number, checked:boolean){
-    alert("change:" + label + " " + column + " " + index + " " + checked);
+    //alert("change:" + label + " " + column + " " + index + " " + checked);
     
     let dialogRef = this.dialog.open(ReasonSelectionComponent, {
       height: '400px',

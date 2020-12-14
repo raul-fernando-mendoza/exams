@@ -1,0 +1,30 @@
+<form [formGroup]="reasonForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>Elementos Faltantes</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+    <div formArrayName="reasonsArray"> 
+      <mat-grid-list *ngFor="let r of db_reasons; let i=index" cols="1" rowHeight="2em" [formGroup]="reasonsArray.at(i)">
+        <mat-grid-tile><mat-checkbox formControlName="control"></mat-checkbox>{{r.label}}</mat-grid-tile>
+      </mat-grid-list>
+    </div> 
+    </mat-card-content>
+  <!--     
+    <mat-card-content>
+   <div formArrayName="reasonsArray"> 
+        <mat-grid-list *ngFor="let r of db_reasons; let i=index" [cols]="2"  rowHeight="2em" [formGroup]="reasonsArray.at(i)" >
+          {{r.label}}
+          
+          <mat-grid-tile>{{r.label}}</mat-grid-tile>
+          <mat-grid-tile><mat-checkbox ></mat-checkbox>{{r.label}}</mat-grid-tile>
+        </mat-grid-list>  
+    </div>  
+    </mat-card-content>
+  -->   
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>
