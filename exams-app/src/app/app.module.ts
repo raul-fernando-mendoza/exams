@@ -34,7 +34,10 @@ import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pendientes.component';
 import { ExamApplicationComponent } from './exam-application/exam-application.component';
 import { AddressFormComponent } from './address-form/address-form.component';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
+import { MatDialogModule } from '@angular/material/dialog'; 
+
 
 @NgModule({
   declarations: [
@@ -47,7 +50,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     LoginFormComponent,
     ExamenesPendientesComponent,
     ExamApplicationComponent,
-    AddressFormComponent
+    AddressFormComponent,
+    ReasonSelectionComponent
   ],
   imports: [
     BrowserModule,
@@ -74,9 +78,15 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatMenuModule,
     MatTreeModule,
     DragDropModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDialogModule
   ],
-  providers: [UserLoginService],
+  providers: [
+    UserLoginService
+  ],
+  entryComponents: [
+    ReasonSelectionComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl,FormArray , Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl,FormArray, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import {ThemePalette} from '@angular/material/core';
-import { group } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog'; 
+import { ReasonSelectionComponent } from '../reason-selection/reason-selection.component';
+//import { ReasonSelectionComponent } from '../reason-selection/reason-selection.component';
 
 
 
@@ -14,10 +15,6 @@ import { group } from '@angular/animations';
 })
 export class ExamApplicationComponent {
  
-  hideRequiredControl = new FormControl(false);
-
-  //questionsForm: FormGroup;
-
   posicionesForm = this.fb.group({
 
     id: null,
@@ -100,7 +97,9 @@ export class ExamApplicationComponent {
     //return JSON.stringify(o);
   } 
   exam_id: number;
-  constructor(private fb: FormBuilder, private route: ActivatedRoute) {}
+  constructor(private fb: FormBuilder, private route: ActivatedRoute
+    , public dialog: MatDialog
+    ) {}
 
   ngOnInit() {
     this.exam_id = Number(this.route.snapshot.paramMap.get('exam_id'));
@@ -109,8 +108,20 @@ export class ExamApplicationComponent {
   }
 
   onSubmit() {
-    alert('Thanks!' + this.hideRequiredControl.value);
+    alert('Thanks!');
   }
 
+  onChange(label:string, column:string, index:number, checked:boolean){
+    alert("change:" + label + " " + column + " " + index + " " + checked);
+    
+    let dialogRef = this.dialog.open(ReasonSelectionComponent, {
+      height: '400px',
+      width: '600px',
+    });    
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`); // Pizza!
+    }) 
+    
+  }
 
 }
