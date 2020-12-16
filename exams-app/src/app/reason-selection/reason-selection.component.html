@@ -4,25 +4,28 @@
       <mat-card-title>Elementos Faltantes</mat-card-title>
     </mat-card-header>
     <mat-card-content>
+    
 
-    <div formArrayName="reasonsArray"> 
-      <mat-grid-list *ngFor="let r of db_reasons; let i=index" cols="1" rowHeight="2em" [formGroup]="reasonsArray.at(i)">
-        <mat-grid-tile><mat-checkbox formControlName="control"></mat-checkbox>{{r.label}}</mat-grid-tile>
+    <div formArrayName="reasonsArr">
+      <mat-grid-list cols="1" rowHeight="3em"> 
+        <mat-grid-tile *ngFor="let r of reasonsArr.controls let i=index" >
+          <mat-icon aria-hidden="false" aria-label="{{r.get('label').value}}" (click)="onChangeReason(i,getIsSelectedFor(i), $event)">{{ getIsSelectedFor(i) ? "close": "check_box_outline_blank" }}</mat-icon>{{r.get("label").value}} 
+        </mat-grid-tile> 
       </mat-grid-list>
     </div> 
-    </mat-card-content>
-  <!--     
-    <mat-card-content>
-   <div formArrayName="reasonsArray"> 
-        <mat-grid-list *ngFor="let r of db_reasons; let i=index" [cols]="2"  rowHeight="2em" [formGroup]="reasonsArray.at(i)" >
-          {{r.label}}
-          
-          <mat-grid-tile>{{r.label}}</mat-grid-tile>
-          <mat-grid-tile><mat-checkbox ></mat-checkbox>{{r.label}}</mat-grid-tile>
-        </mat-grid-list>  
-    </div>  
-    </mat-card-content>
-  -->   
+    <mat-grid-list cols="1" rowHeight="4em"> 
+      <mat-grid-tile>
+        <mat-form-field appearance="legacy">
+          <mat-label>Otra</mat-label>
+          <input matInput placeholder="" formControlName="otra">
+          <mat-icon matSuffix>add_alert</mat-icon>
+          <mat-hint>use una muy pequeña descripcion</mat-hint>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    </mat-card-content> 
+
     <mat-card-actions>
       <button mat-raised-button color="primary" type="submit">Submit</button>
     </mat-card-actions>

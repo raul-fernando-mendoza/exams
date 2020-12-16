@@ -36,7 +36,9 @@ import { ExamApplicationComponent } from './exam-application/exam-application.co
 import { AddressFormComponent } from './address-form/address-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
-import { MatDialogModule } from '@angular/material/dialog'; 
+import { MatDialogModule } from '@angular/material/dialog';
+
+
 
 
 @NgModule({

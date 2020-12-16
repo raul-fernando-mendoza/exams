@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl,FormArray, FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
-
+import { Output, EventEmitter, Inject, OnInit} from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-reason-selection',
@@ -10,81 +9,113 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./reason-selection.component.css']
 })
 export class ReasonSelectionComponent {
-  reasonForm = this.fb.group({
-    id: null,
-    reasonsArray: this.fb.array([]) 
-  });
 
-  get reasonsArray() : FormArray {
-    return this.reasonForm.get("reasonsArray") as FormArray
-  }
+  constructor(private fb: FormBuilder 
+    ,public dialogRef: MatDialogRef<ReasonSelectionComponent>
+    ,@Inject(MAT_DIALOG_DATA) public data: any
+    ) {}
 
-  newReason(
-    id:number, 
-    label:string,
-    value:number ): FormGroup {
-
-    var group = this.fb.group({
-      id: id,
-      label: label,
-      control: new FormControl(value)
-    });
-    return group;  
- }
-
-  db_reasons = [
-      
-    {
-      id:1,
-      label:"cabeza debe ir arriba",
-      value: 0    
-    },
-    {
-      id:2,
-      label:"torso debe ir erguido",
-      value: 0  
-    },
-    {
-      id:3,
-      label:"Pies deben ir juntos",
-      value: 0  
-    }
-  ];     
-
-  initializeFormControls(){
-    //alert( "initialicing" );
-    var i = 0;
-    for (i=0; i<this.db_reasons.length; i++) {
-      var p = this.db_reasons[i]
-      console.debug(p.id + " " + p.label);
-      this.reasonsArray.push(this.newReason(
-        p.id,
-        p.label,
-        p.value          
-        )
-      )
-    }
   
+  reasonForm = this.fb.group({
+    reasons : this.fb.array([
+      this.fb.group({
+        id:1,
+        label:"cabeza debe ir arriba",
+        isSelected: true    
+      }),
+      this.fb.group({
+        id:2,
+        label:"torso debe ir erguido",
+        isSelected: false  
+      }),
+      this.fb.group({
+        id:3,
+        label:"otra",
+        isSelected: true
+      })
+    ]),
+    otra: new FormControl("") 
+  })
+
+  get reasonsArr() { return this.reasonForm.get('reasons') as FormArray; }
+ 
+
+  initializeFormControls(parameter_questions){
+    //alert( "initialicing" );
+    
+    var i = 0;
+    this.reasonForm.get("otra").setValue(parameter_questions.otra);
+    var fa = this.reasonForm.get("reasons") as FormArray;
+    fa.clear();
+
+    for (i=0; i<parameter_questions.questionsArr.length; i++) {
+      var p = parameter_questions.questionsArr[i]
+      console.debug(p.id + " " + p.label);
+      var n = {
+        id: p.id,
+        label: p.label,
+        isSelected: p.isSelected
+      }
+      fa.push( this.fb.group(n) );
+    }
+    
 
     //return JSON.stringify(o);
   } 
-  exam_id: number;
-  constructor(private fb: FormBuilder, private route: ActivatedRoute
-    ,public dialogRef: MatDialogRef<ReasonSelectionComponent>
-    ) {}
 
-  ngOnInit() {
-    //this.exam_id = Number(this.route.snapshot.paramMap.get('exam_id'));
-    this.initializeFormControls();
-    //alert( "receive:" + this.exam_id)
+
+
+  ngOnInit() {    
+    //alert( this.data )
+    this.initializeFormControls( this.data.questions);
   }
 
   onSubmit() {
-    this.dialogRef.close('Pizza!');
+    var fa = this.reasonForm.get("reasons") as FormArray;
+    var selectedQuestions = {
+      questionsArr: [],
+      otra: "",
+      isClean: true,
+    };
+    for(var i = 0; i < fa.controls.length; i++)
+    {
+      var question = fa.at(i);
+      var n = {
+        id: question.get("id").value,
+        label:question.get("label").value,
+        isSelected: question.get("isSelected").value 
+      }   
+      selectedQuestions.questionsArr.push( n );
+      if( n.isSelected == true){
+        selectedQuestions.isClean = false;
+      }
+    }
+    selectedQuestions.otra = this.reasonForm.get("otra").value;
+    if( !(selectedQuestions.otra === "") ){
+      selectedQuestions.isClean = false;
+    }
+
+    //var result = JSON.stringify(resultArray);
+    this.dialogRef.close(selectedQuestions);
     //alert('Thanks!');
   }
 
-  onChange(label:string, index:number, checked:boolean){
-    alert("change:" + label + " "  + index + " " + checked);
+  onChangeReason(idx:number, currentValue, $event){
+    //alert( idx );
+    var fa = this.reasonForm.get("reasons") as FormArray;
+    if( currentValue == false){
+      //var fa:FormArray;
+      
+      fa.at(idx).get("isSelected").setValue(true);
+      //$event.target.textContent= "close";
+    }
+    else{
+       //$event.target.textContent = "check_box_outline_blank";
+       fa.at(idx).get("isSelected").setValue(false);
+    }
+  }
+  getIsSelectedFor(idx:number){
+    var fa = this.reasonForm.get("reasons") as FormArray;
+    return fa.at(idx).get("isSelected").value;
   }
 }
