@@ -37,7 +37,8 @@ import { AddressFormComponent } from './address-form/address-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { MatDialogModule } from '@angular/material/dialog';
-
+import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
+import {MatStepperModule} from '@angular/material/stepper'; 
 
 
 
@@ -53,7 +54,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     ExamenesPendientesComponent,
     ExamApplicationComponent,
     AddressFormComponent,
-    ReasonSelectionComponent
+    ReasonSelectionComponent,
+    ExamSimpleComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,7 +83,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTreeModule,
     DragDropModule,
     MatCheckboxModule,
-    MatDialogModule
+    MatDialogModule,
+    MatStepperModule
   ],
   providers: [
     UserLoginService

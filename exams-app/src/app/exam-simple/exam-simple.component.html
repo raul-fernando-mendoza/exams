@@ -1,0 +1,145 @@
+
+  
+  <mat-horizontal-stepper linear #stepper>
+    <mat-step  [editable]="isEditable">
+        
+        <ng-template matStepLabel>Ejercicio 1</ng-template>
+        <mat-toolbar class="my-class-name" color="primary">
+            <mat-toolbar-row>
+                <span>Alumna: Renata Morales</span>
+                <span class="example-spacer"></span>
+                <span>Calificacion:{{ (getTotalByExercise('exercise_1') ).toFixed(2) }}</span>
+            </mat-toolbar-row>
+        </mat-toolbar>
+
+        <mat-divider></mat-divider>
+
+        <mat-label></mat-label>
+            <mat-grid-list cols="8" rowHeight="2em">
+                <mat-grid-tile
+                    *ngFor="let tile of headers_1"
+                    [colspan]="tile.cols"
+                    [rowspan]="tile.rows"
+                    [style.background]="tile.color">
+                {{tile.text}}
+                </mat-grid-tile>
+            </mat-grid-list>
+            
+            <mat-grid-list *ngFor="let renglon of exam.exercises['exercise_1'].rows; let row=index" cols="8"  rowHeight="2em" >
+                <mat-grid-tile >
+                    <mat-icon aria-hidden="false" aria-label="movimientos_cancelados_1_{{row}}" (click)="onCancelRow('exercise_1', renglon.id)">{{ isCanceledRow('exercise_1', renglon.id) ? "close": "check_box_outline_blank" }}</mat-icon>
+                </mat-grid-tile> 
+                <mat-grid-tile >
+                  {{ renglon.label }}
+                </mat-grid-tile>
+
+                <mat-grid-tile *ngFor="let columna of exam.exercises['exercise_1'].columns; let col=index" [style.background]="'white'"> 
+                  <mat-icon  aria-hidden="false" aria-label="movimiento_1_{{row}}_{{col}}" (click)="onChangeReason('exercise_1', renglon.id, columna.id)">{{ isSelected('exercise_1', renglon.id, columna.id) ? "close": "check_box_outline_blank" }}</mat-icon>
+                  
+                </mat-grid-tile>                 
+                <mat-grid-tile >
+                 {{ ( getTotalByRow('exercise_1',renglon.id) ).toFixed(2) }}
+                </mat-grid-tile>        
+                
+            </mat-grid-list>   
+            
+            <mat-divider></mat-divider>
+          
+            <mat-card>
+                <mat-grid-list cols="3" rowHeight="2em">
+                    <mat-grid-tile>
+                        <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <button mat-button matStepperNext mat-raised-button color="primary">Siguiente</button>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </mat-card>
+    </mat-step>
+    <mat-step [editable]="isEditable">
+        <ng-template matStepLabel>Ejercicio 2</ng-template>
+            <mat-toolbar class="my-class-name" color="primary">
+                <mat-toolbar-row>
+                    <span>Alumna: Renata Morales</span>
+                    <span class="example-spacer"></span>
+                    <span>Calificacion:{{ (getTotalByExercise('exercise_2') ).toFixed(2) }}</span>
+                </mat-toolbar-row>
+            </mat-toolbar>
+
+            <mat-divider></mat-divider>          
+
+          <mat-grid-list cols="15" rowHeight="5em">
+            <mat-grid-tile
+                *ngFor="let tile of headers_2"
+                [colspan]="tile.cols"
+                [rowspan]="tile.rows"
+                [style.background]="tile.color">
+            {{tile.text}}
+            </mat-grid-tile>
+          </mat-grid-list>   
+          <mat-grid-list *ngFor="let renglon of exam.exercises['exercise_2'].rows; let row=index" cols="15"  rowHeight="3em" >
+            <mat-grid-tile >
+                <mat-icon aria-hidden="false" aria-label="movimientos_cancelados_2_{{row}}" (click)="onCancelRow('exercise_2', renglon.id)">{{ isCanceledRow('exercise_2', renglon.id) ? "close": "check_box_outline_blank" }}</mat-icon>
+            </mat-grid-tile> 
+            <mat-grid-tile colspan=2>
+              {{ renglon.label }}
+            </mat-grid-tile>
+            <mat-grid-tile colspan=2>
+                {{ renglon.label2 }}
+              </mat-grid-tile>            
+
+            <mat-grid-tile *ngFor="let columna of exam.exercises['exercise_2'].columns; let col=index" [style.background]="'white'"> 
+              <mat-icon  aria-hidden="false" aria-label="movimiento_2_{{row}}_{{col}}" (click)="onChangeReason('exercise_2', renglon.id, columna.id)">{{ isSelected("exercise_2", renglon.id, columna.id) ? "close": "check_box_outline_blank" }}</mat-icon>
+            </mat-grid-tile>                 
+            <mat-grid-tile >
+             {{ ( getTotalByRow('exercise_2',renglon.id) ).toFixed(2) }}
+            </mat-grid-tile>        
+            
+        </mat-grid-list>                  
+
+        <mat-divider></mat-divider>
+
+        <mat-card>
+            <mat-grid-list cols="3" rowHeight="2em">
+                <mat-grid-tile>
+                    <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                </mat-grid-tile>                
+                <mat-grid-tile>
+                    <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <button mat-button matStepperNext mat-raised-button color="primary">Siguiente</button>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </mat-card>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Done</ng-template>
+      <mat-toolbar class="my-class-name" color="primary">
+        <mat-toolbar-row>
+            <span>Alumna: Renata Morales</span>
+            <span class="example-spacer"></span>
+            <span>Has completado el examen</span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+      <mat-card>
+          <mat-grid-list cols="3" rowHeight="2em">
+              <mat-grid-tile>
+                  <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+              </mat-grid-tile>                
+              <mat-grid-tile>
+                  <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
+              </mat-grid-tile>
+              <mat-grid-tile>
+                  <button mat-button (click)="onSubmit()" mat-raised-button color="primary">Enviar</button>
+              </mat-grid-tile>
+          </mat-grid-list>
+      </mat-card>
+    </mat-step>
+
+  </mat-horizontal-stepper>
+  

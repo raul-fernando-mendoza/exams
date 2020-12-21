@@ -17,8 +17,10 @@
       <mat-grid-tile>
         <mat-form-field appearance="legacy">
           <mat-label>Otra</mat-label>
-          <input matInput placeholder="" formControlName="otra">
-          <mat-icon matSuffix>add_alert</mat-icon>
+          <input  matInput placeholder="" formControlName="otra" maxlength="80">
+          <button type="button" mat-button matSuffix mat-icon-button aria-label="Clear" (click)="onClearOtra()">
+            <mat-icon>close</mat-icon>
+          </button>
           <mat-hint>use una muy pequeña descripcion</mat-hint>
         </mat-form-field>
       </mat-grid-tile>

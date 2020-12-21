@@ -37,6 +37,7 @@ export class ReasonSelectionComponent {
     otra: new FormControl("") 
   })
 
+  
   get reasonsArr() { return this.reasonForm.get('reasons') as FormArray; }
  
 
@@ -117,5 +118,9 @@ export class ReasonSelectionComponent {
   getIsSelectedFor(idx:number){
     var fa = this.reasonForm.get("reasons") as FormArray;
     return fa.at(idx).get("isSelected").value;
+  }
+  onClearOtra(){
+    var otra = this.reasonForm.get("otra") as FormControl;
+    otra.setValue("");
   }
 }
