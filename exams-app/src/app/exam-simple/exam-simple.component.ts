@@ -40,27 +40,32 @@ export class ExamSimpleComponent implements OnInit {
     total:0,
     exercises:{
       'exercise_1':{
-        rowValue:0.5,
+        
         rows:[
           {
             id:"primera",
-            label:"1' (1 1/2)"
+            label:"1' (1 1/2)",
+            rowValue:0.5
           },
           {
             id:"segunda",
-            label:"2' (1 1/2)"
+            label:"2' (1 1/2)",
+            rowValue:0.5
           },
           {
             id:"tercera",
-            label:"3 (1 1/2)"
+            label:"3 (1 1/2)",
+            rowValue:0.5
           },
           {
             id:"cuarta",
-            label:"4' (1 1/2)"
+            label:"4' (1 1/2)",
+            rowValue:0.5
           },
           {
             id:"quinta",
-            label:"5' (1 1/2)"
+            label:"5' (1 1/2)",
+            rowValue:0.5
           }
         ],
         columns:[
@@ -77,22 +82,26 @@ export class ExamSimpleComponent implements OnInit {
           {
             id:"segunda",
             label:"1' (1 1/2)",
-            label2:"Fuera de la vertical"
+            label2:"Fuera de la vertical",
+            rowValue:0.5
           },
           {
             id:"primera",
             label:"2' (1 1/2)",
-            label2:"Dentro de la vertical"
+            label2:"Dentro de la vertical",
+            rowValue:0.5
           },
           {
             id:"cuarta",
             label:"3 (1 1/2)",
-            label2:"Fuera y dentro de la vertical"
+            label2:"Fuera y dentro de la vertical",
+            rowValue:0.5
           },
           {
             id:"fenix",
             label:"4' (1 1/2)",
-            label2:"Fenix"
+            label2:"Fenix",
+            rowValue:0.5
           }
         ],
         columns:[  
@@ -108,59 +117,72 @@ export class ExamSimpleComponent implements OnInit {
         ] 
       },
       'exercise_3':{
-        rowValue:1,
+        
         rows:[
           {
             id:"caderas",
-            label:"Balance"
+            label:"Balance",
+            rowValue:1,
           },
           {
             id:"twist",
-            label:"Twist"
+            label:"Twist",
+            rowValue:1,
           },
           {
             id:"ocho_adelante",
-            label:"8 ext"
+            label:"8 ext",
+            rowValue:1,
           },
           {
             id:"ocho_atras",
-            label:"8 int"
+            label:"8 int",
+            rowValue:1,
           },
           {
             id:"caderas_arriba_abajo",
-            label:"Caderas incl"
+            label:"Caderas incl",
+            rowValue:1,
           },
           {
             id:"recogida",
-            label:"Recogida"
+            label:"Recogida",
+            rowValue:1,
           },
           {
             id:"maya",
-            label:"Maya"
+            label:"Maya",
+            rowValue:1,
           },
           {
             id:"africana",
-            label:"Africana"
+            label:"Africana",
+            rowValue:1,
           },
           {
             id:"circulo_pequeno",
-            label:"Circulo Peq"
+            label:"Circulo Peq",
+            rowValue:1,
           },
           {
             id:"circulo_grande_d",
-            label:"Circulo gde D"
+            label:"Circulo gde D",
+            rowValue:1,
           },
           {
             id:"circulo_grande_i",
-            label:"Circulo gde I"
+            label:"Circulo gde I",
+            rowValue:0.5,
           },
           {
             id:"camello_reverse_d",
-            label:"Camello-rev D"
+            label:"Camello-rev D",
+            rowValue:0.5,
           },
           {
             id:"camello_reverse_i",
-            label:"Camello-rev I"
+            label:"Camello-rev I",
+            rowValue:0.5,
           }
         ],
         columns:[  
@@ -176,59 +198,73 @@ export class ExamSimpleComponent implements OnInit {
         rows:[
           {
             id:"caderas",
-            label:"Balance"
+            label:"Balance",
+            rowValue:1
           },
           {
             id:"twist",
-            label:"Twist"
+            label:"Twist",
+            rowValue:1
           },
           {
             id:"ocho_adelante",
-            label:"8 ext"
+            label:"8 ext",
+            rowValue:1
           },
           {
             id:"ocho_atras",
-            label:"8 int"
+            label:"8 int",
+            rowValue:1
           },
           {
             id:"caderas_arriba_abajo",
-            label:"Caderas incl"
+            label:"Caderas incl",
+            rowValue:1
           },
           {
             id:"recogida",
-            label:"Recogida"
+            label:"Recogida",
+            rowValue:1
           },
           {
             id:"maya",
-            label:"Maya"
+            label:"Maya",
+            rowValue:1
           },
           {
             id:"torso",
-            label:"Torso"
+            label:"Torso",
+            rowValue:1
           },
           {
             id:"africana",
-            label:"Africana"
+            label:"Africana",
+            rowValue:1
           },
           {
             id:"circulo_pequeno",
-            label:"Circulo Peq"
+            label:"Circulo Peq",
+            rowValue:1
           },
           {
             id:"circulo_grande",
-            label:"Circulo gde D"
+            label:"Circulo gde D",
+            rowValue:1
           },
           {
             id:"camello_torso",
-            label:"Camello Torso"
+            label:"Camello Torso",
+            rowValue:1
           },
           {
             id:"camello_pelvis",
-            label:"Camello Pelvis"
+            label:"Camello Pelvis",
+            rowValue:1
           },
           {
             id:"reverse_pelvis",
-            label:"Reverse Pelvis"
+            label:"Reverse Pelvis",
+            rowValue:1
           }
         ],
         columns:[  
@@ -248,19 +284,23 @@ export class ExamSimpleComponent implements OnInit {
         rows:[
           {
             id:"primera",
-            label:"I"
+            label:"I",
+            rowValue:2
           },
           {
             id:"segunda",
-            label:"II"
+            label:"II",
+            rowValue:2
           },
           {
             id:"tercera",
-            label:"III"
+            label:"III",
+            rowValue:2
           },
           {
             id:"cuarta",
-            label:"IV"
+            label:"IV",
+            rowValue:2
           }
         ],
         columns:[  
@@ -1060,7 +1100,7 @@ export class ExamSimpleComponent implements OnInit {
     {text: 'Manos y dedos', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Crótalos a contratiempo', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'valor', cols: 1, rows: 1, color: 'lightblue'}
+    {text: 'valor 11.5', cols: 1, rows: 1, color: 'lightblue'}
   ];
 
   
@@ -1090,7 +1130,7 @@ export class ExamSimpleComponent implements OnInit {
     {text: 'Serie Inicio y final', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Fluidez en serie', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Transicion en serie', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'valor', cols: 1, rows: 1, color: 'lightblue'}
+    {text: 'valor 8', cols: 1, rows: 1, color: 'lightblue'}
   ];
  
   valores_seleccionados = [];
@@ -1115,6 +1155,8 @@ export class ExamSimpleComponent implements OnInit {
   }
   isSelected(exercise_id:string, row_id:string, col_id:string){
     var result = false;
+    if( this.isCanceledRow(exercise_id, row_id) )
+      return true;
     if( this.valores_seleccionados[exercise_id] &&
         this.valores_seleccionados[exercise_id][row_id] &&
         this.valores_seleccionados[exercise_id][row_id][col_id])
@@ -1249,26 +1291,37 @@ export class ExamSimpleComponent implements OnInit {
 
   onCancelRow(exercise_id:string, row_id:string){
     console.log( "canceling row :"+ exercise_id + " id:" + row_id);
+    
     if( !this.movimientos_cancelados[exercise_id] )
       this.movimientos_cancelados[exercise_id] = [];
+      /*
     if( !this.razones_seleccionadas[exercise_id] )
       this.razones_seleccionadas[exercise_id] = [];
+      */
 
     if( this.movimientos_cancelados[exercise_id][row_id] ){
       this.movimientos_cancelados[exercise_id][row_id] = false;
+      
+      /*
       this.razones_seleccionadas[exercise_id][row_id] = [];
       for( let i=0; i < this.exam.exercises[exercise_id].columns.length; i++){
         var c =  this.exam.exercises[exercise_id].columns[i];
         this.setSelected(exercise_id, row_id, c.id , false);
       }  
+      */
+      
     }
     else{
       this.movimientos_cancelados[exercise_id][row_id] = true;
+      
+      /*
       this.razones_seleccionadas[exercise_id][row_id] = [];
       for( let i=0; i < this.exam.exercises[exercise_id].columns.length; i++){
         var c =  this.exam.exercises[exercise_id].columns[i];
         this.setSelected(exercise_id, row_id, c.id , true);
       }  
+      */
+      
     }   
     
     this.calculaTotales(exercise_id, row_id);    
@@ -1299,18 +1352,7 @@ export class ExamSimpleComponent implements OnInit {
     
     this.exam.total = sum    
   }  
-  getTotalByRow(exercise_id:string, row_id:string){
-    let rowValue = this.exam.exercises[exercise_id].rowValue;
-    let numCols = this.exam.exercises[exercise_id].columns.length
-    var result = rowValue;
-    for(let i=0; i<numCols; i++ ){
-      var c = this.exam.exercises[exercise_id].columns[i];
-      if( this.isSelected(exercise_id, row_id, c.id) )
-        result = result - rowValue/ numCols;
 
-    }
-    return result;
-  }
   getTotalByExercise(exercise_id:string){
     if( ! this.exam.exercises[exercise_id] ){
       console.log("ERROR: exercise_id not found for " + exercise_id)
@@ -1330,5 +1372,50 @@ export class ExamSimpleComponent implements OnInit {
         this.disabledQuestions[exercise_id][row_id][col_id] )
         return this.disabledQuestions[exercise_id][row_id][col_id].disabled;
     return false;
+  }
+  getRowValue(exercise_id:string, row_id:string){
+    let rowsNumber = this.exam.exercises[exercise_id].rows.length;
+    let result = 0.0;
+    for( let i=0; i< rowsNumber; i++){
+      let r = this.exam.exercises[exercise_id].rows[i];
+      if( r.id === row_id){
+        result = r.rowValue;
+        break;
+      }
+    }
+    return result;
+  }
+
+  
+  getTotalByRow(exercise_id:string, row_id:string){
+
+    if( this.isCanceledRow(exercise_id,row_id ))
+      return 0;
+
+    let rowValue = this.getRowValue(exercise_id, row_id);
+    let numCols = this.exam.exercises[exercise_id].columns.length
+
+    let numEnabledCols = 0;
+    //calculate the value of each checkbox 
+    for(let i=0; i<numCols; i++ ){
+      var c = this.exam.exercises[exercise_id].columns[i];
+      if( !this.isDisabled(exercise_id, row_id, c.id) )
+        numEnabledCols++;
+    }
+
+    var result = rowValue;
+    for(let i=0; i<numCols; i++ ){
+      var c = this.exam.exercises[exercise_id].columns[i];
+      if( this.isSelected(exercise_id, row_id, c.id) )
+        result = result - rowValue/ numEnabledCols;
+    }
+    return result;
+  } 
+  
+  getRowColor(index:number){
+    if( index % 2 ){
+      return 'lightgray'
+    }
+    else return 'white';
   }
 }
