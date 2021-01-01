@@ -34,23 +34,7 @@ export interface Row2{
 export class ExamSimpleComponent implements OnInit {
 
   isEditable = true;
-  headers_1: Tile[] = [
-    {text: 'saltado', cols: 1, rows: 3, color: '#DDBDF1'},
-    {text: 'Posiciones', cols: 1, rows: 3, color: 'lightblue'},
-    {text: 'Extremidades inferiores', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'Extremidades superiores', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'cabeza', cols: 1, rows: 2, color: 'lightblue'},
-    {text: 'Valor', cols: 1, rows: 2, color: 'lightblue'},
-    {text: 'Posiciones estáticas', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'manos', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'brazos', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'pies y piernas', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Palomas', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Port de bras', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Cráneo', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: '2.5', cols: 1, rows: 1, color: 'lightblue'},    
-  ];
+
 
   exam = {
     total:0,
@@ -93,26 +77,22 @@ export class ExamSimpleComponent implements OnInit {
           {
             id:"segunda",
             label:"1' (1 1/2)",
-            label2:"Fuera de la vertical",
-            total:1 
+            label2:"Fuera de la vertical"
           },
           {
             id:"primera",
             label:"2' (1 1/2)",
-            label2:"Dentro de la vertical",
-            total:1
+            label2:"Dentro de la vertical"
           },
           {
             id:"cuarta",
             label:"3 (1 1/2)",
-            label2:"Fuera y dentro de la vertical",
-            total:1
+            label2:"Fuera y dentro de la vertical"
           },
           {
             id:"fenix",
             label:"4' (1 1/2)",
-            label2:"Fenix",
-            total:1
+            label2:"Fenix"
           }
         ],
         columns:[  
@@ -126,7 +106,207 @@ export class ExamSimpleComponent implements OnInit {
           {id:"brazos"},
           {id:"crotalos"}       
         ] 
+      },
+      'exercise_3':{
+        rowValue:1,
+        rows:[
+          {
+            id:"caderas",
+            label:"Balance"
+          },
+          {
+            id:"twist",
+            label:"Twist"
+          },
+          {
+            id:"ocho_adelante",
+            label:"8 ext"
+          },
+          {
+            id:"ocho_atras",
+            label:"8 int"
+          },
+          {
+            id:"caderas_arriba_abajo",
+            label:"Caderas incl"
+          },
+          {
+            id:"recogida",
+            label:"Recogida"
+          },
+          {
+            id:"maya",
+            label:"Maya"
+          },
+          {
+            id:"africana",
+            label:"Africana"
+          },
+          {
+            id:"circulo_pequeno",
+            label:"Circulo Peq"
+          },
+          {
+            id:"circulo_grande_d",
+            label:"Circulo gde D"
+          },
+          {
+            id:"circulo_grande_i",
+            label:"Circulo gde I"
+          },
+          {
+            id:"camello_reverse_d",
+            label:"Camello-rev D"
+          },
+          {
+            id:"camello_reverse_i",
+            label:"Camello-rev I"
+          }
+        ],
+        columns:[  
+          {id:"caracteristicas"},
+          {id:"shimmy"},
+          {id:"manos"},
+          {id:"port_de_bras"},
+          {id:"crotalos"}   
+        ] 
+      },
+      'exercise_4':{
+        rowValue:1,
+        rows:[
+          {
+            id:"caderas",
+            label:"Balance"
+          },
+          {
+            id:"twist",
+            label:"Twist"
+          },
+          {
+            id:"ocho_adelante",
+            label:"8 ext"
+          },
+          {
+            id:"ocho_atras",
+            label:"8 int"
+          },
+          {
+            id:"caderas_arriba_abajo",
+            label:"Caderas incl"
+          },
+          {
+            id:"recogida",
+            label:"Recogida"
+          },
+          {
+            id:"maya",
+            label:"Maya"
+          },
+          {
+            id:"torso",
+            label:"Torso"
+          },
+          {
+            id:"africana",
+            label:"Africana"
+          },
+          {
+            id:"circulo_pequeno",
+            label:"Circulo Peq"
+          },
+          {
+            id:"circulo_grande",
+            label:"Circulo gde D"
+          },
+          {
+            id:"camello_torso",
+            label:"Camello Torso"
+          },
+          {
+            id:"camello_pelvis",
+            label:"Camello Pelvis"
+          },
+          {
+            id:"reverse_pelvis",
+            label:"Reverse Pelvis"
+          }
+        ],
+        columns:[  
+          {id:"caracteristica"},
+          {id:"shimmy"},
+          {id:"direccion"},
+          {id:"ademanes"},
+          {id:"nivel"},
+          {id:"tiempo"},
+          {id:"gesto"},
+          {id:"portdebras"},
+          {id:"arreglo"}     
+        ] 
+      },
+      'exercise_5':{
+        rowValue:1,
+        rows:[
+          {
+            id:"primera",
+            label:"I"
+          },
+          {
+            id:"segunda",
+            label:"II"
+          },
+          {
+            id:"tercera",
+            label:"III"
+          },
+          {
+            id:"cuarta",
+            label:"IV"
+          }
+        ],
+        columns:[  
+          {id:"crotalos"},
+          {id:"arreglo"},
+          {id:"gesto"},
+          {id:"port_de_bras"},
+          {id:"shimmy"},
+          {id:"secuencia"},
+          {id:"fluidez"},
+          {id:"transiciones"}
+        ] 
       }
+
+    }
+  };
+
+  disabledQuestions = {
+    "exercise_5":{
+      "primera":{
+        "arreglo":{
+          disabled: true
+        }        
+      }, 
+      "segunda":{
+        "crotalos":{
+          disabled: true
+        },
+        "arreglo":{
+          disabled: true
+        }        
+      }, 
+      "tercera":{
+        "crotalos":{
+          disabled: true
+        },
+        "arreglo":{
+          disabled: true
+        }        
+      }
+      , 
+      "cuarta":{
+        "crotalos":{
+          disabled: true
+        }       
+      }           
     }
   };
 
@@ -315,36 +495,603 @@ export class ExamSimpleComponent implements OnInit {
             { id:5, label: "caderas hacia enfrente"} 
 		    ]
       }
-    }
+    },
+    "exercise_3":{
+      "caderas":{
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "desconectar caderas y torso"} ,
+          { id:4, label: "traslaciones laterales de la pelvis"} ,
+          { id:5, label: "alejamiento máx. de pelvis"} 
+        ],
+        "shimmy":[
+          { id:1, label: "Dar uniformidad" },
+          { id:2, label: "mantenerlo mas tiempo" },
+          { id:3, label: "comodidad al hacerlo." },
+          { id:4, label: "ambas piernas" },
+          { id:5, label: "extender piernas" }
+        ],
+        "manos":[ 
+          { id:1, label: "prolongar línea del brazo" },
+          { id:2, label: "dedos proximales bajando el medio "},
+          { id:3, label: "pulgar en oposición"},
+          { id:4, label: "dedo indice y pulgar separados"},
+          { id:5, label: "muñecas en línea media"}
+        ],
+        "port_de_bras":[ 
+          { id:1, label: "pronación antebrazo (palmas abajo)"},
+          { id:2, label: "dar fluidez"},
+          { id:3, label: "vigilar ambos brazos "},
+          { id:4, label: "omóplatos hacia abajo "},
+          { id:5, label: "definir trayectoria y posición."}
+        ],
+        "crotalos":[ //craneo
+          { id:1, label: "sonido a contratiempo"},
+          { id:2, label: "sonido corto y fuerte"},
+          { id:2, label: "sonido claro y agradable"}
+        ]	
+      },
+      "twist":{
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación eje vertical"},
+          { id:4, label: "rotación interna y externa"}
+        ]
+      },
+      "ocho_adelante":{
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación interna/externa + traslación lateral"},
+          { id:4, label: "torsión maxima de pelvis"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "ocho_atras":{
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación interna/externa + traslación lateral"},
+          { id:4, label: "torsión maxima de pelvis"},
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "caderas_arriba_abajo":{
+        "caracteristicas":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinacion arriba/abajo + traslación lateral"}
+        ]
+      },
+      "recogida":{
+        "caracteristicas":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinacion arriba/abajo"}
+        ]
+      },
+      "maya":{
+        "caracteristicas":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinación arriba/abajo + traslación lateral"}
+        ]
+      },
+      "africana":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "inclinación abajo + retroversión+inclinación abajo+posicion neutra."}
+        ]
+      },
+      "circulo_pequeno":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "posición neutra + traslación lateral+inclinación posterior+ traslación lateral "},
+          { id:4, label: "piernas en extención"},
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "circulo_grande_d":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "posición neutra + traslación lateral+inclinación posterior+ traslación lateral+inclinación anterior"},
+          { id:3, label: "piernas flexionadas"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "circulo_grande_i":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "posición neutra + traslación lateral+inclinación posterior+ traslación lateral+inclinación anterior"},
+          { id:3, label: "piernas flexionadas"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "camello_reverse_d":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "Torso: translación adelante y arriba, traslación atras y abajo"},
+          { id:3, label: "Pelvis: traslación adelante+retroversión+traslación dorsal+anteroversión+posición inicial"},
+          { id:4, label: "piernas en extensión"},
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ]
+      },
+      "camello_reverse_i":{ 
+        "caracteristicas":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "Torso: translación adelante y arriba, traslación atras y abajo"},
+          { id:3, label: "Pelvis: traslación adelante+retroversión+traslación dorsal+anteroversión+posición inicial"},
+          { id:4, label: "piernas en extensión"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ]
+      }
+    },
+    "exercise_4":{
+      "caderas":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "desconectar caderas y torso"} ,
+          { id:4, label: "traslaciones laterales de la pelvis"} ,
+          { id:5, label: "alejamiento máx. de pelvis"} 
+        ],
+        "shimmy":[
+          { id:1, label: "Dar uniformidad" },
+          { id:2, label: "Mantenerlo más tiempo" },
+          { id:3, label: "comodidad al hacerlo" },
+          { id:4, label: "ambas piernas" },
+          { id:5, label: "extender piernas" }
+        ],
+        "direccion":[ 
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},
+          { id:4, label: "Dir 6-2"}
+        ],
+        "ademanes":[ 
+          { id:1, label: "Inicial: Brazo extendido hacia arriba en supinación, dedos distales"},
+          { id:2, label: "Brazos extendidos frontal, manos juntas, dedos distales"},
+          { id:3, label: "Brazo flexionado, mano sobre la nariz. El otro brazo en la cadera"},
+          { id:4, label: "Brazo flexionado cubriendo la boca: El otro brazo flexionado sobre el pecho"},
+          { id:5, label: "Final: Brazos en 5a posición, dedos distales"}
+        ],
+        "nivel":[ 
+          { id:1, label: "planta"},
+          { id:2, label: "releve"},
+          { id:3, label: "releve flotado"}
+        ],
+        "tiempo":[ 
+          { id:1, label: "a dos tiempos"},
+          { id:2, label: "a tiempo"},
+          { id:3, label: "contínuo"}
+        ],
+        "gesto":[ 
+          { id:1, label: "Alegría"},
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ],
+        "portdebras":[ 
+          { id:1, label: "pronación antebrazo (palmas abajo)"},
+          { id:2, label: "dar fluidez"},
+          { id:3, label: "vigilar ambos brazos"},
+          { id:4, label: "omóplatos hacia abajo"},
+          { id:5, label: "definir trayectoria y posición"}
+        ],
+        "arreglo":[ 
+          { id:1, label: "acentuación en tiempos y contratiempos"},
+          { id:2, label: "sonidos corto y fuerte"},
+          { id:3, label: "sonidos claro y agradable"}
+        ]           
+      },
+      "twist":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación eje vertical "},  
+          { id:4, label: "rotación interna y externa"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "colera" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "ocho_adelante":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación interna/externa + traslación lateral "},  
+          { id:4, label: "torsión maxima de pelvis"},  
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Tristeza" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "ocho_atras":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "rotación interna/externa + traslación lateral "},  
+          { id:4, label: "torsión maxima de pelvis"},  
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Amor" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "caderas_arriba_abajo":{
+        "caracteristica":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinacion arriba/abajo"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Maldad" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "recogida":{
+        "caracteristica":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinación arriba/abajo + traslación latera"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Verguenza" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "maya":{
+        "caracteristica":[
+          { id:1, label: "alternar pies en uno y 1/2" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "inclinación arriba/abajo + traslación latera"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Sorpresa" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "torso":{
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Miedo" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "africana":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "inclinación abajo + retroversión+inclinación abajo+posicion neutra"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Desprecio" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "circulo_pequeno":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "coxis a tierra"},
+          { id:3, label: "posición neutra + traslación lateral+inclinación posterior+ traslación lateral"},
+          { id:4, label: "piernas en extención"},
+          { id:5, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Alegría" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "circulo_grande":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "posición neutra + traslación lateral+inclinación posterior+ traslaciónlateral+inclinación anterior"},
+          { id:3, label: "piernas flexionadas"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Cólera" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "camello_torso":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "Torso: translación adelante y arriba, traslación atras y abajo"},
+          { id:3, label: "piernas en extensión"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Tristeza" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "camello_pelvis":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "Pelvis: traslación adelante+retroversión+traslación dorsal+anteroversión+posición inicial"},
+          { id:3, label: "piernas en extensión"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 6-4" },
+          { id:2, label: "Dir 4-8"},
+          { id:3, label: "Dir 8-6"},  
+          { id:4, label: "Dir 6-2"}
+        ],
+        "gesto":[
+          { id:1, label: "Amor" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "reverse_pelvis":{
+        "caracteristica":[
+          { id:1, label: "plantas en el suelo" },
+          { id:2, label: "Pelvis: anteroversión+traslación dorsal+retroversión+traslación adelante+posición inicia"},
+          { id:3, label: "piernas en extensión"},
+          { id:4, label: "alejamiento máx. de pelvis"}
+        ],
+        "direccion":[
+          { id:1, label: "Dir 2-8" },
+          { id:2, label: "Dir 8-4"},
+          { id:3, label: "Dir 4-2"},  
+          { id:4, label: "Dir 2-6"}
+        ],
+        "gesto":[
+          { id:1, label: "Maldad" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad posicion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      }
+    },
+    "exercise_5":{
+      "primera":{
+        "crotalos":[
+          { id:1, label: "sonido a contratiempo" },
+          { id:2, label: "sonido corto y fuerte"},
+          { id:3, label: "sonido claro y agradable"} 
+        ],
+        "arreglo":[
+          
+        ],
+        "gesto":[ 
+          { id:1, label: "Verguenza" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad en posicion de cejas"},
+          { id:4, label: "claridad poscion de la boca"},
+          { id:5, label: "mantener el gesto"}
+        ],
+        "port_de_bras":[ 
+          { id:1, label: "pronación antebrazo (palmas abajo)"},
+          { id:2, label: "dar fluidez"},
+          { id:3, label: "vigilar ambos brazos"},
+          { id:4, label: "omóplatos hacia abajo"},
+          { id:5, label: "definir trayectoria y posición. "}
+        ],
+        "shimmy":[ 
+          { id:1, label: "Dar uniformidad"},
+          { id:2, label: "mantenerlo mas tiempo"},
+          { id:3, label: "comodidad al hacerlo."},
+          { id:4, label: "ambas piernas"},
+          { id:5, label: "extender piernas"}
+        ],
+        "secuencia":[ 
+          { id:1, label: "Dirección definida"},
+          { id:2, label: "nivel definido"},
+          { id:3, label: "mov definidos con shimmy"},
+          { id:4, label: "claridad al iniciar"},
+          { id:5, label: "claridad al finalizar"}
+        ],
+        "fluidez":[ 
+          { id:1, label: "claridad"},
+          { id:2, label: "suavidad"},
+          { id:3, label: "mov contínuos"}
+        ],
+        "transiciones":[ 
+          { id:1, label: "definición"},
+          { id:2, label: "limpieza"},
+          { id:3, label: "conexión"},
+          { id:4, label: "puntear"}
+        ]          
+      },
+      "segunda":{
+        "gesto":[ 
+          { id:1, label: "Sorpresa" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad en posicion de cejas"},
+          { id:4, label: "claridad poscion de la boca"},
+          { id:4, label: "mantener el gesto"}
+        ]
+      },
+      "tercera":{
+        "gesto":[ 
+          { id:1, label: "Miedo" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad en posicion de cejas"},
+          { id:4, label: "claridad poscion de la boca"},
+          { id:5, label: "mantener el gesto"}
+        ]
+      },
+      "cuarta":{
+        "arreglo":[ 
+          { id:1, label: "acentuación en tiempos y contratiempos" },
+          { id:2, label: "sonidos corto y fuerte "},
+          { id:3, label: "sonidos claro y agradable"}
+        ],
+        "gesto":[ 
+          { id:1, label: "Desprecio" },
+          { id:2, label: "claridad en posicion de cejas"},
+          { id:3, label: "claridad en posicion de cejas"},
+          { id:4, label: "claridad posicion de la boca"},
+          { id:5, label: "mantener el gesto"}
+        ]
+      }
+    }    
   };
 
   // ************** ejecicio 2 
+  headers_1: Tile[] = [
+    {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
+    {text: 'Posiciones de Pies', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'pies y piernas', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Palomas', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Cráneo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: '2.5', cols: 1, rows: 1, color: 'lightblue'},    
+  ];
 
   headers_2: Tile[] = [
-    {text: 'saltado', cols: 1, rows: 2, color: '#DDBDF1'},
-    {text: ' ', cols: 4, rows: 1, color: 'lightblue'},
-    {text: 'Cuello', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'Tronco', cols: 3, rows: 1, color: 'lightblue'},
-    {text: 'Extremidades Inferiores', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'Extremidades Superiores', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Complemento', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Valor', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
     {text: 'Posicion', cols: 2, rows: 1, color: 'lightblue'},
     {text: 'Torso', cols: 2, rows: 1, color: 'lightblue'},
-    {text: 'Hombros', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Mentón', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Movimiento', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Espalda', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Caderas', cols: 1, rows: 1, color: 'lightgreen'},    
-    {text: 'Pies y Piernas', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Brazos y dedos', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'Crotalos a tiempo', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: '4.0', cols: 1, rows: 1, color: 'lightgreen'}
+    {text: 'Hombro', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Mentón', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Mov', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Espalda', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Caderas', cols: 1, rows: 1, color: 'lightblue'},    
+    {text: 'Pies y Piernas', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Brazos y dedos', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Crotalos a tiempo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Value 4.0', cols: 1, rows: 1, color: 'lightblue'}
+  ];
+
+  headers_3: Tile[] = [
+    {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
+    {text: 'movimento', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Caracteristicas', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Manos y dedos', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Crótalos a contratiempo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'valor', cols: 1, rows: 1, color: 'lightblue'}
   ];
 
   
+  headers_4: Tile[] = [
+    {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
+    {text: 'mov', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Caract', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Shimmy (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Dir', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Ademan', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Nivel', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Tiempo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Rostro y Gesto', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Arreglos crotalos', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'valor 14', cols: 1, rows: 1, color: 'lightblue'}
+  ];
 
+  headers_5: Tile[] = [
+    {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
+    {text: 'serie', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Crot Contra tiempo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Crotalos Arreglo', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Rostro-Gesto', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Port de bras y Dedos', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Shimmy (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Serie Inicio y final', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Fluidez en serie', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Transicion en serie', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'valor', cols: 1, rows: 1, color: 'lightblue'}
+  ];
  
   valores_seleccionados = [];
   razones_seleccionadas = [];
@@ -436,6 +1183,7 @@ export class ExamSimpleComponent implements OnInit {
   }  
 
   retriveReasons(exercise_id:string, row_id:string, col_id:string){
+    console.debug("retriveReasons(" + exercise_id + " " + row_id + " " + col_id + ")")
     var reasons = [];
     if( this.reasonsPerRow[exercise_id] &&
       this.reasonsPerRow[exercise_id][row_id] && 
@@ -564,6 +1312,10 @@ export class ExamSimpleComponent implements OnInit {
     return result;
   }
   getTotalByExercise(exercise_id:string){
+    if( ! this.exam.exercises[exercise_id] ){
+      console.log("ERROR: exercise_id not found for " + exercise_id)
+      return 0.0;
+    }
     let rowsNumber = this.exam.exercises[exercise_id].rows.length;
     let result = 0.0;
     for( let i=0; i< rowsNumber; i++){
@@ -572,4 +1324,11 @@ export class ExamSimpleComponent implements OnInit {
     }
     return result;
   }  
+  isDisabled(exercise_id:string, row_id:string, col_id:string){
+    if( this.disabledQuestions[exercise_id] &&
+        this.disabledQuestions[exercise_id][row_id] &&
+        this.disabledQuestions[exercise_id][row_id][col_id] )
+        return this.disabledQuestions[exercise_id][row_id][col_id].disabled;
+    return false;
+  }
 }
