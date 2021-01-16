@@ -50,16 +50,16 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
       this.examService.Exams(user.token).subscribe(data => {
         console.log( "Exams:" + data );
         
-        for(var i=0; i<data.length; i++){
-          var t:Exam = data[i];
+        for(var i=0; i<data['result'].length; i++){
+          var t:Exam = data['result'][i];
           var e:ExamenesPendientesItem = {
-            "id": e.id,
-            "label": e.label,
-            "studentName": e.studentName,
-            "teacherName": e.teacherName,
-            "grade": e.grade,
-            "completed": e.completed,
-            "applicationDate": e.applicationDate
+            "id": t.id,
+            "label": t.label,
+            "studentName": t.studentName,
+            "teacherName": t.teacherName,
+            "grade": t.grade,
+            "completed": t.completed,
+            "applicationDate": t.applicationDate
           }
           newdata.push(e);
         }

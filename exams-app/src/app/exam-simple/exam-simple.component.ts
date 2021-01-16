@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLinkWithHref } from '@angular/router';
 import { ReasonSelectionComponent } from '../reason-selection/reason-selection.component';
+import { ExamService } from '../exam-service';
 
 export interface Tile {
   color: string;
@@ -45,27 +46,27 @@ export class ExamSimpleComponent implements OnInit {
           {
             id:"primera",
             label:"1' (1 1/2)",
-            rowValue:0.5
+            rowValue:0.6
           },
           {
             id:"segunda",
             label:"2' (1 1/2)",
-            rowValue:0.5
+            rowValue:0.6
           },
           {
             id:"tercera",
             label:"3 (1 1/2)",
-            rowValue:0.5
+            rowValue:0.6
           },
           {
             id:"cuarta",
             label:"4' (1 1/2)",
-            rowValue:0.5
+            rowValue:0.6
           },
           {
             id:"quinta",
             label:"5' (1 1/2)",
-            rowValue:0.5
+            rowValue:0.6
           }
         ],
         columns:[
@@ -83,25 +84,25 @@ export class ExamSimpleComponent implements OnInit {
             id:"segunda",
             label:"1' (1 1/2)",
             label2:"Fuera de la vertical",
-            rowValue:0.5
+            rowValue:1
           },
           {
             id:"primera",
             label:"2' (1 1/2)",
             label2:"Dentro de la vertical",
-            rowValue:0.5
+            rowValue:1
           },
           {
             id:"cuarta",
             label:"3 (1 1/2)",
             label2:"Fuera y dentro de la vertical",
-            rowValue:0.5
+            rowValue:1
           },
           {
             id:"fenix",
             label:"4' (1 1/2)",
             label2:"Fenix",
-            rowValue:0.5
+            rowValue:1
           }
         ],
         columns:[  
@@ -167,7 +168,7 @@ export class ExamSimpleComponent implements OnInit {
           {
             id:"circulo_grande_d",
             label:"Circulo gde D",
-            rowValue:1,
+            rowValue:0.5,
           },
           {
             id:"circulo_grande_i",
@@ -1073,7 +1074,7 @@ export class ExamSimpleComponent implements OnInit {
     {text: 'Palomas', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Cráneo', cols: 1, rows: 1, color: 'lightblue'},
-    {text: '2.5', cols: 1, rows: 1, color: 'lightblue'},    
+    {text: '3', cols: 1, rows: 1, color: 'lightblue'},    
   ];
 
   headers_2: Tile[] = [
@@ -1100,7 +1101,7 @@ export class ExamSimpleComponent implements OnInit {
     {text: 'Manos y dedos', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Crótalos a contratiempo', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'valor 11.5', cols: 1, rows: 1, color: 'lightblue'}
+    {text: 'valor 11', cols: 1, rows: 1, color: 'lightblue'}
   ];
 
   
@@ -1140,14 +1141,13 @@ export class ExamSimpleComponent implements OnInit {
   
   constructor(private route: ActivatedRoute
     , public dialog: MatDialog
+    , private examService: ExamService
     ) {}
 
   ngOnInit() {
     
   }
-  onSubmit(){
-    alert("completado gracias!")
-  }
+
 
   onChangeReason(exercise_id:string, row_id:string, col_id:string){
     if( !this.isCanceledRow(exercise_id, row_id) )
@@ -1418,4 +1418,115 @@ export class ExamSimpleComponent implements OnInit {
     }
     else return 'white';
   }
+  onSubmit(){
+    
+
+    var valoresSeleccionadosJSON = [];
+    for(var exercise_id in this.valores_seleccionados ){
+      for(var row_id in this.valores_seleccionados[exercise_id]){
+        for(var col_id in this.valores_seleccionados[exercise_id][row_id]){
+          console.log( "valores_seleccionados " + exercise_id + "  " + row_id + " " + col_id + " " + this.valores_seleccionados[exercise_id][row_id][col_id] );
+          var selected = this.valores_seleccionados[exercise_id][row_id][col_id]
+          let obj = {
+              "examen_id":1,
+              "exercise_id":exercise_id,
+              "row_id":row_id,
+              "col_id":col_id,
+              "is_selected": selected
+          };
+          valoresSeleccionadosJSON.push( obj )
+        }
+      }
+    }
+
+
+    var RazonesSeleccionadasJSON = [];
+    for(var exercise_id in this.razones_seleccionadas ){
+      for(var row_id in this.razones_seleccionadas[exercise_id]){
+        for(var col_id in this.razones_seleccionadas[exercise_id][row_id]){
+          for(var reason_id in this.razones_seleccionadas[exercise_id][row_id][col_id]){
+            console.log( "razones_seleccionadas " +  exercise_id + "  " + row_id + " " + col_id + " " +  reason_id );
+            let obj = {
+              "examen_id":1,
+              "exercise_id":exercise_id,
+              "row_id":row_id,
+              "col_id":col_id,
+              "reason_id":reason_id
+            };
+            RazonesSeleccionadasJSON.push( obj )
+          }
+        }
+      }
+    }
+
+
+
+
+    var otrasRazonesSeleccionadasJSON = [];
+    for(var exercise_id in this.otras_razones_seleccionadas ){
+      for(var row_id in this.otras_razones_seleccionadas[exercise_id]){
+        for(var col_id in this.otras_razones_seleccionadas[exercise_id][row_id]){
+          let otra_razon = this.otras_razones_seleccionadas[exercise_id][row_id][col_id]
+          console.log( "otras_razones_seleccionadas " + exercise_id + "  " + row_id + " " + col_id + " " +  otra_razon );
+          let obj = {
+            "examen_id":1,
+            "exercise_id":exercise_id,
+            "row_id":row_id,
+            "col_id":col_id,
+            "otra_razon":otra_razon
+          };
+          otrasRazonesSeleccionadasJSON.push( obj )
+        }
+      }
+    }
+
+
+
+    var movimientosCanceladosJSON = []
+    for(var exercise_id in this.movimientos_cancelados ){
+      for(var row_id in this.movimientos_cancelados[exercise_id]){
+        console.log( "movimientos_cancelados " + exercise_id + "  " + row_id  );
+        let obj = {
+          "examen_id":1,
+          "exercise_id":exercise_id,
+          "row_id":row_id
+        }
+        movimientosCanceladosJSON.push(obj)
+      }
+    }
+
+    var totales = [];
+    for(var exercise_id in this.exam.exercises ){
+      for(var row in this.exam.exercises[exercise_id].rows){
+      let row_id = this.exam.exercises[exercise_id].rows[row].id
+      let row_total =  this.getTotalByRow(exercise_id, row_id)
+        console.log( "totales " + exercise_id + "  " + row_id + " " + row_total);
+        let obj = {
+          "examen_id":1,
+          "exercise_id":exercise_id,
+          "row_id":row_id,
+          "row_total": row_total
+        }
+        totales.push(obj)
+      }
+    }
+        
+
+    var data = {
+      "examen_id":1,
+      "valores_seleccionados": valoresSeleccionadosJSON,
+      "razones_seleccionadas" : RazonesSeleccionadasJSON,
+      "otras_razones_seleccionadas": otrasRazonesSeleccionadasJSON,
+      "movimientos_cancelados": movimientosCanceladosJSON,
+      "examen_totales": totales
+    }
+ 
+
+
+
+    this.examService.SaveExamenObservaciones("user.token",data).subscribe(data => {
+      console.log( "Exams:" + data );
+      alert("completado gracias!")
+    });
+  } 
 }
