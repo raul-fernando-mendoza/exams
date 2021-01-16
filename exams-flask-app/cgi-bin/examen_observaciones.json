@@ -1,0 +1,19 @@
+{
+    "what":"ExamenObservacionesUpdate",
+    "Examen_Observaciones":[
+        {
+            "examen_id":1,
+            "exercise_id":"exe1",
+            "row_id":"seq1",
+            "col_id":"head",
+            "is_selected":0
+        },
+        {
+            "examen_id":1,
+            "exercise_id":"exe1",
+            "row_id":"seq1",
+            "col_id":"tobillo",
+            "is_selected":1
+        }
+    ]
+}
