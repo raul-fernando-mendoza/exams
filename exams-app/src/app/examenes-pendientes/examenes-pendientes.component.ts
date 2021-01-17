@@ -43,7 +43,13 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
 
     var newdata:ExamenesPendientesItem[] = [];
     
-    var user:UserLoginCredentials = JSON.parse(localStorage.getItem('exams.app'));
+    //var user:UserLoginCredentials = JSON.parse(localStorage.getItem('exams.app'));
+    var user:UserLoginCredentials={
+    username: "claudia",
+    token: "abc",
+    roles: ["ADMIN","USER"]
+    };
+
     if( user ){
       
 
@@ -78,7 +84,7 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
   } 
   gotoExamApplication(examid: number) {
     //alert(examid);
-    this.router.navigate(['/ExamApplication',{exam_id:examid}]);
+    this.router.navigate(['/simple-exam',{exam_id:examid}]);
   } 
 
 }

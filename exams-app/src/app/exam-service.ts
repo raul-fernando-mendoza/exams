@@ -32,23 +32,23 @@ export class ExamService {
     //return this.http.get<Exam[]>(this.examUrl, {params});
     
   }   
-  public SaveExamenObservaciones(token:string, data:Object): Observable<Object> {
+  public SaveExamen(token:string, data:Object): Observable<Object> {
     const params = new HttpParams()
       .set('token', token); 
 
     var request_data = {"what": "SaveExamen", "entities":data};
-    //var myheaders = new HttpHeaders({'Content-Type': 'text/html'});
     var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 
-    /*
-    this.http.post<any>(this.examUrl, request_data, {headers: myheaders}).subscribe(data => {
-      alert(data);
-      var a = data.what;
-    })
-    */
     return  this.http.post(this.examUrl, request_data, {headers: myheaders});
-
-    //return this.http.get<Exam[]>(this.examUrl, {params});
-    
   }  
+  public GetExamen(token:string, data:Object): Observable<Object> {
+    const params = new HttpParams()
+      .set('token', token); 
+
+    var request_data = {"what": "GetExamen", "entities":data};
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+    return  this.http.post(this.examUrl, request_data, {headers: myheaders});
+  }  
+
 }

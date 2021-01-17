@@ -6,7 +6,7 @@
         <ng-template matStepLabel>Ejer. 1</ng-template>
         <mat-toolbar class="my-class-name" color="white">
             <mat-toolbar-row>
-                <span>Alumna: Renata Morales</span>
+                <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                 <span class="example-spacer"></span>
                 <span>Calificacion:{{ (getTotalByExercise('exercise_1') ).toFixed(2) }}</span>
             </mat-toolbar-row>
@@ -63,7 +63,7 @@
         <ng-template matStepLabel>Ejer. 2</ng-template>
             <mat-toolbar class="my-class-name" color="primary">
                 <mat-toolbar-row>
-                    <span>Alumna: Renata Morales</span>
+                    <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                     <span class="example-spacer"></span>
                     <span>Calificacion:{{ (getTotalByExercise('exercise_2') ).toFixed(2) }}</span>
                 </mat-toolbar-row>
@@ -120,7 +120,7 @@
         <ng-template matStepLabel>Ejer. 3</ng-template>
             <mat-toolbar class="my-class-name" color="primary">
                 <mat-toolbar-row>
-                    <span>Alumna: Renata Morales</span>
+                    <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                     <span class="example-spacer"></span>
                     <span>Calificacion:{{ (getTotalByExercise('exercise_3') ).toFixed(2) }}</span>
                 </mat-toolbar-row>
@@ -174,7 +174,7 @@
         <ng-template matStepLabel>Ejer. 4</ng-template>
             <mat-toolbar class="my-class-name" color="primary">
                 <mat-toolbar-row>
-                    <span>Alumna: Renata Morales</span>
+                    <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                     <span class="example-spacer"></span>
                     <span>Calificacion:{{ (getTotalByExercise('exercise_4') ).toFixed(2) }}</span>
                 </mat-toolbar-row>
@@ -228,7 +228,7 @@
         <ng-template matStepLabel>Ejer. 5</ng-template>
             <mat-toolbar class="my-class-name" color="primary">
                 <mat-toolbar-row>
-                    <span>Alumna: Renata Morales</span>
+                    <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                     <span class="example-spacer"></span>
                     <span>Calificacion:{{ (getTotalByExercise('exercise_5') ).toFixed(2) }}</span>
                 </mat-toolbar-row>
@@ -287,11 +287,43 @@
       <ng-template matStepLabel>Done</ng-template>
         <mat-toolbar class="my-class-name" color="primary">
             <mat-toolbar-row>
-                <span>Alumna: Renata Morales</span>
+                <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                 <span class="example-spacer"></span>
                 <span>Has completado el examen</span>
+                
             </mat-toolbar-row>
+            <mat-toolbar-row>
+                <span> Calificacion (0-10): {{ (getTotal() * 10 / 40).toFixed(2) }} </span>
+            </mat-toolbar-row>
+
         </mat-toolbar>
+
+        <mat-card>
+            <mat-grid-list cols="2" rowHeight="2em">
+                <mat-grid-tile>Ejer 1:</mat-grid-tile>
+                <mat-grid-tile>
+                    <span> {{ getTotalByExercise('exercise_1').toFixed(2) }} </span>
+                </mat-grid-tile>  
+                <mat-grid-tile>Ejer 2:</mat-grid-tile>              
+                <mat-grid-tile>
+                    <span>{{ getTotalByExercise('exercise_2').toFixed(2) }} </span>
+                </mat-grid-tile>
+                <mat-grid-tile>Ejer 3:</mat-grid-tile>
+                <mat-grid-tile>
+                    <span>{{ getTotalByExercise('exercise_3').toFixed(2) }} </span>
+                </mat-grid-tile>
+                <mat-grid-tile>Ejer 4:</mat-grid-tile>
+                <mat-grid-tile>
+                    <span> {{ getTotalByExercise('exercise_4').toFixed(2) }} </span>
+                </mat-grid-tile> 
+                <mat-grid-tile>Ejer 5:</mat-grid-tile>
+                <mat-grid-tile>
+                    <span> {{ getTotalByExercise('exercise_5').toFixed(2) }} </span>
+                </mat-grid-tile> 
+                <mat-grid-tile>Total:</mat-grid-tile> 
+                <mat-grid-tile>{{ getTotal().toFixed(2) }}</mat-grid-tile>                              
+            </mat-grid-list>
+        </mat-card>        
 
         <mat-card>
           <mat-grid-list cols="3" rowHeight="2em">

@@ -1138,13 +1138,22 @@ export class ExamSimpleComponent implements OnInit {
   razones_seleccionadas = [];
   otras_razones_seleccionadas = [];
   movimientos_cancelados = [];
+
+  exam_id = 0
+  estudiante = {}
+  maestro = {}
   
   constructor(private route: ActivatedRoute
     , public dialog: MatDialog
     , private examService: ExamService
-    ) {}
+    ) {
+
+      this.exam_id = parseInt(this.route.snapshot.paramMap.get('exam_id'))
+    }
 
   ngOnInit() {
+
+    this.loadExam()
     
   }
 
@@ -1292,39 +1301,28 @@ export class ExamSimpleComponent implements OnInit {
   onCancelRow(exercise_id:string, row_id:string){
     console.log( "canceling row :"+ exercise_id + " id:" + row_id);
     
-    if( !this.movimientos_cancelados[exercise_id] )
+    if( !this.movimientos_cancelados[exercise_id] ){
       this.movimientos_cancelados[exercise_id] = [];
-      /*
-    if( !this.razones_seleccionadas[exercise_id] )
-      this.razones_seleccionadas[exercise_id] = [];
-      */
-
+    }
+    
     if( this.movimientos_cancelados[exercise_id][row_id] ){
       this.movimientos_cancelados[exercise_id][row_id] = false;
-      
-      /*
-      this.razones_seleccionadas[exercise_id][row_id] = [];
-      for( let i=0; i < this.exam.exercises[exercise_id].columns.length; i++){
-        var c =  this.exam.exercises[exercise_id].columns[i];
-        this.setSelected(exercise_id, row_id, c.id , false);
-      }  
-      */
-      
     }
     else{
       this.movimientos_cancelados[exercise_id][row_id] = true;
-      
-      /*
-      this.razones_seleccionadas[exercise_id][row_id] = [];
-      for( let i=0; i < this.exam.exercises[exercise_id].columns.length; i++){
-        var c =  this.exam.exercises[exercise_id].columns[i];
-        this.setSelected(exercise_id, row_id, c.id , true);
-      }  
-      */
-      
     }   
+     
+    return false;
     
-    this.calculaTotales(exercise_id, row_id);    
+  }
+  setCancelRow(exercise_id:string, row_id:string){
+    console.log( "canceling row :"+ exercise_id + " id:" + row_id);
+    
+    if( !this.movimientos_cancelados[exercise_id] )
+      this.movimientos_cancelados[exercise_id] = [];
+
+    this.movimientos_cancelados[exercise_id][row_id] = true;
+   
     return false;
     
   }
@@ -1334,25 +1332,7 @@ export class ExamSimpleComponent implements OnInit {
         return true;
     return false;
   } 
-  calculaTotales(exercise_id:string, row_id:string){
-    var result:number = this.exam.exercises[exercise_id].rowValue;
-    
-    for( let i=0; i < this.exam.exercises[exercise_id].columns.length; i++){
-      var c =  this.exam.exercises[exercise_id].columns[i];
-      if( this.isSelected(exercise_id, row_id, c.id ) )
-        result = result - this.exam.exercises[exercise_id].rowValue/this.exam.exercises[exercise_id].columns.length ;
-
-      this.exam.exercises[exercise_id].rows[row_id].total = result;
-    }  
-
-    var sum:number = 0.0;
-    var exerciseKeys = Object.keys(this.exam.exercises);
-    for (var key of exerciseKeys)
-      sum = sum + this.reasonsPerRow[key].total
-    
-    this.exam.total = sum    
-  }  
-
+ 
   getTotalByExercise(exercise_id:string){
     if( ! this.exam.exercises[exercise_id] ){
       console.log("ERROR: exercise_id not found for " + exercise_id)
@@ -1366,6 +1346,15 @@ export class ExamSimpleComponent implements OnInit {
     }
     return result;
   }  
+
+  getTotal(){
+    var sum = 0;
+    for(var exercise_id in this.exam.exercises ){
+      sum = sum + this.getTotalByExercise(exercise_id)
+    }  
+    return sum  
+  }
+  
   isDisabled(exercise_id:string, row_id:string, col_id:string){
     if( this.disabledQuestions[exercise_id] &&
         this.disabledQuestions[exercise_id][row_id] &&
@@ -1418,9 +1407,8 @@ export class ExamSimpleComponent implements OnInit {
     }
     else return 'white';
   }
-  onSubmit(){
-    
 
+  onSubmit(){
     var valoresSeleccionadosJSON = [];
     for(var exercise_id in this.valores_seleccionados ){
       for(var row_id in this.valores_seleccionados[exercise_id]){
@@ -1445,15 +1433,17 @@ export class ExamSimpleComponent implements OnInit {
       for(var row_id in this.razones_seleccionadas[exercise_id]){
         for(var col_id in this.razones_seleccionadas[exercise_id][row_id]){
           for(var reason_id in this.razones_seleccionadas[exercise_id][row_id][col_id]){
-            console.log( "razones_seleccionadas " +  exercise_id + "  " + row_id + " " + col_id + " " +  reason_id );
-            let obj = {
-              "examen_id":1,
-              "exercise_id":exercise_id,
-              "row_id":row_id,
-              "col_id":col_id,
-              "reason_id":reason_id
-            };
-            RazonesSeleccionadasJSON.push( obj )
+            if( this.isReasonSelected(exercise_id,row_id, col_id, reason_id)){
+              console.log( "razones_seleccionadas " +  exercise_id + "  " + row_id + " " + col_id + " " +  reason_id );
+              let obj = {
+                "examen_id":this.exam_id,
+                "exercise_id":exercise_id,
+                "row_id":row_id,
+                "col_id":col_id,
+                "reason_id":reason_id
+              };
+              RazonesSeleccionadasJSON.push( obj )
+            }
           }
         }
       }
@@ -1469,7 +1459,7 @@ export class ExamSimpleComponent implements OnInit {
           let otra_razon = this.otras_razones_seleccionadas[exercise_id][row_id][col_id]
           console.log( "otras_razones_seleccionadas " + exercise_id + "  " + row_id + " " + col_id + " " +  otra_razon );
           let obj = {
-            "examen_id":1,
+            "examen_id":this.exam_id,
             "exercise_id":exercise_id,
             "row_id":row_id,
             "col_id":col_id,
@@ -1487,7 +1477,7 @@ export class ExamSimpleComponent implements OnInit {
       for(var row_id in this.movimientos_cancelados[exercise_id]){
         console.log( "movimientos_cancelados " + exercise_id + "  " + row_id  );
         let obj = {
-          "examen_id":1,
+          "examen_id":this.exam_id,
           "exercise_id":exercise_id,
           "row_id":row_id
         }
@@ -1502,7 +1492,7 @@ export class ExamSimpleComponent implements OnInit {
       let row_total =  this.getTotalByRow(exercise_id, row_id)
         console.log( "totales " + exercise_id + "  " + row_id + " " + row_total);
         let obj = {
-          "examen_id":1,
+          "examen_id":this.exam_id,
           "exercise_id":exercise_id,
           "row_id":row_id,
           "row_total": row_total
@@ -1513,8 +1503,8 @@ export class ExamSimpleComponent implements OnInit {
         
 
     var data = {
-      "examen_id":1,
-      "valores_seleccionados": valoresSeleccionadosJSON,
+      "id":this.exam_id,
+      "examen_observaciones": valoresSeleccionadosJSON,
       "razones_seleccionadas" : RazonesSeleccionadasJSON,
       "otras_razones_seleccionadas": otrasRazonesSeleccionadasJSON,
       "movimientos_cancelados": movimientosCanceladosJSON,
@@ -1524,9 +1514,43 @@ export class ExamSimpleComponent implements OnInit {
 
 
 
-    this.examService.SaveExamenObservaciones("user.token",data).subscribe(data => {
+    this.examService.SaveExamen("user.token",data).subscribe(data => {
       console.log( "Exams:" + data );
       alert("completado gracias!")
     });
   } 
+
+  loadExam(){
+    var data = {
+      "id":this.exam_id,
+    } 
+
+    this.examService.GetExamen("user.token",data).subscribe(data => {
+      console.log( "Exams:" + data );
+
+      this.estudiante = data["result"]["estudiante"]
+      this.maestro = data["result"]["maestro"]
+
+
+      var observaciones = data["result"]["observaciones"]
+      for(let i in observaciones ){
+        this.setSelected(observaciones[i]["exercise_id"], observaciones[i]["row_id"], observaciones[i]["col_id"], observaciones[i]["is_selected"])
+      }
+
+      var razones_seleccionadas = data["result"]["razones_seleccionadas"]
+      for(let i in razones_seleccionadas ){
+        this.setReasonSelected(razones_seleccionadas[i]["exercise_id"], razones_seleccionadas[i]["row_id"], razones_seleccionadas[i]["col_id"], razones_seleccionadas[i]["reason_id"], true)
+      } 
+      
+      var otras_razones_seleccionadas = data["result"]["otras_razones_seleccionadas"]
+      for(let i in otras_razones_seleccionadas ){
+        this.setOtherReasonsSelected(otras_razones_seleccionadas[i]["exercise_id"], otras_razones_seleccionadas[i]["row_id"], otras_razones_seleccionadas[i]["col_id"], otras_razones_seleccionadas[i]["otra_razon"])
+      } 
+      
+      var movimientos_cancelados = data["result"]["movimientos_cancelados"]
+      for(let i in movimientos_cancelados ){
+        this.setCancelRow(movimientos_cancelados[i]["exercise_id"], movimientos_cancelados[i]["row_id"])
+      }     
+    });    
+  }
 }

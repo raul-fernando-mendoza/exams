@@ -446,15 +446,16 @@ export class ExamApplicationComponent {
         }
       ];
 
-      this.movimiento_value = 1;
       
-    }    
+      
+    }   
+    this.movimiento_value = 1; 
 
     //initializando valores
     console.log("inicializando valores")
     this.movimientos_cancelados = new Array(this.rowsStatic.rows.length).fill(false);
     this.totales = new Array(this.rowsStatic.rows.length).fill(this.movimiento_value);
-    this.granTotal = this.rowsStatic[0].length * this.movimiento_value;
+    //this.granTotal = this.rowsStatic[0].length * this.movimiento_value;
     
     this.valores_seleccionados = [];
     this.razones_seleccionadas = [];
