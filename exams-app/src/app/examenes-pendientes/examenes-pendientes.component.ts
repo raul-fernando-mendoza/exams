@@ -43,17 +43,13 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
 
     var newdata:ExamenesPendientesItem[] = [];
     
-    //var user:UserLoginCredentials = JSON.parse(localStorage.getItem('exams.app'));
-    var user:UserLoginCredentials={
-    username: "claudia",
-    token: "abc",
-    roles: ["ADMIN","USER"]
-    };
+    var user = JSON.parse(localStorage.getItem('exams.app'));
+ 
 
     if( user ){
       
 
-      this.examService.Exams(user.token).subscribe(data => {
+      this.examService.Exams(user.token, user.user_id).subscribe(data => {
         console.log( "Exams:" + data );
         
         for(var i=0; i<data['result'].length; i++){
@@ -64,7 +60,7 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
             "studentName": t.studentName,
             "teacherName": t.teacherName,
             "grade": t.grade,
-            "completed": t.completed,
+            "completed": t.completado,
             "applicationDate": t.applicationDate
           }
           newdata.push(e);
@@ -75,16 +71,18 @@ export class ExamenesPendientesComponent implements AfterViewInit, OnInit {
     }
     else this.gotoLogin();
   }
+
   gotoLogin() {
     this.router.navigate(['/loginForm']);
   } 
+
   handleRowClick(row){
-    
-    this.gotoExamApplication(row.id);
+    this.gotoExamApplication(row.id, row.studentName );
   } 
-  gotoExamApplication(examid: number) {
+  
+  gotoExamApplication(examid: number, est) {
     //alert(examid);
-    this.router.navigate(['/simple-exam',{exam_id:examid}]);
+    this.router.navigate(['/simple-exam',{exam_id:examid, estudiante:est}]);
   } 
 
 }

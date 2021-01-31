@@ -7,7 +7,6 @@ import { TreeComponent } from './tree/tree.component';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pendientes.component';
-import { ExamApplicationComponent } from './exam-application/exam-application.component';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
 
@@ -19,7 +18,6 @@ const routes: Routes = [
   { path: 'MytableComponent', component: MytableComponent },
   { path: 'TreeComponent', component: TreeComponent },
   { path: 'DragDropComponent' , component: DragDropComponent},
-  { path: 'ExamApplication', component: ExamApplicationComponent},
   { path: 'Reason', component: ReasonSelectionComponent},
   { path: 'simple-exam', component: ExamSimpleComponent }
 ];

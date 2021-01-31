@@ -9,6 +9,7 @@
                 <span>Alumna: {{ estudiante["nombre"] }} {{ estudiante["apellidoPaterno"] }}</span>
                 <span class="example-spacer"></span>
                 <span>Calificacion:{{ (getTotalByExercise('exercise_1') ).toFixed(2) }}</span>
+                
             </mat-toolbar-row>
         </mat-toolbar>
 
@@ -30,7 +31,7 @@
                     <mat-icon aria-hidden="false" aria-label="movimientos_cancelados_1_{{row}}" (click)="onCancelRow('exercise_1', renglon.id)">{{ isCanceledRow('exercise_1', renglon.id) ? "close": "check_box_outline_blank" }}</mat-icon>
                 </mat-grid-tile> 
                 <mat-grid-tile >
-                  {{ renglon.label }} hello
+                  {{ renglon.label }} 
                 </mat-grid-tile>
 
                 <mat-grid-tile *ngFor="let columna of exam.exercises['exercise_1'].columns; let col=index"  >
@@ -48,7 +49,7 @@
             <mat-card>
                 <mat-grid-list cols="3" rowHeight="2em">
                     <mat-grid-tile>
-                        <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                        <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
                     </mat-grid-tile>
                     <mat-grid-tile>
 
@@ -58,6 +59,12 @@
                     </mat-grid-tile>
                 </mat-grid-list>
             </mat-card>
+            <mat-toolbar class="my-class-name" color="white">
+                <mat-toolbar-row>
+                    <span class="example-spacer"></span>
+                    <span>version: {{ version }}</span>                   
+                </mat-toolbar-row>
+            </mat-toolbar>            
     </mat-step>
     <mat-step [editable]="isEditable">
         <ng-template matStepLabel>Ejer. 2</ng-template>
@@ -105,7 +112,7 @@
         <mat-card>
             <mat-grid-list cols="3" rowHeight="2em">
                 <mat-grid-tile>
-                    <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                    <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
                 </mat-grid-tile>                
                 <mat-grid-tile>
                     <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
@@ -159,7 +166,7 @@
         <mat-card>
             <mat-grid-list cols="3" rowHeight="2em">
                 <mat-grid-tile>
-                    <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                    <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
                 </mat-grid-tile>                
                 <mat-grid-tile>
                     <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
@@ -213,7 +220,7 @@
         <mat-card>
             <mat-grid-list cols="3" rowHeight="2em">
                 <mat-grid-tile>
-                    <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                    <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
                 </mat-grid-tile>                
                 <mat-grid-tile>
                     <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
@@ -271,7 +278,7 @@
         <mat-card>
             <mat-grid-list cols="3" rowHeight="2em">
                 <mat-grid-tile>
-                    <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                    <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
                 </mat-grid-tile>                
                 <mat-grid-tile>
                     <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
@@ -328,13 +335,13 @@
         <mat-card>
           <mat-grid-list cols="3" rowHeight="2em">
               <mat-grid-tile>
-                  <button mat-button (click)="onCancel()" mat-raised-button color="warn">Cancelar</button>
+                  <button mat-button (click)="onCancel()" mat-raised-button color="accent">Cancelar</button>
               </mat-grid-tile>                
               <mat-grid-tile>
                   <button mat-button matStepperPrevious mat-raised-button color="primary">Previo</button>
               </mat-grid-tile>
               <mat-grid-tile>
-                  <button mat-button (click)="onSubmit()" mat-raised-button color="primary">Enviar</button>
+                  <button mat-button (click)="onSubmit()" [disabled]="submitting" mat-raised-button color="primary">Enviar</button>
               </mat-grid-tile>
           </mat-grid-list>
         </mat-card>

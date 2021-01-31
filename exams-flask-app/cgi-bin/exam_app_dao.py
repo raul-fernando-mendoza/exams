@@ -3,9 +3,13 @@ import datetime
 import json
 import logging
 
-import db
-from models import Producto, TipoExamen, Maestro, Estudiante, Examen, ExamenObservaciones, RazonesSeleccionadas, OtrasRazonesSeleccionadas
+from db import Session
+from models import Producto, TipoExamen, Maestro, Estudiante, Examen, ExamenObservaciones, RazonesSeleccionadas, OtrasRazonesSeleccionadas, MovimientosCancelados, ExamenTotales, User, Role, Token
 import json
+import uuid
+from datetime import datetime  
+from datetime import timedelta
+from flask_json import FlaskJSON, JsonError, json_response, as_json
 
 def apiProcess(data):
 
@@ -14,138 +18,209 @@ def apiProcess(data):
             user_id = data['user_id']
             return getExamenesPendientes(user_id)
         elif data['what'] == 'SaveExamen':
-            entities = data['entities']
-            logging.debug("entities:" + str(entities))
-            observaciones = entities['valores_seleccionados']
-            logging.debug("valores_seleccionados:" + str(observaciones))
-            for o in observaciones:
-                logging.debug("o:" + str(o))
-                examenObservaciones_uei(examen_id=o['examen_id'],
-                    exercise_id=o['exercise_id'],
-                    row_id=o['row_id'],
-                    col_id=o['col_id'],
-                    is_selected=o['is_selected'])
-            
-            razones_seleccionadas = entities['razones_seleccionadas']
-            logging.debug("razones_seleccionadas:" + str(razones_seleccionadas))
-            n = razones_seleccionadas_remove(entities['examen_id'])
-            for o in razones_seleccionadas:
-                n = razones_seleccionadas_insert(examen_id=o['examen_id'],
-                    exercise_id=o['exercise_id'],
-                    row_id=o['row_id'],
-                    col_id=o['col_id'],
-                    reason_id=o["reason_id"])
-
-            otras_razones_seleccionadas = entities['otras_razones_seleccionadas']
-            logging.debug("otras_razones_seleccionadas:" + str(otras_razones_seleccionadas))
-            n = otras_razones_seleccionadas_remove(entities['examen_id'])
-            for o in otras_razones_seleccionadas:
-                n = otras_razones_seleccionadas_insert(examen_id=o['examen_id'],
-                    exercise_id=o['exercise_id'],
-                    row_id=o['row_id'],
-                    col_id=o['col_id'],
-                    otra_razon=o["otra_razon"])                    
-            return entities
+            return SaveExamen(data)
+        elif data['what'] == 'GetExamen':
+            return getExam(data)
+        elif data["what"] == "loginUser":
+            return loginUser(data)
         else:
-            return json_response(error="action not found")
+            raise NameError("solicitud invalida")
 
 #curl -X POST --data '{"what": "getExamenesPendientes", "user_id":"raul"}' http://localhost:80/api/exam_app_ent.py/requestapi
 #curl -X POST -H "Content-Type: application/json" -d @/var/www/cgi-bin/examen_observaciones.json http://127.0.0.1:5000/requestapi
-def getExamenesPendientes(userid):
-    logging.debug( "getExamenesPendientes:" + str(userid)  )
+def getExamenesPendientes(user_id):
+    logging.debug( "getExamenesPendientes:" + str(user_id)  )
 
-    examenes = db.session.query(Examen).filter_by(estudiante_id=1).all()
-    print("results:" + str(examenes) )
-    result = []
-    for exam in examenes:
-       o = {
-            "id": exam.id,
-            "label": exam.tipoExamen.label,
-            "studentName":exam.estudiante.nombre,
-            "teacherName":exam.maestro.nombre,
-            "grade": exam.grado,
-            "completado": exam.completado,
-            "applicationDate": exam.fechaApplicacion
-            }
-       result.append(o)
-    logging.debug( result );
-    return result
+    session = Session()
+    try:
+        examenes = session.query(Examen).filter_by(maestro_id=user_id).all()
+        print("results:" + str(examenes) )
+        result = []
+        for exam in examenes:
+            o = {
+                "id": exam.id,
+                "label": exam.tipoExamen.label,
+                "studentName":exam.estudiante.nombre,
+                "teacherName":exam.maestro.nombre,
+                "grade": exam.grado,
+                "completado": exam.completado,
+                "applicationDate": exam.fechaApplicacion.strftime("%Y/%m/%d %H:%M:%S")
+                }
+            result.append(o)
+        logging.debug( result )
+        return result
+    except Exception as e:
+        session.rollback()
+        raise JsonError(description="Exception:" + str(e))        
 #update else insert ExamenObservaciones
-def examenObservaciones_uei(examen_id, exercise_id, row_id, col_id, is_selected):
-    logging.debug( "uli_examenObservaciones:" + str(examen_id) + " " + str(exercise_id) + " " + str(row_id) + " " + str(col_id) + " " + str(is_selected) )
 
-    examen_observaciones = db.session.query(ExamenObservaciones).filter_by(examen_id=examen_id,exercise_id=exercise_id, row_id=row_id, col_id=col_id ).first()
-    print("results:" + str(examen_observaciones) )
-    if examen_observaciones:
-        examen_observaciones.is_selected=is_selected
-        db.session.commit()
-        return examen_observaciones
-    else:
-        n = ExamenObservaciones( 
-            examen_id=examen_id,
-            exercise_id=exercise_id,
-            row_id=row_id,
-            col_id=col_id,
-            is_selected=is_selected
-		)
-        db.session.add(n)
-        db.session.commit()
-        return n
+def SaveExamen(data): 
+    logging.debug("SaveExamen called")
+    session = Session()
+    try:
+        entities = data['entities']
+        logging.debug("entities:" + str(entities))
+        
+        exam_id=entities["id"]
+        logging.debug("exam_id:" + str(exam_id))
+        examen = None
+        if id:
+            logging.debug("retriving from database") 
+            examen = session.query(Examen).filter_by(id=exam_id).first()
 
-def razones_seleccionadas_remove(examen_id):
-    logging.debug( "razones_seleccionadas_remove:" + str(examen_id)  )
+        #logging.debug("examen_object:" + str(examen) )
 
-    result = db.session.query(RazonesSeleccionadas).filter_by(examen_id=examen_id ).all()
-    for r in result:
-        print( "r:" + str(r))
-        db.session.delete(r)
-    db.session.commit()
-    print("results:" + str(result) )
-    return True
+        if not examen :
+            raise Exception("Invalid exam number")
 
-def razones_seleccionadas_insert(examen_id, exercise_id, row_id, col_id, reason_id):
-    logging.debug( "razones_seleccionadas_insert:" + str(examen_id) + " " + str(exercise_id) + " " + str(row_id) + " " + str(col_id) + " " + str(reason_id) )
+        
 
-    n = RazonesSeleccionadas( 
-        examen_id=examen_id,
-        exercise_id=exercise_id,
-        row_id=row_id,
-        col_id=col_id,
-        reason_id=reason_id
-    )
-    db.session.add(n)
-    db.session.commit()
-    return n    
+        examen.examen_observaciones.clear()         
+        observaciones = entities['examen_observaciones']
+        logging.debug("examen_observaciones:" + str(observaciones))
+        for o in observaciones:
+            logging.debug("o:" + str(o))
+            n = ExamenObservaciones(
+                examen_id=o['examen_id'],
+                exercise_id=o['exercise_id'],
+                row_id=o['row_id'],
+                col_id=o['col_id'],
+                is_selected=o['is_selected'])
+            examen.examen_observaciones.append(n)
 
-def otras_razones_seleccionadas_remove(examen_id):
-    logging.debug( "otras_razones_seleccionadas_remove:" + str(examen_id)  )
+        examen.razones_seleccionadas.clear()
+        razones_seleccionadas = entities['razones_seleccionadas']
+        logging.debug("razones_seleccionadas:" + str(razones_seleccionadas))
+        for o in razones_seleccionadas:
+            logging.debug("r:" + str(o))
+            
+            n = RazonesSeleccionadas(
+                        examen_id = o["examen_id"],
+                        exercise_id = o["exercise_id"],
+                        row_id=o["row_id"],
+                        col_id=o["col_id"],
+                        reason_id=o["reason_id"]
+            )
+            examen.razones_seleccionadas.append(n)
 
-    result = db.session.query(OtrasRazonesSeleccionadas).filter_by(examen_id=examen_id ).all()
-    for r in result:
-        print( "r:" + str(r))
-        db.session.delete(r)
-    db.session.commit()
-    print("results:" + str(result) )
-    return True
+        examen.otras_razones_seleccionadas.clear()
+        otras_razones_seleccionadas = entities['otras_razones_seleccionadas']
+        logging.debug("otras_razones_seleccionadas:" + str(otras_razones_seleccionadas))
+        
+        for o in otras_razones_seleccionadas:
+            n = OtrasRazonesSeleccionadas(
+                examen_id=o['examen_id'],
+                exercise_id=o['exercise_id'],
+                row_id=o['row_id'],
+                col_id=o['col_id'],
+                otra_razon=o["otra_razon"])   
+            examen.otras_razones_seleccionadas.append(n) 
 
-def otras_razones_seleccionadas_insert(examen_id, exercise_id, row_id, col_id, otra_razon):
-    logging.debug( "otras_razones_seleccionadas_insert:" + str(examen_id) + " " + str(exercise_id) + " " + str(row_id) + " " + str(col_id) + " " + str(otra_razon) )
+        examen.movimientos_cancelados.clear()
+        movimientos_cancelados = entities["movimientos_cancelados"]
+        logging.debug("movimientos_cancelados" + str(movimientos_cancelados))
 
-    n = OtrasRazonesSeleccionadas( 
-        examen_id=examen_id,
-        exercise_id=exercise_id,
-        row_id=row_id,
-        col_id=col_id,
-        otra_razon=otra_razon
-    )
-    db.session.add(n)
-    db.session.commit()
-    return n
+        for o in movimientos_cancelados:
+            n=MovimientosCancelados(
+                examen_id = o["examen_id"],
+                exercise_id = o["exercise_id"],
+                row_id = o["row_id"]
+            )
+            examen.movimientos_cancelados.append(n)
 
-if __name__ == '__main__':
-    # Map command line arguments to function arguments.
-    print( sys.argv[1] );
-    myjson = json.loads(sys.argv[1])
-    print( myjson );
-    res = apiProcess(myjson)
-    print(res);
+        examen.examen_totales.clear()
+        examen_totales = entities["examen_totales"]
+        logging.debug("examen_totales" + str(examen_totales))
+
+        for o in examen_totales:
+            n=ExamenTotales(
+                examen_id = o["examen_id"],
+                exercise_id = o["exercise_id"],
+                row_id = o["row_id"],
+                row_total = o["row_total"]
+            )
+            examen.examen_totales.append(n)
+        examen.completado = True
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise JsonError(description="Exception:" + str(e))
+    finally:
+        session.close()
+    return "OK"
+
+def getExam(data):
+    logging.debug("getExam called")
+    entities = data['entities']
+    #logging.debug("entities:" + str(entities))
+    
+    exam_id=entities["id"]
+    logging.debug("exam_id:" + str(exam_id))
+    examen = None
+    result = None
+
+    session = Session()
+
+
+    try:
+        if id:
+            logging.debug("retriving from database") 
+            examen = session.query(Examen).filter_by(id=exam_id).first()
+
+        #logging.debug("examen_object:" + str(examen) )
+
+        if not examen :
+            raise NameError("Examen Invalido")
+
+        result = examen.toJSON()
+    except Exception as e:
+        session.rollback()
+        raise JsonError(description="Exception:" + str(e))
+    finally:
+        session.close()    
+    return result
+
+
+def loginUser(data): 
+    logging.debug("login user called")
+    entities = data['entities']
+    logging.debug("entities:" + str(entities))
+    
+    user_name=entities["user_name"]
+    password=entities["password"]
+    logging.debug("user_name:" + str(user_name) )
+ 
+    session = Session()
+    try:
+        user = session.query(User).filter_by(user_name=user_name).first()
+        logging.debug("user:" + str(user))
+
+        if user and user.password ==  password:
+            logging.debug("passwords are the same")
+            #create a new key
+            key = str(uuid.uuid4())
+            t = datetime.now() + timedelta(days=1) 
+            token = Token(key, t, user.user_id)
+            session.add(token)
+            session.commit()
+
+            roles = []
+            for r in user.roles:
+                n = {
+                    "role": r.role_name
+                }
+                roles.append(n)
+            
+            obj= {
+                "token":key,
+                "user_id":user.user_id,
+                "roles":roles
+            }
+            return obj
+        else: 
+            raise NameError("Usuario invalido")   
+    except Exception as e:
+        session.rollback()
+        raise JsonError(description="Exception:" + str(e))            
+    finally:
+        session.close()

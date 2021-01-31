@@ -21,18 +21,18 @@ const EXAMPLE_DATA: ExamenesPendientesItem[] = [
   {
     "id": 1,
     "label": "Examen de 1",
-    "studentName": "claudia",
+    "studentName": "maria",
     "teacherName": "claudia",
-    "grade": 8.5,
+    "grade": 1,
     "completed": true,
     "applicationDate": "2010-01-12 12:00"
   },
   {
     "id": 2,
     "label": "Examen de 2",
-    "studentName": "cenicienta",
-    "teacherName": "claudia",
-    "grade": 7.5,
+    "studentName": "maria",
+    "teacherName": "virginia",
+    "grade": 2,
     "completed": false,
     "applicationDate": "2010-01-12 12:00"
   }

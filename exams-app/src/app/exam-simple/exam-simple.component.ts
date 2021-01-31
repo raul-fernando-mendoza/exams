@@ -1,8 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, RouterLinkWithHref } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReasonSelectionComponent } from '../reason-selection/reason-selection.component';
 import { ExamService } from '../exam-service';
+
+
 
 export interface Tile {
   color: string;
@@ -35,7 +37,8 @@ export interface Row2{
 export class ExamSimpleComponent implements OnInit {
 
   isEditable = true;
-
+  submitting = false;
+  version = 0.4;
 
   exam = {
     total:0,
@@ -45,27 +48,27 @@ export class ExamSimpleComponent implements OnInit {
         rows:[
           {
             id:"primera",
-            label:"1' (1 1/2)",
+            label:"1'",
             rowValue:0.6
           },
           {
             id:"segunda",
-            label:"2' (1 1/2)",
+            label:"2'",
             rowValue:0.6
           },
           {
             id:"tercera",
-            label:"3 (1 1/2)",
+            label:"3'",
             rowValue:0.6
           },
           {
             id:"cuarta",
-            label:"4' (1 1/2)",
+            label:"4'",
             rowValue:0.6
           },
           {
             id:"quinta",
-            label:"5' (1 1/2)",
+            label:"5'",
             rowValue:0.6
           }
         ],
@@ -82,25 +85,25 @@ export class ExamSimpleComponent implements OnInit {
         rows:[
           {
             id:"segunda",
-            label:"1' (1 1/2)",
-            label2:"Fuera de la vertical",
+            label:"2'",
+            label2:"Fuera del eje",
             rowValue:1
           },
           {
             id:"primera",
-            label:"2' (1 1/2)",
-            label2:"Dentro de la vertical",
+            label:"1'",
+            label2:"Dentro del eje",
             rowValue:1
           },
           {
             id:"cuarta",
-            label:"3 (1 1/2)",
-            label2:"Fuera y dentro de la vertical",
+            label:"4'",
+            label2:"Combinado",
             rowValue:1
           },
           {
             id:"fenix",
-            label:"4' (1 1/2)",
+            label:"2'",
             label2:"Fenix",
             rowValue:1
           }
@@ -356,24 +359,22 @@ export class ExamSimpleComponent implements OnInit {
       "primera":{
         "pies":[
           { id:1, label: "rotar pie 30' hacia afuera" },
-          { id:2, label: "apoyar sobre 1' o 2' metatarse"},
+          { id:2, label: "apoyar sobre 1' o 2' metatarso"},
           { id:3, label: "tobillo hacia adentro"} ,
           { id:4, label: "talón hacia atrás"} ,
-          { id:5, label: "caderas hacia enfrente"} 
+          { id:5, label: "pelvis alineada"} 
         ],
         "shimmi":[
-          { id:1, label: "Dar uniformidad" },
-          { id:2, label: "Mantenerlo más tiempo" },
-          { id:3, label: "comodidad al hacerlo" },
-          { id:4, label: "ambas piernas" },
-          { id:5, label: "no shake" }
+          { id:1, label: "uniformidad" },
+          { id:2, label: "resistencia" },
+          { id:3, label: "aspecto cómodo" },
+          { id:4, label: "piernas alternadas" },
+          { id:5, label: "piernas extendidas" }
         ],
         "palomas":[ //palomas
-          { id:1, label: "dar suavidad" },
-          { id:2, label: "alargar los dedos"},
-          { id:3, label: "juntar los dedos"},
-          { id:4, label: "pulgar en oposición"},
-          { id:5, label: "mover las muñecas"}
+          { id:1, label: "dedos extendidos"},
+          { id:2, label: "leve separación en dedos"},
+          { id:3, label: "pulgar en anteposición"}
         ],
         "portdebras":[ //port de bras
           { id:1, label: "dar suavidad"},
@@ -383,8 +384,8 @@ export class ExamSimpleComponent implements OnInit {
           { id:5, label: "definir trayectoria y posición"}
         ],
         "craneo":[ //craneo
-          { id:1, label: "barbilla a 90'"},
-          { id:2, label: "cuello sin inclinación"}
+          { id:1, label: "mentón recto"},
+          { id:2, label: "cuello alineado"}
         ]        
       },
       "segunda":{
@@ -392,7 +393,7 @@ export class ExamSimpleComponent implements OnInit {
           { id:1, label: "Rotar pie 30' hacia afuera" },
           { id:2, label: "Apoyar sobre 1' o 2' metatarso"},
           { id:3, label: "tobillo hacia adentro (aduccion)"},  
-          { id:3, label: "talon hacia atras"},
+          { id:3, label: "talón hacia atras"},
           { id:3, label: "caderas hacia enfrente"}
         ]
       },
@@ -427,11 +428,10 @@ export class ExamSimpleComponent implements OnInit {
     "exercise_2":{
       "segunda":{
         "hombros":[
-          { id:1, label: "cuello-hombro = ángulo 90°" },
-          { id:2, label: "omóplatos hacia abajo y atrás"},
-          { id:3, label: "presión descendente en los hombros"} ,
-          { id:4, label: "estirar el cuello"} ,
-          { id:5, label: "no mover los hombros"} 
+          { id:1, label: "omóplatos hacia abajo y atrás"},
+          { id:2, label: "presión descendente en los hombros"} ,
+          { id:3, label: "elongar el cuello"} ,
+          { id:4, label: "no mover los hombros"} 
         ],
         "menton":[
           { id:1, label: "cuello-mentón = ángulo 90°" },
@@ -439,32 +439,32 @@ export class ExamSimpleComponent implements OnInit {
           { id:3, label: "bajar el menton" }
         ],
         "movimiento":[ 
-          { id:1, label: "Definir cada movimiento" },
+          { id:1, label: "Definicion" },
           { id:2, label: "Aplitud"},
-          { id:3, label: "Mantener la superficie de apoyo."}
+          { id:3, label: "Disociación"}
         ],
         "espalda":[ 
           { id:1, label: "espalda recta"},
           { id:2, label: "mov sobre el plano horizontal"}
         ],
-        "caderas":[ //craneo
-          { id:1, label: "barbilla a 90'"},
-          { id:2, label: "cuello sin inclinación"}
+        "caderas":[ 
+          { id:1, label: "Estatica"},
+          { id:2, label: "Frontal"},
+          { id:3, label: "Sobre la vertical"}
         ],
         "pies":[
           { id:1, label: "rotar pie 30° hacia afuera" },
           { id:2, label: "apoyar sobre pulgar y  1° metatarso"},
           { id:3, label: "tobillo hacia abajo"} ,
-          { id:4, label: "alón hacia atrás"} ,
-          { id:5, label: "caderas hacia enfrente"} 
+          { id:4, label: "talón hacia atrás"} 
         ],
-    		"shimmi":[
-          { id:1, label: "Dar uniformidad" },
-          { id:2, label: "mantenerlo mas tiempo"},
-          { id:3, label: "comodidad al hacerlo"} ,
-          { id:4, label: "ambas piernas"} ,
-          { id:5, label: "no shake"} 
-        ],
+        "shimmi":[
+          { id:1, label: "uniformidad" },
+          { id:2, label: "resistencia" },
+          { id:3, label: "aspecto cómodo" },
+          { id:4, label: "piernas alternadas" },
+          { id:5, label: "piernas extendidas" }
+        ],        
         "brazos":[
           { id:1, label: "Precisión en brazos" },
           { id:2, label: "Manos en pronación"},
@@ -475,9 +475,8 @@ export class ExamSimpleComponent implements OnInit {
         "crotalos":[
           { id:1, label: "mantener crótalos separados" },
           { id:2, label: "fuera de tiempo"},
-          { id:3, label: "a contratiempo"} ,
-          { id:4, label: "afinar crótalos"} ,
-          { id:5, label: "claridad en el sonido"} 
+          { id:3, label: "a contratiempo"},
+          { id:4, label: "claridad en el sonido"} 
         ]		
       },
       "primera":{
@@ -1068,10 +1067,10 @@ export class ExamSimpleComponent implements OnInit {
   // ************** ejecicio 2 
   headers_1: Tile[] = [
     {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
-    {text: 'Posiciones de Pies', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Posicion 1/2 punta', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'pies y piernas', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Palomas', cols: 1, rows: 1, color: 'lightblue'},
+    {text: 'Manos', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Port de bras', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Cráneo', cols: 1, rows: 1, color: 'lightblue'},
     {text: '3', cols: 1, rows: 1, color: 'lightblue'},    
@@ -1079,13 +1078,13 @@ export class ExamSimpleComponent implements OnInit {
 
   headers_2: Tile[] = [
     {text: 'fail', cols: 1, rows: 1, color: '#DDBDF1'},
-    {text: 'Posicion', cols: 2, rows: 1, color: 'lightblue'},
+    {text: 'Posicion 1/2 punta', cols: 2, rows: 1, color: 'lightblue'},
     {text: 'Torso', cols: 2, rows: 1, color: 'lightblue'},
     {text: 'Hombro', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Mentón', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Mov', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Espalda', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'Caderas', cols: 1, rows: 1, color: 'lightblue'},    
+    {text: 'Pelvis', cols: 1, rows: 1, color: 'lightblue'},    
     {text: 'Pies y Piernas', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Shimmi (R,I,U)', cols: 1, rows: 1, color: 'lightblue'},
     {text: 'Brazos y dedos', cols: 1, rows: 1, color: 'lightblue'},
@@ -1143,12 +1142,19 @@ export class ExamSimpleComponent implements OnInit {
   estudiante = {}
   maestro = {}
   
-  constructor(private route: ActivatedRoute
+  constructor( private route: ActivatedRoute
+    , private router: Router
     , public dialog: MatDialog
     , private examService: ExamService
     ) {
 
       this.exam_id = parseInt(this.route.snapshot.paramMap.get('exam_id'))
+      var estudiante_name = this.route.snapshot.paramMap.get('estudiante')
+
+      var obj = {
+        "nombre" : estudiante_name
+      };
+      this.estudiante = obj;
     }
 
   ngOnInit() {
@@ -1184,7 +1190,7 @@ export class ExamSimpleComponent implements OnInit {
 
 
   onCancel(){
-    console.log("onCancel");
+    this.router.navigate(['/ExamenesPendientes']);
   }
   setReasonSelected(exercise_id:string, row_id:string, col_id:string, reason_id:string, value:boolean){
     if( !this.razones_seleccionadas[exercise_id] )
@@ -1409,20 +1415,24 @@ export class ExamSimpleComponent implements OnInit {
   }
 
   onSubmit(){
+    this.submitting = true;
+
     var valoresSeleccionadosJSON = [];
     for(var exercise_id in this.valores_seleccionados ){
       for(var row_id in this.valores_seleccionados[exercise_id]){
         for(var col_id in this.valores_seleccionados[exercise_id][row_id]){
           console.log( "valores_seleccionados " + exercise_id + "  " + row_id + " " + col_id + " " + this.valores_seleccionados[exercise_id][row_id][col_id] );
-          var selected = this.valores_seleccionados[exercise_id][row_id][col_id]
-          let obj = {
-              "examen_id":1,
-              "exercise_id":exercise_id,
-              "row_id":row_id,
-              "col_id":col_id,
-              "is_selected": selected
-          };
-          valoresSeleccionadosJSON.push( obj )
+          if( this.isSelected(exercise_id, row_id, col_id) ){
+            var selected = this.valores_seleccionados[exercise_id][row_id][col_id]
+            let obj = {
+                "examen_id":1,
+                "exercise_id":exercise_id,
+                "row_id":row_id,
+                "col_id":col_id,
+                "is_selected": selected
+            };
+            valoresSeleccionadosJSON.push( obj )
+          }
         }
       }
     }
@@ -1458,14 +1468,16 @@ export class ExamSimpleComponent implements OnInit {
         for(var col_id in this.otras_razones_seleccionadas[exercise_id][row_id]){
           let otra_razon = this.otras_razones_seleccionadas[exercise_id][row_id][col_id]
           console.log( "otras_razones_seleccionadas " + exercise_id + "  " + row_id + " " + col_id + " " +  otra_razon );
-          let obj = {
-            "examen_id":this.exam_id,
-            "exercise_id":exercise_id,
-            "row_id":row_id,
-            "col_id":col_id,
-            "otra_razon":otra_razon
-          };
-          otrasRazonesSeleccionadasJSON.push( obj )
+          if( otra_razon && otra_razon.length > 0 ){
+            let obj = {
+              "examen_id":this.exam_id,
+              "exercise_id":exercise_id,
+              "row_id":row_id,
+              "col_id":col_id,
+              "otra_razon":otra_razon
+            };
+            otrasRazonesSeleccionadasJSON.push( obj )
+          }
         }
       }
     }
@@ -1476,12 +1488,14 @@ export class ExamSimpleComponent implements OnInit {
     for(var exercise_id in this.movimientos_cancelados ){
       for(var row_id in this.movimientos_cancelados[exercise_id]){
         console.log( "movimientos_cancelados " + exercise_id + "  " + row_id  );
-        let obj = {
-          "examen_id":this.exam_id,
-          "exercise_id":exercise_id,
-          "row_id":row_id
+        if( this.isCanceledRow(exercise_id, row_id) ){
+          let obj = {
+            "examen_id":this.exam_id,
+            "exercise_id":exercise_id,
+            "row_id":row_id
+          }
+          movimientosCanceladosJSON.push(obj)
         }
-        movimientosCanceladosJSON.push(obj)
       }
     }
 
@@ -1517,6 +1531,11 @@ export class ExamSimpleComponent implements OnInit {
     this.examService.SaveExamen("user.token",data).subscribe(data => {
       console.log( "Exams:" + data );
       alert("completado gracias!")
+      this.submitting = false;
+    },
+    error => {
+      alert("ERROR al salvar el examen:" + error)
+      this.submitting = false;
     });
   } 
 
@@ -1532,7 +1551,7 @@ export class ExamSimpleComponent implements OnInit {
       this.maestro = data["result"]["maestro"]
 
 
-      var observaciones = data["result"]["observaciones"]
+      var observaciones = data["result"]["examen_observaciones"]
       for(let i in observaciones ){
         this.setSelected(observaciones[i]["exercise_id"], observaciones[i]["row_id"], observaciones[i]["col_id"], observaciones[i]["is_selected"])
       }
@@ -1551,6 +1570,10 @@ export class ExamSimpleComponent implements OnInit {
       for(let i in movimientos_cancelados ){
         this.setCancelRow(movimientos_cancelados[i]["exercise_id"], movimientos_cancelados[i]["row_id"])
       }     
+    },
+    error => {
+      console.log( "not found:" + data );
     });    
   }
+  
 }

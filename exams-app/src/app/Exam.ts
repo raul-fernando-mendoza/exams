@@ -7,6 +7,6 @@ export class Exam{
     studentName:string;
     teacherName:string;
     grade:number;
-    completed:boolean;
+    completado:boolean;
     applicationDate:string;
 }

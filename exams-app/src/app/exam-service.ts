@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Exam } from './Exam';
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +10,21 @@ export class ExamService {
   private baseUrl: string;
   private examUrl: string;
   constructor(private http: HttpClient) { 
-    this.baseUrl = "http://192.168.15.12:80/flask/exam_app";
+    var hostname = window.location.hostname
+    if(hostname==="localhost"){
+      hostname= "192.168.15.12"
+    }
+    this.baseUrl = "http://" + hostname +":80/flask/exam_app";
+    
     this.examUrl = this.baseUrl + '/requestapi';
   }
-  public Exams(token:string): Observable<Object> {
+  public Exams(token, user_id): Observable<Object> {
+
+    
     const params = new HttpParams()
       .set('token', token); 
 
-    var request_data = {"what": "getExamenesPendientes", "user_id":"raul"};
+    var request_data = {"what": "getExamenesPendientes", "user_id":user_id};
     //var myheaders = new HttpHeaders({'Content-Type': 'text/html'});
     var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 

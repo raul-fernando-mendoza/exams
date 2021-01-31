@@ -1,10 +1,11 @@
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_json import FlaskJSON, JsonError, json_response, as_json
 from flask_cors import CORS, cross_origin
 
 from exam_app_dao import apiProcess
 import logging
+import json
 
 
 
@@ -53,10 +54,11 @@ def requestapi():
     logging.debug("requestapi:" + str(data))
     try:
         resp = apiProcess(data)
-        logging.debug("result:" + str(resp));
+        logging.debug("result:" + json.dumps(resp,  indent=4, sort_keys=True));
         
-    except (KeyError, TypeError, ValueError):
-        raise JsonError(error='Exception error')
+    except NameError as e:
+        logging.error("a named error has occurred:" + str(e))
+        abort(404, description=str(e))
     return json_response(result=resp);
 
 

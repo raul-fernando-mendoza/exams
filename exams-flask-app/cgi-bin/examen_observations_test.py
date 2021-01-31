@@ -1,5 +1,5 @@
 import unittest
-import exam_app_dao
+import models
 
 class TestExamenObservations(unittest.TestCase):
     """

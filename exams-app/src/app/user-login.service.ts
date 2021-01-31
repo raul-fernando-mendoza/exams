@@ -9,28 +9,33 @@ import { Observable } from 'rxjs';
 })
 export class UserLoginService {
   private baseUrl: string;
-  private usersUrl: string;
-  private currentUserUrl:string;
-  private logoutUrl: string;
+  private examUrl: string;
+  private token: string;
   constructor(private http: HttpClient) { 
-    this.baseUrl = "http://localhost:8080/";
-    this.usersUrl = this.baseUrl + 'loginService';
-    this.currentUserUrl = this.baseUrl +  "currentUserService";
-    this.logoutUrl = this.baseUrl + "logoutService";
+    var hostname = window.location.hostname
+    if(hostname==="localhost"){
+      hostname= "192.168.15.12"
+    }    
+    this.baseUrl = "http://" + hostname +":80/flask/exam_app";
+    this.examUrl = this.baseUrl + '/requestapi';
   }
-  public login(userName:string,password:string): Observable<UserLoginCredentials> {
+  
+  public login(data): Observable<Object> {
     const params = new HttpParams()
-      .set('username', userName)
-      .set('password', password);     
-    return this.http.get<UserLoginCredentials>( this.usersUrl, {params});
-  }  
+     
+
+    var request_data = {"what": "loginUser", "entities":data};
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+    return  this.http.post(this.examUrl, request_data, {headers: myheaders});
+  }    
   public currentUser(token:string): Observable<UserLoginCredentials[]> {
     const params = new HttpParams()
       .set('token', token);    
-    return this.http.get<UserLoginCredentials[]>(this.currentUserUrl, {params});
+    return this.http.get<UserLoginCredentials[]>(this.examUrl, {params});
   }  
   public logout(): Observable<string[]> {
-    return this.http.get<string[]>(this.logoutUrl);
+    return this.http.get<string[]>("");
   }  
 
 }

@@ -28,14 +28,14 @@ class Estudiante(db.Base):
         self.apellidoPaterno = apellidoPaterno
         self.apellidoMaterno = apellidoMaterno
     def __repr__(self):
-        return f'Estudiante({self.nombre}, {self.apellidoPaterno}, {self.apellidoMaterno})'
-    def __str__(self):
-        obj = { "id":self.id,
+        return f'Estudiante({self.nombre}, {self.apellidoPaterno},{self.apellidoMaterno})'
+    def toJSON(self):
+        return { "id":self.id,
                 "nombre":self.nombre,
 				"apellidoPaterno":self.apellidoPaterno,
 				"apellidoMaterno":self.apellidoMaterno
 			}
-        return json.dumps( obj );
+        
         
 class Maestro(db.Base):
     __tablename__ = 'maestro'
@@ -48,14 +48,14 @@ class Maestro(db.Base):
         self.apellidoPaterno = apellidoPaterno
         self.apellidoMaterno = apellidoMaterno
     def __repr__(self):
-        return f'Maestro({self.nombre}, {self.apellidoPaterno}, {self.apellidoMaterno})'
-    def __str__(self):
-        obj = { "id":self.id,
+        return f'Maestro({self.nombre}, {self.apellidoPaterno},{self.apellidoMaterno})'        
+    def toJSON(self):
+        return { "id":self.id,
                 "nombre":self.nombre,
 				"apellidoPaterno":self.apellidoPaterno,
 				"apellidoMaterno":self.apellidoMaterno
 			}
-        return json.dumps( obj );
+        
         
 class TipoExamen(db.Base):
     __tablename__ = 'tipo_examen'
@@ -64,11 +64,14 @@ class TipoExamen(db.Base):
     def __init__(self, label):
         self.label = label
     def __repr__(self):
-        return "{" + f'"id":{self.id}, "label":{self.label} ' + "}"
-    def __str__(self):
-        obj = { "id":self.id, "label":self.label }
-        return json.dumps( obj );
-        #return f'TipoExamen( {self.label} )'
+        return f'TipoExamen({self.label})'        
+    def toJSON(self):
+        return { 
+                    "id":self.id, 
+                    "label":self.label 
+                }
+        
+
         
 class Examen(db.Base):
     __tablename__ = 'examen'
@@ -81,25 +84,61 @@ class Examen(db.Base):
     estudiante_id = Column(Integer, ForeignKey('estudiante.id'))
     estudiante = relationship("Estudiante")
     maestro_id = Column(Integer, ForeignKey('maestro.id'))
-    maestro = relationship("Maestro")   
-    def __init__(self, exam_type_id, estudiante_id, maestro_id, grado, fechaApplicacion):
+    maestro = relationship("Maestro") 
+
+    examen_observaciones = relationship("ExamenObservaciones", cascade="all, delete-orphan")  
+    razones_seleccionadas = relationship("RazonesSeleccionadas", cascade="all, delete-orphan") 
+    otras_razones_seleccionadas = relationship("OtrasRazonesSeleccionadas", cascade="all, delete-orphan") 
+    movimientos_cancelados = relationship("MovimientosCancelados", cascade="all, delete-orphan") 
+    examen_totales = relationship("ExamenTotales", cascade="all, delete-orphan") 
+    
+
+    def __init__(self, id,  exam_type_id, estudiante_id, maestro_id, grado, fechaApplicacion, completado):
+        self.id = id
         self.exam_type_id = exam_type_id
         self.estudiante_id = estudiante_id
         self.maestro_id = maestro_id
         self.grado = grado
         self.fechaApplicacion = fechaApplicacion
+        self.completado = completado
     def __repr__(self):
-        return f'Examen({self.id}, {self.tipoExamen}, {self.grado}, {self.estudiante}, {self.maestro}, {self.fechaApplicacion}, {self.completado} )'
-    def __str__(self):
+        return f'Examen({self.id}, {self.exam_type_id},{self.estudiante_id})'
+    def toJSON(self):
+        
+
         obj = { "id":self.id,
-		        "tipoExamen": self.tipoExamen,
+		       
 				"grado":self.grado,
-				"alumno": self.estudiante,
-				"maestro":self.maestro,                
-				"fechaApplicacion":self.fechaApplicacion,
-				"completado":self.completado
+				"fechaApplicacion":self.fechaApplicacion.strftime("%Y/%m/%d %H:%M:%S"),
+				"completado":self.completado,
+
+                "tipoExamen": self.tipoExamen.toJSON(),
+				"estudiante": self.estudiante.toJSON(),
+				"maestro":self.maestro.toJSON(), 
+
+                "examen_observaciones":[],
+                "razones_seleccionadas":[],
+                "otras_razones_seleccionadas":[],
+                "movimientos_cancelados":[],
+                
+                "examen_totales":[]
 			}
-        return json.dumps( obj )
+        for o in self.examen_observaciones:
+            obj["examen_observaciones"].append( o.toJSON() )
+
+        for o in self.razones_seleccionadas:
+            obj["razones_seleccionadas"].append( o.toJSON() )  
+
+        for o in self.otras_razones_seleccionadas:
+            obj["otras_razones_seleccionadas"].append( o.toJSON() )  
+
+        for o in self.movimientos_cancelados:
+            obj["movimientos_cancelados"].append( o.toJSON() )   
+
+        for o in self.examen_totales:
+            obj["examen_totales"].append( o.toJSON() )                                             
+        
+        return obj
 
 
 class ExamenObservaciones(db.Base):
@@ -117,18 +156,16 @@ class ExamenObservaciones(db.Base):
         self.exercise_id = exercise_id
         self.row_id = row_id
         self.col_id = col_id
-        self.is_selected = is_selected
-    def __repr__(self):
-        return f'ExamenObservaciones({self.examen_id}, {self.exercise_id}, {self.row_id}, {self.col_id}, {self.is_selected})'
-    def __str__(self):
-        obj = { 
+        self.is_selected = is_selected      
+    def toJSON(self):
+        return { 
                 "examen_id":self.examen_id,
 		        "exercise_id": self.exercise_id,
 				"row_id":self.row_id,
 				"col_id": self.col_id,
 				"is_selected":self.is_selected
 			  }
-        return json.dumps( obj )
+       
 
 class RazonesSeleccionadas(db.Base):
     __tablename__ = 'razones_seleccionadas'
@@ -146,17 +183,16 @@ class RazonesSeleccionadas(db.Base):
         self.row_id = row_id
         self.col_id = col_id
         self.reason_id = reason_id
-    def __repr__(self):
-        return f'RazonesSeleccionadas({self.examen_id}, {self.exercise_id}, {self.row_id}, {self.col_id}, {self.reason_id})'
-    def __str__(self):
-        obj = { 
+    def toJSON(self):
+        return { 
                 "examen_id":self.examen_id,
 		        "exercise_id": self.exercise_id,
 				"row_id":self.row_id,
 				"col_id": self.col_id,
 				"reason_id":self.reason_id
 			  }
-        return json.dumps( obj )        
+     
+       
 
 class OtrasRazonesSeleccionadas(db.Base):
     __tablename__ = 'otras_razones_seleccionadas'
@@ -174,17 +210,16 @@ class OtrasRazonesSeleccionadas(db.Base):
         self.row_id = row_id
         self.col_id = col_id
         self.otra_razon = otra_razon
-    def __repr__(self):
-        return f'RazonesSeleccionadas({self.examen_id}, {self.exercise_id}, {self.row_id}, {self.col_id}, {self.otra_razon})'
-    def __str__(self):
-        obj = { 
+    def toJSON(self):
+        return { 
                 "examen_id":self.examen_id,
 		        "exercise_id": self.exercise_id,
 				"row_id":self.row_id,
 				"col_id": self.col_id,
 				"otra_razon":self.otra_razon
 			  }
-        return json.dumps( obj )                
+       
+             
 
 class MovimientosCancelados(db.Base):
     __tablename__ = 'movimientos_cancelados'
@@ -199,15 +234,14 @@ class MovimientosCancelados(db.Base):
         self.exercise_id = exercise_id
         self.row_id = row_id
 
-    def __repr__(self):
-        return f'RazonesSeleccionadas({self.examen_id}, {self.exercise_id}, {self.row_id})'
-    def __str__(self):
-        obj = { 
+    def toJSON(self):
+        return { 
                 "examen_id":self.examen_id,
 		        "exercise_id": self.exercise_id,
 				"row_id":self.row_id
 			  }
-        return json.dumps( obj )                        
+          
+                       
 
 class ExamenTotales(db.Base):
     __tablename__ = 'examen_totales'
@@ -224,13 +258,74 @@ class ExamenTotales(db.Base):
         self.row_id = row_id
         self.row_total = row_total
 
-    def __repr__(self):
-        return f'RazonesSeleccionadas({self.examen_id}, {self.exercise_id}, {self.row_id}, {self.row_total})'
-    def __str__(self):
-        obj = { 
+    def toJSON(self):
+        return { 
                 "examen_id":self.examen_id,
 		        "exercise_id": self.exercise_id,
 				"row_id":self.row_id,
                 "row_total":self.row_total
 			  }
-        return json.dumps( obj )                                
+       
+                               
+user_role = Table('user_role', db.Base.metadata,
+    Column('left_id',Integer, ForeignKey('user.user_id')),
+    Column('right_id',Integer, ForeignKey('role.role_id'))
+)
+
+class User(db.Base):
+    __tablename__ = 'user'
+    user_id = Column(Integer,  primary_key=True)
+    user_name = Column( String(50) , primary_key=True ) 
+
+    password = Column(String(50) , nullable=False)    
+    roles = relationship("Role",
+                    secondary=user_role)
+    
+    def __init__(self, user_id, password):
+        self.user_id = user_id
+        self.password = password
+
+    def toJSON(self):
+        return { 
+                "user_id":self.user_id
+			  }
+        
+
+class Role(db.Base):
+    __tablename__ = 'role'
+
+    role_id = Column(Integer, primary_key=True)
+    role_name = Column(String(50), primary_key=True)  
+ 
+    def __init__(self, role_id):
+        self.role_id = role_id
+
+    def toJSON(self):
+        return { 
+                "role_id":self.role_id
+			  }
+        
+
+class Token(db.Base):
+    __tablename__ = 'token'
+
+    key = Column(String(50), primary_key=True)
+    expirationDate = Column(DateTime)
+    user_id = Column(Integer, nullable=False )
+ 
+    def __init__(self, key, expirationDate, user_id):
+        self.key = key
+        self.expirationDate = expirationDate.strftime("%Y/%m/%d %H:%M:%S")
+        self.user_id = user_id
+
+    def toJSON(self):
+        return { 
+                "key":self.key,
+                "user_id":self.keys,
+                "expirationDate":self.expirationDate
+			  }
+        
+
+if __name__ == '__main__':
+    # create this model.
+    db.Base.metadata.create_all(db.engine)       

@@ -32,13 +32,13 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pendientes.component';
-import { ExamApplicationComponent } from './exam-application/exam-application.component';
 import { AddressFormComponent } from './address-form/address-form.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
 import {MatStepperModule} from '@angular/material/stepper'; 
+
 
 
 
@@ -52,7 +52,6 @@ import {MatStepperModule} from '@angular/material/stepper';
     DragDropComponent,
     LoginFormComponent,
     ExamenesPendientesComponent,
-    ExamApplicationComponent,
     AddressFormComponent,
     ReasonSelectionComponent,
     ExamSimpleComponent,

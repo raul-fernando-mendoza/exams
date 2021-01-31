@@ -24,11 +24,15 @@ export class LoginFormComponent {
 
   onSubmit() {
     console.log("login was submitted");
-    this.userLoginService.login(this.username, this.password).subscribe(data => {
+    var loginData = {
+      "user_name" : this.username,
+      "password": this.password
+    }
+    this.userLoginService.login(loginData).subscribe(data => {
       console.log( "User login submit" + data );
       
       if( data ){
-        var user:UserLoginCredentials= data;
+        var user= data["result"];
         localStorage.setItem('exams.app', JSON.stringify(user));
         this.gotoWelcomeUser();
       }
@@ -37,6 +41,9 @@ export class LoginFormComponent {
         this.userLoginService.logout().subscribe( );
         alert("usuario invalido. try again")
       }
+    },
+    error => {
+      alert("usuario invalido. try again")
     });
     
   }
