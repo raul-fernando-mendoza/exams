@@ -10,7 +10,7 @@ class TestExamenObservations(unittest.TestCase):
             col_id=1,
             is_selected=True)
         self.assertEqual(u.exercise_id, 1)
-    """
+    
     def test_isupper(self):
         u = exam_app_dao.examenObservaciones_uei(examen_id=1,
             exercise_id="exe1",
@@ -25,6 +25,8 @@ class TestExamenObservations(unittest.TestCase):
         # check that s.split fails when the separator is not a string
         with self.assertRaises(TypeError):
             s.split(2)
+
+    """
 
 if __name__ == '__main__':
     unittest.main()

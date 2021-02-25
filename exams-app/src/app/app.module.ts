@@ -37,7 +37,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
-import {MatStepperModule} from '@angular/material/stepper'; 
+import {MatStepperModule} from '@angular/material/stepper';
+import { GraphComponent } from './graph/graph.component';
+import { ExamenesImprovisacionComponent } from './examenes-improvisacion/examenes-improvisacion.component';
+import { ExamenImprovisacionFormComponent } from './examen-improvisacion-form/examen-improvisacion-form.component'; 
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 
@@ -55,6 +60,9 @@ import {MatStepperModule} from '@angular/material/stepper';
     AddressFormComponent,
     ReasonSelectionComponent,
     ExamSimpleComponent,
+    GraphComponent,
+    ExamenesImprovisacionComponent,
+    ExamenImprovisacionFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,7 +91,10 @@ import {MatStepperModule} from '@angular/material/stepper';
     DragDropModule,
     MatCheckboxModule,
     MatDialogModule,
-    MatStepperModule
+    MatStepperModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+     
   ],
   providers: [
     UserLoginService

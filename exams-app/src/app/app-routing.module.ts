@@ -9,9 +9,13 @@ import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesPendientesComponent } from './examenes-pendientes/examenes-pendientes.component';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
+import { GraphComponent } from './graph/graph.component';
+import { ExamenesImprovisacionComponent } from "./examenes-improvisacion/examenes-improvisacion.component";
+import { ExamenImprovisacionFormComponent } from "./examen-improvisacion-form/examen-improvisacion-form.component"
 
 const routes: Routes = [
   { path: 'loginForm', component: LoginFormComponent },
+  
   { path: 'ExamenesPendientes', component: ExamenesPendientesComponent },
   { path: 'NavigationComponent', component: NavigationComponent},
   { path: 'Dashboard', component: DashboardComponent},
@@ -19,7 +23,11 @@ const routes: Routes = [
   { path: 'TreeComponent', component: TreeComponent },
   { path: 'DragDropComponent' , component: DragDropComponent},
   { path: 'Reason', component: ReasonSelectionComponent},
-  { path: 'simple-exam', component: ExamSimpleComponent }
+  { path: 'simple-exam', component: ExamSimpleComponent },
+  { path: 'graph', component: GraphComponent },
+  
+  { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
+  { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent }
 ];
 
 @NgModule({

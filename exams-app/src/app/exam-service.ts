@@ -17,6 +17,7 @@ export class ExamService {
     this.baseUrl = "http://" + hostname +":80/flask/exam_app";
     
     this.examUrl = this.baseUrl + '/requestapi';
+
   }
   public Exams(token, user_id): Observable<Object> {
 
@@ -55,7 +56,20 @@ export class ExamService {
     var request_data = {"what": "GetExamen", "entities":data};
     var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 
+    //return  this.http.post(this.examUrl, request_data, {headers: myheaders});
+    var customurl = "http://laquintacumbres.com/python/services_api.py"
+   ;
+    return  this.http.post(customurl, request_data, {headers: myheaders}); 
+  }  
+  public GetExamApplication(token:string, application_id:Number): Observable<Object> {
+    const params = new HttpParams()
+      .set('token', token); 
+
+    var request_data = {"what": "getExamApplication", "application_id":application_id};
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+    
+
     return  this.http.post(this.examUrl, request_data, {headers: myheaders});
   }  
-
 }

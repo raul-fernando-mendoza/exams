@@ -1,5 +1,5 @@
 import db
-from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Float, Boolean, DateTime, ForeignKey,  ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import json
@@ -70,7 +70,6 @@ class TipoExamen(db.Base):
                     "id":self.id, 
                     "label":self.label 
                 }
-        
 
         
 class Examen(db.Base):
@@ -250,7 +249,7 @@ class ExamenTotales(db.Base):
 
     exercise_id = Column( String(50) , primary_key=True ) 
     row_id = Column(String(50) , primary_key=True)    
-    row_total = Column(String(50) , nullable=False)
+    row_total = Column(Float , nullable=False)
     
     def __init__(self, examen_id, exercise_id, row_id, row_total):
         self.examen_id = examen_id
@@ -329,3 +328,5 @@ class Token(db.Base):
 if __name__ == '__main__':
     # create this model.
     db.Base.metadata.create_all(db.engine)       
+
+

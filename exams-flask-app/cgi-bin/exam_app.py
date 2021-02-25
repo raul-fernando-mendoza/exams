@@ -6,8 +6,9 @@ from flask_cors import CORS, cross_origin
 from exam_app_dao import apiProcess
 import logging
 import json
+import mysql_connect
 
-
+log = logging.getLogger("exam_app")
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -60,6 +61,59 @@ def requestapi():
         logging.error("a named error has occurred:" + str(e))
         abort(404, description=str(e))
     return json_response(result=resp);
+
+#curl -X POST --data '{"exam_impro_criteria":{"label":"","exam_impro_parameter_id":""}}' http://192.168.15.12/flask/exam_app/getObject
+@app.route('/getObject', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def requestGetObject():
+    # We use 'force' to skip mimetype checking to have shorter curl command.
+    log.debug("requestGetObject has been called")
+    data = request.get_json(force=True)
+    log.debug("data:" + str(data))
+    try:
+        obj = mysql_connect.getObject(data)
+        log.debug( json.dumps(obj,  indent=4, sort_keys=True) )
+    except NameError as e:
+        log.error("a named error has occurred:" + str(e))
+        log.error("data:" + str(data))
+        abort(404, description=str(e))
+    return json_response(result=obj)
+
+#curl -X POST --data '{"exam_impro_criteria":{"label":"added label","exam_impro_parameter_id":"2"}}' http://192.168.15.12/flask/exam_app/addObject
+@app.route('/addObject', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def requestAddObject():
+    # We use 'force' to skip mimetype checking to have shorter curl command.
+    log.debug("requestAddObject has been called")
+    data = request.get_json(force=True)
+    log.debug("data:" + str(data))
+    try:
+        obj = mysql_connect.addObject(data)
+        log.debug( json.dumps(obj,  indent=4, sort_keys=True) )
+    except Exception as e:
+        log.error("Exception:" + str(e))
+        log.error("data:" + str(data))
+        abort(404, description=str(e))
+    return json_response(result=obj)
+
+
+#curl -X POST --data '{"exam_impro_criteria":{"label":"some new criteria 3","exam_impro_parameter_id":2},"where":{"id":8}}' http://192.168.15.12/flask/exam_app/getObject
+@app.route('/updateObject', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def requestUpdateObject():
+    # We use 'force' to skip mimetype checking to have shorter curl command.
+    log.debug("getmysql has been called")
+    data = request.get_json(force=True)
+    log.debug("data:" + str(data))
+    try:
+        obj = mysql_connect.updateObject(data)
+        log.debug( json.dumps(obj,  indent=4, sort_keys=True) )
+        
+    except Exception as e:
+        log.error("Exception:" + str(e))
+        log.error("data:" + str(data))
+        abort(404, description=str(e))
+    return json_response(result=obj)
 
 
 @app.route('/get_value')

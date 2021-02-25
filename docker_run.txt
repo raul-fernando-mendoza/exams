@@ -1,0 +1,28 @@
+ //see docker instances running
+ sudo docker ps -a
+ 
+ //kill docker instance
+ sudo docker rm -f 8e3705c1dfaf
+ 
+ //run jellyfin
+docker run -d \
+ --name jellyfin \
+ --user 1000:1000 \
+ --net=host \
+ --volume /mnt/c/jellyfin/config:/config \
+ --volume /mnt/c/jellyfin/cache:/cache \
+ --mount type=bind,source=/mnt/c/jellyfin/media,target=/media \
+ --restart=unless-stopped \
+ jellyfin/jellyfin
+ 
+ //list images
+ sudo docker image ls
+ 
+ //backup jellyfin image
+ docker save jellyfin/jellyfin -o jellyfin_20201226.tar
+ 
+ //backup jellyfin restore
+ sudo docker load < jellyfin_20201226.tar
+ 
+ //docker remove and image
+ docker rmi jellyfin/jellyfin

@@ -1572,7 +1572,7 @@ export class ExamSimpleComponent implements OnInit {
       }     
     },
     error => {
-      console.log( "not found:" + data );
+      console.log( "Error:" +  error.message);
     });    
   }
   

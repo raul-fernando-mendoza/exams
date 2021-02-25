@@ -190,11 +190,11 @@ class TestExamenObservations(unittest.TestCase):
                     "id":17
                 }
             }
-            exam = exam_app_dao.getExam(data)
+            exam = exam_app_dao.getExamen(data)
             logging.debug( json.dumps(exam,  indent=4, sort_keys=True) )
-            data["entities"] = exam
-            result = exam_app_dao.SaveExamen(data)
-            logging.debug(result)
+            #data["entities"] = exam
+            #result = exam_app_dao.SaveExamen(data)
+            #logging.debug(result)
     
 if __name__ == '__main__':
     unittest.main()
