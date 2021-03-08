@@ -113,7 +113,12 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       this.table.dataSource = this.dataSource;    
     },
     error => {
-      alert("ERROR al leer lista de improvisacion:" + error)
+      if( error.status == 401 ){
+        this.router.navigate(['/loginForm']);
+      }
+      else{
+        alert("ERROR al leer lista de improvisacion:" + error.error)
+      }
       
     });   
   }
