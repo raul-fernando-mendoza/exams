@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
-import { enableDebugTools } from '@angular/platform-browser';
 
 
 @Component({
@@ -11,57 +10,56 @@ import { enableDebugTools } from '@angular/platform-browser';
   styleUrls: ['./examen-improvisacion-form.component.css']
 })
 export class ExamenImprovisacionFormComponent {
-  parameters = [
-    { id:8, label:"Parameter", maestro_id: -1, exam_impro_criteria:[{id:1,exam_impro_type_id:1,label:"criteria1",initially_selected:true}]},
-    { id:7, label:"Parameter1", maestro_id: -1, exam_impro_criteria:[{id:1,exam_impro_type_id:1,label:"criteria1",initially_selected:false}]}
-  ]
-  getParameters(){
-    return this.parameters;
-  }
-  updateParametersFormGroup(){
-    var par = {}
+  submitting = false
+  token = "user.token"
 
-    for (let i = this.t.length; i >= 0; i--) {
-        this.t.removeAt(i);
-    }
+  exam_impro_parameter = []
+  today = new Date().toISOString().slice(0, 10)
 
-    for( let i=0; i<this.parameters.length ; i++){
-      var p = this.parameters[i]
-      var fg = this.formBuilder.group( {
-        id: [p.id, Validators.required],
-        label: [p.label, Validators.required],
-        maestro_id:  [p.maestro_id, Validators.required],
-        exam_impro_criteria: new FormArray([]) 
+  criteria = []
+
+  exam_impro_ap_FormGroup = this.fb.group({
+    id: [null],
+    completado:[false, Validators.required],
+    fechaApplicacion: [null, Validators.required],
+    estudiante_id: [null, Validators.required],
+    exam_impro_type_id: [null, Validators.required],
+    materia:[null, Validators.required],    
+    exam_impro_ap_parameter: new FormArray([
+      this.fb.group({
+        id: [null],
+        exam_impro_ap_id:[null],
+        completado: [false],
+        exam_impro_parameter_id:[null],
+        maestro_id:[null], 
+        exam_impro_ap_criteria: new FormArray([
+          this.fb.group({
+            id:[null],
+            exam_impro_ap_parameter_id:[null],
+            exam_impro_criteria_id:[null],
+            selected:false
+          })
+        ])         
       })
-      for( var j = 0; j<p.exam_impro_criteria.length; j++){
-        var c = p.exam_impro_criteria[j]
-        var cg = this.formBuilder.group( {
-          id: [c.id, Validators.required],
-          label: [c.label, Validators.required],
-          isSelected:[c.initially_selected, Validators.required]
-        })
-        var fa:FormArray = fg.controls.exam_impro_criteria as FormArray
-        fa.controls.push(cg)
-      }
-      this.t.push( fg )
-    }
-  }
-
-  examForm = this.fb.group({
-    examImproType: [null, Validators.required],
-    examImproEstudiante: [null, Validators.required],
-    examImproParameters: new FormArray([])
-
+    ])
   });
 
-  get f() { return this.examForm.controls; }
-  get t() { return this.f.examImproParameters as FormArray; }
-  get parametersFormGroups() { return this.t.controls as FormGroup[]; }
-
-  getCriteriaFormGroups(p) {
-     return p.controls.exam_impro_criteria.controls as FormGroup[];
+  get get_exam_impro_ap():FormGroup { return this.exam_impro_ap_FormGroup as FormGroup; }
+  get get_exam_impro_ap_parameter_array():FormArray { 
+    let exam_impro_ap_parameter:FormArray = this.get_exam_impro_ap.controls.exam_impro_ap_parameter as FormArray; 
+    return exam_impro_ap_parameter
   }
- 
+  get get_exam_impro_ap_parameter():FormGroup[] { 
+    return this.get_exam_impro_ap_parameter_array.controls as FormGroup[]; 
+  }
+
+  getCriteriaFormGroups( p : FormGroup ) : FormGroup[]{
+    var arr:FormArray = p.controls.exam_impro_ap_criteria as FormArray
+    var fg = arr.controls
+    return fg as FormGroup[]
+  }
+  
+  
   constructor(private fb: FormBuilder,private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
@@ -71,74 +69,102 @@ export class ExamenImprovisacionFormComponent {
 
   ngOnInit() {
 
+    var examImproTypeRequest = {
+      "exam_impro_type":[{
+          "id":"",
+          "label":""
+      }]
+    }  
 
-      this.examImprovisacionService.getExamsImproTypes("user.token").subscribe(data => {
-        let t = data["result"];
-        this.types.length = 0
-        for( let i =0; i<t.length; i++){
-          let obj = {
-            "id":t[i].id,
-            "label":t[i].label
-          }
-          this.types.push(obj)
+    this.examImprovisacionService.chenequeApiInterface("get", examImproTypeRequest).subscribe(data => {
+      let r = data["result"] as Array<any>;
+      this.types.length = 0
+      for( let i =0; i<r.length; i++){
+        let obj = {
+          "id":r[i].id,
+          "label":r[i].label
         }
-      })
+        this.types.push(obj)
+      }
+    },
+    error => {
+      alert( "error retriving type request" + error )
+    })
 
-      this.examImprovisacionService.getExamsImproEstudiantes("user.token").subscribe(data => {
-          let r = data["result"];
-          this.estudiantes.length = 0
-          for( let i =0; i<r.length; i++){
-            let obj = {
-              "id":r[i].id,
-              "estudianteName":r[i].nombre + " " + r[i].apellidoPaterno + " " + r[i].apellidoMaterno
-            }
-            this.estudiantes.push(obj)
-          }        
 
-      })
+    var estudianteRequest = {
+      "estudiante":[{
+          "id":"",
+          "nombre":"",
+          "apellidoPaterno":"",
+          "apellidoMaterno":""
+      }]
+    }      
 
-      this.updateParametersFormGroup()
+    this.examImprovisacionService.chenequeApiInterface("get", estudianteRequest).subscribe(data => {
+      let r = data["result"] as Array<any>;
+      this.estudiantes.length = 0
+      for( let i =0; i<r.length; i++){
+        let obj = {
+          "id":r[i].id,
+          "estudianteName":r[i].nombre + " " + r[i].apellidoPaterno + " " + r[i].apellidoMaterno
+        }
+        this.estudiantes.push(obj)
+      }
+    },
+    error => {
+        alert( "Error retriving estudiante" + error )
+    }) 
+    
+    var exam_impro_parameter_request = {
+      "exam_impro_parameter":[{
+          "id":"",
+          "label":""
+      }]
+    }      
 
-    /*
-      var exam_impr_type_id = 1
-      var estudiante_id = 1
-      var fechaApplicacion = Date()
+    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_parameter_request).subscribe(data => {
+      let r = data["result"] as Array<any>;
+      for( let i =0; i<r.length; i++){
+        this.exam_impro_parameter[ r[i].id ] = r[i].label
+      }
+    
+    },
+    error => {
+        alert( "Error retriving parameters names" + error.error.error )
+    }) 
+    
+    var maestro_request = {
+      "maestro":[{
+          "id":"",
+          "nombre":"",
+          "apellidoPaterno":"",
+          "apellidoMaterno":""
+      }]
+    }      
 
-      error => {
-        alert("ERROR al crear improvisacion:" + error)
-      });  
-
-      this.examImprovisacionService.addExamImpro("user.token", exam_impr_type_id, estudiante_id, fechaApplicacion).subscribe(data => {
-        console.log( "Exams:" + data );
-        var examCreated = data["result"];
-      },
-      error => {
-        alert("ERROR al crear improvisacion:" + error)
-      });  
-      */      
+    this.examImprovisacionService.chenequeApiInterface("get", maestro_request).subscribe(data => {
+      let r = data["result"] as Array<any>;
+      this.maestros.length = 0
+      for( let i =0; i<r.length; i++){
+        var obj = {
+          id:r[i].id,
+          nombre:r[i].nombre,
+          apellidoPaterno: r[i].appellidoPaterno,
+          apellidoMaterno:r[i].appellidoMaterno
+        }
+        this.maestros.push(obj)
+      }
+    },
+    error => {
+        alert( "Error retriving parameters names" + error.error.error )
+    })      
+    
   }  
   
 
-  onSubmit() {
-    if( !this.examForm.invalid ){
-      alert('Thanks!');
-    }
-    else{
-      const invalid = [];
-      const controls = this.examForm.controls;
-      for (const name in controls) {
-          if (controls[name].invalid) {
-              invalid.push(name);
-          }
-      }
-      alert( "invalid:" + invalid.join(" "));
-    }
-    
-  }
-
   types = [
-    { id:"1", label:"nivel 1"},
-    { id:"2", label:"nivel 2"}
+    { id:-1, label:"N/A"}
   ]
   getExamTypes(){
     return this.types;
@@ -146,33 +172,51 @@ export class ExamenImprovisacionFormComponent {
 
   examTypeChange(event) {
     var parameterId = event.value
-    this.examImprovisacionService.getExamsImproParameters("user.token", parameterId).subscribe(data => {
-      let r = data["result"];
-      this.parameters.length = 0
-      for( let i =0; r!=null && i<r.length; i++){
-        let obj = {
-          "id":r[i].id,
-          "label":r[i].label,
-          "maestro_id":-1,
-          "exam_impro_criteria":r[i].exam_impro_criteria
-        }
-        this.parameters.push(obj)
-      }        
-      this.updateParametersFormGroup()
-  })    
+
+    var exam_impro_parameter_request = {
+      "exam_impro_parameter":[{
+          "id":"",
+          "exam_impro_type_id":parameterId,
+          "label":""
+      }]
+    }      
+
+    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_parameter_request).subscribe(data => {
+      let r = data["result"] as Array<any>;
+
+      var parameterArray = this.get_exam_impro_ap_parameter_array
+      for( let i=parameterArray.length-1; i>=0; i--){
+        parameterArray.removeAt(i)
+
+      }     
+      
+      for( let i =0; i<r.length; i++){
+        var g=this.fb.group({
+          id: [null],
+          exam_impro_ap_id:[null],
+          completado: [false],
+          exam_impro_parameter_id:[r[i].id],
+          maestro_id:[null] ,
+          exam_impro_ap_criteria: new FormArray([])         
+        })
+        parameterArray.push(g)
+        this.addCriteria( r[i].id, g.controls.exam_impro_ap_criteria as FormArray )
+      }
+    },
+    error => {
+        alert( error )
+    })        
   }
 
   estudiantes = [
-    { id:1, estudianteName:"Juanita"},
-    { id:2, estudianteName:"Petra"}
+    { id:-1, estudianteName:"N/A"}
   ]  
   getExamEstudiantes(){
     return this.estudiantes;    
   }  
 
   maestros = [
-    { id: 1, nombre:"Tania", apellidoPaterno:"Zepeda", apellidoMaterno:"Zamudio"},
-    { id: 1, nombre:"Sonia", apellidoPaterno:"Sepulveda", apellidoMaterno:"Solorio"}
+    { id: -1, nombre:"N/A", apellidoPaterno:"N/A", apellidoMaterno:"N/A"}
   ]
 
   getExamMaestros(){
@@ -182,6 +226,98 @@ export class ExamenImprovisacionFormComponent {
     if (typeof obj === "undefined") return "undefined";
     if (obj === null) return "null";
     return obj.constructor.name;
+  }   
+
+
+  getExamImproLabel(id){
+    return this.exam_impro_parameter[ id ] 
+  }
+
+
+  addCriteria( exam_impro_parameter_id , exam_impro_ap_criteria: FormArray){
+
+    var exam_impro_criteria_request = {
+      "exam_impro_criteria":[{
+          "id":"",
+          "label":"",
+          "exam_impro_parameter_id":exam_impro_parameter_id,
+          "initially_selected":""
+      }]
+    } 
+
+    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_criteria_request).subscribe(data => {
+      let r = data["result"] as Array<any>;
+      for( let i= exam_impro_ap_criteria.length-1; i>=0; i--){
+        exam_impro_ap_criteria.removeAt(i)
+      }
+      for( let i =0; i<r.length; i++){
+        var g = this.fb.group({
+          id:[null],
+          exam_impro_ap_parameter_id:[exam_impro_parameter_id],
+          exam_impro_criteria_id:[r[i]["id"]],
+          selected:[ r[i]["initially_selected"] ]
+        })
+        
+        exam_impro_ap_criteria.push(g)
+
+        this.criteria[r[i]["id"]] = r[i]["label"] //add the description to translation table
+      }
+    },
+    error => {
+        alert( "Error retriving parameters names" + error.error.error )
+    }) 
+
+
+  }
+
+
+
+  getCriteria(id){
+    return this.criteria[id]
+  }
+
+  getformValue(){
+    return JSON.stringify(this.exam_impro_ap_FormGroup.value)
   }  
 
+  replacer(key, value) {
+    // Filtrando propiedades 
+    if (key === "fechaApplicacion") {
+      return value.slice(0, 10);
+    }
+    return value;
+  }
+    
+  onSubmit() {
+    this.submitting = true
+    if( this.exam_impro_ap_FormGroup.invalid ){
+      const invalid = [];
+      const controls = this.exam_impro_ap_FormGroup.controls;
+      for (const name in controls) {
+          if (controls[name].invalid) {
+              invalid.push(name);
+          }
+      }
+      alert( "invalid:" + invalid.join(" "));
+    }
+    else{
+      console.log( JSON.stringify(this.exam_impro_ap_FormGroup.value, null, 2) )
+      var jsonStr = JSON.stringify(this.exam_impro_ap_FormGroup.value, this.replacer)
+      var data = JSON.parse(jsonStr);
+      var exam_impro_ap_request= {
+        "exam_impro_ap":data
+      }      
+
+      this.examImprovisacionService.chenequeApiInterface("add", exam_impro_ap_request).subscribe(data => {
+        var result = data["result"]
+        alert("thanks!")
+        console.log(JSON.stringify(result, null, 2))
+        this.router.navigate(['/ExamenesImprovisacion']);
+      },
+      error => {
+        alert("error creating exam_impro_ap_id" + error)
+      })
+    }
+
+  } 
 }

@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Calificacion Recibida Gracias!</h1>
+<div mat-dialog-content>
+  <p>Tu calificacion es: {{data.calificacion}}</p>
+  <p>Puedes adicionar un comentario si lo deseas:</p>
+  <mat-form-field>
+    <mat-label>comentario opcional</mat-label>
+    <input matInput [(ngModel)]="data.comentario">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]=data.comentario cdkFocusInitial>Ok</button>
+</div>

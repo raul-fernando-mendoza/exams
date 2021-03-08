@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserLoginService } from '../user-login.service';
-import { UserLoginCredentials } from '../UserLoginCredentials';
+import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 
 @Component({
   selector: 'app-login-form',
@@ -20,35 +19,32 @@ export class LoginFormComponent {
 
   constructor(private fb: FormBuilder, private route: ActivatedRoute, 
     private router: Router, 
-      private userLoginService: UserLoginService) {}
+    private examImprovisacionService: ExamenesImprovisacionService) {}
+
+  ngOnInit() {
+  }
 
   onSubmit() {
     console.log("login was submitted");
-    var loginData = {
+    var login_request = {
       "user_name" : this.username,
       "password": this.password
     }
-    this.userLoginService.login(loginData).subscribe(data => {
-      console.log( "User login submit" + data );
-      
-      if( data ){
-        var user= data["result"];
-        localStorage.setItem('exams.app', JSON.stringify(user));
-        this.gotoWelcomeUser();
-      }
-      else {
-        localStorage.setItem('exams.app', null);
-        this.userLoginService.logout().subscribe( );
-        alert("usuario invalido. try again")
-      }
+
+    this.examImprovisacionService.chenequeApiInterface("login",login_request).subscribe(data => {
+      let user = data["result"] ;
+      localStorage.setItem('exams.app', JSON.stringify(user));
+      this.examImprovisacionService.LoginEvent(user)
+      this.gotoWelcomeUser();
     },
     error => {
+      localStorage.setItem('exams.app', null);
+      this.examImprovisacionService.LoginEvent(null)
       alert("usuario invalido. try again")
-    });
-    
+    })
   }
 
   gotoWelcomeUser() {
-    this.router.navigate(['/ExamenesPendientes']);
+    this.router.navigate(['/ExamenesImprovisacion']);
   }
 }

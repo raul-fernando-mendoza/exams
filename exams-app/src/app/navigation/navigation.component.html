@@ -5,7 +5,7 @@
       [opened]="(isHandset$ | async) === false">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item href="/loginForm">Login</a>
+     
      <!--
       <a mat-list-item href="/ExamenesPendientes">Examenes Pendientes</a>
       <a mat-list-item href="/graph">graph</a>
@@ -30,6 +30,14 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>exams-app</span>
+      <span class="example-spacer"></span>
+      <button mat-icon-button class="example-icon" aria-label="login" (click)="login()" *ngIf="!userLogged">
+        <mat-icon>login</mat-icon>
+      </button>
+      <span *ngIf="userLogged">{{ user_name }}</span>
+      <button mat-icon-button class="example-icon" aria-label="logout" (click)="logout()" *ngIf="userLogged">
+        <mat-icon>logout</mat-icon>
+      </button>             
     </mat-toolbar>
       <router-outlet></router-outlet>
   </mat-sidenav-content>

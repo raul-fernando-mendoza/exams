@@ -43,6 +43,7 @@ import { ExamenesImprovisacionComponent } from './examenes-improvisacion/examene
 import { ExamenImprovisacionFormComponent } from './examen-improvisacion-form/examen-improvisacion-form.component'; 
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDialog } from './ei-ap-parameter-form/ei-ap-parameter-form.component';
 
 
 
@@ -63,6 +64,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     GraphComponent,
     ExamenesImprovisacionComponent,
     ExamenImprovisacionFormComponent,
+    EiApParameterFormComponent,
+    DialogOverviewExampleDialog,
+    DescriptionDialog
   ],
   imports: [
     BrowserModule,
@@ -94,13 +98,14 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatStepperModule,
     MatDatepickerModule,
     MatNativeDateModule
-     
   ],
   providers: [
     UserLoginService
   ],
   entryComponents: [
-    ReasonSelectionComponent
+    ReasonSelectionComponent,
+    DialogOverviewExampleDialog,
+    DescriptionDialog
   ],
   bootstrap: [AppComponent]
 })

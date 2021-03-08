@@ -1,0 +1,23 @@
+<div *ngFor="let c of exam_impro_ap_criteria.controls; let i=index">
+    <mat-card  [formGroup]="c">
+        <mat-card-header> 
+            <mat-card-title>
+                {{ getCriteriaLabel( c.controls.id.value ) }} 
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngFor="let q of c.controls.exam_impro_app_questions.controls; let j=index">
+            <div [formGroup]="q">
+                <!-- id:{{ q.controls.id.value }} -->
+                <!-- exam_impro_ap_criteria_id: {{ q.controls.exam_impro_ap_criteria_id.value }} -->
+                <button mat-button (click)="showDescription(q.controls.exam_impro_question_id.value)">{{ getQuestionLabel( q.controls.exam_impro_question_id.value ) }}</button>
+                    
+                <mat-slider thumbLabel [displayWith]="formatLabel" min="0.6" max="1" step="0.05" tickInterval="1" formControlName="graded" ></mat-slider>
+            </div>
+            
+        </mat-card-content>
+        <mat-divider></mat-divider> 
+    </mat-card>
+</div>   
+<button mat-raised-button color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
+
+

@@ -21,15 +21,20 @@ function formatDate(date) {
 // TODO: Replace this with your own data model type
 export interface ExamenesImprovisacionItem {
   id: number;
-  estudiante_name: string;
+  materia:string;
+  estudiante: string;
+  maestro: string;
+  tipo:string;
+  parametro: string;
+
   fechaApplicacion: string;
   completado:boolean;
 }
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: ExamenesImprovisacionItem[] = [
-  {id: 1, estudiante_name: 'Maria', fechaApplicacion:formatDate(new Date(2021,1,1)), completado:false},
-  {id: 2, estudiante_name: 'Petra', fechaApplicacion:formatDate(new Date(2021,3,2)), completado:true}
+  {id: 1, materia:"espada", estudiante: 'Maria', maestro:"Petra", tipo:"tecnica1", parametro:"tecnica1", fechaApplicacion:formatDate(new Date(2021,1,1)), completado:false},
+  {id: 2, materia:"taxim",  estudiante: 'Petra', maestro:"Soila", tipo:"tecnica1", parametro:"tecnica2", fechaApplicacion:formatDate(new Date(2021,3,2)), completado:true}
 ];
 
 /**
@@ -93,8 +98,12 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'estudiante_name': return compare(a.estudiante_name, b.estudiante_name, isAsc);
+        case 'estudiante': return compare(a.estudiante, b.estudiante, isAsc);
+        case 'materia': return compare(a.materia, b.materia, isAsc);
+        case 'maestro': return compare(a.maestro, b.maestro, isAsc);
         case 'id': return compare(+a.id, +b.id, isAsc);
+        case 'parametro': return compare(+a.parametro, +b.parametro, isAsc);
+        case 'fechaApplicacion': return compare(+Date.parse(a.fechaApplicacion), +Date.parse(b.fechaApplicacion), isAsc);
         default: return 0;
       }
     });

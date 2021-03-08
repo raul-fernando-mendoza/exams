@@ -12,7 +12,7 @@ import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
 import { GraphComponent } from './graph/graph.component';
 import { ExamenesImprovisacionComponent } from "./examenes-improvisacion/examenes-improvisacion.component";
 import { ExamenImprovisacionFormComponent } from "./examen-improvisacion-form/examen-improvisacion-form.component"
-
+import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-parameter-form.component"
 const routes: Routes = [
   { path: 'loginForm', component: LoginFormComponent },
   
@@ -27,7 +27,8 @@ const routes: Routes = [
   { path: 'graph', component: GraphComponent },
   
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
-  { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent }
+  { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent },
+  { path: 'ei-ap-parameter-form-component', component: EiApParameterFormComponent }
 ];
 
 @NgModule({
