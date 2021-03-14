@@ -261,4 +261,37 @@ export class ExamenesImprovisacionService {
     localStorage.setItem('exams.app', null);
     this.LoginEvent(null)
   }
+
+  hasRole(role){
+    var user = JSON.parse(localStorage.getItem('exams.app'));
+
+    if( !user  ){
+      return false
+    }
+    for( let i =0; i<user.user_role.length; i++){
+      let r = user.user_role[i]
+      if( r.role_id == role ){
+        return true
+      }
+    }
+    return false
+  }
+  getEstudianteID(){
+
+    var user = JSON.parse(localStorage.getItem('exams.app'));
+
+    if( !user  ){
+      return null
+    }
+    return user.user_attribute.estudiante_id
+  }
+  getMaestroID(){
+
+    var user = JSON.parse(localStorage.getItem('exams.app'));
+
+    if( !user  ){
+      return null
+    }
+    return user.user_attribute.maestro_id
+  }  
 }

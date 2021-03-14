@@ -37,16 +37,20 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReasonSelectionComponent } from './reason-selection/reason-selection.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ExamSimpleComponent } from './exam-simple/exam-simple.component';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule} from '@angular/material/stepper';
 import { GraphComponent } from './graph/graph.component';
 import { ExamenesImprovisacionComponent } from './examenes-improvisacion/examenes-improvisacion.component';
 import { ExamenImprovisacionFormComponent } from './examen-improvisacion-form/examen-improvisacion-form.component'; 
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDialog } from './ei-ap-parameter-form/ei-ap-parameter-form.component';
-
-
-
+import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
+import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
+import { MatTabsModule} from '@angular/material/tabs';
+import { EiApplicationTableComponent } from './ei-application-table/ei-application-table.component';
+import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
+import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
+import { MatExpansionModule } from '@angular/material/expansion'; 
 
 @NgModule({
   declarations: [
@@ -66,7 +70,12 @@ import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDia
     ExamenImprovisacionFormComponent,
     EiApParameterFormComponent,
     DialogOverviewExampleDialog,
-    DescriptionDialog
+    DescriptionDialog,
+    EiApReporteComponent,
+    EiTabHolderComponent,
+    EiApplicationTableComponent,
+    EiTipoEditComponent,
+    ExpansionTestComponent
   ],
   imports: [
     BrowserModule,
@@ -97,7 +106,9 @@ import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDia
     MatDialogModule,
     MatStepperModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTabsModule,
+    MatExpansionModule    
   ],
   providers: [
     UserLoginService

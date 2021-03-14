@@ -1,0 +1,43 @@
+<div class="mat-elevation-z8">
+  <mat-toolbar>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" [disabled]="submitting" (click)="createType()">
+      <mat-icon>library_add</mat-icon>
+      <span>Crear nuevo tipo de examen</span>
+    </button>
+  </mat-toolbar>  
+  <table mat-table class="full-width-table" matSort aria-label="Elements">
+   
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let row"><button mat-button (click)="editar(row.id)">{{row.name}}</button></td>
+    </ng-container>
+
+    
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header></th> 
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" >
+          <button mat-menu-item (click)="borrar(row.id)" [disabled]="submitting">
+            <mat-icon>delete</mat-icon>
+            <span>Borrar</span>
+          </button>          
+        </mat-menu>
+        
+      </td>
+    </ng-container>    
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+  <mat-paginator #paginator
+      [length]="dataSource?.data.length"
+      [pageIndex]="0"
+      [pageSize]="50"
+      [pageSizeOptions]="[25, 50, 100, 250]">
+  </mat-paginator>
+</div>

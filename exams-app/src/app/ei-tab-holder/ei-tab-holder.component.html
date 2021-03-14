@@ -1,0 +1,11 @@
+<mat-tab-group mat-align-tabs="start">
+    <mat-tab label="Parametros"><app-examenes-improvisacion></app-examenes-improvisacion></mat-tab>
+    <mat-tab label="Tipos de Examen" *ngIf="isAdmin">
+        <ng-template matTabContent>
+            <app-ei-application-table></app-ei-application-table>
+        </ng-template>
+    </mat-tab>
+</mat-tab-group> 
+
+
+

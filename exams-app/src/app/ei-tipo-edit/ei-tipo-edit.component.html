@@ -1,0 +1,137 @@
+<form [formGroup]="exam_impro_type" >
+    <mat-form-field appearance="legacy">
+        <mat-label>Tipo Examen</mat-label>
+        <input matInput formControlName="label" width="80%" (change)="onChangeTipo(exam_impro_type)">
+    </mat-form-field>
+    <div *ngFor="let p of getFormGroupArray(exam_impro_type,'exam_impro_parameter'); let i=index">
+        
+        <mat-card [formGroup]="p">
+           
+            <mat-card-title>
+                <mat-toolbar color="primary">
+                    <mat-form-field appearance="legacy">
+                        <input matInput  resizeToFitContent  formControlName="label" (change)="onChangeParameter(p)">
+                    </mat-form-field> 
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>                                    
+                    <mat-menu #menu="matMenu" >
+                        <button mat-raised-button color="primary" (click)="delParameter(exam_impro_type, p)" [disabled]="submitting">
+                            <mat-icon>delete</mat-icon>
+                            <span>borrar</span>
+                        </button> 
+                    </mat-menu>                      
+                    
+                </mat-toolbar>
+            </mat-card-title>
+         
+            <mat-card-content>
+                <mat-accordion *ngFor="let c of getFormGroupArray(p,'exam_impro_criteria'); let j=index">
+                    <mat-expansion-panel  [formGroup]="c">
+                        <mat-expansion-panel-header> 
+                            <mat-panel-title>
+                                <mat-toolbar >
+                                    <div  (keydown.Space)="$event.stopPropagation()">
+                                        <mat-form-field appearance="legacy">
+                                            <input matInput formControlName="label" (change)="onChangeCriteria(c)">
+                                        </mat-form-field> 
+                                    </div> 
+                                        <mat-checkbox formControlName="selected"  formControlName="initially_selected" (change)="onChangeCriteria(c)"></mat-checkbox>
+                                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>                                    
+                                        <mat-menu #menu="matMenu" >
+                                            <button mat-button color="accent" (click)="delCriteria(p, c)" [disabled]="submitting">
+                                                <mat-icon>delete</mat-icon>
+                                                <span>borrar</span>
+                                            </button> 
+                                        </mat-menu> 
+                                                                                
+                                </mat-toolbar>
+                            </mat-panel-title> 
+                        </mat-expansion-panel-header>
+                     
+                        <mat-card>
+                            <div *ngFor="let q of getFormGroupArray(c,'exam_impro_question'); let k=index">
+                                <mat-grid-list cols="10" rowHeight="7em" [formGroup]="q">
+                                    
+                                    <mat-grid-tile colspan="3" >
+                                        <mat-form-field appearance="legacy">
+                                            <mat-label>aspecto</mat-label>
+                                            <input matInput placeholder="Escriba lo que debe ocurrir" formControlName="label" (change)="onChangeQuestion(q)">
+                                        </mat-form-field>  
+                                    </mat-grid-tile> 
+                                    
+                                    <mat-grid-tile colspan="5" >
+                                        <div class="textcontainer" (keydown.Space)="$event.stopPropagation()">
+                                            <mat-form-field appearance="legacy">
+                                                <mat-label>descripcion</mat-label>
+                                                <textarea matInput
+                                                cdkTextareaAutosize
+                                                #autosize="cdkTextareaAutosize"
+                                                cdkAutosizeMinRows="1"
+                                                cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeQuestion(q)"></textarea>
+                                            </mat-form-field> 
+                                        </div>
+                                    </mat-grid-tile>  
+                                                                                             
+                                    <mat-grid-tile colspan="1" >
+                                        <mat-form-field appearance="legacy">
+                                            <mat-label>puntos</mat-label> 
+                                            <input matInput placeholder="points" formControlName="points" (change)="onChangeQuestion(q)">
+                                        </mat-form-field> 
+                                    </mat-grid-tile>
+                                     
+                                    <mat-grid-tile colspan="1" >
+                                        <button mat-icon-button [matMenuTriggerFor]="questionMenu" aria-label="Menu Aspectos">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>                                    
+                                        <mat-menu #questionMenu="matMenu" >
+                                            <button mat-raised-button  (click)="delQuestion(c, q)" [disabled]="submitting">
+                                                <mat-icon>delete</mat-icon>
+                                                <span>borrar</span>
+                                            </button> 
+                                        </mat-menu> 
+                                    </mat-grid-tile> 
+                                                                                                          
+                                </mat-grid-list>
+                                
+                            </div> 
+                            
+                            <mat-toolbar>
+                                <span class="example-spacer"></span> 
+                                <button mat-raised-button (click)="newQuestion(c)" [disabled]="submitting"><mat-icon>library_add</mat-icon></button> 
+                            </mat-toolbar>
+                           
+                        </mat-card>
+                        
+                    </mat-expansion-panel>
+                    
+                </mat-accordion>
+            
+            </mat-card-content>
+             
+            <mat-card-actions>
+                <mat-toolbar>
+                    <span class="example-spacer"></span> 
+                    <a mat-raised-button  color="accent" (click)="newCriteria(p)" [disabled]="submitting" >Nuevo Criterio</a> 
+                </mat-toolbar>
+            </mat-card-actions>
+           
+        </mat-card> 
+        
+        
+    </div>
+    <div>
+        <mat-card>
+            <button mat-raised-button color="primary" [disabled]="submitting" (click)="newParameter(exam_impro_type)">Nuevo Parametro</button>
+        </mat-card>
+    </div>
+    <mat-toolbar >
+        <mat-icon>home</mat-icon>
+    </mat-toolbar>
+      
+ <!--  {{ getformValue() }}  --> 
+  
+  </form>
+  

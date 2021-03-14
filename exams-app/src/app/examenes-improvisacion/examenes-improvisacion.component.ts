@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 
 
+
 @Component({
   selector: 'app-examenes-improvisacion',
   templateUrl: './examenes-improvisacion.component.html',
@@ -33,29 +34,23 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }
   ngOnInit() {
 
-    var user = JSON.parse(localStorage.getItem('exams.app'));
+    this.isAdmin = this.examImprovisacionService.hasRole("Admin")
 
-    if( !user  ){
-      this.gotoLogin()
+    var maestro_id = ( this.isAdmin ? "": this.examImprovisacionService.getMaestroID() )
+    var completado:any 
+
+    if( this.isAdmin ){
+      completado = ""
     }
-    var maestro_id = ""
-    var completado = "0";
-    for( let i=0; i< user.user_role.length;i++){
-      let r = user.user_role[i]
-      if( r.role_id == 'Admin'){
-        this.isAdmin=true
-        completado = ""
-        break
-      }
+    else{
+      completado = false
     }
-    for( let i =0; this.isAdmin==false && i<user.user_attribute.length; i++){
-      let a = user.user_attribute[i]
-      if( a.attribute_name == "maestro_id" ){
-        maestro_id = a.attribute_value
-      }
-    }
-  
     
+
+    if(this.isAdmin == false){
+      maestro_id = this.examImprovisacionService.getMaestroID()
+    }
+
 
     var request = {
       exam_impro_ap_parameter:[{
@@ -86,41 +81,46 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }]
     }
 
-    this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(data => { 
-      
-      let datavalues: ExamenesImprovisacionItem[] = [];
+    this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(
+        (result:any) => 
+        { 
+        
+          let datavalues: ExamenesImprovisacionItem[] = [];
 
-      var examImprovisationArray = data["result"];
+          var examImprovisationArray = result["result"];
 
-      for(var i=0; i<examImprovisationArray.length;i++){
-        let exam = examImprovisationArray[i]
-        console.log(exam.id)
-        var obj:ExamenesImprovisacionItem = {
-          id: exam.id, 
-          materia: exam.exam_impro_ap.materia,
-          estudiante: exam.exam_impro_ap.estudiante.nombre + " " + exam.exam_impro_ap.estudiante.apellidoPaterno,
-          maestro: exam.maestro.nombre,
-          tipo: exam.exam_impro_parameter.exam_impro_type.label,
-          parametro:exam.exam_impro_parameter.label,
-          fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 
-          completado: exam.completado 
+          for(var i=0; i<examImprovisationArray.length;i++){
+            let exam = examImprovisationArray[i]
+            console.log(exam.id)
+            var obj:ExamenesImprovisacionItem = {
+              id: exam.id, 
+              materia: exam.exam_impro_ap.materia,
+              estudiante: exam.exam_impro_ap.estudiante.nombre + " " + exam.exam_impro_ap.estudiante.apellidoPaterno,
+              maestro: exam.maestro.nombre,
+              tipo: exam.exam_impro_parameter.exam_impro_type.label,
+              parametro:exam.exam_impro_parameter.label,
+              fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 
+              completado: exam.completado 
+            }
+            datavalues.push(obj)
+            this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
+            this.dataSource.sort = this.sort;
+            this.dataSource.paginator = this.paginator;
+            this.table.dataSource = this.dataSource;
+          }    
+        },
+        (err:any) => {
+          if( err.status == 401 ){
+            this.router.navigate(['/loginForm']);
+          }
+          else{
+            alert("ERROR al leer lista de improvisacion:" + err.error)
+          }
+        },
+        () => {
+          console.log('complete');
         }
-        datavalues.push(obj)
-      }
-      this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.table.dataSource = this.dataSource;    
-    },
-    error => {
-      if( error.status == 401 ){
-        this.router.navigate(['/loginForm']);
-      }
-      else{
-        alert("ERROR al leer lista de improvisacion:" + error.error)
-      }
-      
-    });   
+    ) 
   }
 
   ngAfterViewInit() {
@@ -128,6 +128,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }
   onCreate(){
     this.router.navigate(['/ExamenImprovisacionFormComponent']);
+  }
+  onReport(){
+    this.router.navigate(['/eiReporte']);
   }
   onEdit(id){
     this.router.navigate(['/ei-ap-parameter-form-component',{id:id}]);

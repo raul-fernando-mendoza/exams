@@ -13,6 +13,10 @@ import { GraphComponent } from './graph/graph.component';
 import { ExamenesImprovisacionComponent } from "./examenes-improvisacion/examenes-improvisacion.component";
 import { ExamenImprovisacionFormComponent } from "./examen-improvisacion-form/examen-improvisacion-form.component"
 import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-parameter-form.component"
+import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
+import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
+import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
+import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
 const routes: Routes = [
   { path: 'loginForm', component: LoginFormComponent },
   
@@ -26,9 +30,13 @@ const routes: Routes = [
   { path: 'simple-exam', component: ExamSimpleComponent },
   { path: 'graph', component: GraphComponent },
   
-  { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
+  { path: 'ExamenesImprovisacion_old', component: ExamenesImprovisacionComponent },
   { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent },
-  { path: 'ei-ap-parameter-form-component', component: EiApParameterFormComponent }
+  { path: 'ei-ap-parameter-form-component', component: EiApParameterFormComponent },
+  { path: 'eiReporte', component: EiApReporteComponent },
+  { path: 'ExamenesImprovisacion', component: EiTabHolderComponent },
+  { path: 'ei-tipo-edit', component: EiTipoEditComponent },
+  { path: 'expansion', component: ExpansionTestComponent }
 ];
 
 @NgModule({

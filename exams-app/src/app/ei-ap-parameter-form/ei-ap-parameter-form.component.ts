@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 
 export interface DialogData {
@@ -24,7 +24,8 @@ export interface DescriptionDlgData {
 
 export class EiApParameterFormComponent implements OnInit {
 
-  constructor(private fb: FormBuilder,private route: ActivatedRoute
+  constructor(private fb: FormBuilder
+    , private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder

@@ -1,0 +1,16 @@
+.example-spacer {
+    flex: 1 1 auto;
+  }
+
+.mat-card{ 
+  margin:5px; 
+
+}
+
+.mat-form-field{ width: 100%; }
+
+.mat-toolbar div{ width:100%; }
+
+.textcontainer{
+  width:100%
+}

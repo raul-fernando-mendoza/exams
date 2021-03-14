@@ -1,5 +1,7 @@
 <mat-toolbar>
   <button mat-button color="primary" (click)="onCreate()" *ngIf="isAdmin" >Crear</button>
+  <button mat-button color="primary" (click)="onReport()" *ngIf="isAdmin" >Reporte</button>
+  
 </mat-toolbar>
 <div class="mat-elevation-z8">
   <table mat-table class="full-width-table" matSort aria-label="Elements">

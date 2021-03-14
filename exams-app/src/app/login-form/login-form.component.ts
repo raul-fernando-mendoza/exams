@@ -27,9 +27,18 @@ export class LoginFormComponent {
   onSubmit() {
     console.log("login was submitted");
     var login_request = {
-      "user_name" : this.username,
-      "password": this.password
-    }
+      "user":{
+          "user_name":this.username,
+          "password":this.password,
+          "user_role":[{
+              "role_id":"" 
+          }],
+          "user_attribute(+)":[{
+              "maestro_id":"",
+              "estudiante_id":""
+          }]
+      }
+  }
 
     this.examImprovisacionService.chenequeApiInterface("login",login_request).subscribe(data => {
       let user = data["result"] ;
