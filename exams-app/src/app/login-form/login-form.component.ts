@@ -22,6 +22,8 @@ export class LoginFormComponent {
     private examImprovisacionService: ExamenesImprovisacionService) {}
 
   ngOnInit() {
+    localStorage.setItem('exams.app', null);
+    this.examImprovisacionService.LoginEvent(null)    
   }
 
   onSubmit() {
@@ -33,10 +35,10 @@ export class LoginFormComponent {
           "user_role":[{
               "role_id":"" 
           }],
-          "user_attribute(+)":[{
+          "user_attribute(+)":{
               "maestro_id":"",
               "estudiante_id":""
-          }]
+          }
       }
   }
 

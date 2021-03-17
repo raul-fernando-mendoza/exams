@@ -1,0 +1,14 @@
+.header{
+    display:block;
+}
+.header span{
+    display:block;
+}
+.aspecto{
+    font-size:18px;
+    margin-top:5px;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+  }

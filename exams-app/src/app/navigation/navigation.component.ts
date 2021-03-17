@@ -29,11 +29,14 @@ export class NavigationComponent {
     var user = JSON.parse(localStorage.getItem('exams.app'));
     if( user ){
       this.userLogged = true
-      this.user_name = user["user_name"]    
+      this.user_name = user["user_name"] 
+      this.router.navigate(['/ExamenesImprovisacion']); 
+      
     }
     else{
       this.userLogged = false
       this.user_name = ""
+      this.router.navigate(['/loginForm']);
     }
     
     this.examImprovisacionService.onLoginEvent().subscribe(

@@ -25,7 +25,8 @@ export class ExamenImprovisacionFormComponent {
     estudiante_id: [null, Validators.required],
     exam_impro_type_id: [null, Validators.required],
     materia:[null, Validators.required],    
-    exam_impro_ap_parameter: new FormArray([
+    exam_impro_ap_parameter: new FormArray([])
+    /*
       this.fb.group({
         id: [null],
         exam_impro_ap_id:[null],
@@ -41,7 +42,10 @@ export class ExamenImprovisacionFormComponent {
           })
         ])         
       })
-    ])
+    ]
+    
+    )
+*/    
   });
 
   get get_exam_impro_ap():FormGroup { return this.exam_impro_ap_FormGroup as FormGroup; }
@@ -299,11 +303,13 @@ export class ExamenImprovisacionFormComponent {
           }
       }
       alert( "invalid:" + invalid.join(" "));
+      this.submitting = false
     }
     else{
       console.log( JSON.stringify(this.exam_impro_ap_FormGroup.value, null, 2) )
       var jsonStr = JSON.stringify(this.exam_impro_ap_FormGroup.value, this.replacer)
       var data = JSON.parse(jsonStr);
+
       var exam_impro_ap_request= {
         "exam_impro_ap":data
       }      
@@ -315,7 +321,8 @@ export class ExamenImprovisacionFormComponent {
         this.router.navigate(['/ExamenesImprovisacion']);
       },
       error => {
-        alert("error creating exam_impro_ap_id" + error)
+        alert("error creating exam_impro_ap_id" + error.error)
+        this.submitting = false
       })
     }
 

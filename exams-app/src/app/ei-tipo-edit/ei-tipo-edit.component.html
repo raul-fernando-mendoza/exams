@@ -9,6 +9,7 @@
            
             <mat-card-title>
                 <mat-toolbar color="primary">
+                    
                     <mat-form-field appearance="legacy">
                         <input matInput  resizeToFitContent  formControlName="label" (change)="onChangeParameter(p)">
                     </mat-form-field> 
@@ -26,34 +27,37 @@
             </mat-card-title>
          
             <mat-card-content>
-                <mat-accordion *ngFor="let c of getFormGroupArray(p,'exam_impro_criteria'); let j=index">
-                    <mat-expansion-panel  [formGroup]="c">
+                <mat-accordion  cdkDropList (cdkDropListDropped)="drop($event)" multi="false"> 
+                    <mat-expansion-panel [cdkDragData]="p" [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'exam_impro_criteria'); let j=index" cdkDrag >
                         <mat-expansion-panel-header> 
                             <mat-panel-title>
-                                <mat-toolbar >
-                                    <div  (keydown.Space)="$event.stopPropagation()">
-                                        <mat-form-field appearance="legacy">
-                                            <input matInput formControlName="label" (change)="onChangeCriteria(c)">
-                                        </mat-form-field> 
-                                    </div> 
-                                        <mat-checkbox formControlName="selected"  formControlName="initially_selected" (change)="onChangeCriteria(c)"></mat-checkbox>
-                                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                                            <mat-icon>more_vert</mat-icon>
-                                        </button>                                    
-                                        <mat-menu #menu="matMenu" >
-                                            <button mat-button color="accent" (click)="delCriteria(p, c)" [disabled]="submitting">
-                                                <mat-icon>delete</mat-icon>
-                                                <span>borrar</span>
-                                            </button> 
-                                        </mat-menu> 
-                                                                                
-                                </mat-toolbar>
+                                <div class="example-handle" cdkDragHandle>
+                                    <mat-icon>open_with</mat-icon>
+                                </div>                                     
+                                {{ c.controls.label.value }}
+                           
                             </mat-panel-title> 
                         </mat-expansion-panel-header>
                      
                         <mat-card>
+                            <mat-toolbar>
+                            <mat-form-field appearance="legacy">
+                                <input matInput formControlName="label" (change)="onChangeCriteria(c)">
+                            </mat-form-field> 
+                            <mat-checkbox formControlName="selected"  formControlName="initially_selected" (change)="onChangeCriteria(c)"></mat-checkbox>
+                            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>                                    
+                            <mat-menu #menu="matMenu" >
+                                <button mat-button color="accent" (click)="delCriteria(p, c)" [disabled]="submitting">
+                                    <mat-icon>delete</mat-icon>
+                                    <span>borrar</span>
+                                </button> 
+                            </mat-menu> 
+                            </mat-toolbar>
+                    
                             <div *ngFor="let q of getFormGroupArray(c,'exam_impro_question'); let k=index">
-                                <mat-grid-list cols="10" rowHeight="7em" [formGroup]="q">
+                                <mat-grid-list cols="9" rowHeight="7em" [formGroup]="q">
                                     
                                     <mat-grid-tile colspan="3" >
                                         <mat-form-field appearance="legacy">
@@ -74,14 +78,14 @@
                                             </mat-form-field> 
                                         </div>
                                     </mat-grid-tile>  
-                                                                                             
+                         <!--
                                     <mat-grid-tile colspan="1" >
                                         <mat-form-field appearance="legacy">
                                             <mat-label>puntos</mat-label> 
                                             <input matInput placeholder="points" formControlName="points" (change)="onChangeQuestion(q)">
                                         </mat-form-field> 
                                     </mat-grid-tile>
-                                     
+                        -->                                                                                  
                                     <mat-grid-tile colspan="1" >
                                         <button mat-icon-button [matMenuTriggerFor]="questionMenu" aria-label="Menu Aspectos">
                                             <mat-icon>more_vert</mat-icon>
@@ -108,7 +112,6 @@
                     </mat-expansion-panel>
                     
                 </mat-accordion>
-            
             </mat-card-content>
              
             <mat-card-actions>
@@ -130,7 +133,10 @@
     <mat-toolbar >
         <mat-icon>home</mat-icon>
     </mat-toolbar>
-      
+ 
+    
+
+
  <!--  {{ getformValue() }}  --> 
   
   </form>

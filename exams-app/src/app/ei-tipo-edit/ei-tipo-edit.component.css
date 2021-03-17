@@ -14,3 +14,12 @@
 .textcontainer{
   width:100%
 }
+
+.mat-dialog-actions {
+  border:1px solid black;
+  justify-content: flex-end;
+}
+
+.mat-card-actions{
+  background:white;
+}

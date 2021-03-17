@@ -1,5 +1,5 @@
-<mat-accordion>
-    <mat-expansion-panel hideToggle>
+<mat-accordion cdkDropList (cdkDropListDropped)="drop($event)">
+    <mat-expansion-panel hideToggle cdkDrag>
       <mat-expansion-panel-header>
         <mat-panel-title>
           This is the expansion title
@@ -11,7 +11,7 @@
       <p>This is the primary content of the panel.</p>
     </mat-expansion-panel>
     <mat-expansion-panel (opened)="panelOpenState = true"
-                         (closed)="panelOpenState = false">
+                         (closed)="panelOpenState = false" cdkDrag>
       <mat-expansion-panel-header>
         <mat-panel-title>
           Self aware panel

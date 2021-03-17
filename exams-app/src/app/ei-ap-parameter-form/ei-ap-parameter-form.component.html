@@ -1,22 +1,34 @@
+
+<div class="header">
+<span>estudiante: {{estudianteNombre}}</span>
+<span>Maestra: {{maestraNombre}}</span>
+<span>Materia: {{materia}}</span>
+<span>Parametro:{{parametro}}</span>
+<span>tipo:{{tipo}}</span>
+</div>
+
 <div *ngFor="let c of exam_impro_ap_criteria.controls; let i=index">
-    <mat-card  [formGroup]="c">
-        <mat-card-header> 
-            <mat-card-title>
-                {{ getCriteriaLabel( c.controls.id.value ) }} 
-            </mat-card-title>
-        </mat-card-header>
-        <mat-card-content *ngFor="let q of c.controls.exam_impro_app_questions.controls; let j=index">
+    <div  [formGroup]="c">
+       <!--         <mat-toolbar > -->
+        <mat-toolbar>
+            <span class="example-spacer"></span>
+            <span> {{ getCriteriaLabel( c.controls.id.value ) }}</span>
+            <span class="example-spacer"></span>
+        </mat-toolbar>
+        <!--          </mat-toolbar> -->
+        <div *ngFor="let q of c.controls.exam_impro_app_questions.controls; let j=index">
             <div [formGroup]="q">
                 <!-- id:{{ q.controls.id.value }} -->
                 <!-- exam_impro_ap_criteria_id: {{ q.controls.exam_impro_ap_criteria_id.value }} -->
-                <button mat-button (click)="showDescription(q.controls.exam_impro_question_id.value)">{{ getQuestionLabel( q.controls.exam_impro_question_id.value ) }}</button>
+                <button mat-button (click)="showDescription(q.controls.exam_impro_question_id.value)"><div class="aspecto">{{ getQuestionLabel( q.controls.exam_impro_question_id.value ) }}</div></button>
                     
-                <mat-slider thumbLabel [displayWith]="formatLabel" min="0.6" max="1" step="0.05" tickInterval="1" formControlName="graded" ></mat-slider>
+                <!--<mat-slider thumbLabel [displayWith]="formatLabel" min="0.6" max="1" step="0.05" tickInterval="1" formControlName="graded" ></mat-slider>-->
+
+                <app-star-slider formControlName="graded"></app-star-slider>
+               
             </div>
-            
-        </mat-card-content>
-        <mat-divider></mat-divider> 
-    </mat-card>
+        </div>  
+    </div> 
 </div>   
 <button mat-raised-button color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
 

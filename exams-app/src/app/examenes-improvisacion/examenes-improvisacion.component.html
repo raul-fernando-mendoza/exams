@@ -43,9 +43,25 @@
     
     <ng-container matColumnDef="completado">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>completado</th>
-      <td mat-cell *matCellDef="let row"><div *ngIf="row.completado != 1"> <button mat-raised-button color="primary" (click)="onEdit(row.id)">Edit</button> </div> </td>
-    </ng-container>    
+      <td mat-cell *matCellDef="let row">
+        <button mat-raised-button color="primary" (click)="onEdit(row.id)" *ngIf="row.completado != 1">Edit</button> 
+      </td>
+    </ng-container> 
 
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+      <td mat-cell *matCellDef="let row"> <!--{{ row.id }}  -->
+        <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="isAdmin">
+          <mat-icon>more_vert</mat-icon>
+        </button>                                    
+        <mat-menu #menu="matMenu" >
+            <button mat-raised-button color="primary" (click)="onRemove(row.id)" [disabled]="submitting">
+                <mat-icon>delete</mat-icon>
+                <span>borrar</span>
+            </button> 
+        </mat-menu>         
+      </td>
+    </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>

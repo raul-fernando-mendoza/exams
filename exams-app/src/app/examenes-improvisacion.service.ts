@@ -277,21 +277,22 @@ export class ExamenesImprovisacionService {
     return false
   }
   getEstudianteID(){
+    var estudianteId = null
 
     var user = JSON.parse(localStorage.getItem('exams.app'));
 
-    if( !user  ){
-      return null
+    if( user  ){
+      estudianteId = user.user_attribute.estudiante_id
     }
-    return user.user_attribute.estudiante_id
+    return estudianteId
   }
   getMaestroID(){
-
+    var userId = null
     var user = JSON.parse(localStorage.getItem('exams.app'));
 
-    if( !user  ){
-      return null
+    if( user  ){
+      return  user.user_attribute.maestro_id
     }
-    return user.user_attribute.maestro_id
+    return userId
   }  
 }

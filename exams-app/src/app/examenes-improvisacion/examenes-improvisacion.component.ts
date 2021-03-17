@@ -23,7 +23,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   isAdmin=false
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado'];
+  displayedColumns = ['materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
   
   constructor( private route: ActivatedRoute
     , private router: Router
@@ -32,6 +32,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       
 
   }
+
+  submitting = false
+  
   ngOnInit() {
 
     this.isAdmin = this.examImprovisacionService.hasRole("Admin")
@@ -45,12 +48,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     else{
       completado = false
     }
-    
-
-    if(this.isAdmin == false){
-      maestro_id = this.examImprovisacionService.getMaestroID()
-    }
-
 
     var request = {
       exam_impro_ap_parameter:[{
@@ -137,5 +134,25 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }
   gotoLogin() {
     this.router.navigate(['/loginForm']);
+  }  
+  onRemove(id){
+    this.submitting=true
+    var request = {
+      exam_impro_ap_parameter:{
+        id:id
+      }
+    }
+
+    this.examImprovisacionService.chenequeApiInterface("delete", request).subscribe(
+      data => {
+        this.submitting=false
+        console.log("delete compled successfully")
+        this.ngOnInit()
+      },
+      error =>{
+        this.submitting=false
+        alert("error en delete:" + error.error)
+      }
+    )
   }   
 }

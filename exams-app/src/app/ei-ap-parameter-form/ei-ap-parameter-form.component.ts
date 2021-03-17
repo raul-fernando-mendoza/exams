@@ -41,6 +41,11 @@ export class EiApParameterFormComponent implements OnInit {
   criteria_labels = {}
   question_labels = {}
   question_description = {}
+  estudianteNombre =""
+  maestraNombre = ""
+  materia =""
+  parametro=""
+  tipo=""
 
   exam_impro_ap_criteria = new FormArray([
     this.fb.group({
@@ -57,15 +62,18 @@ export class EiApParameterFormComponent implements OnInit {
   ])        
 
   ngOnInit(): void {
+
     
     var request = {
       exam_impro_ap_parameter:{
         id:this.id,
         exam_impro_ap_criteria:[{
           id:"",
+          selected:true,
           exam_impro_criteria:{
             id:"",
             label:"",
+            idx:"",
             exam_impro_question:[{
               id:"",
               label:"",
@@ -73,8 +81,35 @@ export class EiApParameterFormComponent implements OnInit {
               points:""
             }]
           }
-        }]
+        }],
+        maestro:{
+          nombre:"",
+          apellidoPaterno:""
+        },
+        exam_impro_ap:{
+          materia:"",
+          fechaApplicacion:"",
+          estudiante:{
+            nombre:"",
+            apellidoPaterno:""
+          }
+        },
+        exam_impro_parameter:{
+          id:"",
+          label:"",
+          exam_impro_type:{
+            label:""
+          }
+        }
+      },
+      orderBy:{
+        "exam_impro_parameter.id":"",
+        "exam_impro_criteria.idx":""
       }
+    }
+
+    for( let i=0; this.exam_impro_ap_criteria.length; i++){
+      this.exam_impro_ap_criteria.removeAt(i)
     }
 
     this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(data => { 
@@ -82,6 +117,16 @@ export class EiApParameterFormComponent implements OnInit {
         this.exam_impro_ap_criteria.removeAt(i)
       }
       console.log(data)
+
+      var result = data["result"]
+
+      this.estudianteNombre = result["exam_impro_ap"]["estudiante"]["nombre"] + " " + result["exam_impro_ap"]["estudiante"]["apellidoPaterno"]
+      this.maestraNombre = result["maestro"]["nombre"] + " " + result["maestro"]["apellidoPaterno"]
+      this.materia =  result["exam_impro_ap"]["materia"]
+      this.parametro = result["exam_impro_parameter"]["label"]
+      this.tipo = result["exam_impro_parameter"]["exam_impro_type"]["label"]
+
+
       let ap_criteria_arr= data["result"]["exam_impro_ap_criteria"]
       for( let i = 0; i<ap_criteria_arr.length; i++){
         let ap_criteria = ap_criteria_arr[i]
@@ -162,10 +207,10 @@ export class EiApParameterFormComponent implements OnInit {
   closeParameter(){
     var exam_impro_ap_parameter_update_request = {
       exam_impro_ap_parameter:{
-        completado:true
-      },
-      where:{
-        id:this.id
+        completado:true,
+        where:{
+          id:this.id
+        }
       }
     }
     this.examImprovisacionService.chenequeApiInterface("update", exam_impro_ap_parameter_update_request).subscribe(data => {
@@ -214,10 +259,10 @@ export class EiApParameterFormComponent implements OnInit {
   addComment(comentario): void{
     var exam_impro_ap_parameter_update_request = {
       exam_impro_ap_parameter:{
-        comentario:comentario
-      },
-      where:{
-        id:this.id
+        comentario:comentario,
+        where:{
+          id:this.id
+        }
       }
     }
     this.examImprovisacionService.chenequeApiInterface("update", exam_impro_ap_parameter_update_request).subscribe(data => {
@@ -238,6 +283,10 @@ export class EiApParameterFormComponent implements OnInit {
 
   formatLabel(value: number) {
     return value*100 + "%";
+  }  
+
+  getformValue(){
+    return JSON.stringify(this.exam_impro_ap_criteria.value)
   }  
  
 }

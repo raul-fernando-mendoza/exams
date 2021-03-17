@@ -50,7 +50,8 @@ import { MatTabsModule} from '@angular/material/tabs';
 import { EiApplicationTableComponent } from './ei-application-table/ei-application-table.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
-import { MatExpansionModule } from '@angular/material/expansion'; 
+import { MatExpansionModule } from '@angular/material/expansion';
+import { StarSliderComponent } from './star-slider/star-slider.component'; 
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     EiTabHolderComponent,
     EiApplicationTableComponent,
     EiTipoEditComponent,
-    ExpansionTestComponent
+    ExpansionTestComponent,
+    StarSliderComponent
   ],
   imports: [
     BrowserModule,

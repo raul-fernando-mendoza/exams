@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {take} from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-ei-tipo-edit',
@@ -28,6 +29,7 @@ export class EiTipoEditComponent implements OnInit {
             label:["nombre del criterio",Validators.required],
             exam_impro_parameter_id:[2],
             initially_selected:[false],
+            idx:[0],
             exam_impro_question:new FormArray([
               this.fb.group({
                 id:[null,Validators.required],
@@ -85,6 +87,7 @@ export class EiTipoEditComponent implements OnInit {
               label:"",
               exam_impro_parameter_id:"",
               initially_selected:"",
+              idx:"",
               "exam_impro_question(+)":[{
                 id:"",
                 exam_impro_criteria_id:"",
@@ -93,7 +96,12 @@ export class EiTipoEditComponent implements OnInit {
                 points:""
               }]
             }]
-          }]
+          }],
+        },
+        "orderBy":{
+          "exam_impro_type.id":"",
+          "exam_impro_parameter.id":"",
+          "exam_impro_criteria.idx":""
         }
       }
       this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(
@@ -158,7 +166,7 @@ export class EiTipoEditComponent implements OnInit {
         this.submitting = false;      
       },
       error => {
-        alert("error:" + error.error)
+        alert("error nuevo parametro:" + error.error)
         this.submitting = false; 
       }
     )
@@ -172,7 +180,8 @@ export class EiTipoEditComponent implements OnInit {
         id:null,
         label:"Criterio_" + (criteria_array.length + 1),
         exam_impro_parameter_id:parameter.controls["id"].value,
-        initially_selected:true
+        initially_selected:true,
+        idx:criteria_array.length 
       }
     }
 
@@ -185,13 +194,14 @@ export class EiTipoEditComponent implements OnInit {
           label:[c["label"]],
           exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
           initially_selected:[c["initially_selected"]],
+          idx:[criteria_array.length],
           exam_impro_question:new FormArray([])
         })
         criteria_array.push(g)
         this.submitting = false;         
       },
       error => {
-        alert("error:" + error.error)
+        alert("error nuevo criterio:" + error.error)
         this.submitting = false; 
       }
     )
@@ -225,7 +235,7 @@ export class EiTipoEditComponent implements OnInit {
         this.submitting = false;        
       },
       error => {
-        alert("error:" + error.error)
+        alert("error nueva pregunta:" + error.error)
         this.submitting = false; 
       }
     )
@@ -276,6 +286,7 @@ export class EiTipoEditComponent implements OnInit {
           var tc:FormGroup = criteria_array.controls[i] as FormGroup
           if( tc.controls["id"].value == c.controls.id.value){
             criteria_array.removeAt(i)
+            this.updateCriteriaIndex(criteria_array.controls as FormGroup[],i)
             break;
           }
         }
@@ -325,6 +336,7 @@ export class EiTipoEditComponent implements OnInit {
         label:[c["label"]],
         exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
         initially_selected:[c["initially_selected"]],
+        idx:[c["idx"]],
         exam_impro_question:new FormArray([])
       })
       criteria_array.push(g)
@@ -355,10 +367,10 @@ export class EiTipoEditComponent implements OnInit {
     console.log("exam_impro_type")
     var exam_impro_type_req = {
       exam_impro_type:{
-        label:exam_impro_type.controls["label"].value
-      },
-      where:{
-        id:exam_impro_type.controls["id"].value
+        label:exam_impro_type.controls["label"].value,
+        where:{
+          id:exam_impro_type.controls["id"].value
+        }
       }
     }
 
@@ -376,11 +388,11 @@ export class EiTipoEditComponent implements OnInit {
     console.log("exam_impro_parameter")
     var exam_impro_parameter_req = {
       exam_impro_parameter:{
-        label:exam_impro_parameter.controls["label"].value
-      },
-      where:{
-        id:exam_impro_parameter.controls["id"].value
-      }
+        label:exam_impro_parameter.controls["label"].value,
+        where:{
+          id:exam_impro_parameter.controls["id"].value
+        }
+      }      
     }
 
     this.examImprovisacionService.chenequeApiInterface("update", exam_impro_parameter_req).subscribe(
@@ -397,19 +409,19 @@ export class EiTipoEditComponent implements OnInit {
     var exam_impro_criteria_req = {
       exam_impro_criteria:{
         label:exam_impro_criteria.controls["label"].value,
-        initially_selected:exam_impro_criteria.controls["initially_selected"].value
-      },
-      where:{
-        id:exam_impro_criteria.controls["id"].value
+        initially_selected:exam_impro_criteria.controls["initially_selected"].value,
+        where:{
+          id:exam_impro_criteria.controls["id"].value
+        }
       }
     }
 
     this.examImprovisacionService.chenequeApiInterface("update", exam_impro_criteria_req).subscribe(
       data => {
-        console.log(" criteria update has completed")
+        console.log("criteria update completed:" + exam_impro_criteria.controls["label"].value + " " + exam_impro_criteria.controls["initially_selected"].value)
       },
       error => {
-        alert("error:" + error.error)
+        alert("error onChangeCriteria:" + error.error)
       }
     )
   }
@@ -419,10 +431,10 @@ export class EiTipoEditComponent implements OnInit {
       exam_impro_question:{
         label:exam_impro_question.controls["label"].value,
         description:exam_impro_question.controls["description"].value,
-        points:exam_impro_question.controls["points"].value
-      },
-      where:{
-        id:exam_impro_question.controls["id"].value
+        points:exam_impro_question.controls["points"].value,
+        where:{
+          id:exam_impro_question.controls["id"].value
+        }
       }
     }
 
@@ -443,5 +455,45 @@ export class EiTipoEditComponent implements OnInit {
 
   getformValue(){
     return JSON.stringify(this.exam_impro_type.value)
-  }  
+  } 
+
+  updateCriteriaIndex(formGroupArray:FormGroup[], from){
+    var req = {
+      "exam_impro_criteria":[]
+    }
+    
+    for(let i = from; i<formGroupArray.length; i++ ){
+      var c =  {
+        "idx":i,
+        "where":{
+            "id":formGroupArray[i].controls.id.value
+        }
+      }
+      req["exam_impro_criteria"].push(c)
+      formGroupArray[i].controls.idx.setValue(i)
+    }
+
+    this.examImprovisacionService.chenequeApiInterface("update", req).subscribe(
+      data => {
+        console.log(" type update has completed")
+      },
+      error => {
+        alert("error:" + error.error)
+      }
+    )
+
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event.previousContainer === event.container && 
+      event.previousIndex!=event.currentIndex ) {
+      var formGroupArray:FormGroup[] = event.item.data.controls.exam_impro_criteria.controls as FormGroup[]
+      moveItemInArray(event.item.data.controls.exam_impro_criteria.controls, event.previousIndex, event.currentIndex);
+      this.updateCriteriaIndex(formGroupArray,event.previousIndex<event.currentIndex?event.previousIndex:event.currentIndex)
+
+    } 
+  } 
+  onDragMove(event: CdkDragDrop<any>) {
+    console.log("ondragmove:" + event)
+  }
 }
