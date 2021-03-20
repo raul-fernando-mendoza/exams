@@ -52,6 +52,8 @@ import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { StarSliderComponent } from './star-slider/star-slider.component'; 
+import { AngularFireModule } from '@angular/fire/public_api';
+
 
 @NgModule({
   declarations: [
@@ -110,7 +112,7 @@ import { StarSliderComponent } from './star-slider/star-slider.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatTabsModule,
-    MatExpansionModule    
+    MatExpansionModule   
   ],
   providers: [
     UserLoginService

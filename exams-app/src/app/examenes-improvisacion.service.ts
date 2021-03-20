@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
+import firebase from "firebase/app"
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,7 @@ export class ExamenesImprovisacionService {
     }
     this.baseUrl = "http://" + hostname +":80/flask/exam_app";
     */
-    this.baseUrl = "http://celtic-bivouac-307316.uc.r.appspot.com"
+    this.baseUrl = "https://celtic-bivouac-307316.uc.r.appspot.com"
                     
 
     this.loginSubject = new Subject<boolean>();
@@ -299,4 +301,42 @@ export class ExamenesImprovisacionService {
     }
     return userId
   }  
+
+  register() {
+    firebase.auth().createUserWithEmailAndPassword("rfmh24hr@gmail.com", "Argos4905")
+    .then((userCredential) => {
+      // Signed in 
+      var user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ..
+    });
+  }  
+
+  login(email, password){
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Signed in
+      var user = userCredential.user;
+      // ...
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    });  
+
+    firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+      console.log("idToken:" + idToken)
+      //python
+      //decoded_token = auth.verify_id_token(id_token)
+      //uid = decoded_token['uid']
+    }).catch(function(error) {
+      console.log("the id token could not be retrieved")
+    });
+    
+   
+  }
 }

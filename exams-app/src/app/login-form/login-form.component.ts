@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 
+
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
@@ -26,21 +27,24 @@ export class LoginFormComponent {
     this.examImprovisacionService.LoginEvent(null)    
   }
 
+
+
+
   onSubmit() {
     console.log("login was submitted");
     var login_request = {
-      "user":{
-          "user_name":this.username,
-          "password":this.password,
-          "user_role":[{
-              "role_id":"" 
-          }],
-          "user_attribute(+)":{
-              "maestro_id":"",
-              "estudiante_id":""
-          }
-      }
-  }
+        "user":{
+            "user_name":this.username,
+            "password":this.password,
+            "user_role":[{
+                "role_id":"" 
+            }],
+            "user_attribute(+)":{
+                "maestro_id":"",
+                "estudiante_id":""
+            }
+        }
+    }
 
     this.examImprovisacionService.chenequeApiInterface("login",login_request).subscribe(data => {
       let user = data["result"] ;

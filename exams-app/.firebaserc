@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "celtic-bivouac-307316"
+  },
+  "targets": {
+    "celtic-bivouac-307316": {
+      "hosting": {
+        "exams-app": [
+          "celtic-bivouac-307316"
+        ]
+      }
+    }
+  }
+}
