@@ -8,7 +8,7 @@ email,
 CONCAT( m.nombre," ", m.apellidoPaterno, " ", m.apellidoMaterno) AS maestro, 
 c.exam_impro_ap_parameter_id,
 pt.label AS parametro,  
-5 + ROUND( 5 * SUM( q.graded ) / SUM( iq.points ), 1)  AS grade
+ROUND( 10 * (SUM( q.graded ) / SUM( iq.points) ), 1)  AS grade
 FROM exam_impro_ap a
 JOIN exam_impro_ap_parameter p ON p.exam_impro_ap_id = a.id
 JOIN exam_impro_ap_criteria c ON c.exam_impro_ap_parameter_id = p.id

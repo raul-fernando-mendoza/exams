@@ -14,10 +14,14 @@ export class ExamenesImprovisacionService {
   private examUrl: string;
   constructor(private http: HttpClient) { 
     var hostname = window.location.hostname
+    /*
     if(hostname==="localhost"){
-      hostname= "192.168.15.12"
+      hostname= "https://celtic-bivouac-307316.uc.r.appspot.com/"
     }
     this.baseUrl = "http://" + hostname +":80/flask/exam_app";
+    */
+    this.baseUrl = "http://celtic-bivouac-307316.uc.r.appspot.com"
+                    
 
     this.loginSubject = new Subject<boolean>();
 
