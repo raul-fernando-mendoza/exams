@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserLoginCredentials } from '../UserLoginCredentials';
+import { UserLoginService } from '../user-login.service';
 
 
 @Component({
@@ -22,7 +24,7 @@ export class ExamenImprovisacionFormComponent {
     id: [null],
     completado:[false, Validators.required],
     fechaApplicacion: [null, Validators.required],
-    estudiante_id: [null, Validators.required],
+    estudiante_uid: [null, Validators.required],
     exam_impro_type_id: [null, Validators.required],
     materia:[null, Validators.required],    
     exam_impro_ap_parameter: new FormArray([])
@@ -67,7 +69,8 @@ export class ExamenImprovisacionFormComponent {
   constructor(private fb: FormBuilder,private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: FormBuilder) {
+    , private formBuilder: FormBuilder
+    , private userLoginService:UserLoginService) {
 
   }
 
@@ -80,7 +83,9 @@ export class ExamenImprovisacionFormComponent {
       }]
     }  
 
-    this.examImprovisacionService.chenequeApiInterface("get", examImproTypeRequest).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, examImproTypeRequest).subscribe(data => {
       let r = data["result"] as Array<any>;
       this.types.length = 0
       for( let i =0; i<r.length; i++){
@@ -97,21 +102,20 @@ export class ExamenImprovisacionFormComponent {
 
 
     var estudianteRequest = {
-      "estudiante":[{
-          "id":"",
-          "nombre":"",
-          "apellidoPaterno":"",
-          "apellidoMaterno":""
-      }]
+      "user":{
+          "role":"estudiante"
+      }
     }      
 
-    this.examImprovisacionService.chenequeApiInterface("get", estudianteRequest).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("getUserListForClaim", token, estudianteRequest).subscribe(data => {
       let r = data["result"] as Array<any>;
       this.estudiantes.length = 0
       for( let i =0; i<r.length; i++){
         let obj = {
-          "id":r[i].id,
-          "estudianteName":r[i].nombre + " " + r[i].apellidoPaterno + " " + r[i].apellidoMaterno
+          "uid":r[i].uid,
+          "estudianteName":(r[i].display_name != null)? r[i].display_name : r[i].email
         }
         this.estudiantes.push(obj)
       }
@@ -125,9 +129,11 @@ export class ExamenImprovisacionFormComponent {
           "id":"",
           "label":""
       }]
-    }      
+    }   
+    
+    var token = this.userLoginService.getUserIdToken() 
 
-    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_parameter_request).subscribe(data => {
+    this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_parameter_request).subscribe(data => {
       let r = data["result"] as Array<any>;
       for( let i =0; i<r.length; i++){
         this.exam_impro_parameter[ r[i].id ] = r[i].label
@@ -135,35 +141,32 @@ export class ExamenImprovisacionFormComponent {
     
     },
     error => {
-        alert( "Error retriving parameters names" + error.error.error )
+        alert( "Error retriving parameters names" + error.error )
     }) 
     
     var maestro_request = {
-      "maestro":[{
-          "id":"",
-          "nombre":"",
-          "apellidoPaterno":"",
-          "apellidoMaterno":""
-      }]
+      "user":{
+          "role":"evaluador"
+      }
     }      
 
-    this.examImprovisacionService.chenequeApiInterface("get", maestro_request).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("getUserListForClaim", token, maestro_request).subscribe(data => {
       let r = data["result"] as Array<any>;
       this.maestros.length = 0
       for( let i =0; i<r.length; i++){
-        var obj = {
-          id:r[i].id,
-          nombre:r[i].nombre,
-          apellidoPaterno: r[i].appellidoPaterno,
-          apellidoMaterno:r[i].appellidoMaterno
+        let obj = {
+          "uid":r[i].uid,
+          "maestroName":(r[i].display_name != null)? r[i].display_name : r[i].email
         }
+        console.log("user:" + obj.uid + " " + obj.maestroName)
         this.maestros.push(obj)
       }
     },
     error => {
-        alert( "Error retriving parameters names" + error.error.error )
-    })      
-    
+        alert( "Error retriving estudiante" + error )
+    })     
   }  
   
 
@@ -185,7 +188,9 @@ export class ExamenImprovisacionFormComponent {
       }]
     }      
 
-    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_parameter_request).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_parameter_request).subscribe(data => {
       let r = data["result"] as Array<any>;
 
       var parameterArray = this.get_exam_impro_ap_parameter_array
@@ -200,7 +205,7 @@ export class ExamenImprovisacionFormComponent {
           exam_impro_ap_id:[null],
           completado: [false],
           exam_impro_parameter_id:[r[i].id],
-          maestro_id:[null] ,
+          maestro_uid:[null] ,
           exam_impro_ap_criteria: new FormArray([])         
         })
         parameterArray.push(g)
@@ -213,14 +218,14 @@ export class ExamenImprovisacionFormComponent {
   }
 
   estudiantes = [
-    { id:-1, estudianteName:"N/A"}
+    { uid:-1, estudianteName:"N/A"}
   ]  
   getExamEstudiantes(){
     return this.estudiantes;    
   }  
 
   maestros = [
-    { id: -1, nombre:"N/A", apellidoPaterno:"N/A", apellidoMaterno:"N/A"}
+    { uid: "", maestroName:"N/A"}
   ]
 
   getExamMaestros(){
@@ -249,7 +254,9 @@ export class ExamenImprovisacionFormComponent {
       }]
     } 
 
-    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_criteria_request).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_criteria_request).subscribe(data => {
       let r = data["result"] as Array<any>;
       for( let i= exam_impro_ap_criteria.length-1; i>=0; i--){
         exam_impro_ap_criteria.removeAt(i)
@@ -314,7 +321,9 @@ export class ExamenImprovisacionFormComponent {
         "exam_impro_ap":data
       }      
 
-      this.examImprovisacionService.chenequeApiInterface("add", exam_impro_ap_request).subscribe(data => {
+      var token = this.userLoginService.getUserIdToken() 
+
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_ap_request).subscribe(data => {
         var result = data["result"]
         alert("thanks!")
         console.log(JSON.stringify(result, null, 2))

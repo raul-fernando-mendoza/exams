@@ -3,7 +3,7 @@
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
+    <mat-toolbar><mat-icon>menu</mat-icon></mat-toolbar>
     <mat-nav-list>
      
      <!--
@@ -16,7 +16,9 @@
       <a mat-list-item href="/DragDropComponent">drag</a>
       <a mat-list-item href="/Reason">Reason</a>
       -->
-      <a mat-list-item routerLink="/ExamenesImprovisacion">Examenes Improvisacion</a>
+      <a *ngIf="userLogged" mat-list-item routerLink="/ExamenesImprovisacion">Examenes Improvisacion</a>
+      
+      <a *ngIf="isAdmin" mat-list-item routerLink="/user-list">Users</a>
     
       
     </mat-nav-list>
@@ -31,15 +33,21 @@
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>exams-app</span>
+      <a routerLink="/home">RaxAcademy.com</a>
       <span class="example-spacer"></span>
-      <button mat-icon-button class="example-icon" aria-label="login" (click)="login()" *ngIf="!userLogged">
-        <mat-icon>login</mat-icon>
+      <button mat-stroked-button class="example-icon" aria-label="login" (click)="login()" *ngIf="!userLogged">
+        Login
       </button>
+      <button mat-stroked-button class="example-icon" aria-label="login" (click)="Register()" *ngIf="!userLogged">
+        Registrate
+      </button>
+
       <span *ngIf="userLogged">{{ user_name }}</span>
-      <button mat-icon-button class="example-icon" aria-label="logout" (click)="logout()" *ngIf="userLogged">
+      
+      <button mat-stroked-button class="example-icon" aria-label="logout" (click)="logout()" *ngIf="userLogged">
         <mat-icon>logout</mat-icon>
-      </button>             
+      </button>    
+              
     </mat-toolbar>
       <router-outlet></router-outlet>
   </mat-sidenav-content>

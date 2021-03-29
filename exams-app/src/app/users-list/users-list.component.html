@@ -1,0 +1,42 @@
+<p>User List</p>
+<mat-card *ngFor="let user of users_formarray.controls; let i=index">
+    <mat-card-title>
+            <mat-grid-list cols="9"  rowHeight="1.5em" [formGroup]="user">
+                <mat-grid-tile colspan="4">
+                   user:{{ user.controls.email.value }}
+                </mat-grid-tile>
+                <mat-grid-tile colspan="4">
+                    <mat-form-field>
+                        <mat-label>nombre</mat-label>
+                        <input  matInput placeholder="change it" [value]="displayName" formControlName="displayName" (change)="onChangeUsenDisplayName(user)">
+                    </mat-form-field>  
+                </mat-grid-tile>
+                <mat-grid-tile colspan="1">
+                    <button mat-icon-button [matMenuTriggerFor]="usermenu" >
+                        <mat-icon>more_vert</mat-icon>
+                    </button>                                    
+                    <mat-menu #usermenu="matMenu" >
+                        <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role.id)" [disabled]="submitting">
+                            <span>{{ role.id }}</span>
+                        </button> 
+                    </mat-menu>   
+                </mat-grid-tile>    
+            </mat-grid-list>
+    </mat-card-title>
+    <mat-card-content>
+        <div *ngFor="let userRole of user.controls.roles.controls; let j=index">
+            <div [formGroup]="userRole">
+                {{ userRole.controls.id.value }} 
+                <button mat-icon-button [matMenuTriggerFor]="menu" >
+                    <mat-icon>more_vert</mat-icon>
+                </button>                                    
+                <mat-menu #menu="matMenu" >
+                    <button mat-menu-item  (click)="delRole(user, userRole.controls.id.value)" [disabled]="submitting">
+                        <mat-icon>delete</mat-icon>
+                        <span>borrar</span>
+                    </button> 
+                </mat-menu> 
+            </div>
+        </div> 
+    </mat-card-content>
+</mat-card>

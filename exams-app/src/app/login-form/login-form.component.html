@@ -1,14 +1,15 @@
-<form [formGroup]="loginForm" novalidate (ngSubmit)="onSubmit()">
-  <mat-card class="shipping-card">
+<form [formGroup]="loginForm">
+  <mat-card>
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
      
     </mat-card-header>
+    
     <mat-card-content>
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Username" formControlName="username" [(ngModel)]="username">
+            <input matInput placeholder="Username" formControlName="username" >
             <mat-error *ngIf="loginForm.controls['username'].hasError('required')">
               login is <strong>required</strong>
             </mat-error>            
@@ -18,7 +19,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput type="password" placeholder="password" formControlName="password" [(ngModel)]="password">
+            <input matInput type="password" placeholder="password" formControlName="password">
             <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
               login is <strong>required</strong>
             </mat-error>
@@ -26,8 +27,11 @@
         </div>
       </div>
     </mat-card-content>
+    
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit">Login</button>
+      <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister">Login</button>
+      <button mat-raised-button color="primary" (click)="register()" *ngIf="isRegister">Register</button>
     </mat-card-actions>
+
   </mat-card>
 </form>

@@ -19,8 +19,8 @@
         <mat-grid-tile>
           <mat-form-field appearance="fill" >
             <mat-label>selecciona estudiante</mat-label>
-            <mat-select formControlName="estudiante_id">
-              <mat-option *ngFor="let e of getExamEstudiantes()" [value]="e.id">
+            <mat-select formControlName="estudiante_uid">
+              <mat-option *ngFor="let e of getExamEstudiantes()" [value]="e.uid">
                 {{e.estudianteName}}
               </mat-option>
             </mat-select>
@@ -49,9 +49,9 @@
               {{ getExamImproLabel( p.controls.exam_impro_parameter_id.value ) }}
               <mat-form-field appearance="fill" >
                 <mat-label>selecciona maestro</mat-label>
-                <mat-select formControlName="maestro_id">
-                  <mat-option *ngFor="let m of getExamMaestros()" [value]="m.id">
-                    {{m.nombre}}
+                <mat-select formControlName="maestro_uid">
+                  <mat-option *ngFor="let m of getExamMaestros()" [value]="m.uid">
+                    {{m.maestroName}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -72,6 +72,6 @@
     </mat-card-actions> 
   </mat-card>  
     
-  <!-- {{ getformValue() }}  -->
+   {{ getformValue() }} 
 
 </form>

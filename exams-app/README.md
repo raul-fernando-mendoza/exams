@@ -1,5 +1,15 @@
 # ExamsApp
 
+# use the followng to select the hosting option.
+firebase init
+
+#use to deploy the app
+firebase deploy
+
+#use to run the emulator
+firebase emulators:start
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 
 ## Development server

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { UserLoginService } from '../user-login.service';
 
 
 export interface DialogData {
@@ -29,7 +30,8 @@ export class EiApParameterFormComponent implements OnInit {
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder
-    , public dialog: MatDialog) { 
+    , public dialog: MatDialog
+    , private userLoginService:UserLoginService) { 
       this.id = parseInt(this.route.snapshot.paramMap.get('id'))
     }
   
@@ -59,7 +61,11 @@ export class EiApParameterFormComponent implements OnInit {
         })
       ]) 
     })  
-  ])        
+  ])  
+  
+  nvl(val1, val2){
+    return (val1!=null)?val1:val2
+  }
 
   ngOnInit(): void {
 
@@ -82,16 +88,16 @@ export class EiApParameterFormComponent implements OnInit {
             }]
           }
         }],
-        maestro:{
-          nombre:"",
-          apellidoPaterno:""
+        "maestro:user":{
+          email:"",
+          displayName:""
         },
         exam_impro_ap:{
           materia:"",
           fechaApplicacion:"",
-          estudiante:{
-            nombre:"",
-            apellidoPaterno:""
+          "estudiante:user":{
+            email:"",
+            displayName:""
           }
         },
         exam_impro_parameter:{
@@ -112,7 +118,9 @@ export class EiApParameterFormComponent implements OnInit {
       this.exam_impro_ap_criteria.removeAt(i)
     }
 
-    this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(data => { 
+    var token = this.userLoginService.getUserIdToken()
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(data => { 
       for( let i=0; this.exam_impro_ap_criteria.length; i++){
         this.exam_impro_ap_criteria.removeAt(i)
       }
@@ -120,8 +128,8 @@ export class EiApParameterFormComponent implements OnInit {
 
       var result = data["result"]
 
-      this.estudianteNombre = result["exam_impro_ap"]["estudiante"]["nombre"] + " " + result["exam_impro_ap"]["estudiante"]["apellidoPaterno"]
-      this.maestraNombre = result["maestro"]["nombre"] + " " + result["maestro"]["apellidoPaterno"]
+      this.estudianteNombre = this.nvl(result["exam_impro_ap"]["estudiante"]["displayName"] , result["exam_impro_ap"]["estudiante"]["email"] )
+      this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
       this.materia =  result["exam_impro_ap"]["materia"]
       this.parametro = result["exam_impro_parameter"]["label"]
       this.tipo = result["exam_impro_parameter"]["exam_impro_type"]["label"]
@@ -191,9 +199,9 @@ export class EiApParameterFormComponent implements OnInit {
       }
     }
 
-      
+    var token = this.userLoginService.getUserIdToken() 
 
-    this.examImprovisacionService.chenequeApiInterface("add", exam_impro_questions_request).subscribe(data => {
+    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_questions_request).subscribe(data => {
       var result = data["result"]
       console.log(JSON.stringify(result, null, 2))
       //close the parameter
@@ -213,7 +221,10 @@ export class EiApParameterFormComponent implements OnInit {
         }
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_ap_parameter_update_request).subscribe(data => {
+    
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
       this.retrieveCalificacion()
     },
     error => {
@@ -228,7 +239,8 @@ export class EiApParameterFormComponent implements OnInit {
         exam_impro_ap_parameter_id:this.id
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("get", exam_impro_calificacion_request).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+    this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_calificacion_request).subscribe(data => {
       var result = data["result"]
       this.calificacion = result.grade
       this.openCommentDialog()
@@ -265,7 +277,9 @@ export class EiApParameterFormComponent implements OnInit {
         }
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_ap_parameter_update_request).subscribe(data => {
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
       this.router.navigate(['/ExamenesImprovisacion']);
     },
     error => {

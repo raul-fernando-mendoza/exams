@@ -5,6 +5,7 @@ import { MatTable } from '@angular/material/table';
 import { EiApplicationTableDataSource, EiApplicationTableItem } from './ei-application-table-datasource';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
+import { UserLoginService } from '../user-login.service';
 
 var exam_types: EiApplicationTableItem[] = [];
 
@@ -30,6 +31,7 @@ export class EiApplicationTableComponent implements AfterViewInit, OnInit {
 
   constructor( private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
+    , private userLoginService:UserLoginService
     ) {
       
 
@@ -45,7 +47,9 @@ export class EiApplicationTableComponent implements AfterViewInit, OnInit {
         label:""
       }]
     }
-    this.examImprovisacionService.chenequeApiInterface("get", request).subscribe( data =>{
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe( data =>{
       var result = data["result"] //exam_types.push( {id:t["id"],name:t["label"]} )
       exam_types = []
       result.forEach(t => {
@@ -75,7 +79,10 @@ export class EiApplicationTableComponent implements AfterViewInit, OnInit {
         label:"Tipo de Examen nuevo"
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("add", exam_impro_type_req).subscribe(
+
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_type_req).subscribe(
       data => {
         console.log(" type update has completed")
         this.submitting = false
@@ -94,7 +101,10 @@ export class EiApplicationTableComponent implements AfterViewInit, OnInit {
         id:id
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("delete", exam_impro_type_req).subscribe(
+
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_type_req).subscribe(
       data => {
         console.log("delete has completed")
         this.ngAfterViewInit()

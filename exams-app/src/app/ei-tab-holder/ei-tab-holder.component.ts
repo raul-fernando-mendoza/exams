@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { UserLoginService } from '../user-login.service';
 
 
 @Component({
@@ -10,10 +11,10 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 export class EiTabHolderComponent implements OnInit {
   link = "/loginForm"
   isAdmin = false
-  constructor(private examImprovisacionService: ExamenesImprovisacionService) { }
+  constructor(private userLoginService: UserLoginService) { }
 
   ngOnInit(): void {
-    this.isAdmin = this.examImprovisacionService.hasRole("Admin")
+    this.isAdmin = this.userLoginService.hasRole("admin")
   }
 
 }

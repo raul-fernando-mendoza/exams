@@ -5,6 +5,7 @@ import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {take} from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { UserLoginService } from '../user-login.service';
 
 @Component({
   selector: 'app-ei-tipo-edit',
@@ -53,7 +54,8 @@ export class EiTipoEditComponent implements OnInit {
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder
-    , private _ngZone: NgZone) {
+    , private _ngZone: NgZone
+    , private userLoginService: UserLoginService) {
       this.id = parseInt(this.route.snapshot.paramMap.get('id'))
   
   }
@@ -104,7 +106,9 @@ export class EiTipoEditComponent implements OnInit {
           "exam_impro_criteria.idx":""
         }
       }
-      this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(
+      var token = this.userLoginService.getUserIdToken() 
+
+      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
         data => { 
           let t = data["result"] as Array<any>;
           this.exam_impro_type.controls.id.setValue(t["id"])
@@ -152,7 +156,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
     this.submitting = true;
-    this.examImprovisacionService.chenequeApiInterface("add", exam_impro_parameter_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_parameter_req).subscribe(
       data => {
         console.log(" parameter add has completed")
         var p = data["result"]["exam_impro_parameter"]
@@ -185,7 +191,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("add", exam_impro_criteria_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_criteria_req).subscribe(
       data => {
         console.log(" criteria add has completed")
         var c = data["result"]["exam_impro_criteria"]
@@ -220,7 +228,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("add", exam_impro_question_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_question_req).subscribe(
       data => {
         console.log(" questions add has completed")
         var q = data["result"]["exam_impro_question"]
@@ -248,7 +258,10 @@ export class EiTipoEditComponent implements OnInit {
         id:p.controls.id.value
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("delete", exam_impro_parameter_request).subscribe(
+
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_parameter_request).subscribe(
       data => {
         console.log("question has been erased")
         var parameter_array:FormArray = t.controls["exam_impro_parameter"] as FormArray
@@ -278,7 +291,9 @@ export class EiTipoEditComponent implements OnInit {
         id:c.controls.id.value
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("delete", exam_impro_criteria_request).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_criteria_request).subscribe(
       data => {
         console.log("question has been erased")
         var criteria_array:FormArray = p.controls["exam_impro_criteria"] as FormArray
@@ -308,7 +323,9 @@ export class EiTipoEditComponent implements OnInit {
         id:q.controls.id.value
       }
     }
-    this.examImprovisacionService.chenequeApiInterface("delete", exam_impro_question_request).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_question_request).subscribe(
       data => {
         console.log("question has been erased")
         var question_array:FormArray = c.controls["exam_impro_question"] as FormArray
@@ -374,7 +391,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_type_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+     
+    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_type_req).subscribe(
       data => {
         console.log(" type update has completed")
       },
@@ -395,7 +414,9 @@ export class EiTipoEditComponent implements OnInit {
       }      
     }
 
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_parameter_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_parameter_req).subscribe(
       data => {
         console.log(" parameter update has completed")
       },
@@ -416,7 +437,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_criteria_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update",token, exam_impro_criteria_req).subscribe(
       data => {
         console.log("criteria update completed:" + exam_impro_criteria.controls["label"].value + " " + exam_impro_criteria.controls["initially_selected"].value)
       },
@@ -438,7 +461,9 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("update", exam_impro_question_req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_question_req).subscribe(
       data => {
         console.log(" question update has completed")
       },
@@ -473,7 +498,9 @@ export class EiTipoEditComponent implements OnInit {
       formGroupArray[i].controls.idx.setValue(i)
     }
 
-    this.examImprovisacionService.chenequeApiInterface("update", req).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("update", token, req).subscribe(
       data => {
         console.log(" type update has completed")
       },

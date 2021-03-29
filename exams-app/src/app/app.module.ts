@@ -51,8 +51,11 @@ import { EiApplicationTableComponent } from './ei-application-table/ei-applicati
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { StarSliderComponent } from './star-slider/star-slider.component'; 
-import { AngularFireModule } from '@angular/fire/public_api';
+import { StarSliderComponent } from './star-slider/star-slider.component';
+import { UsersListComponent } from './users-list/users-list.component';
+import { RoleListComponent } from './role-list/role-list.component';
+import { LoginSelectorComponent } from './login-selector/login-selector.component';
+import { WelcomeComponent } from './welcome/welcome.component'; 
 
 
 @NgModule({
@@ -79,7 +82,11 @@ import { AngularFireModule } from '@angular/fire/public_api';
     EiApplicationTableComponent,
     EiTipoEditComponent,
     ExpansionTestComponent,
-    StarSliderComponent
+    StarSliderComponent,
+    UsersListComponent,
+    RoleListComponent,
+    LoginSelectorComponent,
+    WelcomeComponent
   ],
   imports: [
     BrowserModule,
@@ -112,7 +119,7 @@ import { AngularFireModule } from '@angular/fire/public_api';
     MatDatepickerModule,
     MatNativeDateModule,
     MatTabsModule,
-    MatExpansionModule   
+    MatExpansionModule
   ],
   providers: [
     UserLoginService

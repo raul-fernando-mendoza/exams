@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
+import { UserLoginService } from '../user-login.service';
 
 
 @Component({
@@ -14,49 +16,40 @@ export class LoginFormComponent {
     username: [null, Validators.required],
     password: [null, Validators.required]
   });
-
-  username:string;
-  password:string;
+  isRegister = false
 
   constructor(private fb: FormBuilder, private route: ActivatedRoute, 
     private router: Router, 
-    private examImprovisacionService: ExamenesImprovisacionService) {}
+    private userLoginService:UserLoginService) {
+      this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
+  }
 
   ngOnInit() {
-    localStorage.setItem('exams.app', null);
-    this.examImprovisacionService.LoginEvent(null)    
+    this.userLoginService.onLoginEvent().subscribe(
+      (user) => {
+          if (user) {
+            console.log("login form receive notification login success navigatin to examenes improvisacion")
+            this.router.navigate(['/ExamenesImprovisacion']);
+          } 
+      }
+    ); 
   }
 
 
+  onLoginWithEmail(){
+    var user = this.loginForm.controls.username.value
+    var password = this.loginForm.controls.password.value
+    this.userLoginService.loginWithEmail(user, password)
+  }
 
-
-  onSubmit() {
-    console.log("login was submitted");
-    var login_request = {
-        "user":{
-            "user_name":this.username,
-            "password":this.password,
-            "user_role":[{
-                "role_id":"" 
-            }],
-            "user_attribute(+)":{
-                "maestro_id":"",
-                "estudiante_id":""
-            }
-        }
-    }
-
-    this.examImprovisacionService.chenequeApiInterface("login",login_request).subscribe(data => {
-      let user = data["result"] ;
-      localStorage.setItem('exams.app', JSON.stringify(user));
-      this.examImprovisacionService.LoginEvent(user)
-      this.gotoWelcomeUser();
-    },
-    error => {
-      localStorage.setItem('exams.app', null);
-      this.examImprovisacionService.LoginEvent(null)
-      alert("usuario invalido. try again")
-    })
+  register(){
+    var user = this.loginForm.controls.username.value
+    var password = this.loginForm.controls.password.value
+    this.userLoginService.register(user, password)    
+  }
+  onLogout(){
+    //alert("going to call login with Logout")
+    this.userLoginService.logout()
   }
 
   gotoWelcomeUser() {

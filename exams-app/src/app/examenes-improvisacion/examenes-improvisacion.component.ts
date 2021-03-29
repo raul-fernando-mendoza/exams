@@ -5,6 +5,8 @@ import { MatTable } from '@angular/material/table';
 import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './examenes-improvisacion-datasource';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserLoginService } from '../user-login.service';
+import { UserLoginCredentials } from '../UserLoginCredentials';
 
 
 
@@ -27,6 +29,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   
   constructor( private route: ActivatedRoute
     , private router: Router
+    , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
     ) {
       
@@ -37,9 +40,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   
   ngOnInit() {
 
-    this.isAdmin = this.examImprovisacionService.hasRole("Admin")
+    this.isAdmin = this.userLoginService.hasRole("admin")
 
-    var maestro_id = ( this.isAdmin ? "": this.examImprovisacionService.getMaestroID() )
+    var maestro_email = ( this.isAdmin ? "": this.userLoginService.getUserEmail() )
     var completado:any 
 
     if( this.isAdmin ){
@@ -50,72 +53,68 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     }
 
     var request = {
-      exam_impro_ap_parameter:[{
-        id:"",
-        completado:completado,
-        maestro:{
-          id:maestro_id,
-          nombre:"",
-          apellidoPaterno:"",
-          apellidoMaterno:"" 
-        },
-        exam_impro_ap:{
-          fechaApplicacion:"",
-          completado:"",
-          materia:"",
-          estudiante:{
-            nombre:"",
-            apellidoPaterno:"",
-            apellidoMaterno:""
-          }
-        },
-        exam_impro_parameter:{
-          label:"",
-          exam_impro_type:{
-            label:""
-          }  
-        }
-      }]
+        "exam_impro_ap_parameter":[{
+            "id":"",
+            "completado":"",
+            "maestro:user":{
+                "email":maestro_email,
+                "displayName":"" 
+            },
+            "exam_impro_ap":{
+                "fechaApplicacion":"",
+                "completado":"",
+                "materia":"",
+                "estudiante:user":{
+                    "email":"",
+                    "displayName":""
+                }
+            },
+            "exam_impro_parameter":{
+                "label":"",
+                "exam_impro_type":{
+                    "label":""
+                }  
+            }
+        }]
     }
 
-    this.examImprovisacionService.chenequeApiInterface("get", request).subscribe(
-        (result:any) => 
-        { 
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+        result => { 
         
           let datavalues: ExamenesImprovisacionItem[] = [];
 
           var examImprovisationArray = result["result"];
 
-          for(var i=0; i<examImprovisationArray.length;i++){
+          for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
             let exam = examImprovisationArray[i]
             console.log(exam.id)
             var obj:ExamenesImprovisacionItem = {
               id: exam.id, 
               materia: exam.exam_impro_ap.materia,
-              estudiante: exam.exam_impro_ap.estudiante.nombre + " " + exam.exam_impro_ap.estudiante.apellidoPaterno,
-              maestro: exam.maestro.nombre,
+              estudiante: (exam.exam_impro_ap.estudiante.displayName != null)? exam.exam_impro_ap.estudiante.displayName: exam.exam_impro_ap.estudiante.email,
+              maestro: (exam.maestro.displayName!=null)?exam.maestro.displayName:exam.maestro.email,
               tipo: exam.exam_impro_parameter.exam_impro_type.label,
               parametro:exam.exam_impro_parameter.label,
               fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 
               completado: exam.completado 
             }
             datavalues.push(obj)
-            this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
-            this.dataSource.sort = this.sort;
-            this.dataSource.paginator = this.paginator;
-            this.table.dataSource = this.dataSource;
-          }    
+          }  
+          
+          this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          this.table.dataSource = this.dataSource;            
         },
-        (err:any) => {
+        err => {
           if( err.status == 401 ){
             this.router.navigate(['/loginForm']);
           }
           else{
             alert("ERROR al leer lista de improvisacion:" + err.error)
           }
-        },
-        () => {
-          console.log('complete');
         }
     ) 
   }
@@ -143,7 +142,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }
     }
 
-    this.examImprovisacionService.chenequeApiInterface("delete", request).subscribe(
+    var token = this.userLoginService.getUserIdToken() 
+
+    this.examImprovisacionService.chenequeApiInterface("delete", token, request).subscribe(
       data => {
         this.submitting=false
         console.log("delete compled successfully")
