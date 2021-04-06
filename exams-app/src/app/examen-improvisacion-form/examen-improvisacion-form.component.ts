@@ -113,11 +113,28 @@ export class ExamenImprovisacionFormComponent {
       let r = data["result"] as Array<any>;
       this.estudiantes.length = 0
       for( let i =0; i<r.length; i++){
-        let obj = {
-          "uid":r[i].uid,
-          "estudianteName":(r[i].display_name != null)? r[i].display_name : r[i].email
+        
+        var estudiante_user_req = {
+          user:{
+            uid:"",
+            displayName:"",
+            email:r[i]["email"]
+          }
         }
-        this.estudiantes.push(obj)
+
+        this.examImprovisacionService.chenequeApiInterface("get", token, estudiante_user_req).subscribe(
+          estudiante_data =>{
+            let estudiante = estudiante_data["result"]
+            let obj = {
+              "uid":estudiante.uid,
+              "estudianteName":(estudiante.displayName != null)? estudiante.displayName : estudiante.email
+            }
+            this.estudiantes.push(obj)
+          },
+          estudiante_error =>{
+            alert("error leyendo estudiante data:" + estudiante_error.error)
+          }
+        )
       }
     },
     error => {
@@ -156,12 +173,27 @@ export class ExamenImprovisacionFormComponent {
       let r = data["result"] as Array<any>;
       this.maestros.length = 0
       for( let i =0; i<r.length; i++){
-        let obj = {
-          "uid":r[i].uid,
-          "maestroName":(r[i].display_name != null)? r[i].display_name : r[i].email
+        var evaluador_user_req = {
+          user: {
+            uid:"",
+            displayName:"",
+            email:r[i]["email"]
+          }
         }
-        console.log("user:" + obj.uid + " " + obj.maestroName)
-        this.maestros.push(obj)
+        this.examImprovisacionService.chenequeApiInterface("get", token, evaluador_user_req).subscribe(
+          user_data => {
+            let user = user_data["result"]
+            let obj = {
+              "uid":user.uid,
+              "maestroName":(user.displayName != null)? user.displayName : user.email
+            }
+            console.log("user:" + obj.uid + " " + obj.maestroName)
+            this.maestros.push(obj)            
+          },
+          user_error =>{
+            alert("error leyendo usuario para :" + r[i]["email"])
+          }
+        )
       }
     },
     error => {
@@ -185,7 +217,10 @@ export class ExamenImprovisacionFormComponent {
           "id":"",
           "exam_impro_type_id":parameterId,
           "label":""
-      }]
+      }],
+      orderBy:{
+        "exam_impro_parameter.idx":""
+      }
     }      
 
     var token = this.userLoginService.getUserIdToken() 
@@ -251,7 +286,10 @@ export class ExamenImprovisacionFormComponent {
           "label":"",
           "exam_impro_parameter_id":exam_impro_parameter_id,
           "initially_selected":""
-      }]
+      }],
+      orderBy:{
+        "exam_impro_criteria.idx":""
+      }
     } 
 
     var token = this.userLoginService.getUserIdToken() 

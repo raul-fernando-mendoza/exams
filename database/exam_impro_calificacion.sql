@@ -7,7 +7,8 @@ nvl( e.displayName, e.email) AS estudiante,
 nvl(m.displayName,m.email) AS maestro, 
 c.exam_impro_ap_parameter_id,
 pt.label AS parametro,  
-5 + ROUND( 5 * (SUM( q.graded ) / SUM( iq.points) ), 1)  AS grade
+4.5 + ROUND( 5.5 * (SUM( q.graded ) / SUM( iq.points) ), 1)  AS calificacion,
+p.comentario
 FROM exam_impro_ap a
 JOIN exam_impro_ap_parameter p ON p.exam_impro_ap_id = a.id
 JOIN exam_impro_ap_criteria c ON c.exam_impro_ap_parameter_id = p.id
@@ -44,8 +45,9 @@ nvl( e.displayName, e.email) AS estudiante,
 c.exam_impro_ap_parameter_id,
 nvl(m.displayName,m.email) AS maestro, 
 pt.label AS parametro, 
-iq.label AS question,
-5 + q.graded*5 AS calificacion
+cr.label AS criterio,
+iq.label AS aspecto,
+4.5 + q.graded*5.5 AS calificacion
 FROM exam_impro_ap a
 JOIN exam_impro_ap_parameter p ON p.exam_impro_ap_id = a.id
 JOIN exam_impro_ap_criteria c ON c.exam_impro_ap_parameter_id = p.id
@@ -54,5 +56,6 @@ JOIN exam_impro_question iq ON iq.id = q.exam_impro_question_id
 JOIN user as e ON a.estudiante_uid = e.uid
 JOIN exam_impro_type t ON a.exam_impro_type_id = t.id
 JOIN exam_impro_parameter pt ON p.exam_impro_parameter_id = pt.id
+JOIN exam_impro_criteria cr ON c.exam_impro_criteria_id = cr.id
 JOIN user as m ON p.maestro_uid = m.uid
 

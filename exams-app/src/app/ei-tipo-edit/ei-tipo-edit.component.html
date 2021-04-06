@@ -17,9 +17,17 @@
                         <mat-icon>more_vert</mat-icon>
                     </button>                                    
                     <mat-menu #menu="matMenu" >
-                        <button mat-raised-button color="primary" (click)="delParameter(exam_impro_type, p)" [disabled]="submitting">
+                        <button mat-menu-item  (click)="delParameter(exam_impro_type, p)" [disabled]="submitting">
                             <mat-icon>delete</mat-icon>
                             <span>borrar</span>
+                        </button> 
+                        <button mat-menu-item  (click)="upParameter(exam_impro_type, p)" [disabled]="submitting">
+                            <mat-icon>arrow_circle_up</mat-icon>
+                            <span>mover arriba</span>
+                        </button> 
+                        <button mat-menu-item color="primary" (click)="downParameter(exam_impro_type, p)" [disabled]="submitting">
+                            <mat-icon>arrow_circle_down</mat-icon>
+                            <span>mover abajo</span>
                         </button> 
                     </mat-menu>                      
                     
@@ -49,10 +57,14 @@
                                 <mat-icon>more_vert</mat-icon>
                             </button>                                    
                             <mat-menu #menu="matMenu" >
-                                <button mat-button color="accent" (click)="delCriteria(p, c)" [disabled]="submitting">
+                                <button mat-menu-item color="accent" (click)="delCriteria(p, c)" [disabled]="submitting">
                                     <mat-icon>delete</mat-icon>
                                     <span>borrar</span>
                                 </button> 
+                                <button mat-menu-item color="accent" (click)="dupCriteria(p, c)" [disabled]="submitting">
+                                    <mat-icon>content_copy</mat-icon>
+                                    <span>duplicar</span>
+                                </button>                                 
                             </mat-menu> 
                             </mat-toolbar>
                     
@@ -91,10 +103,18 @@
                                             <mat-icon>more_vert</mat-icon>
                                         </button>                                    
                                         <mat-menu #questionMenu="matMenu" >
-                                            <button mat-raised-button  (click)="delQuestion(c, q)" [disabled]="submitting">
+                                            <button mat-menu-item  (click)="delQuestion(c, q)" [disabled]="submitting">
                                                 <mat-icon>delete</mat-icon>
                                                 <span>borrar</span>
                                             </button> 
+                                            <button mat-menu-item  (click)="upQuestion(c, q)" [disabled]="submitting">
+                                                <mat-icon>arrow_circle_up</mat-icon>
+                                                <span>mover arriba</span>
+                                            </button> 
+                                            <button mat-menu-item color="primary" (click)="downQuestion(c, q)" [disabled]="submitting">
+                                                <mat-icon>arrow_circle_down</mat-icon>
+                                                <span>mover abajo</span>
+                                            </button>                                             
                                         </mat-menu> 
                                     </mat-grid-tile> 
                                                                                                           

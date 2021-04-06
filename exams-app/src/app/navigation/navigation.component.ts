@@ -12,9 +12,7 @@ import { UserLoginService } from '../user-login.service';
 })
 export class NavigationComponent {
 
-  userLogged = false
-  user_name = ""
-  isAdmin = false
+
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
@@ -26,33 +24,13 @@ export class NavigationComponent {
     , private userLoginService: UserLoginService) {}
 
   ngOnInit() {
-
-    this.isAdmin = this.userLoginService.hasRole("admin")
-
-    if( this.userLoginService.getIsloggedIn() ){
-      this.userLogged = true
-      this.user_name = this.userLoginService.getUserEmail()
-      this.router.navigate(['/ExamenesImprovisacion']); 
-      
-    }
-    else{
-      this.userLogged = false
-      this.user_name = "Please login"
-      this.router.navigate(['/home']); 
-    }
-    
     this.userLoginService.onLoginEvent().subscribe(
       (user_name) => {
-          this.isAdmin = this.userLoginService.hasRole("admin")
           if (user_name) {
             console.log("navigation has received notification that login has Completed:" + user_name)
-            this.userLogged = true
-            this.user_name = user_name
-            this.router.navigate(['/ExamenesImprovisacion']);
+            this.router.navigate(['/home']);
           } else {
             console.log("navigation Logout has been received")
-            this.userLogged=false
-            this.user_name = null
             this.router.navigate(['/home']);
           }
       }
@@ -69,4 +47,24 @@ export class NavigationComponent {
     this.userLoginService.logout()
     this.router.navigate(['/loginForm']);
   }
+  isEmailVerified(){
+    return this.userLoginService.getIsEmailVerified()
+  }
+
+  isLoggedIn(){
+    return this.userLoginService.getIsloggedIn()
+  }
+  isAdmin(){
+    return this.userLoginService.hasRole("admin")
+  }
+  isReadOnly(){
+    return this.userLoginService.hasRole('readonly')
+  }
+  isEvaluator(){
+    return this.userLoginService.hasRole('evaluador')
+  }  
+  getUserName(){
+    return (this.userLoginService.getDisplayName())?this.userLoginService.getDisplayName():this.userLoginService.getUserEmail()
+  }
+  
 }

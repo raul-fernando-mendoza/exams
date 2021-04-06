@@ -19,3 +19,13 @@
 .example-spacer {
   flex: 1 1 auto;
 }
+
+.main_link{
+  color: #EEEEEE;
+}
+
+.version{
+  font-size:8px;
+  margin:5px;
+}
+

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 
 
@@ -25,17 +23,9 @@ export class LoginFormComponent {
   }
 
   ngOnInit() {
-    this.userLoginService.onLoginEvent().subscribe(
-      (user) => {
-          if (user) {
-            console.log("login form receive notification login success navigatin to examenes improvisacion")
-            this.router.navigate(['/ExamenesImprovisacion']);
-          } 
-      }
-    ); 
+
   }
-
-
+  
   onLoginWithEmail(){
     var user = this.loginForm.controls.username.value
     var password = this.loginForm.controls.password.value
@@ -50,9 +40,5 @@ export class LoginFormComponent {
   onLogout(){
     //alert("going to call login with Logout")
     this.userLoginService.logout()
-  }
-
-  gotoWelcomeUser() {
-    this.router.navigate(['/ExamenesImprovisacion']);
   }
 }

@@ -29,13 +29,11 @@ export interface ExamenesImprovisacionItem {
 
   fechaApplicacion: string;
   completado:boolean;
+  calificacion:number
 }
 
 // TODO: replace this with real data from your application
-const EXAMPLE_DATA: ExamenesImprovisacionItem[] = [
-  {id: 1, materia:"espada", estudiante: 'Maria', maestro:"Petra", tipo:"tecnica1", parametro:"tecnica1", fechaApplicacion:formatDate(new Date(2021,1,1)), completado:false},
-  {id: 2, materia:"taxim",  estudiante: 'Petra', maestro:"Soila", tipo:"tecnica1", parametro:"tecnica2", fechaApplicacion:formatDate(new Date(2021,3,2)), completado:true}
-];
+const EXAMPLE_DATA: ExamenesImprovisacionItem[] = [];
 
 /**
  * Data source for the ExamenesImprovisacion view. This class should

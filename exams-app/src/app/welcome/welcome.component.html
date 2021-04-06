@@ -1,2 +1,6 @@
-<p>Bienvenido a RaxAcademy</p>
-<p *ngIf="!isloggedIn">Por favor registrese o ingrese</p>
+<p>Bienvenido</p>
+<p *ngIf="!isLoggedIn()">Por favor registrese o ingrese</p>
+<div *ngIf="isLoggedIn() && !isEmailVerified()">
+    Su email no ha sido verificado. si desea enviar un nuevo link presione el boton
+    <button mat-raised-button color="primary" (click)="emailVerify()" >Enviar email</button>
+</div>

@@ -1,0 +1,27 @@
+user{  
+"uid": "Dv804RnZZgTpSQL8H99xW5WbkoG7",  
+"email": "test@rax.com",  
+"emailVerified": false,  
+"displayName": "test",  
+"photoURL": "",  
+"phoneNumber": null,  
+"disabled": false,  
+"passwordHash": null,  
+"passwordSalt": null,  
+"tokensValidAfterTime": null,  
+"metadata": {    
+	"creationTime": "1616542109062",    
+	"lastSignInTime": "1616542109062"  },  
+	"customClaims": {},  
+	"providerData": [    
+		{      "providerId": "password",      
+				"email": "test@rax.com",      
+				"federatedId": "test@rax.com",      
+				"rawId": "test@rax.com",      
+				"displayName": "test",      
+				"photoUrl": ""    
+		}  
+	]
+}
+
+

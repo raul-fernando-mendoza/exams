@@ -53,12 +53,6 @@ export class EiApParameterFormComponent implements OnInit {
     this.fb.group({
       id:[1],
       exam_impro_app_questions: new FormArray([
-        this.fb.group({
-          id:[2],
-          exam_impro_ap_criteria_id:[3],
-          exam_impro_question_id:[4],
-          graded: [5]
-        })
       ]) 
     })  
   ])  
@@ -109,8 +103,9 @@ export class EiApParameterFormComponent implements OnInit {
         }
       },
       orderBy:{
-        "exam_impro_parameter.id":"",
-        "exam_impro_criteria.idx":""
+        "exam_impro_parameter.idx":"",
+        "exam_impro_criteria.idx":"",
+        "exam_impro_question.idx":""
       }
     }
 
@@ -235,14 +230,14 @@ export class EiApParameterFormComponent implements OnInit {
   retrieveCalificacion(){
     var exam_impro_calificacion_request = {
       exam_impro_calificacion:{
-        grade:"",
+        calificacion:"",
         exam_impro_ap_parameter_id:this.id
       }
     }
     var token = this.userLoginService.getUserIdToken() 
     this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_calificacion_request).subscribe(data => {
       var result = data["result"]
-      this.calificacion = result.grade
+      this.calificacion = result.calificacion
       this.openCommentDialog()
     },
     error => {

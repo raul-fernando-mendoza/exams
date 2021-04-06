@@ -56,6 +56,7 @@ import { UsersListComponent } from './users-list/users-list.component';
 import { RoleListComponent } from './role-list/role-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component'; 
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 
 @NgModule({
@@ -119,7 +120,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatTabsModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatButtonToggleModule
   ],
   providers: [
     UserLoginService

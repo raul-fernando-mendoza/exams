@@ -6,7 +6,7 @@ import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './ex
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { UserLoginCredentials } from '../UserLoginCredentials';
+
 
 
 
@@ -22,7 +22,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   @ViewChild(MatTable) table: MatTable<ExamenesImprovisacionItem>;
   dataSource: ExamenesImprovisacionDataSource;
   token:""
-  isAdmin=false
+
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
@@ -39,14 +39,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   submitting = false
   
   ngOnInit() {
+    console.log("on init called")
 
-    this.isAdmin = this.userLoginService.hasRole("admin")
-
-    var maestro_email = ( this.isAdmin ? "": this.userLoginService.getUserEmail() )
+    var maestro_email = ( this.isAdmin() ? "": this.userLoginService.getUserEmail() )
     var completado:any 
 
-    if( this.isAdmin ){
+    if( this.isAdmin() || this.isReadOnly() ){
       completado = ""
+      maestro_email = ""
     }
     else{
       completado = false
@@ -55,7 +55,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     var request = {
         "exam_impro_ap_parameter":[{
             "id":"",
-            "completado":"",
+            "completado":completado,
             "maestro:user":{
                 "email":maestro_email,
                 "displayName":"" 
@@ -74,8 +74,17 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
                 "exam_impro_type":{
                     "label":""
                 }  
+            },
+            "exam_impro_calificacion(+)":{
+                "calificacion":"",
+                "join":{
+                    "exam_impro_ap_parameter_id":"exam_impro_ap_parameter.id"
+                }
             }
-        }]
+        }],
+        orderBy:{
+          "exam_impro_ap_parameter.id":"desc"
+        }
     }
 
     var token = this.userLoginService.getUserIdToken() 
@@ -89,7 +98,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
           for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
             let exam = examImprovisationArray[i]
-            console.log(exam.id)
+            //console.log(exam.id)
             var obj:ExamenesImprovisacionItem = {
               id: exam.id, 
               materia: exam.exam_impro_ap.materia,
@@ -98,7 +107,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               tipo: exam.exam_impro_parameter.exam_impro_type.label,
               parametro:exam.exam_impro_parameter.label,
               fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 
-              completado: exam.completado 
+              completado: exam.completado,
+              calificacion:(exam.exam_impro_calificacion)?exam.exam_impro_calificacion.calificacion:0
             }
             datavalues.push(obj)
           }  
@@ -155,5 +165,35 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         alert("error en delete:" + error.error)
       }
     )
-  }   
+  }  
+  
+  isAdmin(){
+    return this.userLoginService.hasRole("admin")
+  }
+  isReadOnly(){
+    return this.userLoginService.hasRole("readonly")
+  }
+  isEvaluador(){
+    return this.userLoginService.hasRole("evaluador")
+  }
+
+  timerId = null
+
+  onRefresh(){
+    if( this.timerId != null ){
+      console.log("removing timeout")
+      clearInterval(this.timerId);
+      this.timerId = null
+    }
+    else{
+      console.log("adding timeout")
+      this.ngOnInit()
+      this.timerId = setInterval(
+        () => { 
+          console.log("calling refresh")
+          this.ngOnInit() 
+        }
+        , 20000);
+    }
+  }
 }

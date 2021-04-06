@@ -16,9 +16,9 @@
       <a mat-list-item href="/DragDropComponent">drag</a>
       <a mat-list-item href="/Reason">Reason</a>
       -->
-      <a *ngIf="userLogged" mat-list-item routerLink="/ExamenesImprovisacion">Examenes Improvisacion</a>
+      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() " mat-list-item routerLink="/ExamenesImprovisacion">Examenes Improvisacion</a>
       
-      <a *ngIf="isAdmin" mat-list-item routerLink="/user-list">Users</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
     
       
     </mat-nav-list>
@@ -33,18 +33,19 @@
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a routerLink="/home">RaxAcademy.com</a>
+      <a class="main_link" routerLink="/home">RaxAcademy.com</a>
+      <a class="version" routerLink="/home">ver 1.1.1</a>
       <span class="example-spacer"></span>
-      <button mat-stroked-button class="example-icon" aria-label="login" (click)="login()" *ngIf="!userLogged">
+      <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Login
       </button>
-      <button mat-stroked-button class="example-icon" aria-label="login" (click)="Register()" *ngIf="!userLogged">
+      <button mat-stroked-button  aria-label="Registrate" (click)="Register()" *ngIf="!isLoggedIn()">
         Registrate
       </button>
 
-      <span *ngIf="userLogged">{{ user_name }}</span>
+      <span *ngIf="isLoggedIn()">{{ getUserName() }}</span>
       
-      <button mat-stroked-button class="example-icon" aria-label="logout" (click)="logout()" *ngIf="userLogged">
+      <button mat-stroked-button  aria-label="logout" (click)="logout()" *ngIf="isLoggedIn()">
         <mat-icon>logout</mat-icon>
       </button>    
               

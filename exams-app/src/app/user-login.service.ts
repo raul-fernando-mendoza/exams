@@ -11,28 +11,40 @@ import { Router } from '@angular/router';
 })
 export class UserLoginService {
   private loginSubject : Subject<any>;
-  private user_email:string=null
-  private user_uid:string=null
+  //private user_email:string=null
+  //private user_uid:string=null
   private user_idtoken:string=null
+  private user = null;
   private user_claims = null;
-  private user_displayName = null;
-  private isloggedIn = false;
+  //private user_displayName = null;
+  //private isloggedIn = false;
+
+  
 
 
   constructor(private http: HttpClient 
     ,private examenesImprovisacionService:ExamenesImprovisacionService
     ,private router: Router) { 
     this.loginSubject = new Subject<boolean>();
+
+    try{
+      this.user = JSON.parse( localStorage.getItem('user') )
+      this.user_idtoken = localStorage.getItem('user_idtoken')
+      this.user_claims = JSON.parse(localStorage.getItem("user_claims") )
+    }
+    catch{
+      this.reset()
+    }
     
   }
   
   reset(){
-    this.user_email=null
-    this.user_uid=null
-    this.user_idtoken=null
+    this.user=null
+    localStorage.setItem('user', null)
     this.user_claims = null
-    this.user_displayName = null
-    this.isloggedIn = false   
+    localStorage.setItem('user_claims',null)
+    this.user_idtoken = null
+    localStorage.setItem('user_idtoken',null)
   }
 
   register(email,password) {
@@ -41,8 +53,19 @@ export class UserLoginService {
       // Signed in 
       var user:firebase.User = userCredential.user;
       console.log(user.uid)
-      alert("welcome:" + email)
-      this.router.navigate(['/loginForm']);
+      
+      userCredential.user.sendEmailVerification()
+      .then(() => {
+        alert("Un email de verificacion ha sido enviado a su email:" + user.email)
+        // ...
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        alert("error sending the confirmation email:" + errorCode + " " + error.message)
+      });
+
+      this.LoginEvent(null)
       
     })
     .catch((error) => {
@@ -54,43 +77,10 @@ export class UserLoginService {
   }  
 
   loginWithEmail(email, password){
-    this.user_email = null
-    this.user_uid = null
-    this.user_idtoken = null
-    this.user_claims = null
-    firebase.auth().signInWithEmailAndPassword(email, password).then(userCredential => {
-      // Signed in
-      var user = userCredential.user;
-      this.user_email = user.email
-      console.log("user.email" + user.email)
-      console.log("user.uid:" + user.uid)
-      this.user_uid = user.uid
-      this.user_displayName = user.displayName
-      this.isloggedIn = true
-      //now get the id token
-      firebase.auth().currentUser.getIdToken(true).then(idToken => {
-        //id token retrieved
-        console.log("idToken:" + idToken)
-        this.user_idtoken = idToken
-        //now get the roles
-        firebase.auth().currentUser.getIdTokenResult()
-        .then((idTokenResult) => {
-          console.log(idTokenResult.claims)
-          this.user_claims = {}
-          // Confirm the user is an Admin.
-          for(const claim in idTokenResult.claims){
-            this.user_claims[claim] = idTokenResult.claims[claim]
-            console.log("claims:" + claim + ":" + idTokenResult.claims[claim])
-          }
-          this.LoginEvent(this.user_email)
-        })
-        .catch((error) => {
-         alert("error retriving claims"+ error);
-        });         
-      }).catch(function(error) {
-        alert("the id token could not be retrieved")
-      });
+    this.reset()
 
+    firebase.auth().signInWithEmailAndPassword(email, password).then(userCredentials => {
+      this.login(userCredentials)
     })
     .catch( error =>{
       alert("Error in loging:" + error)
@@ -102,53 +92,61 @@ export class UserLoginService {
 
 
   signInWithPopup(){
-    this.user_email = null
-    this.user_displayName = null
-    this.user_uid = null
-    this.user_idtoken = null
-    this.user_claims = null
+    this.reset()
    
     var provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    firebase.auth().signInWithPopup(provider).then(userCredential => {
-      // Signed in
-      var user = userCredential.user;
-      this.user_email = user.email
-      console.log("user.email" + user.email)
-      console.log("user.uid:" + user.uid)
-      this.user_uid = user.uid
-      this.user_displayName = user.displayName
-      //now get the id token
-      firebase.auth().currentUser.getIdToken(true).then(idToken => {
-        //id token retrieved
-        console.log("idToken:" + idToken)
-        this.user_idtoken = idToken
-        this.isloggedIn = true
-        //now get the roles
-        firebase.auth().currentUser.getIdTokenResult()
-        .then((idTokenResult) => {
-          console.log(idTokenResult.claims)
-          this.user_claims = {}
-          // Confirm the user is an Admin.
-          for(const claim in idTokenResult.claims){
-            this.user_claims[claim] = idTokenResult.claims[claim]
-            console.log("claims:" + claim + ":" + idTokenResult.claims[claim])
-          }
-          this.LoginEvent(this.user_email)
-        })
-        .catch((error) => {
-         alert("error retriving claims"+ error);
-        });         
-      }).catch(function(error) {
-        alert("the id token could not be retrieved")
-      });
-
+    firebase.auth().signInWithPopup(provider).then(userCredentials => {
+      this.login(userCredentials)
     })
     .catch( error =>{
-      alert("Error in loging:" + error)
+      alert("Error in loging with popup:" + error)
     })
      
+  }
+
+  login( userCredentials: firebase.auth.UserCredential){
+    let user = userCredentials.user;
+    
+    this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
+    localStorage.setItem('user', JSON.stringify( this.user ) )
+
+    console.log("user.email" + this.user.email)
+    console.log("user.uid:" + this.user.uid)
+    
+
+    //now get the id token
+    firebase.auth().currentUser.getIdToken(true).then(idToken => {
+      //id token retrieved
+      console.log("idToken:" + idToken)
+      this.user_idtoken = idToken
+      localStorage.setItem('user_idtoken',this.user_idtoken)
+      //now get the roles
+      firebase.auth().currentUser.getIdTokenResult()
+      .then((idTokenResult) => {
+        console.log(idTokenResult.claims)
+        this.user_claims = idTokenResult.claims
+        
+        localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
+        this.LoginEvent(this.user.email)
+      })
+      .catch((error) => {
+       alert("error retriving claims"+ error);
+      });         
+    }).catch(function(error) {
+      alert("the id token could not be retrieved")
+    });
+
+  }
+
+  sendEmailLink(){
+    firebase.auth().currentUser.sendEmailVerification().then(function(result) {
+      alert("email sent")
+    },
+    function(reason:any){
+      alert("ERROR logout reason:" + reason)
+    });
   }
 
   logout(){
@@ -176,15 +174,18 @@ export class UserLoginService {
     return false
   }
   getUserEmail(){
-    return this.user_email
+    return (this.user)?this.user.email:null
   }
   getDisplayName(){
-    return this.user_displayName
+    return (this.user)?this.user.displayName:null
   }
   getUserIdToken(){
     return this.user_idtoken
   } 
   getIsloggedIn(){
-    return this.isloggedIn
+    return (this.user)?true:false
   }   
+  getIsEmailVerified(){
+    return (this.user)?this.user.emailVerified:false
+  }
 }
