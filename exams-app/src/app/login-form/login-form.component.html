@@ -1,7 +1,8 @@
 <form [formGroup]="loginForm">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Login</mat-card-title>
+      <mat-card-title *ngIf="!isRegister">Login</mat-card-title>
+      <mat-card-title *ngIf="isRegister">Registrar usuario nuevo</mat-card-title>
      
     </mat-card-header>
     
@@ -9,7 +10,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Username" formControlName="username" >
+            <input matInput placeholder="email" formControlName="username" >
             <mat-error *ngIf="loginForm.controls['username'].hasError('required')">
               login is <strong>required</strong>
             </mat-error>            
@@ -30,7 +31,7 @@
     
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister">Login</button>
-      <button mat-raised-button color="primary" (click)="register()" *ngIf="isRegister">Register</button>
+      <button mat-raised-button color="warn" (click)="register()" *ngIf="isRegister">Register</button>
     </mat-card-actions>
 
   </mat-card>
