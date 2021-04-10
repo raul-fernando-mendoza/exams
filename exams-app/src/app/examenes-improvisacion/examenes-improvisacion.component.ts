@@ -83,7 +83,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             }
         }],
         orderBy:{
-          "exam_impro_ap_parameter.id":"desc"
+          "exam_impro_ap.materia":""
         }
     }
 
