@@ -28,7 +28,10 @@ export class UsersListComponent implements OnInit {
         uid:"",
         displayName:"",
         email:""
-      }]
+      }],
+      orderBy:{
+        "user.email":""
+      }
     }
     var token = this.userLoginService.getUserIdToken()
     this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
@@ -65,6 +68,39 @@ export class UsersListComponent implements OnInit {
       }
     );
 
+  }
+
+  reloadUsers(){
+    this.users_formarray.clear()
+    var request = {
+      user:[{
+        uid:"",
+        displayName:"",
+        email:""
+      }],
+      orderBy:{
+        "user.email":""
+      }
+    }
+    var token = this.userLoginService.getUserIdToken()
+    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+      data => {
+        var users = data["result"]
+        for( const user of users){
+          var user_group = this.fb.group({
+            uid:[user.uid],
+            email:[user.email],
+            displayName:[user.displayName],
+            roles: new FormArray([])
+          })
+          this.users_formarray.push(user_group)
+          this.loadUserRoles(user, user_group.controls.roles as FormArray)
+        }
+      },
+      error => {
+        alert("error retriving the users:" + error.error)
+      }
+    );    
   }
 
 
@@ -168,4 +204,28 @@ export class UsersListComponent implements OnInit {
       }
     );      
   }
+  deleteUser(userEmail){
+
+    if( !confirm("Esta seguro de querer borrar el usuario:"+ userEmail) ){
+      return
+    }
+
+    var request = {
+      user:{
+        email:userEmail
+      }
+
+    }
+    var token = this.userLoginService.getUserIdToken()
+    this.examImprovisacionService.chenequeApiInterface("removeUser", token, request).subscribe(
+      data => {
+        console.log("user removed")
+        this.reloadUsers()
+      },
+      error => {
+        alert("error changing user name:" + error.error)
+      }
+    );      
+  }
+
 }

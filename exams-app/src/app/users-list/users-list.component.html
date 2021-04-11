@@ -3,7 +3,7 @@
     <mat-card-title>
             <mat-grid-list cols="9"  rowHeight="1.5em" [formGroup]="user">
                 <mat-grid-tile colspan="4">
-                   user:{{ user.controls.email.value }}
+                   {{ user.controls.email.value }}
                 </mat-grid-tile>
                 <mat-grid-tile colspan="4">
                     <mat-form-field>
@@ -12,6 +12,10 @@
                     </mat-form-field>  
                 </mat-grid-tile>
                 <mat-grid-tile colspan="1">
+                    <button (click)="deleteUser( user.controls.email.value )">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    
                     <button mat-icon-button [matMenuTriggerFor]="usermenu" >
                         <mat-icon>more_vert</mat-icon>
                     </button>                                    
