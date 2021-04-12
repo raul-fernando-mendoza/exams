@@ -52,6 +52,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       completado = false
     }
 
+    if( this.isReadOnly() ){
+      const index = this.displayedColumns.indexOf('maestro', 0);
+      if (index > -1) {
+         this.displayedColumns.splice(index, 1);
+      }
+    }
+
     var request = {
         "exam_impro_ap_parameter":[{
             "id":"",
@@ -98,12 +105,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
           for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
             let exam = examImprovisationArray[i]
+
             //console.log(exam.id)
             var obj:ExamenesImprovisacionItem = {
               id: exam.id, 
               materia: exam.exam_impro_ap.materia,
               estudiante: (exam.exam_impro_ap.estudiante.displayName != null)? exam.exam_impro_ap.estudiante.displayName: exam.exam_impro_ap.estudiante.email,
-              maestro: (exam.maestro.displayName!=null)?exam.maestro.displayName:exam.maestro.email,
+              maestro:(exam.maestro.displayName!=null)?exam.maestro.displayName:exam.maestro.email,
               tipo: exam.exam_impro_parameter.exam_impro_type.label,
               parametro:exam.exam_impro_parameter.label,
               fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 

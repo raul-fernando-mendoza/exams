@@ -88,12 +88,14 @@ export class EiTipoEditComponent implements OnInit {
             exam_impro_type_id:"",
             label:"",
             idx:"",
+            description:"",
             "exam_impro_criteria(+)":[{
               id:"",
               label:"",
               exam_impro_parameter_id:"",
               initially_selected:"",
               idx:"",
+              description:"",
               "exam_impro_question(+)":[{
                 id:"",
                 exam_impro_criteria_id:"",
@@ -131,6 +133,7 @@ export class EiTipoEditComponent implements OnInit {
               label:[p["label"]],
               exam_impro_parameter_id:[p["exam_impro_parameter_id"]],
               idx:[p["idx"]],
+              description:[p["description"]],
               exam_impro_criteria:new FormArray([])
             })
             parameter_arr.push(g)
@@ -176,6 +179,7 @@ export class EiTipoEditComponent implements OnInit {
           label:[p["label"]],
           exam_impro_type_id:[p["exam_impro_type_id"]],
           idx:[p["idx"]],
+          description:[p["description"]],
           exam_impro_criteria:new FormArray([]),
         })
         parameters_array.push(g)  
@@ -197,7 +201,8 @@ export class EiTipoEditComponent implements OnInit {
         label:"Criterio_" + (criteria_array.length + 1),
         exam_impro_parameter_id:parameter.controls["id"].value,
         initially_selected:true,
-        idx:criteria_array.controls.length 
+        idx:criteria_array.controls.length,
+        description:"" 
       }
     }
 
@@ -213,6 +218,7 @@ export class EiTipoEditComponent implements OnInit {
           exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
           initially_selected:[c["initially_selected"]],
           idx:[criteria_array.length],
+          description:[""],
           exam_impro_question:new FormArray([])
         })
         criteria_array.push(g)
@@ -235,6 +241,7 @@ export class EiTipoEditComponent implements OnInit {
         exam_impro_parameter_id:parameter.controls["id"].value,
         initially_selected:true,
         idx:criteria_array.controls.length,
+        description:c.controls.description.value,
         exam_impro_question:[] 
       }
     }
@@ -264,6 +271,7 @@ export class EiTipoEditComponent implements OnInit {
           exam_impro_ap_parameter_id:[c["exam_impro_parameter_id"]],
           initially_selected:[c["initially_selected"]],
           idx:[c["idx"]],
+          description:[c["description"]],
           exam_impro_question:new FormArray([])
         })
         criteria_array.push(g)
@@ -368,7 +376,7 @@ export class EiTipoEditComponent implements OnInit {
         this.submitting = false; 
       },
       error => {
-        alert( "paramtero no pudo ser borrado" )
+        alert( "paramtero no pudo ser borrado:"  + error)
         this.submitting = false; 
       }
     )
@@ -472,6 +480,7 @@ export class EiTipoEditComponent implements OnInit {
         exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
         initially_selected:[c["initially_selected"]],
         idx:[c["idx"]],
+        description:[c["description"]],
         exam_impro_question:new FormArray([])
       })
       criteria_array.push(g)
@@ -525,6 +534,7 @@ export class EiTipoEditComponent implements OnInit {
     var exam_impro_parameter_req = {
       exam_impro_parameter:{
         label:exam_impro_parameter.controls["label"].value,
+        description:exam_impro_parameter.controls["description"].value,
         where:{
           id:exam_impro_parameter.controls["id"].value
         }
@@ -542,11 +552,14 @@ export class EiTipoEditComponent implements OnInit {
       }
     )
   }
+
+
   onChangeCriteria(exam_impro_criteria){
     console.log("exam_impro_criteria")
     var exam_impro_criteria_req = {
       exam_impro_criteria:{
         label:exam_impro_criteria.controls["label"].value,
+        description:exam_impro_criteria.controls["description"].value,
         initially_selected:exam_impro_criteria.controls["initially_selected"].value,
         where:{
           id:exam_impro_criteria.controls["id"].value
@@ -565,6 +578,8 @@ export class EiTipoEditComponent implements OnInit {
       }
     )
   }
+
+  
   onChangeQuestion(exam_impro_question){
     console.log("exam_impro_question")
     var exam_impro_question_req = {

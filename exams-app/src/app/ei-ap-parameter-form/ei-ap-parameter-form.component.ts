@@ -48,6 +48,7 @@ export class EiApParameterFormComponent implements OnInit {
   materia =""
   parametro=""
   tipo=""
+  parametro_descripcion=""
 
   exam_impro_ap_criteria = new FormArray([
     this.fb.group({
@@ -74,6 +75,7 @@ export class EiApParameterFormComponent implements OnInit {
             id:"",
             label:"",
             idx:"",
+            description:"",
             exam_impro_question:[{
               id:"",
               label:"",
@@ -97,6 +99,7 @@ export class EiApParameterFormComponent implements OnInit {
         exam_impro_parameter:{
           id:"",
           label:"",
+          description:"",
           exam_impro_type:{
             label:""
           }
@@ -127,6 +130,7 @@ export class EiApParameterFormComponent implements OnInit {
       this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
       this.materia =  result["exam_impro_ap"]["materia"]
       this.parametro = result["exam_impro_parameter"]["label"]
+      this.parametro_descripcion = result["exam_impro_parameter"]["description"]
       this.tipo = result["exam_impro_parameter"]["exam_impro_type"]["label"]
 
 
@@ -136,6 +140,7 @@ export class EiApParameterFormComponent implements OnInit {
         var exam_impro_ap_criteria_id = ap_criteria.id
         var cg:FormGroup = this.fb.group({
           id:[exam_impro_ap_criteria_id],
+          description:[ap_criteria["exam_impro_criteria"]["description"]],
           exam_impro_app_questions: new FormArray([])
         })        
 
@@ -289,6 +294,13 @@ export class EiApParameterFormComponent implements OnInit {
       data: { description: description}
     });    
   }
+
+  showText(str){
+    const dialogRef = this.dialog.open(DescriptionDialog, {
+      width: '250px',
+      data: { description: str}
+    });    
+  }  
 
   formatLabel(value: number) {
     return value*100 + "%";

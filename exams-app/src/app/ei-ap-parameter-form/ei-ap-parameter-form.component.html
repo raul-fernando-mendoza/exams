@@ -3,7 +3,7 @@
 <span>estudiante: {{estudianteNombre}}</span>
 <span>Maestra: {{maestraNombre}}</span>
 <span>Materia: {{materia}}</span>
-<span>Parametro:{{parametro}}</span>
+<span class="description" (click)="showText(parametro_descripcion)">Parametro:{{parametro}}</span>
 <span>tipo:{{tipo}}</span>
 </div>
 
@@ -12,7 +12,7 @@
        <!--         <mat-toolbar > -->
         <mat-toolbar>
             <span class="example-spacer"></span>
-            <span> {{ getCriteriaLabel( c.controls.id.value ) }}</span>
+            <span (click)="showText(c.controls.description.value)"> {{ getCriteriaLabel( c.controls.id.value ) }}</span>
             <span class="example-spacer"></span>
         </mat-toolbar>
         <!--          </mat-toolbar> -->

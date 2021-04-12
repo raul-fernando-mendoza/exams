@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
-import { EiApplicationTableDataSource, EiApplicationTableItem } from './ei-application-table-datasource';
+import { EiApplicationTableDataSource, EiApplicationTableItem } from './ei-tipo-list-datasource';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
@@ -12,11 +12,11 @@ var exam_types: EiApplicationTableItem[] = [];
 
 
 @Component({
-  selector: 'app-ei-application-table',
-  templateUrl: './ei-application-table.component.html',
-  styleUrls: ['./ei-application-table.component.css']
+  selector: 'app-ei-tipo-list',
+  templateUrl: './ei-tipo-list.component.html',
+  styleUrls: ['./ei-tipo-list.component.css']
 })
-export class EiApplicationTableComponent implements AfterViewInit, OnInit {
+export class EiTipoListComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<EiApplicationTableItem>;

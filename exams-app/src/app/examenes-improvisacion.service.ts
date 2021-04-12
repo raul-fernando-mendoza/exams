@@ -34,9 +34,5 @@ export class ExamenesImprovisacionService {
 
     return  this.http.post(url, request_data, {headers: myheaders});
   }
-  
-
-
-
 
 }

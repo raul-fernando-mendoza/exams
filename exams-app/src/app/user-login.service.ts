@@ -62,7 +62,7 @@ export class UserLoginService {
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        alert("error sending the confirmation email:" + errorCode + " " + error.message)
+        alert("error sending the confirmation email:" + errorCode + " " + errorMessage)
       });
 
       this.LoginEvent(null)

@@ -20,7 +20,6 @@ import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-paramet
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
-import { ExpansionTestComponent } from './expansion-test/expansion-test.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component';
@@ -45,7 +44,6 @@ const routes: Routes = [
   { path: 'eiReporte', component: EiApReporteComponent },
   { path: 'ExamenesImprovisacion', component: EiTabHolderComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
-  { path: 'expansion', component: ExpansionTestComponent },
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
   { path: 'home', component: WelcomeComponent },

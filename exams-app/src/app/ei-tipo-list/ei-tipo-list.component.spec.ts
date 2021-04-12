@@ -4,15 +4,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 
-import { ExamenesPendientesComponent } from './examenes-pendientes.component';
+import { EiTipoListComponent } from './ei-tipo-list.component';
 
-describe('ExamenesPendientesComponent', () => {
-  let component: ExamenesPendientesComponent;
-  let fixture: ComponentFixture<ExamenesPendientesComponent>;
+describe('EiTipoListComponent', () => {
+  let component: EiTipoListComponent;
+  let fixture: ComponentFixture<EiTipoListComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExamenesPendientesComponent ],
+      declarations: [ EiTipoListComponent ],
       imports: [
         NoopAnimationsModule,
         MatPaginatorModule,
@@ -23,7 +23,7 @@ describe('ExamenesPendientesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExamenesPendientesComponent);
+    fixture = TestBed.createComponent(EiTipoListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

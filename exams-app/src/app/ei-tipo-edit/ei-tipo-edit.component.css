@@ -12,7 +12,8 @@
 .mat-toolbar div{ width:100%; }
 
 .textcontainer{
-  width:100%
+  width:100%;
+  margin:5px;
 }
 
 .mat-dialog-actions {
