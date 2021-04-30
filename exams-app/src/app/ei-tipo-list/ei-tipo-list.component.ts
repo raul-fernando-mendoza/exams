@@ -47,21 +47,25 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
         label:""
       }]
     }
-    var token = this.userLoginService.getUserIdToken() 
+    this.userLoginService.getUserIdToken().then( token => {
 
-    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe( data =>{
-      var result = data["result"] //exam_types.push( {id:t["id"],name:t["label"]} )
-      exam_types = []
-      result.forEach(t => {
-        exam_types.push( {id:t["id"],name:t["label"]} ) 
+      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe( data =>{
+        var result = data["result"] //exam_types.push( {id:t["id"],name:t["label"]} )
+        exam_types = []
+        result.forEach(t => {
+          exam_types.push( {id:t["id"],name:t["label"]} ) 
+        })
+        this.dataSource = new EiApplicationTableDataSource(exam_types)
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        this.table.dataSource = this.dataSource;      
+      },
+      error => {
+        alert("Error loading improvisation exam types"+ error.error)
       })
-      this.dataSource = new EiApplicationTableDataSource(exam_types)
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.table.dataSource = this.dataSource;      
     },
     error => {
-      alert("Error loading improvisation exam types"+ error.error)
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })  
 
   }
@@ -80,19 +84,22 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_type_req).subscribe(
-      data => {
-        console.log(" type update has completed")
-        this.submitting = false
-        this.ngAfterViewInit()
-      },
-      error => {
-        alert("error:" + error.error)
-        this.submitting = false
-      }
-    )    
+    this.userLoginService.getUserIdToken().then( token =>{
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_type_req).subscribe(
+        data => {
+          console.log(" type update has completed")
+          this.submitting = false
+          this.ngAfterViewInit()
+        },
+        error => {
+          alert("error:" + error.error)
+          this.submitting = false
+        }
+      )   
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
   borrar(id){
     this.submitting = true
@@ -102,18 +109,21 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_type_req).subscribe(
-      data => {
-        console.log("delete has completed")
-        this.ngAfterViewInit()
-        this.submitting = false
-      },
-      error => {
-        alert("error:" + error.error)
-        this.submitting = false
-      }
-    )    
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_type_req).subscribe(
+        data => {
+          console.log("delete has completed")
+          this.ngAfterViewInit()
+          this.submitting = false
+        },
+        error => {
+          alert("error:" + error.error)
+          this.submitting = false
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })    
   }
 }

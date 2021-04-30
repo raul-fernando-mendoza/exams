@@ -39,7 +39,6 @@ export class EiApParameterFormComponent implements OnInit {
   id = null
   comentario = ""
   calificacion = -1
-  token = ""
   criteria_labels = {}
   question_labels = {}
   question_description = {}
@@ -49,129 +48,171 @@ export class EiApParameterFormComponent implements OnInit {
   parametro=""
   tipo=""
   parametro_descripcion=""
+  elementCount = 0
 
-  exam_impro_ap_criteria = new FormArray([
-    this.fb.group({
-      id:[1],
-      exam_impro_app_questions: new FormArray([
-      ]) 
-    })  
-  ])  
+  exam_impro_ap_parameter = this.fb.group({
+    id: [null, Validators.required],
+    comentario:[null, Validators.required],
+       
+    exam_impro_ap_criteria:new FormArray([])
+  });  
+ 
   
   nvl(val1, val2){
     return (val1!=null)?val1:val2
   }
 
+  getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+    var fa:FormArray =  fg.controls[controlname] as FormArray
+    return fa.controls as FormGroup[]
+  }  
+
   ngOnInit(): void {
 
-    
+    this.exam_impro_ap_parameter.controls.id.setValue( this.id )
     var request = {
       exam_impro_ap_parameter:{
         id:this.id,
-        exam_impro_ap_criteria:[{
-          id:"",
-          selected:true,
-          exam_impro_criteria:{
-            id:"",
-            label:"",
-            idx:"",
-            description:"",
-            exam_impro_question:[{
-              id:"",
-              label:"",
-              description:"",
-              points:""
-            }]
-          }
-        }],
+        comentario:"",
         "maestro:user":{
-          email:"",
-          displayName:""
-        },
+          displayName:"",
+          email:""
+        },        
         exam_impro_ap:{
-          materia:"",
-          fechaApplicacion:"",
-          "estudiante:user":{
-            email:"",
-            displayName:""
-          }
-        },
-        exam_impro_parameter:{
           id:"",
-          label:"",
-          description:"",
+          estudiante_uid:"",
+          materia:"",
+          "estudiante:user":{
+            displayName:"",
+            email:""
+          },
           exam_impro_type:{
             label:""
           }
-        }
+        },      
+        exam_impro_parameter:{
+          label:"",
+          description:""
+        },
+        exam_impro_ap_criteria:[{
+          id:"",
+          exam_impro_criteria:{
+            label:"",
+            description:"",
+            idx:""
+          },
+          exam_impro_ap_question:[{
+            id:"",
+            graded:"",
+            comment:"",
+            exam_impro_question:{
+              label:"",
+              description:"",
+              idx:"",
+              itemized:"",
+            },
+            "exam_impro_ap_observation(+)":[{
+              id:"",
+              complied:"",
+              "exam_impro_observation(+)":{
+                label:"",
+                description:"",
+                idx:""
+              }
+            }]
+          }]
+        }]        
       },
       orderBy:{
-        "exam_impro_parameter.idx":"",
         "exam_impro_criteria.idx":"",
-        "exam_impro_question.idx":""
+        "exam_impro_question.idx":"",
+        "exam_impro_observation.idx":""
       }
     }
 
-    for( let i=0; this.exam_impro_ap_criteria.length; i++){
-      this.exam_impro_ap_criteria.removeAt(i)
+    var exam_impro_ap_criteria:FormArray = this.exam_impro_ap_parameter.controls.exam_impro_ap_criteria as FormArray
+
+    for( let i=0; exam_impro_ap_criteria.length; i++){
+      exam_impro_ap_criteria.removeAt(i)
     }
 
-    var token = this.userLoginService.getUserIdToken()
+    this.userLoginService.getUserIdToken().then( token => {
 
-    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(data => { 
-      for( let i=0; this.exam_impro_ap_criteria.length; i++){
-        this.exam_impro_ap_criteria.removeAt(i)
-      }
-      console.log(data)
+      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(data => { 
+        for( let i=0; exam_impro_ap_criteria.length; i++){
+          exam_impro_ap_criteria.removeAt(i)
+        }
+        console.log(data)
 
-      var result = data["result"]
+        var result = data["result"]
 
-      this.estudianteNombre = this.nvl(result["exam_impro_ap"]["estudiante"]["displayName"] , result["exam_impro_ap"]["estudiante"]["email"] )
-      this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
-      this.materia =  result["exam_impro_ap"]["materia"]
-      this.parametro = result["exam_impro_parameter"]["label"]
-      this.parametro_descripcion = result["exam_impro_parameter"]["description"]
-      this.tipo = result["exam_impro_parameter"]["exam_impro_type"]["label"]
+        this.estudianteNombre = this.nvl(result["exam_impro_ap"]["estudiante"]["displayName"] , result["exam_impro_ap"]["estudiante"]["email"] )
+        this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
+        this.materia =  result["exam_impro_ap"]["materia"]
+        this.parametro = result["exam_impro_parameter"]["label"]
+        this.parametro_descripcion = result["exam_impro_parameter"]["description"]
+        this.tipo = result["exam_impro_ap"]["exam_impro_type"]["label"]
+        
+        this.exam_impro_ap_parameter.controls.comentario = result["comentario"]
 
 
-      let ap_criteria_arr= data["result"]["exam_impro_ap_criteria"]
-      for( let i = 0; i<ap_criteria_arr.length; i++){
-        let ap_criteria = ap_criteria_arr[i]
-        var exam_impro_ap_criteria_id = ap_criteria.id
-        var cg:FormGroup = this.fb.group({
-          id:[exam_impro_ap_criteria_id],
-          description:[ap_criteria["exam_impro_criteria"]["description"]],
-          exam_impro_app_questions: new FormArray([])
-        })        
+        let ap_criteria_arr= data["result"]["exam_impro_ap_criteria"]
+        for( let i = 0; i<ap_criteria_arr.length; i++){
+          let c = ap_criteria_arr[i]
+          this.addCriteria( exam_impro_ap_criteria, c )
 
-        this.exam_impro_ap_criteria.push(cg)
-
-        this.criteria_labels[exam_impro_ap_criteria_id] = ap_criteria.exam_impro_criteria.label
-
-        for( let j=0; j< ap_criteria.exam_impro_criteria.exam_impro_question.length; j++){
-          let question = ap_criteria.exam_impro_criteria.exam_impro_question[j] 
-          var qg:FormGroup = this.fb.group({
-            id:[null],
-            exam_impro_ap_criteria_id:[exam_impro_ap_criteria_id],
-            exam_impro_question_id:[question.id],
-            graded:[question.points]
-          })
-          var qa:FormArray = cg.controls.exam_impro_app_questions as FormArray
-          qa.push(qg)
-
-          this.question_labels[question.id] = question.label
-          this.question_description[question.id] = question.description
         }
 
-      }
-
+      },
+      error => {
+        alert("ERROR al leer:"+ error.message)
+      });
     },
     error => {
-      alert("ERROR al leer:" + error)
-      
-    });   
+      alert("Error en token:" + error.errorCode + " " + error.errorMessage)
+    })
     
   }
+  addCriteria( cq:FormArray, c){
+    var cg:FormGroup = this.fb.group({
+      id:[c["id"]],
+      label:[c["exam_impro_criteria"]["label"]],
+      description:[c["exam_impro_criteria"]["description"]],
+      exam_impro_ap_question: new FormArray([])
+    })        
+    cq.push(cg)   
+    for( let i=0; i<c.exam_impro_ap_question.length; i++) {
+      this.addQuestion(cg.controls.exam_impro_ap_question as FormArray, c.exam_impro_ap_question[i])
+    }
+  }
+
+  addQuestion( qa:FormArray , q){
+    var qg:FormGroup = this.fb.group({
+      id:[q["id"]],
+      label:[q["exam_impro_question"]["label"]],
+      description:[q["exam_impro_question"]["description"]],
+      graded:[q["graded"]],
+      comment:[q["comment"]],
+      itemized:[q["exam_impro_question"]["itemized"]],
+      exam_impro_ap_observation: new FormArray([])
+    })
+    qa.push(qg)
+    this.elementCount++;
+    for( let i=0; i< q.exam_impro_ap_observation.length; i++){
+      this.addObservation(qg.controls.exam_impro_ap_observation as FormArray,  q.exam_impro_ap_observation[i])
+    }
+  }
+
+  addObservation( observation_arr: FormArray, o){
+    var fg:FormGroup = this.fb.group({
+      id:[o["id"]],
+      label:[o["exam_impro_observation"]["label"]],
+      description:[o["exam_impro_observation"]["description"]],
+      complied: [o["complied"]]
+    }) 
+    observation_arr.push(fg)
+    this.elementCount++;
+  } 
   
   getCriteriaLabel(id){
     return this.criteria_labels[id]
@@ -181,38 +222,10 @@ export class EiApParameterFormComponent implements OnInit {
     return this.question_labels[id]
   }
 
+  
+
   submit(){
     this.submitting = true
-    console.log( JSON.stringify(this.exam_impro_ap_criteria.value, null, 2) )
-    var jsonStr = JSON.stringify(this.exam_impro_ap_criteria.value)
-    var data = JSON.parse(jsonStr);
-
-    var exam_impro_questions_request= {
-      "exam_impro_ap_question":[]
-    }
-
-    for( let i=0; i<data.length;i++){
-      var c = data[i]
-      for(let j=0; j< c.exam_impro_app_questions.length; j++){
-        var q = c.exam_impro_app_questions[j]
-        exam_impro_questions_request.exam_impro_ap_question.push(q)
-      }
-    }
-
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_questions_request).subscribe(data => {
-      var result = data["result"]
-      console.log(JSON.stringify(result, null, 2))
-      //close the parameter
-      this.closeParameter()
-    },
-    error => {
-      alert("error creating questions" + error)
-    })
-  }
-
-  closeParameter(){
     var exam_impro_ap_parameter_update_request = {
       exam_impro_ap_parameter:{
         completado:true,
@@ -222,15 +235,27 @@ export class EiApParameterFormComponent implements OnInit {
       }
     }
     
-    var token = this.userLoginService.getUserIdToken() 
+    this.userLoginService.getUserIdToken().then( token => {
 
-    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
-      this.retrieveCalificacion()
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
+        this.retrieveCalificacion()
+        this.submitting = false
+      },
+      error => {
+        alert("error closing parameter"  + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+      }) 
     },
     error => {
-      alert("error closing parameter" + error)
-    })    
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      this.submitting = false
+    })  
   }
+
+  useColapsed(){
+    return (this.elementCount > 40)
+  } 
+
 
   retrieveCalificacion(){
     var exam_impro_calificacion_request = {
@@ -239,21 +264,29 @@ export class EiApParameterFormComponent implements OnInit {
         exam_impro_ap_parameter_id:this.id
       }
     }
-    var token = this.userLoginService.getUserIdToken() 
-    this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_calificacion_request).subscribe(data => {
-      var result = data["result"]
-      this.calificacion = result.calificacion
-      this.openCommentDialog()
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_calificacion_request).subscribe(data => {
+        var result = data["result"]
+        this.calificacion = result.calificacion
+        this.openCommentDialog()
+      },
+      error => {
+        alert("error retrieving calificacion" + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+      })  
     },
     error => {
-      alert("error retrieving calificacion" + error)
-    })    
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      this.submitting = false
+    })
+
   }
 
   openCommentDialog(){
+    let comentario = this.exam_impro_ap_parameter.controls.comentario 
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
-      data: {calificacion:this.calificacion, comentario: ""}
+      data: {calificacion:this.calificacion, comentario: comentario}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -268,6 +301,119 @@ export class EiApParameterFormComponent implements OnInit {
     });
   }
 
+  onChangeObservation(q, o){
+    var request={
+      "exam_impro_ap_observation":{
+        complied:o.controls.complied.value,
+        where:{
+          id:o.controls.id.value
+        }
+      }
+    }
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
+        console.log("observation updated")
+        this.updateQuestionGrade(q)
+      },
+      error => {
+        alert("error updating observation"  + error.errorCode + " " + error.errorMessage)
+      }) 
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })    
+  }
+
+  onChangeQuestion(q){
+    if( q.controls.itemized.value ){
+      var request={
+        "exam_impro_ap_question":{
+          comment:q.controls.comment.value,
+          where:{
+            id:q.controls.id.value
+          }
+        }
+      }
+      this.userLoginService.getUserIdToken().then( token => { 
+        this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
+          console.log("question updated")
+          this.updateQuestionGrade(q)
+        },
+        error => {
+          alert("error question update"  + error.errorCode + " " + error.errorMessage)
+        })    
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      })    
+    }
+    else{
+      var request_graded={
+        "exam_impro_ap_question":{
+          graded:q.controls.graded.value,
+          where:{
+            id:q.controls.id.value
+          }
+        }
+      }
+      this.userLoginService.getUserIdToken().then( token => { 
+        this.examImprovisacionService.chenequeApiInterface("update", token, request_graded).subscribe(data => {
+          console.log("question updated")
+        },
+        error => {
+          alert("error question update"  + error.errorCode + " " + error.errorMessage)
+        })    
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      })          
+
+    }
+  }
+
+  updateQuestionGrade(q){
+
+    let observation_count = q.controls.exam_impro_ap_observation.length;
+    let graded = 1;
+
+    for( let i=0; i<q.controls.exam_impro_ap_observation.length; i++){
+      var o:FormGroup = q.controls.exam_impro_ap_observation.controls[i] as FormGroup
+      if( !o.controls.complied.value ){
+        observation_count--;
+      }
+    }
+
+
+    if( q.controls.comment.value && q.controls.comment.value.length > 0 ){
+      graded = observation_count / (q.controls.exam_impro_ap_observation.length + 1)
+    }
+    else{
+      graded = observation_count / (q.controls.exam_impro_ap_observation.length)
+    }
+
+    var request={
+      exam_impro_ap_question:{
+        graded:graded,
+        where:{
+          id:q.controls.id.value
+        }
+      }
+    } 
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
+        console.log("question graded updated")
+        q.controls.graded.value = graded
+      },
+      error => {
+        alert("error question graded update"  + error.errorCode + " " + error.errorMessage)
+      })    
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })         
+
+  }
+
   addComment(comentario): void{
     var exam_impro_ap_parameter_update_request = {
       exam_impro_ap_parameter:{
@@ -277,21 +423,23 @@ export class EiApParameterFormComponent implements OnInit {
         }
       }
     }
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
-      this.router.navigate(['/ExamenesImprovisacion']);
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
+        this.router.navigate(['/ExamenesImprovisacion']);
+      },
+      error => {
+        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+      })    
     },
     error => {
-      alert("error adicionando comentario" + error)
-    })    
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
 
-  showDescription(id){
-    var description = this.question_description[id]
+  showDescription(desc){
     const dialogRef = this.dialog.open(DescriptionDialog, {
       width: '250px',
-      data: { description: description}
+      data: { description: desc}
     });    
   }
 
@@ -307,7 +455,7 @@ export class EiApParameterFormComponent implements OnInit {
   }  
 
   getformValue(){
-    return JSON.stringify(this.exam_impro_ap_criteria.value)
+    return JSON.stringify(this.exam_impro_ap_parameter.value)
   }  
  
 }

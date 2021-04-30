@@ -21,27 +21,7 @@ export class WelcomeComponent implements OnInit {
   }
 
   emailVerify(): void{
-    /*
-    var userEmail = this.userLoginService.getUserEmail()
-
-    var request = {
-      user:{
-        email:userEmail
-      }
-    }
-
-    var token = this.userLoginService.getUserEmail()
-
-    this.examenesImprovisacionService.chenequeApiInterface("sendEmailVerification",token,request).subscribe(
-      data => {
-        alert("email sent:" + data["result"] )
-      },
-      error => {
-        alert("email was not sent" + error)
-      }
-    )  
-    */
-   this.userLoginService.sendEmailLink()
+    this.userLoginService.sendEmailLink()
   }
   isLoggedIn() : boolean{
     return this.userLoginService.getIsloggedIn()

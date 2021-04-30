@@ -60,10 +60,14 @@
           <mat-icon>more_vert</mat-icon>
         </button>                                    
         <mat-menu #menu="matMenu" >
-            <button mat-raised-button color="primary" (click)="onRemove(row.id)" [disabled]="submitting">
-                <mat-icon>delete</mat-icon>
-                <span>borrar</span>
-            </button> 
+          <button mat-menu-item color="primary" (click)="onRemove(row)" [disabled]="submitting">
+            <mat-icon>delete</mat-icon>
+            <span>borrar</span>
+          </button>
+          <button mat-menu-item color="primary" (click)="onEdit(row.id)" [disabled]="submitting">
+            <mat-icon>edit</mat-icon>
+            <span>Corregir</span>
+          </button>             
         </mat-menu>         
       </td>
     </ng-container>

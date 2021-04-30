@@ -13,6 +13,17 @@
     flex: 1 1 auto;
   }
 
-.description{
+.question{
+    font-size:1.5em;
+    margin-bottom: 1em;
+}
+
+.criteria{
     font-weight: bold;
 }
+
+.padded{
+    margin-left:2em;
+    margin-top:1em;
+}
+

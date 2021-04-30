@@ -7,29 +7,74 @@
 <span>tipo:{{tipo}}</span>
 </div>
 
-<div *ngFor="let c of exam_impro_ap_criteria.controls; let i=index">
-    <div  [formGroup]="c">
-       <!--         <mat-toolbar > -->
+<div *ngIf="useColapsed()">
+    <mat-accordion>
+        <mat-expansion-panel [formGroup]="c" *ngFor="let c of getFormGroupArray(exam_impro_ap_parameter,'exam_impro_ap_criteria'); let i=index" [expanded]="i==0" >
+            <mat-expansion-panel-header> 
+                <mat-panel-title > 
+                    <mat-toolbar>
+                        <span class="example-spacer"></span>
+                        <span class="criteria">{{ c.controls.label.value }}</span>
+                        <span class="example-spacer"></span>
+                    </mat-toolbar>
+                </mat-panel-title>
+            </mat-expansion-panel-header> 
+            <mat-panel-description>
+                {{ c.controls.description.value }}
+            </mat-panel-description> 
+            <mat-panel-content>
+                <div [formGroup]="q" *ngFor="let q of getFormGroupArray(c,'exam_impro_ap_question'); let j=index">
+                    <div *ngIf="q.controls.itemized.value" >
+                        <div (click)="showText(q.controls.description.value)" class="question">{{ q.controls.label.value }} <mat-icon *ngIf="q.controls.graded.value < 1">close</mat-icon></div>
+                        <div *ngIf="q.controls.itemized.value">
+                            <div [formGroup]="o" *ngFor="let o of getFormGroupArray(q,'exam_impro_ap_observation'); let oi=index">
+                                <span class="description" (click)="showText(o.controls.description.value)">{{ o.controls.label.value }}</span><mat-checkbox formControlName="complied" (change)="onChangeObservation(q, o)"></mat-checkbox>
+                            </div> 
+                            
+                            <mat-form-field appearance="legacy">
+                                <mat-label>Otro</mat-label>
+                                <input matInput placeholder="Escriba lo que debe ocurrir" maxlength="200" formControlName="comment" (change)="onChangeQuestion(q)">
+                            </mat-form-field>                    
+                        </div>              
+                    </div>
+                    <div class="padded" *ngIf="!q.controls.itemized.value">
+                        <div class="question" (click)="showText(q.controls.description.value)">{{ q.controls.label.value }} </div>
+                        <app-star-slider formControlName="graded" (click)="onChangeQuestion(q)"></app-star-slider>
+                    </div>
+                </div> 
+            </mat-panel-content> 
+        </mat-expansion-panel>
+
+    </mat-accordion>
+</div>
+<div *ngIf="!useColapsed()">
+    <div [formGroup]="c" *ngFor="let c of getFormGroupArray(exam_impro_ap_parameter,'exam_impro_ap_criteria'); let i=index" >
         <mat-toolbar>
             <span class="example-spacer"></span>
-            <span (click)="showText(c.controls.description.value)"> {{ getCriteriaLabel( c.controls.id.value ) }}</span>
+            <span class="criteria" (click)="showText(c.controls.description.value)">{{ c.controls.label.value }}</span>
             <span class="example-spacer"></span>
         </mat-toolbar>
-        <!--          </mat-toolbar> -->
-        <div *ngFor="let q of c.controls.exam_impro_app_questions.controls; let j=index">
-            <div [formGroup]="q">
-                <!-- id:{{ q.controls.id.value }} -->
-                <!-- exam_impro_ap_criteria_id: {{ q.controls.exam_impro_ap_criteria_id.value }} -->
-                <button mat-button (click)="showDescription(q.controls.exam_impro_question_id.value)"><div class="aspecto">{{ getQuestionLabel( q.controls.exam_impro_question_id.value ) }}</div></button>
+        <div [formGroup]="q" *ngFor="let q of getFormGroupArray(c,'exam_impro_ap_question'); let j=index">
+            <div *ngIf="q.controls.itemized.value" >
+                <div (click)="showText(q.controls.description.value)" class="question">{{ q.controls.label.value }}<mat-icon *ngIf="q.controls.graded.value < 1">close</mat-icon></div>
+                <div *ngIf="q.controls.itemized.value">
+                    <div [formGroup]="o" *ngFor="let o of getFormGroupArray(q,'exam_impro_ap_observation'); let oi=index">
+                        <span class="description" (click)="showText(o.controls.description.value)">{{ o.controls.label.value }}</span><mat-checkbox formControlName="complied" (change)="onChangeObservation(q, o)"></mat-checkbox>
+                    </div> 
                     
-                <!--<mat-slider thumbLabel [displayWith]="formatLabel" min="0.6" max="1" step="0.05" tickInterval="1" formControlName="graded" ></mat-slider>-->
-
-                <app-star-slider formControlName="graded"></app-star-slider>
-               
+                    <mat-form-field appearance="legacy">
+                        <mat-label>Otro</mat-label>
+                        <input matInput placeholder="Escriba lo que debe ocurrir" maxlength="200" formControlName="comment" (change)="onChangeQuestion(q)">
+                    </mat-form-field>                    
+                </div>              
             </div>
-        </div>  
-    </div> 
-</div>   
+            <div class="padded" *ngIf="!q.controls.itemized.value">
+                <div class="question" (click)="showText(q.controls.description.value)">{{ q.controls.label.value }} </div>
+                <app-star-slider formControlName="graded" (click)="onChangeQuestion(q)"></app-star-slider>
+            </div>
+        </div> 
+    </div>
+</div>
 <button mat-raised-button color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
 
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EmailValidator, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
 
@@ -16,13 +17,32 @@ export class UsersListComponent implements OnInit {
 
   constructor(private examImprovisacionService: ExamenesImprovisacionService
     , private userLoginService: UserLoginService
-    , private fb: FormBuilder) { 
+    , private fb: FormBuilder
+    , private router: Router) { 
 
   }
 
 
   ngOnInit(): void {
 
+
+    this.userLoginService.getUserIdToken().then( 
+      token =>{
+        this.reloadUserList(token)
+        this.reloadRolesList(token)
+      },
+      err => {
+        if( err.status == 401 ){
+          this.router.navigate(['/loginForm']);
+        }
+        else{
+          alert("ERROR al leer lista de improvisacion:" + err.error)
+        }      
+      }
+    )
+  }
+
+  reloadUserList(token){
     var request = {
       user:[{
         uid:"",
@@ -33,7 +53,7 @@ export class UsersListComponent implements OnInit {
         "user.email":""
       }
     }
-    var token = this.userLoginService.getUserIdToken()
+
     this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
       data => {
         var users = data["result"]
@@ -45,14 +65,16 @@ export class UsersListComponent implements OnInit {
             roles: new FormArray([])
           })
           this.users_formarray.push(user_group)
-          this.loadUserRoles(user, user_group.controls.roles as FormArray)
+          this.loadUserRoles(token, user, user_group.controls.roles as FormArray)
         }
       },
       error => {
         alert("error retriving the users:" + error.error)
       }
     );
+  }
 
+  reloadRolesList(token){
     var request_roles = {
       role:[{
         id:""
@@ -68,9 +90,9 @@ export class UsersListComponent implements OnInit {
       }
     );
 
-  }
+  }  
 
-  reloadUsers(){
+  reloadUsers(token){
     this.users_formarray.clear()
     var request = {
       user:[{
@@ -82,7 +104,6 @@ export class UsersListComponent implements OnInit {
         "user.email":""
       }
     }
-    var token = this.userLoginService.getUserIdToken()
     this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
       data => {
         var users = data["result"]
@@ -94,7 +115,7 @@ export class UsersListComponent implements OnInit {
             roles: new FormArray([])
           })
           this.users_formarray.push(user_group)
-          this.loadUserRoles(user, user_group.controls.roles as FormArray)
+          this.loadUserRoles(token, user, user_group.controls.roles as FormArray)
         }
       },
       error => {
@@ -104,13 +125,12 @@ export class UsersListComponent implements OnInit {
   }
 
 
-  loadUserRoles(user, roles_formarray:FormArray){
+  loadUserRoles(token, user, roles_formarray:FormArray){
     var request_roles = {
       user:{
         "email":user.email
       }
     }
-    var token = this.userLoginService.getUserIdToken()
     this.examImprovisacionService.chenequeApiInterface("getClaims", token, request_roles).subscribe(
       data => {
         user["roles"] = []
@@ -127,6 +147,7 @@ export class UsersListComponent implements OnInit {
       }
     );  
   }
+
   addRole(user:FormGroup, role_id:string){
 
     var roles_fa = user.controls.roles as FormArray
@@ -144,20 +165,24 @@ export class UsersListComponent implements OnInit {
         role:role_id
       }
     }
-    var token = this.userLoginService.getUserIdToken()
-    this.examImprovisacionService.chenequeApiInterface("addClaim", token, reques_addroles).subscribe(
-      data => {
-        var role_fg:FormGroup = this.fb.group({
-          id:[role_id]
-        }) 
-        roles_fa.push(role_fg)
-      },
-      error => {
-        alert("error retriving the users:" + error.error)
-      }
-    );    
-
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("addClaim", token, reques_addroles).subscribe(
+        data => {
+          var role_fg:FormGroup = this.fb.group({
+            id:[role_id]
+          }) 
+          roles_fa.push(role_fg)
+        },
+        error => {
+          alert("error retriving the users:" + error.errorCode + " " + error.errorMessage)
+        }
+      ); 
+    },
+    error =>{
+      alert("token error:" + error.errorCode + " " + error.errorMessage)
+    })
   }
+  
   delRole(user:FormGroup, role:string){
     var reques_delroles = {
       user:{
@@ -165,23 +190,27 @@ export class UsersListComponent implements OnInit {
         role:role
       }
     }
-    var token = this.userLoginService.getUserIdToken()
-    this.examImprovisacionService.chenequeApiInterface("removeClaim", token, reques_delroles).subscribe(
-      data => {
-       var roles_fa: FormArray = user.controls.roles as FormArray
-       for( let i =0 ; i< roles_fa.controls.length; i++){
-        var role_fg:FormGroup = roles_fa.controls[i] as FormGroup
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("removeClaim", token, reques_delroles).subscribe(
+        data => {
+        var roles_fa: FormArray = user.controls.roles as FormArray
+        for( let i =0 ; i< roles_fa.controls.length; i++){
+          var role_fg:FormGroup = roles_fa.controls[i] as FormGroup
 
-        if(  role_fg.controls.id.value == role){
-          roles_fa.removeAt(i)
+          if(  role_fg.controls.id.value == role){
+            roles_fa.removeAt(i)
+          }
         }
-       }
-       
-      },
-      error => {
-        alert("error retriving the users:" + error.error)
-      }
-    );   
+        
+        },
+        error => {
+          alert("error retriving the users:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("token error:" + error.errorCode + " " + error.errorMessage)
+    })  
   }
 
   onChangeUsenDisplayName(user){
@@ -194,15 +223,19 @@ export class UsersListComponent implements OnInit {
       }
 
     }
-    var token = this.userLoginService.getUserIdToken()
-    this.examImprovisacionService.chenequeApiInterface("update", token, reques_updateDisplayName).subscribe(
-      data => {
-        console.log("displayName changed")
-      },
-      error => {
-        alert("error changing user name:" + error.error)
-      }
-    );      
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("update", token, reques_updateDisplayName).subscribe(
+        data => {
+          console.log("displayName changed")
+        },
+        error => {
+          alert("error changing user name:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("token error:" + error.errorCode + " " + error.errorMessage)
+    })
   }
   deleteUser(userEmail){
 
@@ -216,16 +249,20 @@ export class UsersListComponent implements OnInit {
       }
 
     }
-    var token = this.userLoginService.getUserIdToken()
-    this.examImprovisacionService.chenequeApiInterface("removeUser", token, request).subscribe(
-      data => {
-        console.log("user removed")
-        this.reloadUsers()
-      },
-      error => {
-        alert("error changing user name:" + error.error)
-      }
-    );      
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("removeUser", token, request).subscribe(
+        data => {
+          console.log("user removed")
+          this.reloadUsers(token)
+        },
+        error => {
+          alert("error changing user name:" + error.error)
+        }
+      )  
+    },
+    error => {
+      alert("token error:" + error.errorCode + " " + error.errorMessage)
+    })    
   }
 
 }

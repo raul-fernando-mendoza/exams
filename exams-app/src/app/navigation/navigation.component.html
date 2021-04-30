@@ -4,14 +4,13 @@
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-
-
     <mat-toolbar>
 
     </mat-toolbar>
     <mat-nav-list>
-      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() " mat-list-item routerLink="/ExamenesImprovisacion">Examenes Improvisacion</a>
+      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() " mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
+
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -24,8 +23,7 @@
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">RaxAcademy.com</a>
-      <a class="version" routerLink="/home">ver 1.1.3</a>
+      <a class="main_link" routerLink="/home">RaxAcademy.com TOTH ver 1.2.2</a>
       <span class="example-spacer"></span>
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Login

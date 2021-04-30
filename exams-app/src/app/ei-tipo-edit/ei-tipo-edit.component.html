@@ -47,7 +47,7 @@
             <mat-card-content>
                 <mat-accordion  cdkDropList (cdkDropListDropped)="drop($event)" multi="false"> 
                     <mat-expansion-panel [cdkDragData]="p" [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'exam_impro_criteria'); let j=index" cdkDrag >
-                        <mat-expansion-panel-header> 
+                        <mat-expansion-panel-header > 
                             <mat-panel-title>
                                 <div class="example-handle" cdkDragHandle>
                                     <mat-icon>open_with</mat-icon>
@@ -72,7 +72,7 @@
                                     cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeCriteria(c)"></textarea>
                                 </mat-form-field> 
                             </div>
-                            <mat-checkbox formControlName="selected"  formControlName="initially_selected" (change)="onChangeCriteria(c)"></mat-checkbox>
+                            <mat-checkbox formControlName="initially_selected" (change)="onChangeCriteria(c)"></mat-checkbox>
                             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                                 <mat-icon>more_vert</mat-icon>
                             </button>                                    
@@ -92,13 +92,14 @@
                                 <mat-grid-list cols="9" rowHeight="7em" [formGroup]="q">
                                     
                                     <mat-grid-tile colspan="3" >
+                                        <mat-icon>star_rate</mat-icon>
                                         <mat-form-field appearance="legacy">
                                             <mat-label>aspecto</mat-label>
                                             <input matInput placeholder="Escriba lo que debe ocurrir" formControlName="label" (change)="onChangeQuestion(q)">
                                         </mat-form-field>  
                                     </mat-grid-tile> 
                                     
-                                    <mat-grid-tile colspan="5" >
+                                    <mat-grid-tile colspan="4" >
                                         <div class="textcontainer" (keydown.Space)="$event.stopPropagation()">
                                             <mat-form-field appearance="legacy">
                                                 <mat-label>descripcion</mat-label>
@@ -110,14 +111,10 @@
                                             </mat-form-field> 
                                         </div>
                                     </mat-grid-tile>  
-                         <!--
+
                                     <mat-grid-tile colspan="1" >
-                                        <mat-form-field appearance="legacy">
-                                            <mat-label>puntos</mat-label> 
-                                            <input matInput placeholder="points" formControlName="points" (change)="onChangeQuestion(q)">
-                                        </mat-form-field> 
+                                    <mat-checkbox formControlName="itemized" (change)="onChangeQuestion(q)"></mat-checkbox>
                                     </mat-grid-tile>
-                        -->                                                                                  
                                     <mat-grid-tile colspan="1" >
                                         <button mat-icon-button [matMenuTriggerFor]="questionMenu" aria-label="Menu Aspectos">
                                             <mat-icon>more_vert</mat-icon>
@@ -139,12 +136,68 @@
                                     </mat-grid-tile> 
                                                                                                           
                                 </mat-grid-list>
+
+                                <!-- OBSERVATIONS START -->  
+                                <mat-card *ngIf="q.controls.itemized.value">
+                                    <div  *ngFor="let o of getFormGroupArray(q,'exam_impro_observation'); let oi=index">
+                                        <mat-grid-list cols="9" rowHeight="7em" [formGroup]="o">
+                                            <mat-grid-tile colspan="3" >
+                                                <mat-icon>remove_red_eye</mat-icon>
+                                                <mat-form-field appearance="legacy">
+                                                    <mat-label>observation</mat-label>
+                                                    <input matInput placeholder="Escriba lo que debe ocurrir" formControlName="label" (change)="onChangeObservation(o)">
+                                                </mat-form-field>  
+                                            </mat-grid-tile> 
+                                            
+                                            <mat-grid-tile colspan="5" >
+                                                <div class="textcontainer" (keydown.Space)="$event.stopPropagation()">
+                                                    <mat-form-field appearance="legacy">
+                                                        <mat-label>descripcion</mat-label>
+                                                        <textarea matInput
+                                                        cdkTextareaAutosize
+                                                        #autosize="cdkTextareaAutosize"
+                                                        cdkAutosizeMinRows="1"
+                                                        cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeObservation(o)"></textarea>
+                                                    </mat-form-field> 
+                                                </div>
+                                            </mat-grid-tile>  
+        
+                                            <mat-grid-tile colspan="1" >
+                                                <button mat-icon-button [matMenuTriggerFor]="observationMenu" aria-label="Menu Observation">
+                                                    <mat-icon>more_vert</mat-icon>
+                                                </button>                                    
+                                                <mat-menu #observationMenu="matMenu" >
+                                                    <button mat-menu-item  (click)="delObservation(q, o)" [disabled]="submitting">
+                                                        <mat-icon>delete</mat-icon>
+                                                        <span>borrar</span>
+                                                    </button> 
+                                                    <button mat-menu-item  (click)="upObservation(q, o)" [disabled]="submitting">
+                                                        <mat-icon>arrow_circle_up</mat-icon>
+                                                        <span>mover arriba</span>
+                                                    </button> 
+                                                    <button mat-menu-item color="primary" (click)="downObservation(q, o)" [disabled]="submitting">
+                                                        <mat-icon>arrow_circle_down</mat-icon>
+                                                        <span>mover abajo</span>
+                                                    </button>                                             
+                                                </mat-menu> 
+                                            </mat-grid-tile> 
+                                                                                                                
+                                        </mat-grid-list>
+                                        
+                                    </div> 
+                                    <mat-toolbar >
+                                        <span class="example-spacer"></span> 
+                                        <button mat-raised-button color="warn" (click)="newObservation(q)" [disabled]="submitting"  >Add Observation</button> 
+                                        <span class="example-spacer"></span> 
+                                    </mat-toolbar>                                 
+                                </mat-card>    
+                                <!-- OBSERVATIONS END-->
                                 
                             </div> 
                             
                             <mat-toolbar>
                                 <span class="example-spacer"></span> 
-                                <button mat-raised-button (click)="newQuestion(c)" [disabled]="submitting"><mat-icon>library_add</mat-icon></button> 
+                                <button mat-raised-button (click)="newQuestion(c)" [disabled]="submitting">Add Aspecto</button> 
                             </mat-toolbar>
                            
                         </mat-card>

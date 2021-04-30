@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { UserLoginService } from './user-login.service';
-
-
-
 
 
 @Injectable({
@@ -18,6 +14,7 @@ export class ExamenesImprovisacionService {
 
   }
   
+  
   public chenequeApiInterface(action, token, data): Observable<Object> {
 
     var url = this.apiURL 
@@ -29,6 +26,8 @@ export class ExamenesImprovisacionService {
       "token":token,
       "data":data
     }
+
+
    
     var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 

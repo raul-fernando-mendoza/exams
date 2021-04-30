@@ -1,9 +1,6 @@
-<form [formGroup]="exam_impro_ap_FormGroup" novalidate (ngSubmit)="onSubmit()">
+<form [formGroup]="exam_impro_ap" novalidate (ngSubmit)="onSubmit()">
 
-  <mat-card class="shipping-card" >
-    <mat-card-header>
-      <mat-card-title>Crear Examen Improvisacion id:{{ exam_impro_ap_FormGroup.controls.id.value }} </mat-card-title>
-    </mat-card-header> 
+  <mat-card >
     <mat-card-content > 
       <mat-grid-list cols="4" rowHeight="4em">
         <mat-grid-tile>
@@ -42,10 +39,9 @@
         </mat-grid-tile>          
       </mat-grid-list>
 
-
-      <div *ngFor="let p of get_exam_impro_ap_parameter; let i=index">
+      <div *ngFor="let p of getFormGroupArray(exam_impro_ap,'exam_impro_parameter'); let i=index">
         <div [formGroup]="p">
-           <!--   id: {{ p.controls.id.value }} -->
+             id: {{ p.controls.id.value }} 
               {{ getExamImproLabel( p.controls.exam_impro_parameter_id.value ) }}
               <mat-form-field appearance="fill" >
                 <mat-label>selecciona maestro</mat-label>
@@ -56,14 +52,14 @@
                 </mat-select>
               </mat-form-field>
               
-              <div *ngFor="let criteria of getCriteriaFormGroups(p)" >
-                <div  [formGroup]="criteria">
-                  id:{{  criteria.controls.id.value }}
-                  {{ getCriteria( criteria.controls.exam_impro_criteria_id.value ) }}
-                  <mat-checkbox formControlName="selected"></mat-checkbox>
+              <div *ngFor="let c of getFormGroupArray(p,'exam_impro_criteria'); let ci=index" >
+                <div  [formGroup]="c">
+                  id:{{  c.controls.id.value }}
+                  {{ getCriteria( c.controls.exam_impro_criteria_id.value ) }}
+                  <mat-checkbox formControlName="initially_selected"></mat-checkbox>
                 </div>
-              </div>  
-        </div>        
+              </div>              
+        </div>   
       </div>
      
     </mat-card-content>  
@@ -72,6 +68,6 @@
     </mat-card-actions> 
   </mat-card>  
     
- <!--  {{ getformValue() }} -->
+   <!-- {{ getformValue() }} -->
 
 </form>

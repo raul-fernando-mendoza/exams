@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import firebase from 'firebase/app';
 import "firebase/auth";
-import { ExamenesImprovisacionService } from './examenes-improvisacion.service';
 import { Router } from '@angular/router';
+import { ERROR_COMPONENT_TYPE } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,6 @@ export class UserLoginService {
 
 
   constructor(private http: HttpClient 
-    ,private examenesImprovisacionService:ExamenesImprovisacionService
     ,private router: Router) { 
     this.loginSubject = new Subject<boolean>();
 
@@ -83,7 +82,7 @@ export class UserLoginService {
       this.login(userCredentials)
     })
     .catch( error =>{
-      alert("Error in loging:" + error)
+      alert("Error in loging:" + error.errorCode + " " + error.errorMessage)
     })
      
 
@@ -179,8 +178,15 @@ export class UserLoginService {
   getDisplayName(){
     return (this.user)?this.user.displayName:null
   }
-  getUserIdToken(){
-    return this.user_idtoken
+  getUserIdToken():Promise<String> {
+    /*
+    if( ! firebase.auth().currentUser ){
+        return new Promise<String>((resolve, reject) => {
+                resolve(this.user_idtoken);
+        });
+    }
+    */
+    return firebase.auth().currentUser.getIdToken()
   } 
   getIsloggedIn(){
     return (this.user)?true:false

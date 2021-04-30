@@ -4,8 +4,11 @@
   <p>Puedes adicionar un comentario si lo deseas:</p>
   <mat-form-field>
     <mat-label>comentario opcional</mat-label>
-    <input matInput [(ngModel)]="data.comentario">
+    <input matInput maxlength="200" [(ngModel)]="data.comentario">
   </mat-form-field>
+  <div>
+  {{ data.comentario.length }} caracteres de 200
+</div>
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]=data.comentario cdkFocusInitial>Ok</button>

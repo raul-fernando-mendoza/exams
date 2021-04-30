@@ -20,33 +20,7 @@ export class EiTipoEditComponent implements OnInit {
   exam_impro_type = this.fb.group({
     id: [null, Validators.required],
     label:["nombre tipo de examen", Validators.required],   
-    exam_impro_parameter: new FormArray([
-      /*
-      this.fb.group({
-        id: [null, Validators.required],
-        exam_impro_type_id:[1, Validators.required],
-        label:["nombre del parametro", Validators.required],
-        exam_impro_criteria: new FormArray([
-          this.fb.group({
-            id:[null],
-            label:["nombre del criterio",Validators.required],
-            exam_impro_parameter_id:[2],
-            initially_selected:[false],
-            idx:[0],
-            exam_impro_question:new FormArray([
-              this.fb.group({
-                id:[null,Validators.required],
-                exam_impro_criteria_id:[3,Validators.required],
-                label:["nombre de la pregunta",Validators.required],
-                description:["descripcion de la pregunta",Validators.required],
-                points:[1,Validators.required]
-              })
-            ])
-          })
-        ])         
-      })
-      */
-    ])
+    exam_impro_parameter: new FormArray([])
   });
   
   id;
@@ -102,7 +76,15 @@ export class EiTipoEditComponent implements OnInit {
                 label:"",
                 description:"",
                 points:"",
-                idx:""
+                idx:"",
+                itemized:"",
+                "exam_impro_observation(+)":[{
+                  id:"",
+                  exam_impro_question_id:"",
+                  label:"",
+                  description:"",
+                  idx:""
+                }]
               }]
             }]
           }],
@@ -111,40 +93,36 @@ export class EiTipoEditComponent implements OnInit {
           "exam_impro_type.id":"",
           "exam_impro_parameter.idx":"",
           "exam_impro_criteria.idx":"",
-          "exam_impro_question.idx":""
+          "exam_impro_question.idx":"",
+          "exam_impro_observation.idx":""
         }
       }
-      var token = this.userLoginService.getUserIdToken() 
+      this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
-        data => { 
-          let t = data["result"] as Array<any>;
-          this.exam_impro_type.controls.id.setValue(t["id"])
-          this.exam_impro_type.controls.label.setValue(t["label"])
-          var parameter_arr:FormArray = this.exam_impro_type.controls.exam_impro_parameter as FormArray
+        this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+          data => { 
+            let t = data["result"] as Array<any>;
+            this.exam_impro_type.controls.id.setValue(t["id"])
+            this.exam_impro_type.controls.label.setValue(t["label"])
+            var parameter_arr:FormArray = this.exam_impro_type.controls.exam_impro_parameter as FormArray
 
-          for( let i=parameter_arr.length-1; i>=0; i--){
-            parameter_arr.removeAt(i)
+            for( let i=parameter_arr.length-1; i>=0; i--){
+              parameter_arr.removeAt(i)
+            }
+            for( let i =0; i<t["exam_impro_parameter"].length; i++){
+              var p = t["exam_impro_parameter"][i]
+              this.addParameter(p , parameter_arr)
+            }
+          },     
+          error => {
+            alert("error loading impro type")
+            console.log(JSON.stringify(request))
           }
-          for( let i =0; i<t["exam_impro_parameter"].length; i++){
-            var p = t["exam_impro_parameter"][i]
-            var g = this.fb.group({
-              id:[p["id"]],
-              label:[p["label"]],
-              exam_impro_parameter_id:[p["exam_impro_parameter_id"]],
-              idx:[p["idx"]],
-              description:[p["description"]],
-              exam_impro_criteria:new FormArray([])
-            })
-            parameter_arr.push(g)
-            this.addCriteria( p, g.controls.exam_impro_criteria as FormArray)
-          }
-        },     
-        error => {
-          alert("error loading impro type")
-          console.log(JSON.stringify(request))
-        }
-      )  
+        )
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      }) 
     }
 
     this.exam_impro_type.valueChanges
@@ -157,6 +135,66 @@ export class EiTipoEditComponent implements OnInit {
     
   }
 
+  addParameter( p, parameters: FormArray){
+    var g = this.fb.group({
+      id:[p["id"]],
+      label:[p["label"]],
+      exam_impro_parameter_id:[p["exam_impro_parameter_id"]],
+      idx:[p["idx"]],
+      description:[p["description"]],
+      exam_impro_criteria:new FormArray([])
+    })
+    parameters.push(g) 
+    for( let i =0; p["exam_impro_criteria"] && i<p["exam_impro_criteria"].length; i++){
+      this.addCriteria( p["exam_impro_criteria"][i], g.controls.exam_impro_criteria as FormArray)
+    } 
+  }
+
+  addCriteria( c, criteria_array:FormArray  ){
+      var g = this.fb.group({
+        id:[c["id"]],
+        label:[c["label"]],
+        exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
+        initially_selected:[c["initially_selected"]],
+        idx:[c["idx"]],
+        description:[c["description"]],
+        exam_impro_question:new FormArray([])
+      })
+      criteria_array.push(g)
+      for( let i =0; c["exam_impro_question"] && i<c["exam_impro_question"].length; i++){
+        this.addQuestion( c["exam_impro_question"][i],  g.controls.exam_impro_question as FormArray)
+      }
+  }
+
+  addQuestion( q, question_array:FormArray  ){
+    var g = this.fb.group({
+      id:[q["id"]],
+      label:[q["label"]],
+      exam_impro_criteria_id:[q["exam_impro_criteria_id"]],
+      description:[q["description"]],
+      points:[q["points"]],
+      idx:[q["idx"]],
+      itemized:[q["itemized"]],
+      exam_impro_observation:new FormArray([])
+    })
+    question_array.push(g)
+    for( let i =0;q["exam_impro_observation"] && i<q["exam_impro_observation"].length; i++){
+      this.addObservation( q["exam_impro_observation"][i],  g.controls.exam_impro_observation as FormArray)
+    }    
+  }  
+
+  addObservation( o, observation_array:FormArray  ){
+    var g = this.fb.group({
+      id:[o["id"]],
+      exam_impro_question_id:[o["exam_impro_question_id"]],
+      label:[o["label"]],
+      description:[o["description"]],
+      idx:[o["idx"]]
+    })
+    observation_array.push(g)
+  }   
+
+
   newParameter( tipo:FormGroup  ){
     var parameters_array:FormArray = tipo.controls["exam_impro_parameter"] as FormArray
     var exam_impro_parameter_req = {
@@ -168,28 +206,25 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
     this.submitting = true;
-    var token = this.userLoginService.getUserIdToken() 
+    
+    this.userLoginService.getUserIdToken().then( token => {
 
-    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_parameter_req).subscribe(
-      data => {
-        console.log(" parameter add has completed")
-        var p = data["result"]["exam_impro_parameter"]
-        var g = this.fb.group({
-          id:[p["id"]],
-          label:[p["label"]],
-          exam_impro_type_id:[p["exam_impro_type_id"]],
-          idx:[p["idx"]],
-          description:[p["description"]],
-          exam_impro_criteria:new FormArray([]),
-        })
-        parameters_array.push(g)  
-        this.submitting = false;      
-      },
-      error => {
-        alert("error nuevo parametro:" + error.error)
-        this.submitting = false; 
-      }
-    )
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_parameter_req).subscribe(
+        data => {
+          console.log(" parameter add has completed")
+          var p = data["result"]["exam_impro_parameter"]
+          this.addParameter( p , parameters_array)  
+          this.submitting = false;      
+        },
+        error => {
+          alert("error nuevo parametro:" + error.error)
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
 
   newCriteria( parameter:FormGroup  ){
@@ -206,29 +241,24 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
+    this.userLoginService.getUserIdToken().then( token => {
 
-    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_criteria_req).subscribe(
-      data => {
-        console.log(" criteria add has completed")
-        var c = data["result"]["exam_impro_criteria"]
-        var g = this.fb.group({
-          id:[c["id"]],
-          label:[c["label"]],
-          exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
-          initially_selected:[c["initially_selected"]],
-          idx:[criteria_array.length],
-          description:[""],
-          exam_impro_question:new FormArray([])
-        })
-        criteria_array.push(g)
-        this.submitting = false;         
-      },
-      error => {
-        alert("error nuevo criterio:" + error.error)
-        this.submitting = false; 
-      }
-    )
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_criteria_req).subscribe(
+        data => {
+          console.log(" criteria add has completed")
+          var c = data["result"]["exam_impro_criteria"]
+          this.addCriteria(c, criteria_array)
+          this.submitting = false;         
+        },
+        error => {
+          alert("error nuevo criterio:" + error.error)
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }  
 
   dupCriteria( parameter:FormGroup, c:FormGroup  ){
@@ -254,51 +284,44 @@ export class EiTipoEditComponent implements OnInit {
         label:q.controls["label"].value,
         description:q.controls["description"].value,
         points:q.controls["points"].value,
-        idx:i
+        itemized:q.controls["itemized"].value,
+        idx:i,
+        exam_impro_observation:[]
       }
       request["exam_impro_criteria"]["exam_impro_question"].push(nq)
+
+      if( q.controls.exam_impro_observation ){
+        var observation:FormArray = q.controls.exam_impro_observation as FormArray
+        for( let oi=0; oi<observation.length; oi++){
+          var o:FormGroup= observation.controls[oi] as FormGroup
+          let new_o = {
+            id:null,
+            label:o.controls.label.value,
+            description:o.controls.description.value,
+            idx:oi
+          }
+          nq["exam_impro_observation"].push(new_o)
+        }
+      }
     }    
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("add", token, request).subscribe(
-      data => {
-        console.log(" criteria add has completed")
-        var c = data["result"]["exam_impro_criteria"]
-        var g = this.fb.group({
-          id:[c["id"]],
-          label:[c["label"]],
-          exam_impro_ap_parameter_id:[c["exam_impro_parameter_id"]],
-          initially_selected:[c["initially_selected"]],
-          idx:[c["idx"]],
-          description:[c["description"]],
-          exam_impro_question:new FormArray([])
-        })
-        criteria_array.push(g)
-
-        var q_array:FormArray = g.controls["exam_impro_question"] as FormArray
-
-        var questions = c["exam_impro_question"]
-
-        for( let i=0; i< questions.length; i++){
-          let q = questions[i]
-          var qg = this.fb.group({
-            id:[q["id"]],
-            exam_impro_criteria_id:[q["exam_impro_criteria_id"]],
-            label:[q["label"]],
-            description:[q["description"]],
-            points:[q["points"]],
-            idx:i
-          })
-          q_array.push(qg)
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("add", token, request).subscribe(
+        data => {
+          console.log(" criteria add has completed")
+          var c = data["result"]["exam_impro_criteria"]
+          this.addCriteria(c, criteria_array)
+          this.submitting = false;         
+        },
+        error => {
+          alert("error nuevo criterio:" + error.error)
+          this.submitting = false; 
         }
-        this.submitting = false;         
-      },
-      error => {
-        alert("error nuevo criterio:" + error.error)
-        this.submitting = false; 
-      }
-    )
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }  
 
 
@@ -312,32 +335,28 @@ export class EiTipoEditComponent implements OnInit {
         description:"" ,
         points:1,
         exam_impro_criteria_id:criteria.controls["id"].value,
-        idx:question_array.controls.length
+        idx:question_array.controls.length,
+        itemized:0
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_question_req).subscribe(
-      data => {
-        console.log(" questions add has completed")
-        var q = data["result"]["exam_impro_question"]
-        var g = this.fb.group({
-          id:[q["id"]],
-          label:[q["label"]],
-          description:[q["description"]],
-          points:[q["points"]],
-          exam_impro_criteria_id:[q["exam_impro_criteria_id"]],
-          idx:[q["idx"]]
-        })
-        question_array.push(g) 
-        this.submitting = false;        
-      },
-      error => {
-        alert("error nueva pregunta:" + error.error)
-        this.submitting = false; 
-      }
-    )
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_question_req).subscribe(
+        data => {
+          console.log(" questions add has completed")
+          var q = data["result"]["exam_impro_question"]
+          this.addQuestion(q, question_array)
+          this.submitting = false;        
+        },
+        error => {
+          alert("error nueva pregunta:" + error.error)
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
 
   delParameter(t, p){
@@ -352,39 +371,31 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_parameter_request).subscribe(
-      data => {
-        console.log("question has been erased")
-        var parameter_array:FormArray = t.controls["exam_impro_parameter"] as FormArray
-        for(var i=0; i<parameter_array.length; i++){
-          var tp:FormGroup = parameter_array.controls[i] as FormGroup
-          if( tp.controls["id"].value == p.controls.id.value){
-            parameter_array.removeAt(i)
-            this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i).subscribe(
-              success => {
-
-              },
-              error =>{
-                alert("error reordering parameters")
-              }
-            )
-            break;
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_parameter_request).subscribe(
+        data => {
+          console.log("question has been erased")
+          var parameter_array:FormArray = t.controls["exam_impro_parameter"] as FormArray
+          for(var i=0; i<parameter_array.length; i++){
+            var tp:FormGroup = parameter_array.controls[i] as FormGroup
+            if( tp.controls["id"].value == p.controls.id.value){
+              parameter_array.removeAt(i)
+              this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i)
+              break;
+            }
           }
+          this.submitting = false; 
+        },
+        error => {
+          alert( "paramtero no pudo ser borrado:"  + error)
+          this.submitting = false; 
         }
-        this.submitting = false; 
-      },
-      error => {
-        alert( "paramtero no pudo ser borrado:"  + error)
-        this.submitting = false; 
-      }
-    )
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
-
-
-
-
 
 
   delCriteria(p, c){
@@ -397,37 +408,31 @@ export class EiTipoEditComponent implements OnInit {
         id:c.controls.id.value
       }
     }
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_criteria_request).subscribe(
-      data => {
-        console.log("question has been erased")
-        var criteria_array:FormArray = p.controls["exam_impro_criteria"] as FormArray
-        for(var i=0; i<criteria_array.length; i++){
-          var tc:FormGroup = criteria_array.controls[i] as FormGroup
-          if( tc.controls["id"].value == c.controls.id.value){
-            criteria_array.removeAt(i)
-            this.updateTableIdx("exam_impro_criteria", criteria_array.controls as FormGroup[],i).subscribe(
-              success =>{
-                console.log("reordering criteria complete:" + success)
-              },
-              error => {
-                alert("error reordering criteria")
-              }
-            )
-            break;
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_criteria_request).subscribe(
+        data => {
+          console.log("question has been erased")
+          var criteria_array:FormArray = p.controls["exam_impro_criteria"] as FormArray
+          for(var i=0; i<criteria_array.length; i++){
+            var tc:FormGroup = criteria_array.controls[i] as FormGroup
+            if( tc.controls["id"].value == c.controls.id.value){
+              criteria_array.removeAt(i)
+              this.updateTableIdx("exam_impro_criteria", criteria_array.controls as FormGroup[],i)
+              break;
+            }
           }
+          this.submitting = false; 
+        },
+        error => {
+          alert( "criterio no pudo ser borrado" )
+          this.submitting = false; 
         }
-        this.submitting = false; 
-      },
-      error => {
-        alert( "criterio no pudo ser borrado" )
-        this.submitting = false; 
-      }
-    )
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
-
-
 
   delQuestion(c, q){
     this.submitting = false; 
@@ -436,75 +441,34 @@ export class EiTipoEditComponent implements OnInit {
         id:q.controls.id.value
       }
     }
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_question_request).subscribe(
-      data => {
-        console.log("question has been erased")
-        
-        
-        var question_array:FormArray = c.controls["exam_impro_question"] as FormArray
-        
-        for(var i=0; i<question_array.length; i++){
-          var tq:FormGroup = question_array.controls[i] as FormGroup
-          if( tq.controls["id"].value == q.controls.id.value){
-            question_array.removeAt(i)
-            this.updateTableIdx("exam_impro_question", question_array.controls as FormGroup[], i).subscribe(
-              data => {
-                console.log("update index completed")
-              },
-              error => {
-                alert("error re-ordering questions")
-              }
-            )
-            
-            
-            break;
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_question_request).subscribe(
+        data => {
+          console.log("question has been erased")
+          
+          
+          var question_array:FormArray = c.controls["exam_impro_question"] as FormArray
+          
+          for(var i=0; i<question_array.length; i++){
+            var tq:FormGroup = question_array.controls[i] as FormGroup
+            if( tq.controls["id"].value == q.controls.id.value){
+              question_array.removeAt(i)
+              this.updateTableIdx("exam_impro_question", question_array.controls as FormGroup[], i)
+              break;
+            }
           }
+          this.submitting = false; 
+        },
+        error => {
+          alert( "aspecto no pudo ser borrado" )
+          this.submitting = false; 
         }
-        this.submitting = false; 
-      },
-      error => {
-        alert( "aspecto no pudo ser borrado" )
-        this.submitting = false; 
-      }
-    )
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
-
-  addCriteria( p, criteria_array:FormArray  ){
-    for( let i =0; i<p["exam_impro_criteria"].length; i++){
-      var c = p["exam_impro_criteria"][i]
-      var g = this.fb.group({
-        id:[c["id"]],
-        label:[c["label"]],
-        exam_impro_ap_parameter_id:[c["exam_impro_ap_parameter_id"]],
-        initially_selected:[c["initially_selected"]],
-        idx:[c["idx"]],
-        description:[c["description"]],
-        exam_impro_question:new FormArray([])
-      })
-      criteria_array.push(g)
-      this.addQuestion( c,  g.controls.exam_impro_question as FormArray)
-    }
-
-  }
-
-  addQuestion( c, question_array:FormArray  ){
-    for( let i =0; i<c["exam_impro_question"].length; i++){
-      var q = c["exam_impro_question"][i]
-      var g = this.fb.group({
-        id:[q["id"]],
-        label:[q["label"]],
-        exam_impro_criteria_id:[q["exam_impro_criteria_id"]],
-        description:[q["description"]],
-        points:[q["points"]],
-        idx:[q["idx"]],
-      })
-      question_array.push(g)
-    }
-
-  }  
-
 
   onChangeTipo(exam_impro_type){
     console.log("exam_impro_type")
@@ -517,16 +481,19 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-     
-    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_type_req).subscribe(
-      data => {
-        console.log(" type update has completed")
-      },
-      error => {
-        alert("error:" + error.error)
-      }
-    )
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_type_req).subscribe(
+        data => {
+          console.log(" type update has completed")
+        },
+        error => {
+          alert("error:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
 
   }
   onChangeParameter(exam_impro_parameter){
@@ -541,18 +508,20 @@ export class EiTipoEditComponent implements OnInit {
       }      
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_parameter_req).subscribe(
-      data => {
-        console.log(" parameter update has completed")
-      },
-      error => {
-        alert("error:" + error.error)
-      }
-    )
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_parameter_req).subscribe(
+        data => {
+          console.log(" parameter update has completed")
+        },
+        error => {
+          alert("error:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
-
 
   onChangeCriteria(exam_impro_criteria){
     console.log("exam_impro_criteria")
@@ -567,16 +536,19 @@ export class EiTipoEditComponent implements OnInit {
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("update",token, exam_impro_criteria_req).subscribe(
-      data => {
-        console.log("criteria update completed:" + exam_impro_criteria.controls["label"].value + " " + exam_impro_criteria.controls["initially_selected"].value)
-      },
-      error => {
-        alert("error onChangeCriteria:" + error.error)
-      }
-    )
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("update",token, exam_impro_criteria_req).subscribe(
+        data => {
+          console.log("criteria update completed:" + exam_impro_criteria.controls["label"].value + " " + exam_impro_criteria.controls["initially_selected"].value)
+        },
+        error => {
+          alert("error onChangeCriteria:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
 
   
@@ -587,22 +559,26 @@ export class EiTipoEditComponent implements OnInit {
         label:exam_impro_question.controls["label"].value,
         description:exam_impro_question.controls["description"].value,
         points:exam_impro_question.controls["points"].value,
+        itemized:exam_impro_question.controls["itemized"].value,
         where:{
           id:exam_impro_question.controls["id"].value
         }
       }
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_question_req).subscribe(
-      data => {
-        console.log(" question update has completed")
-      },
-      error => {
-        alert("error:" + error.error)
-      }
-    )
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_question_req).subscribe(
+        data => {
+          console.log(" question update has completed")
+        },
+        error => {
+          alert("error:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
   getAnyClass(obj) {
     if (typeof obj === "undefined") return "undefined";
@@ -614,7 +590,7 @@ export class EiTipoEditComponent implements OnInit {
     return JSON.stringify(this.exam_impro_type.value)
   } 
 
-  updateTableIdx(tableName, formGroupArray:FormGroup[], from:number) : Observable<any>{
+  updateTableIdx(tableName, formGroupArray:FormGroup[], from:number){
     var req = {
       
     }
@@ -631,10 +607,19 @@ export class EiTipoEditComponent implements OnInit {
       formGroupArray[i].controls["idx"].setValue(i)
     }
 
-    var token = this.userLoginService.getUserIdToken() 
-
-    return this.examImprovisacionService.chenequeApiInterface("update", token, req)
-
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, req).subscribe(
+        data => {
+          console.log("completed")
+        },
+        error => {
+          alert("error updating indexes:"  + error.errorCode + " " + error.errorMessage)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }
 
 
@@ -647,14 +632,7 @@ export class EiTipoEditComponent implements OnInit {
         let group = parameter_array.at(i)
         parameter_array.removeAt(i)
         parameter_array.insert(i-1,group)
-        this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i-1).subscribe(
-          success => {
-
-          },
-          error =>{
-            alert("error reordering parameters")
-          }
-        )
+        this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i-1)
         break;
       }
     }
@@ -669,14 +647,7 @@ export class EiTipoEditComponent implements OnInit {
         let group = parameter_array.at(i)
         parameter_array.removeAt(i)
         parameter_array.insert(i+1,group)
-        this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i).subscribe(
-          success => {
-
-          },
-          error =>{
-            alert("error reordering parameters")
-          }
-        )
+        this.updateTableIdx("exam_impro_parameter", parameter_array.controls as FormGroup[],i)
         break;
       }
     }
@@ -687,12 +658,7 @@ export class EiTipoEditComponent implements OnInit {
       event.previousIndex!=event.currentIndex ) {
       var formGroupArray:FormGroup[] = event.item.data.controls.exam_impro_criteria.controls as FormGroup[]
       moveItemInArray(event.item.data.controls.exam_impro_criteria.controls, event.previousIndex, event.currentIndex);
-      this.updateTableIdx("exam_impro_criteria", formGroupArray,event.previousIndex<event.currentIndex?event.previousIndex:event.currentIndex).subscribe(
-        data => {
-          console.log("update index completed")
-        }
-      )
-
+      this.updateTableIdx("exam_impro_criteria", formGroupArray,event.previousIndex<event.currentIndex?event.previousIndex:event.currentIndex)
     } 
   } 
   onDragMove(event: CdkDragDrop<any>) {
@@ -708,14 +674,7 @@ export class EiTipoEditComponent implements OnInit {
         let group = questions_array.at(i)
         questions_array.removeAt(i)
         questions_array.insert(i-1,group)
-        this.updateTableIdx("exam_impro_question", questions_array.controls as FormGroup[],i-1).subscribe(
-          success => {
-
-          },
-          error =>{
-            alert("error reordering questions")
-          }
-        )
+        this.updateTableIdx("exam_impro_question", questions_array.controls as FormGroup[],i-1)
         break;
       }
     }
@@ -730,16 +689,135 @@ export class EiTipoEditComponent implements OnInit {
         let group = questions_array.at(i)
         questions_array.removeAt(i)
         questions_array.insert(i+1,group)
-        this.updateTableIdx("exam_impro_question", questions_array.controls as FormGroup[],i).subscribe(
-          success => {
-
-          },
-          error =>{
-            alert("error reordering parameters")
-          }
-        )
+        this.updateTableIdx("exam_impro_question", questions_array.controls as FormGroup[],i)
         break;
       }
     }
+  } 
+
+  newObservation( question:FormGroup  ){
+    this.submitting = true; 
+    var observation_array:FormArray = question.controls["exam_impro_observation"] as FormArray
+    var exam_impro_observation_req = {
+      exam_impro_observation:{
+        id:null,
+        exam_impro_question_id:question.controls.id.value,
+        label:"",
+        description:"",
+        idx:observation_array.length
+      }
+    }
+
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_observation_req).subscribe(
+        data => {
+          console.log(" observation add has completed")
+          var o = data["result"]["exam_impro_observation"]
+          this.addObservation( o, observation_array)
+          this.submitting = false;        
+        },
+        error => {
+          alert("error nueva observation:" + error.error );           
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
   }  
+  onChangeObservation(observation){
+    console.log("exam_impro_observation")
+    var exam_impro_observation_req = {
+      exam_impro_observation:{
+        label:observation.controls["label"].value,
+        description:observation.controls["description"].value,
+        where:{
+          id:observation.controls["id"].value
+        }
+      }
+    }
+
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_observation_req).subscribe(
+        data => {
+          console.log(" question update has completed")
+        },
+        error => {
+          alert("error:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
+  }
+ 
+  delObservation( q, o){
+    this.submitting = false; 
+    var request = {
+      exam_impro_observation:{
+        id:o.controls.id.value
+      }
+    }
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("delete", token, request).subscribe(
+        data => {
+          console.log("observation has been erased")
+          
+          
+          var observation_array:FormArray = q.controls["exam_impro_observation"] as FormArray
+          
+          for(var i=0; i<observation_array.length; i++){
+            var fg:FormGroup = observation_array.controls[i] as FormGroup
+            if( fg.controls["id"].value == o.controls.id.value){
+              observation_array.removeAt(i)
+              this.updateTableIdx("exam_impro_observation", observation_array.controls as FormGroup[], i)
+              break;
+            }
+          }
+          this.submitting = false; 
+        },
+        error => {
+          alert( "aspecto no pudo ser borrado" )
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
+  }
+
+  upObservation(q, o){
+    console.log("upObservacion")
+    var observation_array:FormArray = q.controls["exam_impro_observation"] as FormArray
+    for(var i=1; i<observation_array.length; i++){
+      var og:FormGroup = observation_array.controls[i] as FormGroup
+      if( og.controls["id"].value == o.controls.id.value){
+        let group = observation_array.at(i)
+        observation_array.removeAt(i)
+        observation_array.insert(i-1,group)
+        this.updateTableIdx("exam_impro_observation", observation_array.controls as FormGroup[],i-1)
+        break;
+      }
+    }
+  }
+
+  downObservation(q, o){
+    console.log("downObservation")
+    var observation_array:FormArray = q.controls["exam_impro_observation"] as FormArray
+    for(var i=0; i<observation_array.length-1; i++){
+      var g:FormGroup = observation_array.controls[i] as FormGroup
+      if( g.controls["id"].value == o.controls.id.value){
+        let group = observation_array.at(i)
+        observation_array.removeAt(i)
+        observation_array.insert(i+1,group)
+        this.updateTableIdx("exam_impro_observation", observation_array.controls as FormGroup[],i)
+        break;
+      }
+    }
+  } 
+
+
 }
