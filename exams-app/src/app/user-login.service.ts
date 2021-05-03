@@ -186,6 +186,7 @@ export class UserLoginService {
         });
     }
     */
+    console.log("firebase:" + firebase)
     return firebase.auth().currentUser.getIdToken()
   } 
   getIsloggedIn(){

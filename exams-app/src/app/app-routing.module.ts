@@ -23,6 +23,7 @@ import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 const routes: Routes = [
   
   /*
@@ -42,8 +43,9 @@ const routes: Routes = [
   { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent },
   { path: 'ei-ap-parameter-form-component', component: EiApParameterFormComponent },
   { path: 'eiReporte', component: EiApReporteComponent },
-  { path: 'ExamenesImprovisacion', component: EiTabHolderComponent },
+  { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
+  { path: 'ei-tipo-list', component: EiTipoListComponent },
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
   { path: 'home', component: WelcomeComponent },

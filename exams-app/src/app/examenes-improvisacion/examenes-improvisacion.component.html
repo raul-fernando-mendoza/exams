@@ -1,6 +1,5 @@
 <mat-toolbar>
   <button mat-button color="primary" (click)="onCreate()" *ngIf="isAdmin" >Crear</button>
-  <button mat-button color="primary" (click)="onReport()" *ngIf="isAdmin" >Reporte</button>
   <mat-button-toggle-group multiple name="refreshgrp" aria-label="refresh group">
     <mat-button-toggle value="refresh" (click)="onRefresh()"><mat-icon>refresh</mat-icon></mat-button-toggle>
   </mat-button-toggle-group> 

@@ -6,7 +6,7 @@ firebase init
 #use to deploy the app
 firebase deploy
 
-#use to run the emulator
+#use to run the emulator activate the emulator mode in environment.ts
 firebase emulators:start
 
 
