@@ -131,29 +131,33 @@ export class EiApParameterFormComponent implements OnInit {
     }
 
     var exam_impro_ap_criteria:FormArray = this.exam_impro_ap_parameter.controls.exam_impro_ap_criteria as FormArray
-
+/*
     for( let i=0; exam_impro_ap_criteria.length; i++){
       exam_impro_ap_criteria.removeAt(i)
     }
-
+*/
     this.userLoginService.getUserIdToken().then( token => {
 
       this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(data => { 
+  /*
         for( let i=0; exam_impro_ap_criteria.length; i++){
           exam_impro_ap_criteria.removeAt(i)
         }
         console.log(data)
-
+ */
         var result = data["result"]
 
         this.estudianteNombre = this.nvl(result["exam_impro_ap"]["estudiante"]["displayName"] , result["exam_impro_ap"]["estudiante"]["email"] )
         this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
+
         this.materia =  result["exam_impro_ap"]["materia"]
         this.parametro = result["exam_impro_parameter"]["label"]
         this.parametro_descripcion = result["exam_impro_parameter"]["description"]
         this.tipo = result["exam_impro_ap"]["exam_impro_type"]["label"]
+
+        var commentario = this.nvl( result["comentario"], "")
         
-        this.exam_impro_ap_parameter.controls.comentario = result["comentario"]
+        this.exam_impro_ap_parameter.controls.comentario.setValue( commentario )
 
 
         let ap_criteria_arr= data["result"]["exam_impro_ap_criteria"]
@@ -174,12 +178,14 @@ export class EiApParameterFormComponent implements OnInit {
     
   }
   addCriteria( cq:FormArray, c){
+   
     var cg:FormGroup = this.fb.group({
       id:[c["id"]],
       label:[c["exam_impro_criteria"]["label"]],
       description:[c["exam_impro_criteria"]["description"]],
       exam_impro_ap_question: new FormArray([])
-    })        
+    })
+         
     cq.push(cg)   
     for( let i=0; i<c.exam_impro_ap_question.length; i++) {
       this.addQuestion(cg.controls.exam_impro_ap_question as FormArray, c.exam_impro_ap_question[i])
@@ -283,7 +289,7 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   openCommentDialog(){
-    let comentario = this.exam_impro_ap_parameter.controls.comentario 
+    let comentario = this.exam_impro_ap_parameter.controls.comentario.value 
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
       data: {calificacion:this.calificacion, comentario: comentario}

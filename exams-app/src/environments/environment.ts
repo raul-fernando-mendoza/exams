@@ -16,10 +16,10 @@ export const environment = {
     storageBucket: "celtic-bivouac-307316.appspot.com",
     messagingSenderId: "671173409486",
     appId: "1:671173409486:web:7a9521ddf9ec974f33ae9f",
-    measurementId: "G-ZHNWBMKVQ2",
-    apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
+    measurementId: "G-ZHNWBMKVQ2"
+   // apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
   },
-  apiURL:"http://192.168.15.12:5000/api"
+  apiURL:"http://192.168.15.12:10000/api"
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 
