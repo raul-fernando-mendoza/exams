@@ -2,13 +2,15 @@
 <div mat-dialog-content>
   <p>Tu calificacion es: {{data.calificacion}}</p>
   <p>Puedes adicionar un comentario si lo deseas:</p>
-  <mat-form-field>
+  <p>
+  <mat-form-field appearance="outline">
     <mat-label>comentario opcional</mat-label>
     <input matInput maxlength="200" [(ngModel)]="data.comentario">
   </mat-form-field>
-  <div>
+  </p>
+  <p>
   {{ data.comentario.length }} caracteres de 200
-</div>
+  </p>
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]=data.comentario cdkFocusInitial>Ok</button>
