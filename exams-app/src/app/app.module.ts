@@ -48,6 +48,8 @@ import { RoleListComponent } from './role-list/role-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component'; 
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { PaymentComponent } from './payment/payment.component';
+import { StripeModule } from 'stripe-angular';
 
 
 @NgModule({
@@ -69,7 +71,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     UsersListComponent,
     RoleListComponent,
     LoginSelectorComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    PaymentComponent
   ],
   imports: [
     BrowserModule,
@@ -103,7 +106,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     MatNativeDateModule,
     MatTabsModule,
     MatExpansionModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    [ StripeModule.forRoot("ADD HERE YOUR STRIPE PUBLIC KEY") ]
   ],
   providers: [
     UserLoginService
