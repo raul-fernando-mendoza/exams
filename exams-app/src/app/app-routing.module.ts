@@ -24,6 +24,7 @@ import { UsersListComponent } from './users-list/users-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
+import { PaymentComponent } from './payment/payment.component';
 const routes: Routes = [
   
   /*
@@ -49,7 +50,9 @@ const routes: Routes = [
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
   { path: 'home', component: WelcomeComponent },
-  { path: 'register', component: LoginFormComponent }
+  { path: 'register', component: LoginFormComponent },
+  
+  { path: 'payment', component: PaymentComponent }
 ];
 
 @NgModule({
