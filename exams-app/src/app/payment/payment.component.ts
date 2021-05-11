@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { StripeScriptTag } from "stripe-angular";
 import { StripeclientService } from '../stripeclient.service';
 
+//the server code is at accept-a-card-payment\using-webhooks\server\node
 //curl -d '{items: [{ id: "photo-subscription" }], currency: "usd"}' -H 'Content-Type: application/json' http://localhost:4242/create-payment-intent
  
 
