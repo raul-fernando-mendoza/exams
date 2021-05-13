@@ -26,7 +26,11 @@
   margin-right: 0;
 }
 
-.example-form-field {
-  margin-right: 20px;
+.example-full-width{
+  width:80%;
+}
+
+.mat-form-field {
+  margin: 5px;
 }
 

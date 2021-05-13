@@ -187,6 +187,22 @@ export class UserLoginService {
     }
     */
     console.log("firebase:" + firebase)
+    if( firebase ){
+      if( firebase.auth() ){
+        if( firebase.auth().currentUser ){
+          console.log("firebase user:" + firebase.auth().currentUser.email) 
+        }
+        else{
+          console.log("auth is null")
+        }
+      }
+      else{
+        console.log("auth is null")
+      }
+    }
+    else{
+      console.log("firebase is null")
+    }
     return firebase.auth().currentUser.getIdToken()
   } 
   getIsloggedIn(){

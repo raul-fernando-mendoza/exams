@@ -39,6 +39,8 @@ export class ExamenImprovisacionFormComponent {
     estudiante_uid: [null, Validators.required],
     exam_impro_type_id: [null, Validators.required],
     materia:[null, Validators.required],    
+    title:[null], 
+    expression:[null], 
     exam_impro_parameter: new FormArray([])
   });
 
@@ -341,6 +343,8 @@ export class ExamenImprovisacionFormComponent {
       estudiante_uid: this.exam_impro_ap.controls.estudiante_uid.value,
       exam_impro_type_id: this.exam_impro_ap.controls.exam_impro_type_id.value,
       materia: this.exam_impro_ap.controls.materia.value,
+      title: this.exam_impro_ap.controls.title.value,
+      expression: this.exam_impro_ap.controls.expression.value,
       exam_impro_ap_parameter: []
     }
     var parameter_array = this.exam_impro_ap.controls.exam_impro_parameter as FormArray;

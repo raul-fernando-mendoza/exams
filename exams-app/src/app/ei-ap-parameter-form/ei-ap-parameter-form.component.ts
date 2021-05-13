@@ -45,6 +45,8 @@ export class EiApParameterFormComponent implements OnInit {
   estudianteNombre =""
   maestraNombre = ""
   materia =""
+  title = ""
+  expression = ""
   parametro=""
   tipo=""
   parametro_descripcion=""
@@ -82,6 +84,8 @@ export class EiApParameterFormComponent implements OnInit {
           id:"",
           estudiante_uid:"",
           materia:"",
+          title:"",
+          expression:"",
           "estudiante:user":{
             displayName:"",
             email:""
@@ -151,6 +155,8 @@ export class EiApParameterFormComponent implements OnInit {
         this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
 
         this.materia =  result["exam_impro_ap"]["materia"]
+        this.title =  result["exam_impro_ap"]["title"]
+        this.expression =  result["exam_impro_ap"]["expression"]
         this.parametro = result["exam_impro_parameter"]["label"]
         this.parametro_descripcion = result["exam_impro_parameter"]["description"]
         this.tipo = result["exam_impro_ap"]["exam_impro_type"]["label"]

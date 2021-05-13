@@ -22,6 +22,9 @@ function formatDate(date) {
 export interface ExamenesImprovisacionItem {
   id: number;
   materia:string;
+  title:string;
+ 
+
   estudiante: string;
   maestro: string;
   tipo:string;
@@ -98,6 +101,7 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
       switch (this.sort.active) {
         case 'estudiante': return compare(a.estudiante, b.estudiante, isAsc);
         case 'materia': return compare(a.materia, b.materia, isAsc);
+        case 'title': return compare(a.title, b.title, isAsc);
         case 'maestro': return compare(a.maestro, b.maestro, isAsc);
         case 'id': return compare(+a.id, +b.id, isAsc);
         case 'parametro': return compare(+a.parametro, +b.parametro, isAsc);

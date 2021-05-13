@@ -24,7 +24,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
+  displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
   
   constructor( private route: ActivatedRoute
     , private router: Router
@@ -87,6 +87,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               "fechaApplicacion":"",
               "completado":"",
               "materia":"",
+              "title":"",
+              "expression":"",
               "estudiante:user":{
                   "email":"",
                   "displayName":""
@@ -123,6 +125,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
           var obj:ExamenesImprovisacionItem = {
             id: exam.id, 
             materia: exam.exam_impro_ap.materia,
+            title: exam.exam_impro_ap.title,
             estudiante: (exam.exam_impro_ap.estudiante.displayName != null)? exam.exam_impro_ap.estudiante.displayName: exam.exam_impro_ap.estudiante.email,
             maestro:(exam.maestro.displayName!=null)?exam.maestro.displayName:exam.maestro.email,
             tipo: exam.exam_impro_parameter.exam_impro_type.label,

@@ -34,7 +34,7 @@ import { MatStepperModule} from '@angular/material/stepper';
 import { ExamenesImprovisacionComponent } from './examenes-improvisacion/examenes-improvisacion.component';
 import { ExamenImprovisacionFormComponent } from './examen-improvisacion-form/examen-improvisacion-form.component'; 
 import { MatDatepickerModule} from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDialog } from './ei-ap-parameter-form/ei-ap-parameter-form.component';
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
@@ -107,6 +107,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
   ],
   providers: [
     UserLoginService
+    ,{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }
   ],
   entryComponents: [
     DialogOverviewExampleDialog,

@@ -2,42 +2,43 @@
 
   <mat-card >
     <mat-card-content > 
-      <mat-grid-list cols="4" rowHeight="4em">
-        <mat-grid-tile>
-          <mat-form-field appearance="fill" > 
-            <mat-label>Tipo de examen</mat-label>
-            <mat-select formControlName="exam_impro_type_id" (selectionChange)="examTypeChange($event)">
-              <mat-option *ngFor="let t of getExamTypes()" [value]="t.id" >
-                {{t.label}} 
-              </mat-option>
-            </mat-select>
-          </mat-form-field>             
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <mat-form-field appearance="fill" >
-            <mat-label>selecciona estudiante</mat-label>
-            <mat-select formControlName="estudiante_uid">
-              <mat-option *ngFor="let e of getExamEstudiantes()" [value]="e.uid">
-                {{e.estudianteName}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field> 
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <mat-form-field color="accent" appearance="fill">
-            <mat-label>Seleccione una fecha de applicacion del examen</mat-label>
-            <input matInput [matDatepicker]="picker1" formControlName="fechaApplicacion">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <mat-form-field class="example-full-width">
-            <mat-label>Materia</mat-label>
-            <input matInput placeholder="change it" value="" formControlName="materia">
-          </mat-form-field>
-        </mat-grid-tile>          
-      </mat-grid-list>
+      <mat-form-field appearance="fill" > 
+        <mat-label>Tipo de examen</mat-label>
+        <mat-select formControlName="exam_impro_type_id" (selectionChange)="examTypeChange($event)">
+          <mat-option *ngFor="let t of getExamTypes()" [value]="t.id" >
+            {{t.label}} 
+          </mat-option>
+        </mat-select>
+      </mat-form-field>             
+      <mat-form-field appearance="fill" >
+        <mat-label>selecciona estudiante</mat-label>
+        <mat-select formControlName="estudiante_uid">
+          <mat-option *ngFor="let e of getExamEstudiantes()" [value]="e.uid">
+            {{e.estudianteName}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field> 
+
+      <mat-form-field color="accent" appearance="fill">
+        <mat-label>Seleccione una fecha de applicacion del examen</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="fechaApplicacion">
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <mat-label>Materia</mat-label>
+        <input matInput placeholder="" value="" formControlName="materia">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Titulo</mat-label>
+        <input matInput placeholder="" value="" formControlName="title">
+      </mat-form-field>       
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Expresion</mat-label>
+        <input matInput placeholder="" value="" formControlName="expression">
+      </mat-form-field>          
 
       <div *ngFor="let p of getFormGroupArray(exam_impro_ap,'exam_impro_parameter'); let i=index">
         <div [formGroup]="p">
