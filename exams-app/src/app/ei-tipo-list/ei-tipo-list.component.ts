@@ -49,7 +49,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       exam_impro_type:[{ 
         id:"",
         label:""
-      }]
+      }],
+      "orderBy":{
+        "exam_impro_type.label":"",
+      }
     }
     this.userLoginService.getUserIdToken().then( token => {
 
@@ -84,6 +87,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       exam_impro_type:{
         id:null,
         label:"Tipo de Examen nuevo"
+        
       }
     }
 
