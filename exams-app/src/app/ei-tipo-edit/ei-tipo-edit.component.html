@@ -39,6 +39,10 @@
                             <mat-icon>arrow_circle_down</mat-icon>
                             <span>mover abajo</span>
                         </button> 
+                        <button mat-menu-item color="primary" (click)="dupParameter(exam_impro_type, p)" [disabled]="submitting">
+                            <mat-icon>content_copy</mat-icon>
+                            <span>duplicar</span>
+                        </button> 
                     </mat-menu>                      
                     
                 </mat-toolbar>

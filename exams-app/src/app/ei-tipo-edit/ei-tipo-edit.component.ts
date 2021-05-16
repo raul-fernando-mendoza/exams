@@ -259,7 +259,107 @@ export class EiTipoEditComponent implements OnInit {
     error => {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })
+  }
+
+  copyDataObservation(o:FormGroup){
+    let exam_impro_question = {
+      id:null,
+      label:o.controls.label.value,
+      description:o.controls.description.value,
+      idx:o.controls.idx.value
+    }
+    return exam_impro_question;
   }  
+
+  copyDataQuestion(q:FormGroup){
+    let exam_impro_question = {
+      id:null,
+      label:q.controls.label.value,
+      description:q.controls.description.value,
+      points:q.controls.points.value,
+      itemized:q.controls.itemized.value,
+      idx:q.controls.idx.value,
+      exam_impro_observation:[]
+    }
+    var observation_array:FormArray = q.controls["exam_impro_observation"] as FormArray
+    for(let i=0; i<observation_array.length;  i++){
+      var o:FormGroup = observation_array.controls[i] as FormGroup
+      var o_data = this.copyDataObservation(o)
+      exam_impro_question.exam_impro_observation.push(o_data)
+    } 
+    return exam_impro_question     
+  }
+  
+  copyDataCriteria(c:FormGroup){
+    var exam_impro_criteria={
+      id:null,
+      label: c.controls.label.value,
+      initially_selected:c.controls.initially_selected.value,
+      idx:c.controls.idx.value,
+      description:c.controls.description.value,
+      exam_impro_question:[] 
+    }
+    var question_array:FormArray = c.controls.exam_impro_question as FormArray
+    for(let i=0; i<question_array.length;  i++){
+      var q:FormGroup = question_array.controls[i] as FormGroup
+      var c_data = this.copyDataQuestion(q)
+      exam_impro_criteria.exam_impro_question.push(c_data)
+    } 
+    return exam_impro_criteria   
+  }
+
+  copyDataParameter(p:FormGroup){
+    var exam_impro_parameter={
+      id:null,
+      label:p.controls.label.value,
+      
+      idx:p.controls.idx.value,
+      exam_impro_criteria:[]
+    } 
+    var criteria_array:FormArray = p.controls["exam_impro_criteria"] as FormArray
+    for(let i=0; i<criteria_array.length;  i++){
+      var c:FormGroup = criteria_array.controls[i] as FormGroup
+      var c_data = this.copyDataCriteria(c)
+      exam_impro_parameter.exam_impro_criteria.push(c_data)
+    }
+    return exam_impro_parameter;
+
+  }
+  
+
+  dupParameter( exam_impro_type:FormGroup, p:FormGroup){
+    var exam_impro_parameter = this.copyDataParameter(p)
+    var parameters_array:FormArray = exam_impro_type.controls["exam_impro_parameter"] as FormArray
+    exam_impro_parameter["idx"] = parameters_array.controls.length
+    exam_impro_parameter["exam_impro_type_id"] = exam_impro_type.controls.id.value
+    
+
+    var exam_impro_parameter_req = {
+      exam_impro_parameter:exam_impro_parameter
+    }
+
+    this.submitting = true;
+    
+    this.userLoginService.getUserIdToken().then( token => {
+
+      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_parameter_req).subscribe(
+        data => {
+          console.log(" parameter add has completed")
+          var p = data["result"]["exam_impro_parameter"]
+          this.addParameter( p , parameters_array)  
+          this.submitting = false;      
+        },
+        error => {
+          alert("error nuevo parametro:" + error.error)
+          this.submitting = false; 
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    }) 
+  }
+
 
   dupCriteria( parameter:FormGroup, c:FormGroup  ){
     this.submitting = true; 

@@ -41,6 +41,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
+    this.loadTypeList()
+  }
+
+  loadTypeList(){
     var request = {
       exam_impro_type:[{ 
         id:"",
@@ -69,7 +73,6 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
     })  
 
   }
-
 
   editar(row_id){
     this.router.navigate(['/ei-tipo-edit',{id:row_id}]);
@@ -125,5 +128,73 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
     error => {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })    
+  }
+
+  onCopy(id:number){
+    this.submitting=true;
+    var request = {
+      exam_impro_type:{
+        id:id,
+        label:"",
+        "exam_impro_parameter(+)":[{
+          label:"",
+          idx:"",
+          description:"",
+          "exam_impro_criteria(+)":[{
+            label:"",
+            initially_selected:"",
+            idx:"",
+            description:"",
+            "exam_impro_question(+)":[{
+              label:"",
+              description:"",
+              points:"",
+              idx:"",
+              itemized:"",
+              "exam_impro_observation(+)":[{
+                label:"",
+                description:"",
+                idx:""
+              }]
+            }]
+          }]
+        }],
+      },
+      "orderBy":{
+        "exam_impro_type.label":"",
+      }
+    }
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+        data => { 
+          var tipo = data["result"]
+          tipo["id"] = null
+          tipo["label"] = tipo["label"] + "-copia"
+
+          var request_add = {
+            exam_impro_type:tipo
+          }
+          this.examImprovisacionService.chenequeApiInterface("add", token, request_add).subscribe(
+            data_add => {
+              this.loadTypeList()
+              this.submitting = false
+            },
+            error_add =>{
+              alert( "Error:" + error_add.error.error)
+              this.submitting = false
+            }
+          )
+        },   
+        error => {
+          alert("error loading impro type")
+          console.log(JSON.stringify(request))
+          this.submitting = false
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      this.submitting = false
+    }) 
   }
 }
