@@ -134,7 +134,7 @@ export class UsersListComponent implements OnInit {
     this.examImprovisacionService.chenequeApiInterface("getClaims", token, request_roles).subscribe(
       data => {
         user["roles"] = []
-        console.log("roles for " + user.email + " roles:" + data["result"])
+        //console.log("roles for " + user.email + " roles:" + data["result"])
         for( const key in data["result"]){
           var role_formgroup = this.fb.group({
             id:[key]

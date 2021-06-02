@@ -42,6 +42,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     var maestro_email = ( this.isAdmin() ? "": this.userLoginService.getUserEmail() )
     var completado:any 
+    var fechaApplicacion = ( this.isReadOnly() ? new Date().toISOString().slice(0, 10) :"" )    
 
     if( this.isAdmin() || this.isReadOnly() ){
       completado = ""
@@ -61,7 +62,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, completado, maestro_email)
+        this.updateList(token, completado, maestro_email, fechaApplicacion)
       },
       error => {
         if( error.status == 401 ){
@@ -74,7 +75,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )
   }
 
-  updateList( token , completado, maestro_email ){
+  updateList( token , completado, maestro_email , fechaApplicacion){
     var request = {
       "exam_impro_ap_parameter":[{
           "id":"",
@@ -84,7 +85,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               "displayName":"" 
           },
           "exam_impro_ap":{
-              "fechaApplicacion":"",
+              "fechaApplicacion":fechaApplicacion,
               "completado":"",
               "materia":"",
               "title":"",
@@ -144,7 +145,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     
       },
       error => {
-        alert("ERROR al leer lista de examenes:" + error.errorCode + " " + error.errorMessage)
+        if( error.error && error.error instanceof String && error.error.search("token")){
+          console.log("ERROR al leer lista de examenes:" + error.status + " " + error.error)
+          this.router.navigate(['/loginForm'])
+        }
+        else{
+          alert("ha habido un error por favor reintente")
+        }
       }
     )        
   }  

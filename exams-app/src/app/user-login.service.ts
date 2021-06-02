@@ -27,9 +27,9 @@ export class UserLoginService {
     this.loginSubject = new Subject<boolean>();
 
     try{
-      this.user = JSON.parse( localStorage.getItem('user') )
-      this.user_idtoken = localStorage.getItem('user_idtoken')
-      this.user_claims = JSON.parse(localStorage.getItem("user_claims") )
+      this.user =  JSON.parse( localStorage.getItem('user') ) //{ "email":"olduser", "displayName":"olddisplayname", "emailVerified":false, "uid":"UI1234"}
+      this.user_idtoken = localStorage.getItem('user_idtoken') // ""eyJhbGciOiJSUzI1NiIsImtpZCI6IjMwMjUxYWIxYTJmYzFkMzllNDMwMWNhYjc1OTZkNDQ5ZDgwNDI1ZjYiLCJ0eXAiOiJKV1QifQ.eyJhZG1pbiI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL2NlbHRpYy1iaXZvdWFjLTMwNzMxNiIsImF1ZCI6ImNlbHRpYy1iaXZvdWFjLTMwNzMxNiIsImF1dGhfdGltZSI6MTYyMjI5NTcwOCwidXNlcl9pZCI6IlIxbE8wSGRPRnBjWDFadXIyTlRGdzAzdkxlWTIiLCJzdWIiOiJSMWxPMEhkT0ZwY1gxWnVyMk5URncwM3ZMZVkyIiwiaWF0IjoxNjIyMjk1NzA5LCJleHAiOjE2MjIyOTkzMDksImVtYWlsIjoicmF1bF9mZXJuYW5kb19tZW5kb3phQGhvdG1haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInJhdWxfZmVybmFuZG9fbWVuZG96YUBob3RtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.HNDI1PyS87LtA_ToJQ6hjFIpQAKIm02Uyu44WyA5fy1HC-M6UmBxHv0KdzboDPyetVmS64UkcrHy6dgWu8XbBG1UtYKszbeBG88fLEV9FIMGyt_JuxH_hrDHsUq-6NstSz_My4eJ69bbVirOmskipNtp-wB_4vYl9US81TB0_9Uxrv6pzIEAxNCxQXSIYAxgUNXsjWcM4QeqYVA5x3EIbOcnQ3DQP_6Ht9hVfJvxCI1O3loUQmnqiYe5kIeJlIzqlFgPHZ4INEtcOAZen6yQKX3I12BhuHvLYHdPZ6Coxb5jB2PT8iktG6U_Q1gHw8IMwfsB3ECuRwOn9oK5PzgbnQ""
+      this.user_claims = JSON.parse(localStorage.getItem("user_claims") ) // {"admin":true }
     }
     catch{
       this.reset()
@@ -179,32 +179,30 @@ export class UserLoginService {
     return (this.user)?this.user.displayName:null
   }
   getUserIdToken():Promise<String> {
-    /*
-    if( ! firebase.auth().currentUser ){
-        return new Promise<String>((resolve, reject) => {
-                resolve(this.user_idtoken);
-        });
+    if( firebase && firebase.auth() && firebase.auth().currentUser ){
+      return new Promise<String>((resolve, reject) => {
+        console.log("firebase user:" + firebase.auth().currentUser.email) 
+        firebase.auth().currentUser.getIdToken().then(
+          idToken =>{
+            if ( this.user_idtoken != idToken ){
+              console.log("******** Got a new ID token:" + this.user_idtoken + " " + idToken)
+            }
+            else{
+              console.log("Got same token")
+            }
+            this.user_idtoken = idToken
+            localStorage.setItem('user_idtoken',this.user_idtoken) 
+            resolve(idToken);
+          }
+        )
+      })
     }
-    */
-    console.log("firebase:" + firebase)
-    if( firebase ){
-      if( firebase.auth() ){
-        if( firebase.auth().currentUser ){
-          console.log("firebase user:" + firebase.auth().currentUser.email) 
-        }
-        else{
-          console.log("auth is null")
-        }
-      }
-      else{
-        console.log("auth is null")
-      }
-    }
-    else{
-      console.log("firebase is null")
-    }
-    return firebase.auth().currentUser.getIdToken()
-  } 
+    console.log("firebase is null return previous saved token")
+    return new Promise<String>((resolve, reject) => {
+      resolve(this.user_idtoken);
+    })
+  }
+
   getIsloggedIn(){
     return (this.user)?true:false
   }   

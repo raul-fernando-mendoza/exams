@@ -295,7 +295,7 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   openCommentDialog(){
-    let comentario = this.exam_impro_ap_parameter.controls.comentario.value 
+    let comentario = this.exam_impro_ap_parameter.controls.comentario.value || ""
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
       data: {calificacion:this.calificacion, comentario: comentario}
@@ -481,6 +481,7 @@ export class DialogOverviewExampleDialog {
   constructor(
     public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+
 }
 
  

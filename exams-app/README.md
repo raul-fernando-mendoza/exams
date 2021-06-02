@@ -1,9 +1,11 @@
 # ExamsApp
-
+#to execute use
+npm start
 # use the followng to select the hosting option.
 firebase init
 
-#use to deploy the app
+#use to deploy the app first compile for deployment
+ng build --prod 
 firebase deploy
 
 #use to run the emulator activate the emulator mode in environment.ts
