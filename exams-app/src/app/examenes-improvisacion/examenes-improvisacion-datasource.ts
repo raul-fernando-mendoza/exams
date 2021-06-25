@@ -20,18 +20,19 @@ function formatDate(date) {
 
 // TODO: Replace this with your own data model type
 export interface ExamenesImprovisacionItem {
-  id: number;
-  materia:string;
-  title:string;
+  examGrade_id: string
+  parameterGrade_id:string
+  materia:string
+  title:string
  
 
-  estudiante: string;
-  maestro: string;
-  tipo:string;
-  parametro: string;
+  student_name: string
+  maestro: string
+  tipo:string
+  parametro: string
 
-  fechaApplicacion: string;
-  completado:boolean;
+  fechaApplicacion: string
+  completado:boolean
   calificacion:number
 }
 
@@ -99,11 +100,10 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'estudiante': return compare(a.estudiante, b.estudiante, isAsc);
+        case 'student_name': return compare(a.student_name, b.student_name, isAsc);
         case 'materia': return compare(a.materia, b.materia, isAsc);
         case 'title': return compare(a.title, b.title, isAsc);
         case 'maestro': return compare(a.maestro, b.maestro, isAsc);
-        case 'id': return compare(+a.id, +b.id, isAsc);
         case 'parametro': return compare(+a.parametro, +b.parametro, isAsc);
         case 'fechaApplicacion': return compare(+Date.parse(a.fechaApplicacion), +Date.parse(b.fechaApplicacion), isAsc);
         default: return 0;

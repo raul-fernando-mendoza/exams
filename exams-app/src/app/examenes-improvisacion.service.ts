@@ -14,7 +14,7 @@ export class ExamenesImprovisacionService {
 
   }
   
-  
+ /*
   public chenequeApiInterface(action, token, data): Observable<Object> {
 
     var url = this.apiURL 
@@ -34,5 +34,41 @@ export class ExamenesImprovisacionService {
 
     return this.http.post(url, request_data, {headers: myheaders})
   }
+*/
+public firestoreApiInterface(action, token, data): Observable<Object> {
+
+  var url = this.apiURL 
+
+  var request_data = {
+    "service":"firestore",
+    "database":"notused",
+    "action":action,
+    "token":token,
+    "data":data
+  }
+
+  var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+  return this.http.post(url, request_data, {headers: myheaders})
+}
+
+public authApiInterface(action, token, data): Observable<Object> {
+
+  var url = this.apiURL 
+
+  var request_data = {
+    "service":"auth",
+    "action":action,
+    "token":token,
+    "data":data
+  }
+
+  var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+  return this.http.post(url, request_data, {headers: myheaders})
+}
+
 
 }

@@ -3,21 +3,11 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
+import { Aspect, Criteria, Exam, ExamGrade, ExamGradeRequest, ExamMultipleRequest, ExamRequest, Parameter, User } from '../exams/exams.module';
+import { ExamFormService } from '../exam-form.service';
 
 
-function formatDate(date) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
 
-  if (month.length < 2) 
-      month = '0' + month;
-  if (day.length < 2) 
-      day = '0' + day;
-
-  return [year, month, day].join('-');
-}
 
 @Component({
   selector: 'app-examen-improvisacion-form',
@@ -27,25 +17,40 @@ function formatDate(date) {
 export class ExamenImprovisacionFormComponent {
   submitting = false
 
-  parameter_label = []
+  parameter_label 
   today = new Date().toISOString().slice(0, 10)
 
-  criteria_label = []
+  criteria_label 
 
-  exam_impro_ap = this.fb.group({
+  exams: Exam[] 
+
+  students:User[] 
+  evaluators:User[] 
+
+  examGrade = this.fb.group({
     id: [null],
-    completado:[false, Validators.required],
-    fechaApplicacion: [null, Validators.required],
-    estudiante_uid: [null, Validators.required],
-    exam_impro_type_id: [null, Validators.required],
-    materia:[null, Validators.required],    
+    course:[null,Validators.required],
+    completed:[false, Validators.required],
+    applicationDate: [null, Validators.required],
+    student_uid: [null, Validators.required],
+    student_name:[null,Validators.required],
+
+    exam_id: [null, Validators.required],
+    exam_label: [null, Validators.required],
+
     title:[null], 
     expression:[null], 
-    exam_impro_parameter: new FormArray([])
+    parameterGrades: new FormArray([])
   });
 
   getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+    if( fg == null){
+      console.error("fg is null for:" + controlname)
+    }
     var fa:FormArray =  fg.controls[controlname] as FormArray
+    if( fa == null){
+      console.error("fa is null for::" + controlname)
+    }
     return fa.controls as FormGroup[]
   }
   
@@ -53,7 +58,8 @@ export class ExamenImprovisacionFormComponent {
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder
-    , private userLoginService:UserLoginService) {
+    , private userLoginService:UserLoginService
+    , private examFormFormService:ExamFormService) {
 
   }
 
@@ -68,24 +74,24 @@ export class ExamenImprovisacionFormComponent {
 
   initialize(token){
 
-    var examImproTypeRequest = {
-      "exam_impro_type":[{
-          "id":"",
-          "label":""
+    var req:ExamMultipleRequest = {
+      "exams":[{
+          "id":null,
+          "label":null
       }]
     }  
 
 
 
-    this.examImprovisacionService.chenequeApiInterface("get", token, examImproTypeRequest).subscribe(data => {
-      let r = data["result"] as Array<any>;
-      this.types.length = 0
+    this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(data => {
+      let r:Exam[] = data["result"] as Array<any>;
+      this.exams = []
       for( let i =0; i<r.length; i++){
-        let obj = {
+        let obj:Exam = {
           "id":r[i].id,
           "label":r[i].label
         }
-        this.types.push(obj)
+        this.exams.push(obj)
       }
     },
     error => {
@@ -93,38 +99,22 @@ export class ExamenImprovisacionFormComponent {
     })
 
 
-    var estudianteRequest = {
-      "user":{
-          "role":"estudiante"
-      }
+    var userReq = {
+        "claims":"estudiante"
     }      
 
-    this.examImprovisacionService.chenequeApiInterface("getUserListForClaim", token, estudianteRequest).subscribe(data => {
-      let r = data["result"] as Array<any>;
-      this.estudiantes.length = 0
-      for( let i =0; i<r.length; i++){
-        
-        var estudiante_user_req = {
-          user:{
-            uid:"",
-            displayName:"",
-            email:r[i]["email"]
-          }
+    this.examImprovisacionService.authApiInterface("getUserListForClaim", token, userReq).subscribe(data => {
+      let students = data["result"] as Array<any>;
+      this.students = []
+      for( let i =0; i<students.length; i++){
+        let estudiante = students[i]
+        let obj:User = {
+          "uid":estudiante.uid,
+          "email":estudiante.email,
+          "displayName":(estudiante.displayName != null)? estudiante.displayName : estudiante.email,
+          "claims":estudiante.claims
         }
-
-        this.examImprovisacionService.chenequeApiInterface("get", token, estudiante_user_req).subscribe(
-          estudiante_data =>{
-            let estudiante = estudiante_data["result"]
-            let obj = {
-              "uid":estudiante.uid,
-              "estudianteName":(estudiante.displayName != null)? estudiante.displayName : estudiante.email
-            }
-            this.estudiantes.push(obj)
-          },
-          estudiante_error =>{
-            alert("error leyendo estudiante data:" + estudiante_error.error)
-          }
-        )
+        this.students.push(obj)
       }
     },
     error => {
@@ -132,101 +122,76 @@ export class ExamenImprovisacionFormComponent {
     }) 
     
     
-    var maestro_request = {
-      "user":{
-          "role":"evaluador"
-      }
+    var evaluator_req = {
+      "claims":"evaluador"
     }      
 
-    this.examImprovisacionService.chenequeApiInterface("getUserListForClaim", token, maestro_request).subscribe(data => {
-      let r = data["result"] as Array<any>;
-      this.maestros.length = 0
-      for( let i =0; i<r.length; i++){
-        var evaluador_user_req = {
-          user: {
-            uid:"",
-            displayName:"",
-            email:r[i]["email"]
-          }
+    this.examImprovisacionService.authApiInterface("getUserListForClaim", token, evaluator_req).subscribe(data => {
+      let users:User[] = data["result"] as Array<any>;
+      this.evaluators = []
+      for( let i =0; i<users.length; i++){
+        var user = users[i]
+        let obj:User = {
+          "uid":user.uid,
+          "email":user.email,
+          "displayName":(user.displayName != null)? user.displayName : user.email,
+          "claims":user.claims
         }
-        this.examImprovisacionService.chenequeApiInterface("get", token, evaluador_user_req).subscribe(
-          user_data => {
-            let user = user_data["result"]
-            let obj = {
-              "uid":user.uid,
-              "maestroName":(user.displayName != null)? user.displayName : user.email
-            }
-            console.log("user:" + obj.uid + " " + obj.maestroName)
-            this.maestros.push(obj)            
-          },
-          user_error =>{
-            alert("error leyendo usuario para :" + r[i]["email"])
-          }
-        )
+        console.log("user:" + obj.uid + " " + obj.displayName)
+        this.evaluators.push(obj)            
       }
     },
     error => {
-        alert( "Error retriving estudiante" + error )
+        alert( "Error retriving evaluador" + error )
     })     
   }  
   
-
-  types = [
-    { id:-1, label:"N/A"}
-  ]
   getExamTypes(){
-    return this.types;
+    return this.exams;
   }
 
-  examTypeChange(event) {
-    var parameterId = event.value
-    this.parameter_label = []
-    this.criteria_label = []
+  examChange(event) {
+    var examId = event.value
 
-    var parameter:FormArray = this.exam_impro_ap.controls.exam_impro_parameter as FormArray
-    for( let i=parameter.length-1; i>=0; i--){
-      parameter.removeAt(i)
-    }        
+    for(let i =0 ; i< this.exams.length; i++){
+      let exam:Exam = this.exams[i]
+      if( exam.id == examId ){
+        this.examGrade.controls.exam_id.setValue(exam.id)
+        this.examGrade.controls.exam_label.setValue(exam.label)
+      } 
+    }
 
-    var exam_impro_parameter_request = {
-      exam_impro_parameter:[{
-          id:"",
-          exam_impro_type_id:parameterId,
-          label:"",
-          exam_impro_criteria:[{
-            id:"",
-            label:"",
-            idx:"",
-            initially_selected:"",
-            exam_impro_question:[{
-              id:"",
-              label:"",
-              idx:"",
-              itemized:"",
-              "exam_impro_observation(+)":[{
-                id:"",
-                label:"",
-                idx:""
+    var parameterGrades:FormArray = this.examGrade.controls.parameterGrades as FormArray
+    parameterGrades.clear()      
+
+    var req:ExamRequest = {
+      exams:{
+          id:examId,
+          label:null,
+          parameters:[{
+            id:null,
+            idx:null,
+            label:null,
+            scoreType:null,
+            criterias:[{
+              id:null,
+              label:null,
+              idx:null,
+              initiallySelected:null,              
+              aspects:[{
+                id:null,
+                idx:null,
+                label:null
               }]
-
             }]
           }]
-      }],
-      orderBy:{
-        "exam_impro_parameter.idx":"",
-        "exam_impro_criteria.idx":"",
-        "exam_impro_question.idx":"",
-        "exam_impro_observation.idx":""
       }
-    }      
-
+    }  
+    
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_parameter_request).subscribe(data => {
-        let parameter_array = data["result"] as Array<any>;
-
-       for( let i =0; i<parameter_array.length; i++){
-          this.addParameter(parameter, parameter_array[i])
-        }
+      this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(data => {
+        let exam:Exam = data["result"];
+        this.addExam(parameterGrades, exam)
       },
       error => {
           alert( error )
@@ -236,177 +201,107 @@ export class ExamenImprovisacionFormComponent {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })       
   }
+  addExam(parameterGrades:FormArray, exam:Exam){
 
-  addParameter(parameter_array:FormArray, p){
+    for( let i=0; i<exam.parameters.length; i++){
+      let parameter = exam.parameters[i]
+      this.addParameter(parameterGrades, parameter)
+    }
+
+    parameterGrades.controls.sort( (a, b) => {
+      var afg:FormGroup = a as FormGroup 
+      var bfg:FormGroup = b as FormGroup
+      return  afg.controls.idx.value - bfg.controls.idx.value 
+    })       
+  }
+
+
+
+  addParameter(parameterGrade_array:FormArray, p:Parameter){
+
     var g=this.fb.group({
-      id: [null],
-      exam_impro_ap_id:[null],
-      exam_impro_parameter_id:[p["id"]],
-      maestro_uid:[null] ,
-      completado: [false],
-      exam_impro_criteria: new FormArray([])         
+      id: [p.id],
+      idx: [p.idx],
+      label: [p.label],
+      scoreType: [p.scoreType],
+      score: [null],
+      evaluator_uid:[null],
+      evaluator_name:[null],
+      student_uid:[null],
+      student_name:[null],
+      completed: [false],
+      criteriaGrades: new FormArray([])         
     })
-    parameter_array.push(g) 
-    this.parameter_label[p["id"]]=p["label"]
+    parameterGrade_array.push(g) 
 
-    for( let i=0; i<p.exam_impro_criteria.length; i++){
-      this.addCriteria(g.controls.exam_impro_criteria as FormArray, p["exam_impro_criteria"][i])
+    var criteriaGrades_Array = g.controls.criteriaGrades as FormArray
+    for( let i=0; i<p.criterias.length; i++){
+      let criteria:Criteria = p.criterias[i]
+      this.addCriteria(criteriaGrades_Array, criteria)
+    }
+    criteriaGrades_Array.controls.sort( (a, b) => {
+      var afg:FormGroup = a as FormGroup 
+      var bfg:FormGroup = b as FormGroup
+      return  afg.controls.idx.value - bfg.controls.idx.value 
+    })    
+  }
+
+  addCriteria(criteriaGrade_array:FormArray, c:Criteria){
+    var g = this.fb.group({
+      id:[null],
+      idx:[c.idx],
+      label:[c.label],
+      description:[c.description],
+      score:[null],
+      isSelected:[ c.initiallySelected ],
+      aspectGrades: new FormArray([])
+    })
+    criteriaGrade_array.push(g)
+
+    for(let i=0; i<c.aspects.length; i++){
+      let aspect:Aspect = c.aspects[i]
+      this.addAspect(g.controls.aspectGrades as FormArray, aspect)
     }
   }
 
-  addCriteria(criteria_array:FormArray, c){
+  addAspect(question_array:FormArray, a: Aspect ){
     var g = this.fb.group({
       id:[null],
-      exam_impro_criteria_id:[c["id"]],
-      initially_selected:[ c["initially_selected"] ],
-      exam_impro_question: new FormArray([])
-    })
-    criteria_array.push(g)
-    this.criteria_label[c["id"]] = c["label"] //add the description to translation table
-
-    for(let i=0; i<c.exam_impro_question.length; i++){
-      this.addQuestion(g.controls.exam_impro_question as FormArray, c.exam_impro_question[i])
-    }
-  }
-
-  addQuestion(question_array:FormArray, q){
-    var g = this.fb.group({
-      id:[null],
-      exam_impro_ap_question_id:[null],
-      exam_impro_question_id:[q["id"]],
-      exam_impro_observation: new FormArray([])
+      idx:[a.idx],
+      label:[a.label],
+      description:[a.description],
+      isGraded:[true],
+      score:[null],
+      hasMedal:[false],
+      medalDescription:[a.description]
     })
     question_array.push(g)
 
-    for(let i=0; q.exam_impro_observation && i<q.exam_impro_observation.length; i++){
-      this.addObservation(g.controls.exam_impro_observation as FormArray, q.exam_impro_observation[i])
-    }    
-  }
-
-  addObservation(observation_array:FormArray, o){
-    var g = this.fb.group({
-      id:[null],
-      exam_impro_ap_question_id:[null],
-      exam_impro_observation_id: o["id"]
-    })
-    observation_array.push(g)    
-  }
-
-  estudiantes = [
-    { uid:-1, estudianteName:"N/A"}
-  ] 
-
-  getExamEstudiantes(){
-    return this.estudiantes;    
   }  
 
-  maestros = [
-    { uid: "", maestroName:"N/A"}
-  ]
+  getExamStudents(){
+    return this.students;    
+  }  
 
-  getExamMaestros(){
-    return this.maestros
+   getExamEvaluators(){
+    return this.evaluators
   }
   getAnyClass(obj) {
     if (typeof obj === "undefined") return "undefined";
     if (obj === null) return "null";
     return obj.constructor.name;
   }   
-
-
-  getExamImproLabel(id){
-    return this.parameter_label[ id ] 
-  }
-
-  getCriteria(id){
-    return this.criteria_label[id]
-  }
-
   getformValue(){
-    return JSON.stringify(this.exam_impro_ap.value)
+    return JSON.stringify(this.examGrade.value)
   }  
 
-  replacer(key, value) {
-    // Filtrando propiedades 
-    if (key === "fechaApplicacion") {
-      return value.slice(0, 10);
-    }
-    return value;
-  }
-
-  retriveOnlySelected(){
-
-    var exam_impro_ap = {
-      id:null,
-      completado:false,
-      fechaApplicacion: formatDate( this.exam_impro_ap.controls.fechaApplicacion.value ),
-      estudiante_uid: this.exam_impro_ap.controls.estudiante_uid.value,
-      exam_impro_type_id: this.exam_impro_ap.controls.exam_impro_type_id.value,
-      materia: this.exam_impro_ap.controls.materia.value,
-      title: this.exam_impro_ap.controls.title.value,
-      expression: this.exam_impro_ap.controls.expression.value,
-      exam_impro_ap_parameter: []
-    }
-    var parameter_array = this.exam_impro_ap.controls.exam_impro_parameter as FormArray;
-    for( let pi=0; pi<parameter_array.length; pi++){
-      var p = parameter_array.controls[pi] as FormGroup
-      var ap_parameter = {
-        id:null,
-        exam_impro_ap_id:null,
-        exam_impro_parameter_id: p.controls.exam_impro_parameter_id.value,
-        maestro_uid: p.controls.maestro_uid.value,
-        completado:false,
-        exam_impro_ap_criteria:[]
-      }
-      exam_impro_ap.exam_impro_ap_parameter.push(ap_parameter)
-      var criteria_array = p.controls.exam_impro_criteria as FormArray
-      for( let ci=0; ci<criteria_array.length; ci++){
-        var c = criteria_array.controls[ci] as FormGroup
-        if( c.controls.initially_selected.value == true ){
-          var ap_criteria = {
-            id:null,
-            exam_impro_ap_parameter_id:null,
-            exam_impro_criteria_id:c.controls.exam_impro_criteria_id.value,
-            exam_impro_ap_question:[]
-          }
-          ap_parameter.exam_impro_ap_criteria.push(ap_criteria)
-          // adding quesitons
-          var question = c.controls.exam_impro_question as FormArray
-          for( let qi=0; qi< question.length; qi++){
-            var q=question.controls[qi] as FormGroup
-            var ap_question = {
-              id:null,
-              exam_impro_ap_criteria_id:null,
-              exam_impro_question_id:q.controls.exam_impro_question_id.value,
-              exam_impro_ap_observation:[]
-            }
-            ap_criteria.exam_impro_ap_question.push(ap_question)
-
-            //add observations
-            var observation_array = q.controls.exam_impro_observation as FormArray
-            for( let oi=0; observation_array && oi<observation_array.length; oi++){
-              let o = observation_array.controls[oi] as FormGroup
-              var ap_observation = {
-                id:null,
-                exam_impro_ap_question_id:null,
-                exam_impro_observation_id:o.controls.exam_impro_observation_id.value
-              }
-              ap_question.exam_impro_ap_observation.push(ap_observation)
-            }
-          }
-        }
-      }
-    }
-    return exam_impro_ap;
-  }
 
 
-    
   onSubmit() {
     this.submitting = true
-    if( this.exam_impro_ap.invalid ){
+    if( this.examGrade.invalid ){
       const invalid = [];
-      const controls = this.exam_impro_ap.controls;
+      const controls = this.examGrade.controls;
       for (const name in controls) {
           if (controls[name].invalid) {
               invalid.push(name);
@@ -416,25 +311,25 @@ export class ExamenImprovisacionFormComponent {
       this.submitting = false
     }
     else{
+      var data = this.examGrade.value
+      
+      var json:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormFormService.replacer, 4) )
 
-      var data = this.retriveOnlySelected()
-      console.log( data )
 
-
-      var exam_impro_ap_request= {
-        "exam_impro_ap":data
+      var req :ExamGradeRequest = {
+        "examGrades":json
       }      
 
       this.userLoginService.getUserIdToken().then( token => { 
 
-        this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_ap_request).subscribe(data => {
+        this.examImprovisacionService.firestoreApiInterface("add", token, req).subscribe(data => {
           var result = data["result"]
           alert("thanks!")
           console.log(JSON.stringify(result, null, 2))
           this.router.navigate(['/ExamenesImprovisacion']);
         },
         error => {
-          alert("error creating exam_impro_ap_id" + error.error)
+          alert("error creating examGrade" + error.error)
           this.submitting = false
         })
       },
@@ -445,4 +340,36 @@ export class ExamenImprovisacionFormComponent {
     }
 
   } 
+
+  getUserDisplayName(user:User){
+    if(user.claims && "displayName" in user.claims ){
+      return user.claims["displayName"]
+    } 
+    return user.displayName
+  }
+
+
+  examStudentChange(event) {
+    var studentId = event.value
+    for( let i =0; i< this.students.length; i++){
+      let student:User = this.students[i]
+      if( student.uid == studentId ){
+        this.examGrade.controls.student_name.setValue( this.getUserDisplayName(student) )
+        break;
+      } 
+    }
+  }   
+
+  examEvaluatorChange(parameter,event) {
+    var evaluatorId = event.value
+    for( let i =0; i< this.evaluators.length; i++){
+      let evaluator:User = this.evaluators[i]
+      if( evaluator.uid == evaluatorId ){
+        parameter.controls.evaluator_name.setValue( this.getUserDisplayName(evaluator) )
+        console.log( "evaluator:" + parameter.controls.evaluator_name.value )
+        break;
+      } 
+    }
+  }    
+
 }

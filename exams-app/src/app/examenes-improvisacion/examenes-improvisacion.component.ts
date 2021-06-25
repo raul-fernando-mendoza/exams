@@ -6,7 +6,8 @@ import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './ex
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-
+import { ExamGrade, ExamGradeMultipleRequest, ParameterGrade, ParameterGradeRequest } from '../exams/exams.module';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
 
 
@@ -26,7 +27,15 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
   
-  constructor( private route: ActivatedRoute
+
+  applicationDate = null
+  evaluador_uid
+  completado
+  applicationDates = []
+
+  constructor( 
+      private fb: FormBuilder 
+    , private route: ActivatedRoute
     , private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
@@ -40,16 +49,15 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     console.log("on init called")
 
-    var maestro_email = ( this.isAdmin() ? "": this.userLoginService.getUserEmail() )
-    var completado:any 
-    var fechaApplicacion = ( this.isReadOnly() ? new Date().toISOString().slice(0, 10) :"" )    
-
     if( this.isAdmin() || this.isReadOnly() ){
-      completado = ""
-      maestro_email = ""
+      this.completado = null
+      this.evaluador_uid = null
+      this.applicationDate = null
     }
     else{
-      completado = false
+      this.completado = false
+      this.evaluador_uid = this.userLoginService.getUserUid()
+      this.applicationDate = new Date().toISOString().slice(0, 10)
     }
 
     if( this.isReadOnly() ){
@@ -59,10 +67,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }
     }
 
+    
+
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, completado, maestro_email, fechaApplicacion)
+        this.getApplicationDates(token)
+        this.updateList(token, this.completado, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
@@ -75,67 +86,73 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )
   }
 
-  updateList( token , completado, maestro_email , fechaApplicacion){
-    var request = {
-      "exam_impro_ap_parameter":[{
-          "id":"",
-          "completado":completado,
-          "maestro:user":{
-              "email":maestro_email,
-              "displayName":"" 
-          },
-          "exam_impro_ap":{
-              "fechaApplicacion":fechaApplicacion,
-              "completado":"",
-              "materia":"",
-              "title":"",
-              "expression":"",
-              "estudiante:user":{
-                  "email":"",
-                  "displayName":""
-              }
-          },
-          "exam_impro_parameter":{
-              "label":"",
-              "exam_impro_type":{
-                  "label":""
-              }  
-          },
-          "exam_impro_calificacion(+)":{
-              "calificacion":"",
-              "join":{
-                  "exam_impro_ap_parameter_id":"exam_impro_ap_parameter.id"
-              }
+  updateList( token , completado, evaluador_uid , applicationDate){
+    var request:ExamGradeMultipleRequest = {
+      examGrades:[{
+        id:null,
+        exam_id:null,
+        exam_label:null,
+
+        course: null,
+        completed: null,
+        applicationDate:applicationDate,
+      
+        student_uid:null,
+        student_name:null,
+      
+        title:null,
+        expression:null,
+
+        score:null,
+      
+        parameterGrades:[
+          {
+            id: null,
+            idx: null,
+            label: null,
+            scoreType: null,
+            score:null,
+            evaluator_uid:evaluador_uid,
+            evaluator_name:null,
+         
+            completed:completado
+          
           }
-      }],
-      orderBy:{
-        "exam_impro_ap.fechaApplicacion":"desc",
-        "exam_impro_ap.materia":"",
-        "exam_impro_parameter.label":""
-      }
+        ]
+      }]
+    }
+    if (applicationDate == null){
+      request["orderBy"]={
+        "applicationDate":"asc",
+        "id":"asc"
+      }      
     }
       
-    this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+    this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
       result => { 
-        var examImprovisationArray = result["result"];
+        var examImprovisationArray:ExamGrade[] = result["result"];
         let datavalues: ExamenesImprovisacionItem[] = [];
         for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
-          let exam = examImprovisationArray[i]
-    
-          //console.log(exam.id)
-          var obj:ExamenesImprovisacionItem = {
-            id: exam.id, 
-            materia: exam.exam_impro_ap.materia,
-            title: exam.exam_impro_ap.title,
-            estudiante: (exam.exam_impro_ap.estudiante.displayName != null)? exam.exam_impro_ap.estudiante.displayName: exam.exam_impro_ap.estudiante.email,
-            maestro:(exam.maestro.displayName!=null)?exam.maestro.displayName:exam.maestro.email,
-            tipo: exam.exam_impro_parameter.exam_impro_type.label,
-            parametro:exam.exam_impro_parameter.label,
-            fechaApplicacion:exam.exam_impro_ap.fechaApplicacion.substring(0, 10), 
-            completado: exam.completado,
-            calificacion:(exam.exam_impro_calificacion)?exam.exam_impro_calificacion.calificacion:0
+          let examGrade:ExamGrade = examImprovisationArray[i]
+          for( var j=0; j< examGrade.parameterGrades.length; j++){
+            let parameterGrade:ParameterGrade = examGrade.parameterGrades[j]
+      
+            //console.log(exam.id)
+            var obj:ExamenesImprovisacionItem = {
+              examGrade_id:examGrade.id,
+              parameterGrade_id: parameterGrade.id, 
+              materia: examGrade.course,
+              title: examGrade.title,
+              student_name: examGrade.student_name,
+              maestro:parameterGrade.evaluator_name,
+              tipo: examGrade.exam_label,
+              parametro:parameterGrade.label,
+              fechaApplicacion:examGrade.applicationDate.toString().substring(0, 10), 
+              completado: parameterGrade.completed,
+              calificacion:(parameterGrade.score)?parameterGrade.score:0
+            }
+            datavalues.push(obj)
           }
-          datavalues.push(obj)
         }  
         
         this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
@@ -165,8 +182,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   onReport(){
     this.router.navigate(['/eiReporte']);
   }
-  onEdit(id){
-    this.router.navigate(['/ei-ap-parameter-form-component',{id:id}]);
+  onEdit(examGrade_id, parameterGrade_id){
+    this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   }
   gotoLogin() {
     this.router.navigate(['/loginForm']);
@@ -176,15 +193,15 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       return
     }    
     this.submitting=true
-    var request = {
-      exam_impro_ap_parameter:{
-        id:row.id
+    var request:ParameterGradeRequest = {
+      parameterGrades:{
+        id:row.parameterGrade_id
       }
     }
 
     
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.chenequeApiInterface("delete", token, request).subscribe(
+      this.examImprovisacionService.firestoreApiInterface("delete", token, request).subscribe(
         data => {
           this.submitting=false
           console.log("delete compled successfully")
@@ -229,5 +246,44 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }
         , 20000);
     }
+  }
+  getApplicationDates(token){
+    var applicationDates = [""]
+
+    var req = {
+      examGrades:[{
+        applicationDate:null
+      }]
+    }
+    this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(
+      data => {
+        var resultSet = data["result"]  
+        for( var i=0; i<resultSet.length; i++){
+          let a = resultSet[i]["applicationDate"] 
+          if( applicationDates.indexOf(a) === -1 ){
+            applicationDates.push(a)
+          }
+        }
+      },
+      error => {
+        alert("error getApplicationDates "  + error.errorCode + " " + error.errorMessage)
+    })    
+    this.applicationDates = applicationDates  
+  }
+  applicationDateChange(){
+    console.log("date changed to:" + this.applicationDate)
+    this.userLoginService.getUserIdToken().then(
+      token => {
+        this.updateList(token, this.completado, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
+      },
+      error => {
+        if( error.status == 401 ){
+          this.router.navigate(['/loginForm']);
+        }
+        else{
+          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
+        }
+      }
+    )    
   }
 }

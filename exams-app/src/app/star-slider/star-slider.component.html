@@ -1,9 +1,4 @@
 <div [class]='"start_control_" + percentage' 
-      (mousedown)="onStart($event)"                                         
-      (touchstart)="onStart($event)"
-      (mousemove)="onTrack($event)"
-      (ontouchmove)="onTrack($event)"
-      (mouseup)="onEnd($event)"
-      (ontouchend)="onEnd($event)">
-</div> 
+      (click)="onContainerClick($event)">
+</div>
  

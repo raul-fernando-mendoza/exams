@@ -1,9 +1,11 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { UserLoginService } from '../user-login.service';
+import { ExamFormService } from '../exam-form.service';
+import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  CriteriaGrade, ExamGrade, ExamGradeRequest, ParameterGradeRequest } from '../exams/exams.module';
 
 
 export interface DialogData {
@@ -31,13 +33,44 @@ export class EiApParameterFormComponent implements OnInit {
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder
     , public dialog: MatDialog
-    , private userLoginService:UserLoginService) { 
-      this.id = parseInt(this.route.snapshot.paramMap.get('id'))
+    , private userLoginService:UserLoginService
+    , private examFormService:ExamFormService) { 
+      this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
+      this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
     }
   
+  examGrade:FormGroup = this.fb.group({
+    id: [null],
+    exam_id:[null],
+    exam_label:[null],
+
+    course:[null],
+    completed: [null],
+    applicationDate:[null],
+
+    student_uid:[null],
+    student_name:[null],
+
+
+    title: [null],
+    expression: [null],
+    score:[null],
+
+    
+    parameterGrades: new FormArray([])        
+  })
+
+  
+
   submitting = false
-  id = null
+  
+  examGrade_id = null
+  parameterGrade_id = null
+  parameterGrade_scoreType = null
+
   comentario = ""
+
+/*  
   calificacion = -1
   criteria_labels = {}
   question_labels = {}
@@ -51,129 +84,128 @@ export class EiApParameterFormComponent implements OnInit {
   tipo=""
   parametro_descripcion=""
   elementCount = 0
-
-  exam_impro_ap_parameter = this.fb.group({
-    id: [null, Validators.required],
-    comentario:[null, Validators.required],
-       
-    exam_impro_ap_criteria:new FormArray([])
-  });  
  
+ */
   
   nvl(val1, val2){
     return (val1!=null)?val1:val2
   }
 
   getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+    if( fg == null){
+      console.error("ERROR controls for " + controlname + " in " + fg)
+    }
     var fa:FormArray =  fg.controls[controlname] as FormArray
+    if( fa == null){
+      console.error("I can not find controls for:" + controlname)
+    }
     return fa.controls as FormGroup[]
-  }  
+  }
 
   ngOnInit(): void {
 
-    this.exam_impro_ap_parameter.controls.id.setValue( this.id )
-    var request = {
-      exam_impro_ap_parameter:{
-        id:this.id,
-        comentario:"",
-        "maestro:user":{
-          displayName:"",
-          email:""
-        },        
-        exam_impro_ap:{
-          id:"",
-          estudiante_uid:"",
-          materia:"",
-          title:"",
-          expression:"",
-          "estudiante:user":{
-            displayName:"",
-            email:""
-          },
-          exam_impro_type:{
-            label:""
-          }
-        },      
-        exam_impro_parameter:{
-          label:"",
-          description:""
-        },
-        exam_impro_ap_criteria:[{
-          id:"",
-          exam_impro_criteria:{
-            label:"",
-            description:"",
-            idx:""
-          },
-          exam_impro_ap_question:[{
-            id:"",
-            graded:"",
-            comment:"",
-            exam_impro_question:{
-              label:"",
-              description:"",
-              idx:"",
-              itemized:"",
-            },
-            "exam_impro_ap_observation(+)":[{
-              id:"",
-              complied:"",
-              "exam_impro_observation(+)":{
-                label:"",
-                description:"",
-                idx:""
-              }
-            }]
-          }]
-        }]        
-      },
-      orderBy:{
-        "exam_impro_criteria.idx":"",
-        "exam_impro_question.idx":"",
-        "exam_impro_observation.idx":""
+    var request:ExamGradeRequest = {
+      examGrades:{
+        id: this.examGrade_id,
+
+        exam_id:null,
+        exam_label:null,
+      
+        course: null,
+        completed: null,
+        applicationDate:null,
+      
+        student_uid:null,
+        student_name:null,
+      
+        title:null,
+        expression:null,
+
+        score:null,
+        parameterGrades:[{
+          id: this.parameterGrade_id,
+          idx: null,
+          label: null,
+          score: null,
+          evaluator_uid:null,
+          evaluator_name:null,
+          scoreType:null,
+          evaluator_comment:null,
+
+          completed:null,
+        
+          criteriaGrades:[{
+            id:null,
+            idx:null,  
+            label: null,
+            isSelected:null,  
+            score:null,
+            description: null,
+            aspectGrades:[{
+              id:null,
+              idx:null,  
+              label: null,
+              description:null,
+              isGraded:null,
+              score:null,
+              hasMedal:null,
+              medalDescription:null,
+              missingElements:null
+            }]         
+          }]        
+        }]
       }
     }
 
-    var exam_impro_ap_criteria:FormArray = this.exam_impro_ap_parameter.controls.exam_impro_ap_criteria as FormArray
-/*
-    for( let i=0; exam_impro_ap_criteria.length; i++){
-      exam_impro_ap_criteria.removeAt(i)
-    }
-*/
+
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(data => { 
-  /*
-        for( let i=0; exam_impro_ap_criteria.length; i++){
-          exam_impro_ap_criteria.removeAt(i)
+      this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(data => { 
+        var e:ExamGrade = data["result"]
+
+        this.examGrade.controls.id.setValue(e.id)
+        this.examGrade.controls.exam_id.setValue(e.exam_id)
+        this.examGrade.controls.exam_label.setValue(e.exam_label)
+        this.examGrade.controls.course.setValue(e.course)
+        this.examGrade.controls.completed.setValue(e.completed)
+        this.examGrade.controls.applicationDate.setValue(e.applicationDate)
+        this.examGrade.controls.student_uid.setValue(e.student_uid)
+        this.examGrade.controls.student_name.setValue(e.student_name)
+        this.examGrade.controls.title.setValue(e.title)
+        this.examGrade.controls.expression.setValue(e.expression)
+        this.examGrade.controls.score.setValue(e.score)
+
+        var p = e.parameterGrades[0]
+
+        this.parameterGrade_scoreType = p.scoreType
+
+        var g = this.fb.group({
+          id:[p.id],
+          idx:[p.idx],
+          label:[p.label],
+          scoreType:[p.scoreType],
+          score:[p.score],
+          evaluator_uid:[p.evaluator_uid],
+          evaluator_name:[p.evaluator_name],
+          evaluator_comment:[p.evaluator_comment],
+          completed:[e.completed],
+          criteriaGrades: new FormArray([])
+        })
+
+        var parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
+        parameterGrades_array.clear()
+        parameterGrades_array.push(g)
+    
+        var criteriaGrades_Array = g.controls.criteriaGrades as FormArray
+        for( let i=0; i<p.criteriaGrades.length; i++){
+          let criteriaGrade:CriteriaGrade = p.criteriaGrades[i]
+          this.addCriteriaGrade(criteriaGrades_Array, criteriaGrade)
         }
-        console.log(data)
- */
-        var result = data["result"]
-
-        this.estudianteNombre = this.nvl(result["exam_impro_ap"]["estudiante"]["displayName"] , result["exam_impro_ap"]["estudiante"]["email"] )
-        this.maestraNombre = this.nvl( result["maestro"]["displayName"], result["maestro"]["email"])
-
-        this.materia =  result["exam_impro_ap"]["materia"]
-        this.title =  result["exam_impro_ap"]["title"]
-        this.expression =  result["exam_impro_ap"]["expression"]
-        this.parametro = result["exam_impro_parameter"]["label"]
-        this.parametro_descripcion = result["exam_impro_parameter"]["description"]
-        this.tipo = result["exam_impro_ap"]["exam_impro_type"]["label"]
-
-        var commentario = this.nvl( result["comentario"], "")
-        
-        this.exam_impro_ap_parameter.controls.comentario.setValue( commentario )
-
-
-        let ap_criteria_arr= data["result"]["exam_impro_ap_criteria"]
-        for( let i = 0; i<ap_criteria_arr.length; i++){
-          let c = ap_criteria_arr[i]
-          this.addCriteria( exam_impro_ap_criteria, c )
-
-        }
-
-      },
+        criteriaGrades_Array.controls.sort( (a, b) => {
+          var afg:FormGroup = a as FormGroup 
+          var bfg:FormGroup = b as FormGroup
+          return  afg.controls.idx.value - bfg.controls.idx.value 
+        })      },
       error => {
         alert("ERROR al leer:"+ error.message)
       });
@@ -183,78 +215,106 @@ export class EiApParameterFormComponent implements OnInit {
     })
     
   }
-  addCriteria( cq:FormArray, c){
-   
-    var cg:FormGroup = this.fb.group({
-      id:[c["id"]],
-      label:[c["exam_impro_criteria"]["label"]],
-      description:[c["exam_impro_criteria"]["description"]],
-      exam_impro_ap_question: new FormArray([])
+
+  addCriteriaGrade(criteriaGrade_array:FormArray, c:CriteriaGrade){
+    var g = this.fb.group({
+      id:[c.id],
+      idx:[c.idx],
+      label:[c.label],
+      description:[c.description],
+      score:[c.score],
+      isSelected:[ c.isSelected ],
+      aspectGrades: new FormArray([])
     })
-         
-    cq.push(cg)   
-    for( let i=0; i<c.exam_impro_ap_question.length; i++) {
-      this.addQuestion(cg.controls.exam_impro_ap_question as FormArray, c.exam_impro_ap_question[i])
+    criteriaGrade_array.push(g)
+
+    var apectGrades_array = g.controls.aspectGrades as FormArray
+
+    for(let i=0; i<c.aspectGrades.length; i++){
+      let aspectGrade:AspectGrade = c.aspectGrades[i]
+      this.addAspectGrade(apectGrades_array, aspectGrade)
     }
+    apectGrades_array.controls.sort( (a, b) => {
+      var afg:FormGroup = a as FormGroup 
+      var bfg:FormGroup = b as FormGroup
+      return  afg.controls.idx.value - bfg.controls.idx.value 
+    })       
   }
 
-  addQuestion( qa:FormArray , q){
-    var qg:FormGroup = this.fb.group({
-      id:[q["id"]],
-      label:[q["exam_impro_question"]["label"]],
-      description:[q["exam_impro_question"]["description"]],
-      graded:[q["graded"]],
-      comment:[q["comment"]],
-      itemized:[q["exam_impro_question"]["itemized"]],
-      exam_impro_ap_observation: new FormArray([])
+  addAspectGrade(question_array:FormArray, a: AspectGrade ){
+    var score:any = null
+    if ( this.parameterGrade_scoreType == 'starts'){
+      if( a.score == null){
+        score = 1
+      }
+      else{
+        score = a.score
+      }
+    }
+    else if(this.parameterGrade_scoreType == 'status'){
+      if( a.score == null){
+        score = '0.95'
+      }
+      else{
+        score = a.score.toString()
+      }
+    }
+    var g = this.fb.group({
+      id:[a.id],
+      idx:[a.idx],
+      label:[a.label],
+      description:[a.description],
+      isGraded:[a.isGraded],
+      score:[score],
+      hasMedal:[a.hasMedal],
+      medalDescription:[a.medalDescription],
+      missingElements:[a.missingElements]
     })
-    qa.push(qg)
-    this.elementCount++;
-    for( let i=0; i< q.exam_impro_ap_observation.length; i++){
-      this.addObservation(qg.controls.exam_impro_ap_observation as FormArray,  q.exam_impro_ap_observation[i])
+    question_array.push(g)
+
+  }
+  onChangeAspect(a){
+    console.log("a:" +JSON.stringify(a.value))
+    if ( a.controls.score.value <= 0.75){
+      a.controls.medalDescription.setValue(null)
+      a.controls.hasMedal.setValue(false)
+      a.controls.medalDescription.disable()
     }
-  }
-
-  addObservation( observation_arr: FormArray, o){
-    var fg:FormGroup = this.fb.group({
-      id:[o["id"]],
-      label:[o["exam_impro_observation"]["label"]],
-      description:[o["exam_impro_observation"]["description"]],
-      complied: [o["complied"]]
-    }) 
-    observation_arr.push(fg)
-    this.elementCount++;
-  } 
-  
-  getCriteriaLabel(id){
-    return this.criteria_labels[id]
-  }
-
-  getQuestionLabel(id){
-    return this.question_labels[id]
-  }
-
-  
-
-  submit(){
+    else{
+      a.controls.medalDescription.enable()
+      if( a.controls.medalDescription.value && a.controls.medalDescription.value.length){
+        a.controls.hasMedal.setValue(true)
+      }
+      else{
+        a.controls.hasMedal.setValue(false)
+      }
+    }
+    if (a.controls.score.value > 0){
+      a.controls.isGraded.setValue(true)
+    }
+    else{
+      a.controls.isGraded.setValue(false)
+    }
     this.submitting = true
-    var exam_impro_ap_parameter_update_request = {
-      exam_impro_ap_parameter:{
-        completado:true,
-        where:{
-          id:this.id
-        }
+    var req:AspectGradeRequest = {
+      aspectGrades:{
+        id:a.controls.id.value,
+        isGraded:a.controls.isGraded.value,
+        score:Number(a.controls.score.value),
+        hasMedal:a.controls.hasMedal.value,
+        medalDescription:a.controls.medalDescription.value,
+        missingElements:a.controls.missingElements.value
       }
     }
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
-        this.retrieveCalificacion()
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
+        console.log("aspect updated")
         this.submitting = false
       },
       error => {
-        alert("error closing parameter"  + error.errorCode + " " + error.errorMessage)
+        alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
         this.submitting = false
       }) 
     },
@@ -262,185 +322,146 @@ export class EiApParameterFormComponent implements OnInit {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
       this.submitting = false
     })  
+
   }
 
-  useColapsed(){
-    return (this.elementCount > 40)
-  } 
+  onChangeStarts(a){
+    console.log("changed to:" + a)
 
-
-  retrieveCalificacion(){
-    var exam_impro_calificacion_request = {
-      exam_impro_calificacion:{
-        calificacion:"",
-        exam_impro_ap_parameter_id:this.id
+    this.submitting = true
+    var req:AspectGradeRequest = {
+      aspectGrades:{
+        id:a.controls.id.value,
+        isGraded:true,
+        score:Number(a.controls.score.value),
+        hasMedal:null,
+        medalDescription:null,
+        missingElements:null
       }
     }
+    
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.chenequeApiInterface("get", token, exam_impro_calificacion_request).subscribe(data => {
-        var result = data["result"]
-        this.calificacion = result.calificacion
-        this.openCommentDialog()
+
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
+        console.log("aspect updated")
+        this.submitting = false
       },
       error => {
-        alert("error retrieving calificacion" + error.errorCode + " " + error.errorMessage)
+        alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
         this.submitting = false
-      })  
+      }) 
     },
     error => {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
       this.submitting = false
-    })
+    })  
 
+  }
+  submit(){
+    console.log("submit called")
+    this.submitting = true
+    this.updateScore()
+    this.openCommentDialog()
+  }
+  updateScore(){
+    console.log("update score")
+    var totalPoints:number= 0;
+    var earnedPoints:number = 0;
+    var finalScore:number = 0;
+    let parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
+    let parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
+    let criteriaGrades_array = parameterGrade.controls.criteriaGrades as FormArray
+    for( var i =0; i<criteriaGrades_array.controls.length; i++){
+      let criteriaGrade:FormGroup = criteriaGrades_array.controls[i] as FormGroup
+      if( criteriaGrade.controls.isSelected.value == true ){
+        let aspectGrade_array:FormArray = criteriaGrade.controls.aspectGrades as FormArray
+        for( var j=0; j<aspectGrade_array.controls.length; j++){
+          totalPoints = totalPoints + 1
+          let aspectGrade:FormGroup = aspectGrade_array.controls[j] as FormGroup
+          earnedPoints = earnedPoints + Number(aspectGrade.controls.score.value)
+          if( aspectGrade.controls.hasMedal && aspectGrade.controls.hasMedal.value == true){
+            earnedPoints = earnedPoints + 0.05
+          }
+        }
+      }
+    }
+    finalScore = Number( ((earnedPoints / totalPoints) * 10 ).toFixed(2) )
+    parameterGrade.controls.score.setValue( finalScore )   
   }
 
   openCommentDialog(){
-    let comentario = this.exam_impro_ap_parameter.controls.comentario.value || ""
+    console.log("openCommentDialog")
+    var parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
+    var parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
+
+    var calificacion = parameterGrade.controls.score.value
+
+    let comentario = parameterGrade.controls.evaluator_comment.value ? parameterGrade.controls.evaluator_comment.value: ""
+
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
-      data: {calificacion:this.calificacion, comentario: comentario}
+      data: {calificacion:calificacion, comentario: comentario}
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       if( result != undefined ){
-        this.addComment(result)  
+        var parameterGrades_array = this.examGrade.controls.parameterGrades as FormArray
+        var parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
+        parameterGrade.controls.evaluator_comment.setValue(result) 
+        this.updateComment() 
       }
       else{
-        this.router.navigate(['/ExamenesImprovisacion']);
+        this.close()
       }
 
     });
   }
 
-  onChangeObservation(q, o){
-    var request={
-      "exam_impro_ap_observation":{
-        complied:o.controls.complied.value,
-        where:{
-          id:o.controls.id.value
-        }
+  updateComment(): void{
+    console.log("updateComment")
+    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
+    var parameter:FormGroup = parameterGrade_arr.controls[0] as FormGroup
+    var req:ParameterGradeRequest = {
+      parameterGrades:{
+        id: parameter.controls.id.value,
+        evaluator_comment:parameter.controls.evaluator_comment.value,
       }
     }
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
-        console.log("observation updated")
-        this.updateQuestionGrade(q)
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
+        this.close() 
       },
       error => {
-        alert("error updating observation"  + error.errorCode + " " + error.errorMessage)
-      }) 
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })    
-  }
-
-  onChangeQuestion(q){
-    if( q.controls.itemized.value ){
-      var request={
-        "exam_impro_ap_question":{
-          comment:q.controls.comment.value,
-          where:{
-            id:q.controls.id.value
-          }
-        }
-      }
-      this.userLoginService.getUserIdToken().then( token => { 
-        this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
-          console.log("question updated")
-          this.updateQuestionGrade(q)
-        },
-        error => {
-          alert("error question update"  + error.errorCode + " " + error.errorMessage)
-        })    
-      },
-      error => {
-        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      })    
-    }
-    else{
-      var request_graded={
-        "exam_impro_ap_question":{
-          graded:q.controls.graded.value,
-          where:{
-            id:q.controls.id.value
-          }
-        }
-      }
-      this.userLoginService.getUserIdToken().then( token => { 
-        this.examImprovisacionService.chenequeApiInterface("update", token, request_graded).subscribe(data => {
-          console.log("question updated")
-        },
-        error => {
-          alert("error question update"  + error.errorCode + " " + error.errorMessage)
-        })    
-      },
-      error => {
-        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      })          
-
-    }
-  }
-
-  updateQuestionGrade(q){
-
-    let observation_count = q.controls.exam_impro_ap_observation.length;
-    let graded = 1;
-
-    for( let i=0; i<q.controls.exam_impro_ap_observation.length; i++){
-      var o:FormGroup = q.controls.exam_impro_ap_observation.controls[i] as FormGroup
-      if( !o.controls.complied.value ){
-        observation_count--;
-      }
-    }
-
-
-    if( q.controls.comment.value && q.controls.comment.value.length > 0 ){
-      graded = observation_count / (q.controls.exam_impro_ap_observation.length + 1)
-    }
-    else{
-      graded = observation_count / (q.controls.exam_impro_ap_observation.length)
-    }
-
-    var request={
-      exam_impro_ap_question:{
-        graded:graded,
-        where:{
-          id:q.controls.id.value
-        }
-      }
-    } 
-    this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.chenequeApiInterface("update", token, request).subscribe(data => {
-        console.log("question graded updated")
-        q.controls.graded.value = graded
-      },
-      error => {
-        alert("error question graded update"  + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
       })    
     },
     error => {
+      this.submitting = false
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })         
-
-  }
-
-  addComment(comentario): void{
-    var exam_impro_ap_parameter_update_request = {
-      exam_impro_ap_parameter:{
-        comentario:comentario,
-        where:{
-          id:this.id
-        }
+      
+    })
+  }  
+  close(): void{
+    console.log("close")
+    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
+    var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
+    var req:ParameterGradeRequest = {
+      parameterGrades:{
+        id: parameterGrade.controls.id.value,
+        score: parameterGrade.controls.score.value,
+        completed:true
       }
     }
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.chenequeApiInterface("update", token, exam_impro_ap_parameter_update_request).subscribe(data => {
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
+        this.submitting = false
         this.router.navigate(['/ExamenesImprovisacion']);
       },
       error => {
         alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
       })    
     },
     error => {
@@ -462,12 +483,8 @@ export class EiApParameterFormComponent implements OnInit {
     });    
   }  
 
-  formatLabel(value: number) {
-    return value*100 + "%";
-  }  
-
   getformValue(){
-    return JSON.stringify(this.exam_impro_ap_parameter.value)
+    return JSON.stringify(this.examGrade.value)
   }  
  
 }

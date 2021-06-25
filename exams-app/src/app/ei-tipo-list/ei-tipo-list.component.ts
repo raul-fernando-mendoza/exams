@@ -3,11 +3,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { EiApplicationTableDataSource, EiApplicationTableItem } from './ei-tipo-list-datasource';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
+import { Exam, ExamMultipleRequest, ExamRequest} from 'src/app/exams/exams.module'
+import { stringify } from '@angular/compiler/src/util';
 
-var exam_types: EiApplicationTableItem[] = [];
+var ex_types: EiApplicationTableItem[] = [];
 
 
 
@@ -26,7 +28,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = [ 'name', 'id'];
+  displayedColumns = [ 'label', 'id'];
   submitting = false
 
   constructor( private router: Router
@@ -45,24 +47,20 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
   }
 
   loadTypeList(){
-    var request = {
-      exam_impro_type:[{ 
-        id:"",
-        label:""
+
+    var req:ExamMultipleRequest = {
+      exams:[{
+        id:null,
+        label:null
       }],
-      "orderBy":{
-        "exam_impro_type.label":"",
-      }
+      orderBy:
+        { label:"asc" }
     }
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe( data =>{
-        var result = data["result"] //exam_types.push( {id:t["id"],name:t["label"]} )
-        exam_types = []
-        result.forEach(t => {
-          exam_types.push( {id:t["id"],name:t["label"]} ) 
-        })
-        this.dataSource = new EiApplicationTableDataSource(exam_types)
+      this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe( data =>{
+        var result:Exam[] = data["result"] //ex_types.push( {id:t["id"],name:t["label"]} )
+        this.dataSource = new EiApplicationTableDataSource(result)
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;      
@@ -83,20 +81,19 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
   createType(){
     this.submitting = true
-    var exam_impro_type_req = {
-      exam_impro_type:{
+    var req:ExamRequest = {
+      exams:{
         id:null,
         label:"Tipo de Examen nuevo"
-        
       }
     }
 
     this.userLoginService.getUserIdToken().then( token =>{
-      this.examImprovisacionService.chenequeApiInterface("add", token, exam_impro_type_req).subscribe(
+      this.examImprovisacionService.firestoreApiInterface("add", token, req).subscribe(
         data => {
           console.log(" type update has completed")
           this.submitting = false
-          this.ngAfterViewInit()
+          this.loadTypeList()
         },
         error => {
           alert("error:" + error.error)
@@ -110,17 +107,17 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
   }
   borrar(id){
     this.submitting = true
-    var exam_impro_type_req = {
-      exam_impro_type:{
+    var req:ExamRequest = {
+      exams:{
         id:id
       }
     }
 
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.chenequeApiInterface("delete", token, exam_impro_type_req).subscribe(
+      this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("delete has completed")
-          this.ngAfterViewInit()
+          this.loadTypeList()
           this.submitting = false
         },
         error => {
@@ -134,64 +131,24 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
     })    
   }
 
-  onCopy(id:number){
+  onCopy(row){
     this.submitting=true;
-    var request = {
-      exam_impro_type:{
-        id:id,
-        label:"",
-        "exam_impro_parameter(+)":[{
-          label:"",
-          idx:"",
-          description:"",
-          "exam_impro_criteria(+)":[{
-            label:"",
-            initially_selected:"",
-            idx:"",
-            description:"",
-            "exam_impro_question(+)":[{
-              label:"",
-              description:"",
-              points:"",
-              idx:"",
-              itemized:"",
-              "exam_impro_observation(+)":[{
-                label:"",
-                description:"",
-                idx:""
-              }]
-            }]
-          }]
-        }],
-      },
-      "orderBy":{
-        "exam_impro_type.label":"",
+
+    var req:ExamRequest = {
+      exams:{
+        id:row["id"],
+        label:row["label"]
       }
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.chenequeApiInterface("get", token, request).subscribe(
+      this.examImprovisacionService.firestoreApiInterface("dupDocument", token, req).subscribe(
         data => { 
-          var tipo = data["result"]
-          tipo["id"] = null
-          tipo["label"] = tipo["label"] + "-copia"
-
-          var request_add = {
-            exam_impro_type:tipo
-          }
-          this.examImprovisacionService.chenequeApiInterface("add", token, request_add).subscribe(
-            data_add => {
-              this.loadTypeList()
-              this.submitting = false
-            },
-            error_add =>{
-              alert( "Error:" + error_add.error.error)
-              this.submitting = false
-            }
-          )
+          var exam:Exam = data["result"]
+          this.loadTypeList()
         },   
         error => {
           alert("error loading impro type")
-          console.log(JSON.stringify(request))
+          console.log(JSON.stringify(req))
           this.submitting = false
         }
       )

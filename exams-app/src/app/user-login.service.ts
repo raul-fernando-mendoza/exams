@@ -172,6 +172,9 @@ export class UserLoginService {
       return true;
     return false
   }
+  getUserUid(){
+    return (this.user)?this.user.uid:null
+  }  
   getUserEmail(){
     return (this.user)?this.user.email:null
   }

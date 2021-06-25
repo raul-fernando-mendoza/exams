@@ -1,18 +1,25 @@
 <mat-toolbar>
+
   <button mat-button color="primary" (click)="onCreate()" *ngIf="isAdmin" >Crear</button>
+  
   <mat-button-toggle-group multiple name="refreshgrp" aria-label="refresh group">
     <mat-button-toggle value="refresh" (click)="onRefresh()"><mat-icon>refresh</mat-icon></mat-button-toggle>
   </mat-button-toggle-group> 
+  
+  <mat-form-field appearance="fill" > 
+    <mat-label>date</mat-label>
+    <mat-select [(value)]="applicationDate" (selectionChange)="applicationDateChange()">
+      <mat-option *ngFor="let a of applicationDates" [value]="a" >
+        {{a}} 
+      </mat-option>
+    </mat-select>
+  </mat-form-field> 
 
 </mat-toolbar>
+ 
 <div class="mat-elevation-z8">
   <table mat-table class="full-width-table" matSort aria-label="Elements">
-    <!-- 
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-      <td mat-cell *matCellDef="let row"> {{ row.id }}  </td>
-    </ng-container>
-    -->
+
     <ng-container matColumnDef="materia">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>materia</th>
       <td mat-cell *matCellDef="let row">{{row.materia}}</td>
@@ -25,7 +32,7 @@
 
     <ng-container matColumnDef="estudiante">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-      <td mat-cell *matCellDef="let row">{{row.estudiante}}</td>
+      <td mat-cell *matCellDef="let row">{{row.student_name}}</td>
     </ng-container>
 
     <ng-container matColumnDef="maestro">
@@ -51,15 +58,14 @@
     <ng-container matColumnDef="completado">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>completado</th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onEdit(row.id)" *ngIf="row.completado != 1 && (isEvaluador() || isAdmin() )">Edit</button> 
+        <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completado != 1 && (isEvaluador() || isAdmin() )">Edit</button> 
         <span *ngIf="row.completado == 1">{{ row.calificacion }}</span>
       </td>
-      
     </ng-container> 
 
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-      <td mat-cell *matCellDef="let row"> <!--{{ row.id }}  -->
+      <td mat-cell *matCellDef="let row"> 
         <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="isAdmin()">
           <mat-icon>more_vert</mat-icon>
         </button>                                    
@@ -68,7 +74,7 @@
             <mat-icon>delete</mat-icon>
             <span>borrar</span>
           </button>
-          <button mat-menu-item color="primary" (click)="onEdit(row.id)" [disabled]="submitting">
+          <button mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
             <mat-icon>edit</mat-icon>
             <span>Corregir</span>
           </button>             
@@ -85,4 +91,6 @@
       [pageSize]="50"
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
+
 </div>
+
