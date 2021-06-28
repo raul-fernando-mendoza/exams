@@ -32,7 +32,7 @@ export interface ExamenesImprovisacionItem {
   parametro: string
 
   fechaApplicacion: string
-  completado:boolean
+  completed:boolean
   calificacion:number
 }
 

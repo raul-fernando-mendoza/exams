@@ -39,16 +39,17 @@ export class EiApParameterFormComponent implements OnInit {
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
     }
   
+   
   examGrade:FormGroup = this.fb.group({
     id: [null],
     exam_id:[null],
     exam_label:[null],
 
-    course:[null],
+    course:[null, Validators.required],
     completed: [null],
-    applicationDate:[null],
+    applicationDate:[null, Validators.required],
 
-    student_uid:[null],
+    student_uid:[null, Validators.required],
     student_name:[null],
 
 
@@ -486,9 +487,36 @@ export class EiApParameterFormComponent implements OnInit {
   getformValue(){
     return JSON.stringify(this.examGrade.value)
   }  
- 
-}
 
+  isAdmin(){
+    return this.userLoginService.hasRole("admin")
+  }
+
+  updateHeader(){
+    console.log("close")
+    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
+    var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
+    var req:ExamGradeRequest = {
+      examGrades:{
+        id: this.examGrade.controls.id.value,
+        title: this.examGrade.controls.title.value
+      }
+    }
+    this.userLoginService.getUserIdToken().then( token => { 
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
+        this.submitting = false
+        this.router.navigate(['/ExamenesImprovisacion']);
+      },
+      error => {
+        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+      })    
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
+  }
+}
 @Component({
   selector: 'ei-ap-parameter-comentario-dlg',
   templateUrl: 'ei-ap-parameter-comentario-dlg.html',

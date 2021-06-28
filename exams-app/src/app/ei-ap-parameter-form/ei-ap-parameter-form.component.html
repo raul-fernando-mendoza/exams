@@ -2,8 +2,14 @@
     <div class="header">
     <span>estudiante: {{examGrade.controls.student_name.value}}</span>
     <span>Materia: {{examGrade.controls.course.value}}</span>
-    <span>Titulo: {{examGrade.controls.exam_label.value}}</span>
-    <span>Expresion: {{examGrade.controls.expression.value}}</span>
+    <span>Tipo de Examen: {{examGrade.controls.exam_label.value}}</span>
+    <span *ngIf="!isAdmin() && examGrade.controls.title.value" >Titulo: {{examGrade.controls.title.value}}</span>
+    <mat-form-field *ngIf="isAdmin()" class="example-full-width" (change)="updateHeader()">
+        <mat-label>Titulo</mat-label>
+        <input matInput  formControlName="title">
+    </mat-form-field>   
+
+    <span *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</span>
     <span>ApplicationDate: {{examGrade.controls.applicationDate.value}}</span>
     
     </div>
@@ -11,8 +17,6 @@
     <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index" >
         <div>Maestra: {{p.controls.evaluator_name.value}}</div>
         <div>parameter:{{p.controls.label.value}}</div>
-        <div>completed:{{p.controls.completed.value}}</div>
-        
 
 
         <div [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let j=index" >

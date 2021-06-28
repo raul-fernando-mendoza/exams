@@ -140,20 +140,20 @@ export interface ParameterGrade{
 export interface ExamGrade{
   id: string
 
-  exam_id:string
-  exam_label:string
+  exam_id?:string
+  exam_label?:string
 
-  course: string
-  completed: string
-  applicationDate:Date
+  course?: string
+  completed?: string
+  applicationDate?:Date
 
-  student_uid:string
-  student_name:string
+  student_uid?:string
+  student_name?:string
 
-  title:string
-  expression:string
+  title?:string
+  expression?:string
 
-  score:number
+  score?:number
 
   parameterGrades?:ParameterGrade[]
 }

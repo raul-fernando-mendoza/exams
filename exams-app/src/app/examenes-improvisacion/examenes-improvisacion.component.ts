@@ -15,7 +15,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 @Component({
   selector: 'app-examenes-improvisacion',
   templateUrl: './examenes-improvisacion.component.html',
-  styleUrls: ['./examenes-improvisacion.component.css']
+  styleUrls: ['./examenes-improvisacion.component.css'] 
 })
 export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -25,12 +25,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completado',"id"];
+  displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
   
 
   applicationDate = null
-  evaluador_uid
-  completado
+  evaluador_uid = null
+  hideCompleted = true
+  periodicRefresh = false
   applicationDates = []
 
   constructor( 
@@ -50,12 +51,11 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     console.log("on init called")
 
     if( this.isAdmin() || this.isReadOnly() ){
-      this.completado = null
+      this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
       this.evaluador_uid = null
-      this.applicationDate = null
+      this.applicationDate = localStorage.getItem('applicationDate') 
     }
     else{
-      this.completado = false
       this.evaluador_uid = this.userLoginService.getUserUid()
       this.applicationDate = new Date().toISOString().slice(0, 10)
     }
@@ -73,7 +73,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     this.userLoginService.getUserIdToken().then(
       token => {
         this.getApplicationDates(token)
-        this.updateList(token, this.completado, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
@@ -86,7 +86,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )
   }
 
-  updateList( token , completado, evaluador_uid , applicationDate){
+  updateList( token , hideCompleted, evaluador_uid , applicationDate){
+    var showClosed = null
+    if ( hideCompleted == true ){
+      showClosed = false
+    }
+    else{
+      showClosed = null
+    }
     var request:ExamGradeMultipleRequest = {
       examGrades:[{
         id:null,
@@ -115,7 +122,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             evaluator_uid:evaluador_uid,
             evaluator_name:null,
          
-            completed:completado
+            completed:showClosed
           
           }
         ]
@@ -148,7 +155,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               tipo: examGrade.exam_label,
               parametro:parameterGrade.label,
               fechaApplicacion:examGrade.applicationDate.toString().substring(0, 10), 
-              completado: parameterGrade.completed,
+              completed: parameterGrade.completed,
               calificacion:(parameterGrade.score)?parameterGrade.score:0
             }
             datavalues.push(obj)
@@ -230,25 +237,27 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
   timerId = null
 
-  onRefresh(){
-    if( this.timerId != null ){
+  periodicRefreshChange(){
+    
+    if( this.periodicRefresh == false ){
       console.log("removing timeout")
       clearInterval(this.timerId);
       this.timerId = null
     }
     else{
+      this.applicationFilterChange()
       console.log("adding timeout")
-      this.ngOnInit()
-      this.timerId = setInterval(
+      this.applicationFilterChange()
+      this.timerId = setTimeout(
         () => { 
           console.log("calling refresh")
-          this.ngOnInit() 
+          this.periodicRefreshChange()
         }
-        , 20000);
+        , 7000);
     }
   }
   getApplicationDates(token){
-    var applicationDates = [""]
+    var applicationDates = []
 
     var req = {
       examGrades:[{
@@ -264,17 +273,20 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             applicationDates.push(a)
           }
         }
+        this.applicationDates =[""].concat(applicationDates.sort().reverse())
       },
       error => {
         alert("error getApplicationDates "  + error.errorCode + " " + error.errorMessage)
     })    
-    this.applicationDates = applicationDates  
+     
   }
-  applicationDateChange(){
+  applicationFilterChange(){
     console.log("date changed to:" + this.applicationDate)
+    localStorage.setItem('hideCompleted' , this.hideCompleted.toString())
+    localStorage.setItem('applicationDate', this.applicationDate.toString())    
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.completado, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
