@@ -113,9 +113,9 @@ export interface CriteriaGrade{
   id:string
   idx?:number  
   label?: string
-  isSelected?:boolean  
-  score?:number
   description?: string
+  isSelected?:boolean  
+  score?:number  
   aspectGrades?: AspectGrade[]
 }
 
@@ -123,6 +123,7 @@ export interface ParameterGrade{
   id: string
   idx?: number
   label?: string
+  description?:string
   type?:string
   scoreType?: string
   score?:number

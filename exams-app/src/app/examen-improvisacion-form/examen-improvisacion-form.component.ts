@@ -172,16 +172,19 @@ export class ExamenImprovisacionFormComponent {
             id:null,
             idx:null,
             label:null,
+            description:null,
             scoreType:null,
             criterias:[{
               id:null,
               label:null,
+              description:null,
               idx:null,
               initiallySelected:null,              
               aspects:[{
                 id:null,
                 idx:null,
-                label:null
+                label:null,
+                description:null,
               }]
             }]
           }]
@@ -223,6 +226,7 @@ export class ExamenImprovisacionFormComponent {
       id: [p.id],
       idx: [p.idx],
       label: [p.label],
+      description: [p.description],
       scoreType: [p.scoreType],
       score: [null],
       evaluator_uid:[null, Validators.required],
@@ -273,7 +277,7 @@ export class ExamenImprovisacionFormComponent {
       isGraded:[true],
       score:[null],
       hasMedal:[false],
-      medalDescription:[a.description]
+      medalDescription:[null]
     })
     question_array.push(g)
 

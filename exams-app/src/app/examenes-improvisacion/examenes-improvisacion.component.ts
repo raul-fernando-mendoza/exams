@@ -94,6 +94,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     else{
       showClosed = null
     }
+    if( applicationDate == ""){
+      applicationDate = null
+    }
     var request:ExamGradeMultipleRequest = {
       examGrades:[{
         id:null,
@@ -165,7 +168,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
-        this.table.dataSource = this.dataSource;            
+        this.table.dataSource = this.dataSource;  
+        console.log("update completed")          
     
       },
       error => {
@@ -283,7 +287,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   applicationFilterChange(){
     console.log("date changed to:" + this.applicationDate)
     localStorage.setItem('hideCompleted' , this.hideCompleted.toString())
-    localStorage.setItem('applicationDate', this.applicationDate.toString())    
+    localStorage.setItem('applicationDate', this.applicationDate != null ? this.applicationDate.toString() : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
         this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)

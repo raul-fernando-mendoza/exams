@@ -16,7 +16,8 @@
 
     <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index" >
         <div>Maestra: {{p.controls.evaluator_name.value}}</div>
-        <div>parameter:{{p.controls.label.value}}</div>
+        <div>Parametro:{{p.controls.label.value}}</div>
+        <div>Descripcion:{{p.controls.description.value}}</div>
 
 
         <div [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let j=index" >
