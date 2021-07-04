@@ -34,6 +34,7 @@ export interface ExamenesImprovisacionItem {
   fechaApplicacion: string
   completed:boolean
   calificacion:number
+  certificate_url:string
 }
 
 // TODO: replace this with real data from your application

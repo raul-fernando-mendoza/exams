@@ -155,6 +155,7 @@ export interface ExamGrade{
   expression?:string
 
   score?:number
+  certificate_url?:string
 
   parameterGrades?:ParameterGrade[]
 }
