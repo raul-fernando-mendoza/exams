@@ -1,0 +1,12 @@
+#sudo nano /lib/systemd/system/videos_compress.service
+#sudo systemctl enable videos_compress.service
+#sudo systemctl start videos_compress.service
+#sudo systemctl status videos_compress.service 
+[Unit]
+Description=compress files in /samba/claudia/to_compress
+
+[Service]
+ExecStart=/var/inotify/videos_compress_load.sh
+
+[Install]
+WantedBy=multi-user.target

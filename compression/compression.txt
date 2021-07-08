@@ -1,0 +1,23 @@
+ffmpeg -i test_large.mp4 -vcodec libx265 -crf 28 -vf "scale=1024:-1" test_large.mp4_reduced.mp4
+
+
+ffmpeg -nostdin -i /samba/claudia/IMG_4152.MOV -vcodec libx264 -crf 28 -vf "scale=1024:-1" /tmp/c_IMG_4152.MOV && rm -f ${dir}${file} && gsutil mv ${compressedTargetfile} gs://celtic-bivouac-307316.appspot.com/videos
+
+
+gcloud pubsub topics publish video-files-received --message="/samba/claudia/IMG 2153.MOV"
+
+gcloud pubsub subscriptions create process-video-files-subscription --topic=video-files-received
+
+gcloud pubsub subscriptions pull video-files-received-sub --format="value(DATA)" --auto-ack
+
+
+            compressedTargetfile="/tmp/c_${file}"
+            ffmpeg -nostdin -i ${dir}${file} -vcodec libx264 -crf 28 -vf "scale=1024:-1" ${compressedTargetfile} 
+            gsutil mv ${compressedTargetfile} gs://celtic-bivouac-307316.appspot.com/videos
+            #rm -f ${dir}${file}
+
+
+
+file=$1
+$list=$(find '/samba/claudia/$file' -not -newermt '-10 seconds')
+for f in $list

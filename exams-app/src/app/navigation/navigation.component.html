@@ -24,6 +24,7 @@
       <a *ngIf="isAdmin()" mat-list-item routerLink="/eiReporte">Reportes</a>      
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
       <a *ngIf="!isLoggedIn()" mat-list-item  routerLink="/login-selector">Login</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/videos-list">Videos</a>
 
       <button mat-stroked-button  aria-label="logout" (click)="logout()" *ngIf="isLoggedIn()">
         logout

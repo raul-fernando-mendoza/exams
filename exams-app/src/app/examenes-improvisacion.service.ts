@@ -72,4 +72,23 @@ public authApiInterface(action, token, data): Observable<Object> {
 }
 
 
+public gsApiInterface(action, token, data): Observable<Object> {
+
+  var url = this.apiURL 
+
+  var request_data = {
+    "service":"gs",
+    "bucket":"celtic-bivouac-307316.appspot.com",
+    "action":action,
+    "token":token,
+    "data":data
+  }
+
+  var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+  return this.http.post(url, request_data, {headers: myheaders})
+}
+
+
 }

@@ -11,7 +11,7 @@ import { UserLoginService } from '../user-login.service';
 })
 export class UsersListComponent implements OnInit {
 
-  roles = ['admin','readonly','evaluador'];
+  roles = ['admin','readonly','evaluador','estudiante'];
 
   users_formarray = new FormArray([])
 
