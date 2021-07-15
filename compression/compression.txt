@@ -19,5 +19,12 @@ gcloud pubsub subscriptions pull video-files-received-sub --format="value(DATA)"
 
 
 file=$1
-$list=$(find '/samba/claudia/$file' -not -newermt '-10 seconds')
+$list=$(find /samba/claudia/* ! -newerat '-10 seconds')
+
+rm -f /tmp/IMG_2153.MOV && ffmpeg -nostdin -i /samba/claudia/to_compress/IMG_2153.MOV -vcodec libx264 -crf 28 -vf "scale=1280:-2" /tmp/IMG_2153.MOV
+
+ffmpeg -nostdin -i /samba/claudia/rejected/1_otro.MOV -vf "scale=-2:1280:flags=lanczos" -vcodec libx264 -profile:v main -level 3.1 -preset medium -crf 23 -x264-params ref=4 -acodec copy -movflags +faststart /samba/claudia/compressed/1_otro.MOV.MOV
 for f in $list
+
+gsutil mv '/var/videos_compress/tmp/video_1_bonito.mp4' gs://celtic-bivouac-307316.appspot.com/videos
+gsutil cp gs://celtic-bivouac-307316.appspot.com/videos/video_1_bonito.mp4 '/var/videos_compress/tmp/video_1_bonito.mp4'

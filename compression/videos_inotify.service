@@ -1,12 +1,14 @@
-#sudo nano /lib/systemd/system/videos_inotify.service
+#sudo vi /lib/systemd/system/videos_inotify.service
 #sudo systemctl enable videos_inotify.service
 #sudo systemctl start videos_inotify.service
-#sudo systemctl status videos_inotify.service 
+#sudo systemctl status videos_inotify.service
 [Unit]
 Description=Notify when videos arrive to /samba/claudia/to_compress
 
 [Service]
-ExecStart=/var/inotify/videos_receive_notify_wait.sh
+ExecStart=/etc/videos_compress/videos_inotify.sh
+User=claudia
+Group=sambashare
 
 [Install]
 WantedBy=multi-user.target
