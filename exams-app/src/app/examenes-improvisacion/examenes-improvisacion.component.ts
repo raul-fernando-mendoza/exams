@@ -121,6 +121,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         expression:null,
 
         score:null,
+        certificate_url:null,
       
         parameterGrades:[
           {
@@ -169,7 +170,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               parametro:parameterGrade.label,
               fechaApplicacion:application_date_src, 
               completed: parameterGrade.completed,
-              calificacion:(parameterGrade.score)?parameterGrade.score:0
+              calificacion:(parameterGrade.score)?parameterGrade.score:0,
+              certificate_url:examGrade.certificate_url
             }
             datavalues.push(obj)
 
@@ -312,5 +314,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }
       }
     )    
+  }
+  onCertificate(url){
+    console.log("url:" + url)
   }
 }

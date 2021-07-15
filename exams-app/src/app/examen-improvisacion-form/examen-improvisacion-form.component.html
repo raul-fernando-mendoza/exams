@@ -52,6 +52,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
+              <mat-checkbox formControlName="isSelected" (change)="onParameterChange(p)"></mat-checkbox>
               
               <div *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let ci=index" >
                 <div  [formGroup]="c">

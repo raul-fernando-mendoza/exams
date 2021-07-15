@@ -88,6 +88,11 @@
             <mat-icon>beenhere</mat-icon>
             <a target="_blank" href="{{row.certificate_url}}">cerficado</a>
           </button>             
+          <button *ngIf="row.certificate_url != null" mat-menu-item color="primary" (click)="onCertificate(row.certificate_url)" [disabled]="submitting">
+            <mat-icon>beenhere</mat-icon>
+            <a target="_blank" href="{{row.certificate_url}}">cerficado</a>
+          </button>             
+
         </mat-menu>         
       </td>
     </ng-container>

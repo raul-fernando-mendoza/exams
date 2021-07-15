@@ -234,6 +234,7 @@ export class ExamenImprovisacionFormComponent {
       student_uid:[null],
       student_name:[null],
       completed: [false],
+      isSelected:[true],
       criteriaGrades: new FormArray([])         
     })
     parameterGrade_array.push(g) 
@@ -299,7 +300,19 @@ export class ExamenImprovisacionFormComponent {
     return JSON.stringify(this.examGrade.value)
   }  
 
-
+  replacerRemoveUnselectedParameters(key, value:[]) {
+    // Filtrando propiedades 
+    if (key === "parameterGrades") {
+      let parametersGrade_array = []
+      for(let i=0; i<value.length; i++){
+        if( value[i]["isSelected"] == true){
+          parametersGrade_array.push(value[i])
+        }
+      }
+      return parametersGrade_array;
+    }
+    return value;
+  }  
 
   onSubmit() {
     this.submitting = true
@@ -317,7 +330,8 @@ export class ExamenImprovisacionFormComponent {
     else{
       var data = this.examGrade.value
       
-      var json:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormFormService.replacer, 4) )
+      var json0:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormFormService.replacer, 4) )
+      var json:ExamGrade = JSON.parse( JSON.stringify(json0, this.replacerRemoveUnselectedParameters, 4) )
 
 
       var req :ExamGradeRequest = {
@@ -375,5 +389,17 @@ export class ExamenImprovisacionFormComponent {
       } 
     }
   }    
-
+  onParameterChange(p){
+    console.log("parameterChange")
+    if( !p.value.isSelected){
+      //p.controls.evaluator_uid.clearValidators()
+      p.controls.evaluator_uid.disable()
+      p.controls.evaluator_name.disable()
+    }
+    else{
+      //p.controls.evaluator_uid.setValidators(Validators.required)
+      p.controls.evaluator_uid.enable()
+      p.controls.evaluator_name.enable()
+    }
+  }
 }
