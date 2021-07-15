@@ -2,19 +2,17 @@
 
   <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
   
-  <button mat-button value="refresh" (click)="applicationFilterChange()"><mat-icon>refresh</mat-icon></button>
+  <button mat-button value="refresh" (click)="applicationFilterChange(null)"><mat-icon>refresh</mat-icon></button>
   
 
-  <mat-form-field class="filter_element"  appearance="fill" > 
-    <mat-label>fecha</mat-label>
-    <mat-select [(value)]="applicationDate" (selectionChange)="applicationFilterChange()">
-      <mat-option *ngFor="let a of applicationDates" [value]="a" >
-        {{a}} 
-      </mat-option>
-    </mat-select>
-  </mat-form-field> 
-
-  <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange()" aria-label="examenes abiertos solamente">Abiertos</mat-slide-toggle>
+  <mat-form-field appearance="fill">
+    <mat-label>date {{ applicationDate }}: </mat-label>
+    <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange($event)" aria-label="examenes abiertos solamente">Abiertos</mat-slide-toggle>
   <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">Refresh</mat-slide-toggle>
 
 </mat-toolbar>

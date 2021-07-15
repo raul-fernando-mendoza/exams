@@ -7,7 +7,8 @@ import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { ExamGrade, ExamGradeMultipleRequest, ParameterGrade, ParameterGradeRequest } from '../exams/exams.module';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 
 
@@ -28,12 +29,12 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
   
 
-  applicationDate = null
   evaluador_uid = null
   student_uid = null
   hideCompleted = true
   periodicRefresh = false
   applicationDates = []
+  applicationDate = null
 
   constructor( 
       private fb: FormBuilder 
@@ -51,20 +52,25 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     console.log("on init called")
 
+    var saved_applicationDate = localStorage.getItem('applicationDate')
+    if (saved_applicationDate && saved_applicationDate != 'null'){
+      this.applicationDate = new Date( saved_applicationDate )
+    }
+    
+    this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
+
     if( this.isAdmin() || this.isReadOnly() ){
-      this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
+      
       this.evaluador_uid = null
-      this.applicationDate = localStorage.getItem('applicationDate') ? localStorage.getItem('applicationDate') : null
+      
     }
     else if ( this.isEvaluador() ){
       this.hideCompleted = true
       this.evaluador_uid = this.userLoginService.getUserUid()
-      this.applicationDate = new Date().toISOString().slice(0, 10)
     }
     else{
       this.hideCompleted = false
       this.student_uid = this.userLoginService.getUserUid()
-      this.applicationDate = new Date().toISOString().slice(0, 10)
     }
 
     if( this.isReadOnly() ){
@@ -79,7 +85,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.getApplicationDates(token)
         this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
       },
       error => {
@@ -101,8 +106,11 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     else{
       showClosed = null
     }
-    if( applicationDate == ""){
+    if( applicationDate == null || applicationDate == "" ){
       applicationDate = null
+    }
+    else{
+      applicationDate = applicationDate.toISOString().split('T')[0]
     }
     var request:ExamGradeMultipleRequest = {
       examGrades:[{
@@ -263,7 +271,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       this.timerId = null
     }
     else{
-      this.applicationFilterChange()
+      this.applicationFilterChange(null)
       console.log("adding timeout")
       this.timerId = setTimeout(
         () => { 
@@ -273,34 +281,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         , 7000);
     }
   }
-  getApplicationDates(token){
-    var applicationDates = []
-
-    var req = {
-      examGrades:[{
-        applicationDate:null
-      }]
+  applicationFilterChange(e){
+    if ( e instanceof MatDatepickerInputEvent ){
+      if ( e.value == null ){
+        this.applicationDate = null
+      }
+      else this.applicationDate = e.value
     }
-    this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(
-      data => {
-        var resultSet = data["result"]  
-        for( var i=0; i<resultSet.length; i++){
-          let a = resultSet[i]["applicationDate"] 
-          if( applicationDates.indexOf(a) === -1 ){
-            applicationDates.push(a)
-          }
-        }
-        this.applicationDates =[""].concat(applicationDates.sort().reverse())
-      },
-      error => {
-        alert("error getApplicationDates "  + error.errorCode + " " + error.errorMessage)
-    })    
-     
-  }
-  applicationFilterChange(){
     console.log("date changed to:" + this.applicationDate)
     localStorage.setItem('hideCompleted' , this.hideCompleted.toString())
-    localStorage.setItem('applicationDate', this.applicationDate != null ? this.applicationDate.toString() : null)    
+    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
         this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
