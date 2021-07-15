@@ -49,12 +49,8 @@ import { LoginSelectorComponent } from './login-selector/login-selector.componen
 import { WelcomeComponent } from './welcome/welcome.component'; 
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-<<<<<<< HEAD
 import { VideosListComponent } from './videos-list/videos-list.component';
 import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component'; 
-=======
-import { VideosListComponent } from './videos-list/videos-list.component'; 
->>>>>>> 494fe68 (adding video folders)
 
 
 @NgModule({
