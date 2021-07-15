@@ -1,0 +1,19 @@
+
+
+<div *ngFor="let f of urls; let i=index">
+    <a target="_blank" href="{{f.url}}">{{f.name}}</a>
+</div>
+
+
+<div *ngFor="let f of urls; let i=index">
+<video class="video-js vjs-default-skin" controls preload="auto"
+       width="640" height="264" vjs-video vjs-setup="options">
+    <source src="{{f.url}}" type='video/mp4' />
+</video>
+</div>
+
+<div *ngFor="let f of urls; let i=index">
+    <source src="{{f.url}}" type='video/mp4' />
+    <app-vjs-player [src]="f.url"></app-vjs-player>
+</div>
+

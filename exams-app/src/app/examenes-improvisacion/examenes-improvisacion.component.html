@@ -5,7 +5,7 @@
   <button mat-button value="refresh" (click)="applicationFilterChange()"><mat-icon>refresh</mat-icon></button>
   
 
-  <mat-form-field *ngIf="isAdmin()" class="filter_element"  appearance="fill" > 
+  <mat-form-field class="filter_element"  appearance="fill" > 
     <mat-label>fecha</mat-label>
     <mat-select [(value)]="applicationDate" (selectionChange)="applicationFilterChange()">
       <mat-option *ngFor="let a of applicationDates" [value]="a" >
@@ -14,8 +14,8 @@
     </mat-select>
   </mat-form-field> 
 
-  <mat-slide-toggle *ngIf="isAdmin()" class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange()" aria-label="examenes abiertos solamente">Abiertos</mat-slide-toggle>
-  <mat-slide-toggle *ngIf="isAdmin()" class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">Refresh</mat-slide-toggle>
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange()" aria-label="examenes abiertos solamente">Abiertos</mat-slide-toggle>
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">Refresh</mat-slide-toggle>
 
 </mat-toolbar>
  
@@ -68,17 +68,25 @@
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
       <td mat-cell *matCellDef="let row"> 
-        <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="isAdmin()">
+        <button mat-icon-button [matMenuTriggerFor]="menu" >
           <mat-icon>more_vert</mat-icon>
         </button>                                    
         <mat-menu #menu="matMenu" >
-          <button mat-menu-item color="primary" (click)="onRemove(row)" [disabled]="submitting">
+          <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onRemove(row)" [disabled]="submitting" >
             <mat-icon>delete</mat-icon>
             <span>borrar</span>
           </button>
-          <button mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+          <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
             <mat-icon>edit</mat-icon>
             <span>Corregir</span>
+          </button> 
+          <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+            <mat-icon>view</mat-icon>
+            <span>ver</span>
+          </button>                        
+          <button *ngIf="row.certificate_url != null" mat-menu-item color="primary" (click)="onCertificate(row.certificate_url)" [disabled]="submitting">
+            <mat-icon>beenhere</mat-icon>
+            <a target="_blank" href="{{row.certificate_url}}">cerficado</a>
           </button>             
         </mat-menu>         
       </td>

@@ -19,7 +19,7 @@ export const environment = {
     measurementId: "G-ZHNWBMKVQ2"
    // apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
   },
-  apiURL:"http://192.168.15.12:10000/api"
+  apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 

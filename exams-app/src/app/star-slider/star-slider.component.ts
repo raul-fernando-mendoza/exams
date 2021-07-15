@@ -1,4 +1,4 @@
-import { EventEmitter, Optional, Output, ViewChild } from '@angular/core';
+import { EventEmitter, Input, Optional, Output, ViewChild } from '@angular/core';
 import { HostBinding } from '@angular/core';
 import { Self } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
@@ -15,6 +15,7 @@ import { Observable, Subject } from 'rxjs';
 export class StarSliderComponent  implements ControlValueAccessor {
 
   @ViewChild('location') location;
+  @Input() private enabled = true;
   @Output() private valueChange = new EventEmitter();
   widget;
 
@@ -46,13 +47,15 @@ export class StarSliderComponent  implements ControlValueAccessor {
   }
   percentage = 100
   onContainerClick(event: MouseEvent): void {
-    let pct = this.getRoundPct( (event.offsetX/250) * 100 )
-    if(pct != this.percentage){
-      this.percentage = pct
-     // console.log("calling on change on " + this.percentage/100)
-      this._onChange(this.percentage/100)
-      this.valueChange.emit(this.percentage/100);
-    }      
+    if( this.enabled ){
+      let pct = this.getRoundPct( (event.offsetX/250) * 100 )
+      if(pct != this.percentage){
+        this.percentage = pct
+      // console.log("calling on change on " + this.percentage/100)
+        this._onChange(this.percentage/100)
+        this.valueChange.emit(this.percentage/100);
+      }    
+    }  
   }
 
   getRoundPct(pct):number{

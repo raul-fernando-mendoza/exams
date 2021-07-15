@@ -30,6 +30,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
   applicationDate = null
   evaluador_uid = null
+  student_uid = null
   hideCompleted = true
   periodicRefresh = false
   applicationDates = []
@@ -53,10 +54,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     if( this.isAdmin() || this.isReadOnly() ){
       this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
       this.evaluador_uid = null
-      this.applicationDate = localStorage.getItem('applicationDate') 
+      this.applicationDate = localStorage.getItem('applicationDate') ? localStorage.getItem('applicationDate') : null
+    }
+    else if ( this.isEvaluador() ){
+      this.hideCompleted = true
+      this.evaluador_uid = this.userLoginService.getUserUid()
+      this.applicationDate = new Date().toISOString().slice(0, 10)
     }
     else{
-      this.evaluador_uid = this.userLoginService.getUserUid()
+      this.hideCompleted = false
+      this.student_uid = this.userLoginService.getUserUid()
       this.applicationDate = new Date().toISOString().slice(0, 10)
     }
 
@@ -107,7 +114,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         completed: null,
         applicationDate:applicationDate,
       
-        student_uid:null,
+        student_uid:this.student_uid,
         student_name:null,
       
         title:null,
@@ -142,11 +149,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       result => { 
         var examImprovisationArray:ExamGrade[] = result["result"];
         let datavalues: ExamenesImprovisacionItem[] = [];
+
+        let applicationDates = []
+
         for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
           let examGrade:ExamGrade = examImprovisationArray[i]
           for( var j=0; j< examGrade.parameterGrades.length; j++){
             let parameterGrade:ParameterGrade = examGrade.parameterGrades[j]
-      
+            let application_date_src = examGrade.applicationDate.toString().substring(0, 10)
             //console.log(exam.id)
             var obj:ExamenesImprovisacionItem = {
               examGrade_id:examGrade.id,
@@ -157,12 +167,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               maestro:parameterGrade.evaluator_name,
               tipo: examGrade.exam_label,
               parametro:parameterGrade.label,
-              fechaApplicacion:examGrade.applicationDate.toString().substring(0, 10), 
+              fechaApplicacion:application_date_src, 
               completed: parameterGrade.completed,
               calificacion:(parameterGrade.score)?parameterGrade.score:0
             }
             datavalues.push(obj)
+
           }
+          
         }  
         
         this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
@@ -251,7 +263,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     else{
       this.applicationFilterChange()
       console.log("adding timeout")
-      this.applicationFilterChange()
       this.timerId = setTimeout(
         () => { 
           console.log("calling refresh")

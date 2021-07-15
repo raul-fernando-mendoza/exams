@@ -3,14 +3,14 @@
     <span>estudiante: {{examGrade.controls.student_name.value}}</span>
     <span>Materia: {{examGrade.controls.course.value}}</span>
     <span>Tipo de Examen: {{examGrade.controls.exam_label.value}}</span>
-    <span *ngIf="!isAdmin() && examGrade.controls.title.value" >Titulo: {{examGrade.controls.title.value}}</span>
-    <mat-form-field *ngIf="isAdmin()" class="example-full-width" (change)="updateHeader()">
+    <mat-form-field class="example-full-width" (change)="updateHeader()">
         <mat-label>Titulo</mat-label>
         <input matInput  formControlName="title">
     </mat-form-field>   
 
     <span *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</span>
     <span>ApplicationDate: {{examGrade.controls.applicationDate.value}}</span>
+
     
     </div>
 
@@ -18,6 +18,7 @@
         <div>Maestra: {{p.controls.evaluator_name.value}}</div>
         <div>Parametro:{{p.controls.label.value}}</div>
         <div>Descripcion:{{p.controls.description.value}}</div>
+        <span *ngIf="p.controls.completed.value == true" > <b>score: {{p.controls.score.value.value}} </b></span>
 
 
         <div [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let j=index" >
@@ -31,9 +32,9 @@
                     
                     <div *ngIf="p.controls.scoreType.value == 'starts'">
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
-                        <app-star-slider formControlName="score" (valueChange)="onChangeStarts(a)"></app-star-slider>
+                        <app-star-slider [enabled]="!isDisabled" formControlName="score" (valueChange)="onChangeStarts(a)"></app-star-slider>
                     </div>
-                    <div *ngIf="p.controls.scoreType.value != 'starts'" class="padded" >
+                    <div  *ngIf="p.controls.scoreType.value != 'starts'" class="padded" >
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
 
                         <div>
@@ -66,7 +67,7 @@
                             </mat-form-field> 
                             <mat-icon color="primary" *ngIf="a.controls.hasMedal.value">military_tech</mat-icon>                   
                         </div>
-                        <mat-form-field appearance="legacy" >
+                        <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
                             <input matInput placeholder="Elementos faltantes" maxlength="200" formControlName="missingElements" (change)="onChangeAspect(a)" >
                         </mat-form-field> 
@@ -75,7 +76,9 @@
                 </div> 
             </div>
         </div>
-        <button mat-raised-button color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
+        <div class="comment" *ngIf="p.controls.completed.value == true" >score: {{p.controls.evaluator_comment.value}} </div>
+
+        <button mat-raised-button *ngIf="!isDisabled" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
     </div>
 </div>
 

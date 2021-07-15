@@ -71,22 +71,8 @@ export class EiApParameterFormComponent implements OnInit {
 
   comentario = ""
 
-/*  
-  calificacion = -1
-  criteria_labels = {}
-  question_labels = {}
-  question_description = {}
-  estudianteNombre =""
-  maestraNombre = ""
-  materia =""
-  title = ""
-  expression = ""
-  parametro=""
-  tipo=""
-  parametro_descripcion=""
-  elementCount = 0
- 
- */
+  isDisabled = null
+
   
   nvl(val1, val2){
     return (val1!=null)?val1:val2
@@ -104,7 +90,6 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     var request:ExamGradeRequest = {
       examGrades:{
         id: this.examGrade_id,
@@ -174,10 +159,18 @@ export class EiApParameterFormComponent implements OnInit {
         this.examGrade.controls.student_uid.setValue(e.student_uid)
         this.examGrade.controls.student_name.setValue(e.student_name)
         this.examGrade.controls.title.setValue(e.title)
+
+        
         this.examGrade.controls.expression.setValue(e.expression)
         this.examGrade.controls.score.setValue(e.score)
 
         var p = e.parameterGrades[0]
+
+        this.isDisabled = p.completed
+
+        if( this.isDisabled ){
+          this.examGrade.get("title").disable()
+        }        
 
         this.parameterGrade_scoreType = p.scoreType
 
@@ -187,11 +180,11 @@ export class EiApParameterFormComponent implements OnInit {
           label:[p.label],
           description:[p.description],
           scoreType:[p.scoreType],
-          score:[p.score],
+          score:[{value:p.score, disable: this.isDisabled}],
           evaluator_uid:[p.evaluator_uid],
           evaluator_name:[p.evaluator_name],
           evaluator_comment:[p.evaluator_comment],
-          completed:[e.completed],
+          completed:[p.completed],
           criteriaGrades: new FormArray([])
         })
 
@@ -268,10 +261,10 @@ export class EiApParameterFormComponent implements OnInit {
       label:[a.label],
       description:[a.description],
       isGraded:[a.isGraded],
-      score:[score],
-      hasMedal:[a.hasMedal],
-      medalDescription:[a.medalDescription],
-      missingElements:[a.missingElements]
+      score:[{ value:score, disabled:this.isDisabled}],
+      hasMedal:[{ value:a.hasMedal, disabled:this.isDisabled}],
+      medalDescription:[{ value:a.medalDescription, disabled:this.isDisabled}],
+      missingElements:[{ value:a.missingElements, disabled:this.isDisabled}]
     })
     question_array.push(g)
 
@@ -298,7 +291,7 @@ export class EiApParameterFormComponent implements OnInit {
     else{
       a.controls.isGraded.setValue(false)
     }
-    this.submitting = true
+    
     var req:AspectGradeRequest = {
       aspectGrades:{
         id:a.controls.id.value,
@@ -314,16 +307,16 @@ export class EiApParameterFormComponent implements OnInit {
 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         console.log("aspect updated")
-        this.submitting = false
+        
       },
       error => {
         alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
+      
       }) 
     },
     error => {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      this.submitting = false
+    
     })  
 
   }
@@ -492,6 +485,10 @@ export class EiApParameterFormComponent implements OnInit {
 
   isAdmin(){
     return this.userLoginService.hasRole("admin")
+  }
+
+  isEvaluador(){
+    return this.userLoginService.hasRole("evaluador")
   }
 
   updateHeader(){

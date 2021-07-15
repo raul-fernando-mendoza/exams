@@ -48,7 +48,9 @@ import { RoleListComponent } from './role-list/role-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component'; 
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle'; 
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { VideosListComponent } from './videos-list/videos-list.component';
+import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component'; 
 
 
 @NgModule({
@@ -70,7 +72,9 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     UsersListComponent,
     RoleListComponent,
     LoginSelectorComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    VideosListComponent,
+    AppVjsPlayerComponent
   ],
   imports: [
     BrowserModule,

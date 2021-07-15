@@ -63,6 +63,9 @@ export class NavigationComponent {
   isEvaluator(){
     return this.userLoginService.hasRole('evaluador')
   }  
+  isStudent(){
+    return this.userLoginService.hasRole('estudiante')
+  }    
   getUserName(){
     return (this.userLoginService.getDisplayName())?this.userLoginService.getDisplayName():this.userLoginService.getUserEmail()
   }

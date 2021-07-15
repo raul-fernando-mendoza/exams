@@ -47,6 +47,7 @@ public firestoreApiInterface(action, token, data): Observable<Object> {
     "data":data
   }
 
+  console.log( JSON.stringify(request_data, null, 2))
   var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 
 

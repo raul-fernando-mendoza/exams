@@ -34,3 +34,8 @@
 .cancelation{
     margin-right: 50px;
 }
+.comment{
+    border: solid black;
+    margin-top:1em;
+    padding:0.5em;
+}
