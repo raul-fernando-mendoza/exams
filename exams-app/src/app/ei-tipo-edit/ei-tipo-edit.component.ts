@@ -662,8 +662,6 @@ export class EiTipoEditComponent implements OnInit {
       var g:FormGroup = parameter_array.controls[i] as FormGroup
       if( g.controls.id.value == p.controls.id.value){
         let group = parameter_array.at(i)
-        parameter_array.removeAt(i)
-        parameter_array.insert(i-1,group)
         var req = {
           exams:{
             id:t.controls.id.value,
@@ -677,6 +675,9 @@ export class EiTipoEditComponent implements OnInit {
         this.userLoginService.getUserIdToken().then( token => { 
           this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
             data => {
+              parameter_array.removeAt(i)
+              parameter_array.insert(i-1,group)
+     
               console.log("aspect upParameter has completed")
             },
             error => {
@@ -700,8 +701,6 @@ export class EiTipoEditComponent implements OnInit {
       var g:FormGroup = parameter_array.controls[i] as FormGroup
       if( g.controls.id.value == p.controls.id.value){
         let group = parameter_array.at(i)
-        parameter_array.removeAt(i)
-        parameter_array.insert(i+1,group)
         var req = {
           exams:{
             id:t.controls.id.value,
@@ -715,6 +714,9 @@ export class EiTipoEditComponent implements OnInit {
         this.userLoginService.getUserIdToken().then( token => { 
           this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
             data => {
+              parameter_array.removeAt(i)
+              parameter_array.insert(i+1,group)
+      
               console.log("aspect downParameter has completed")
             },
             error => {
@@ -737,7 +739,7 @@ export class EiTipoEditComponent implements OnInit {
       var p:FormGroup = event.item.data as FormGroup
       var criterias_array:FormArray = p.controls.criterias as FormArray
       var c:FormGroup = criterias_array.controls[event.previousIndex] as FormGroup
-      moveItemInArray(criterias_array.controls, event.previousIndex, event.currentIndex);
+      
       
       var req = {
         parameters:{
@@ -752,6 +754,7 @@ export class EiTipoEditComponent implements OnInit {
       this.userLoginService.getUserIdToken().then( token => { 
         this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
           data => {
+            moveItemInArray(criterias_array.controls, event.previousIndex, event.currentIndex);
             console.log("aspect downParameter has completed")
           },
           error => {
@@ -777,8 +780,7 @@ export class EiTipoEditComponent implements OnInit {
       var qg:FormGroup = aspects_array.controls[i] as FormGroup
       if( qg.controls.id.value == a.controls.id.value){
         let group = aspects_array.at(i)
-        aspects_array.removeAt(i)
-        aspects_array.insert(i-1,group)
+
         
         var req = {
           criterias:{
@@ -793,6 +795,8 @@ export class EiTipoEditComponent implements OnInit {
         this.userLoginService.getUserIdToken().then( token => { 
           this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
             data => {
+              aspects_array.removeAt(i)
+              aspects_array.insert(i-1,group)              
               console.log("aspect reorder has completed")
               
             },
@@ -816,8 +820,7 @@ export class EiTipoEditComponent implements OnInit {
       var qg:FormGroup = aspects_array.controls[i] as FormGroup
       if( qg.controls.id.value == a.controls.id.value){
         let group = aspects_array.at(i)
-        aspects_array.removeAt(i)
-        aspects_array.insert(i+1,group)
+
         
         var req = {
           criterias:{
@@ -833,6 +836,8 @@ export class EiTipoEditComponent implements OnInit {
           this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
             data => {
               console.log("aspect reorder has completed")
+              aspects_array.removeAt(i)
+              aspects_array.insert(i+1,group)              
             },
             error => {
               alert("error:" + error.error)

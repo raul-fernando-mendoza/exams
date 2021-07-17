@@ -200,7 +200,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
           this.router.navigate(['/loginForm'])
         }
         else{
-          alert("ha habido un error por favor reintente")
+          alert("ha habido un error al leer la lista de examenes:" + error.error)
         }
       }
     )        
