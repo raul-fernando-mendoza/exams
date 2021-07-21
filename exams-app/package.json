@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^11.0.9",
     "@angular/router": "^11.0.9",
     "chart.js": "^2.9.4",
+    "chartjs": "^0.3.24",
     "firebase": "^8.6.8",
     "firebase-admin": "^9.5.0",
     "rxjs": "^6.6.6",

@@ -81,7 +81,11 @@
           <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
             <mat-icon>visibility</mat-icon>
             <span>ver</span>
-          </button>                        
+          </button>  
+          <button  mat-menu-item color="primary" (click)="onGraph(row.examGrade_id)" [disabled]="submitting">
+            <mat-icon>assessment</mat-icon>
+            <span>grafico</span>
+          </button>                                  
           <button *ngIf="row.certificate_url != null" mat-menu-item color="primary" (click)="onCertificate(row.certificate_url)" [disabled]="submitting">
             <mat-icon>beenhere</mat-icon>
             <a target="_blank" href="{{row.certificate_url}}">cerficado</a>

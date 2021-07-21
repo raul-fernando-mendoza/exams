@@ -25,6 +25,7 @@ import { LoginSelectorComponent } from './login-selector/login-selector.componen
 import { WelcomeComponent } from './welcome/welcome.component';
 import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { VideosListComponent } from './videos-list/videos-list.component';
+import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component';
 const routes: Routes = [
   
   /*
@@ -51,7 +52,8 @@ const routes: Routes = [
   { path: 'login-selector', component: LoginSelectorComponent },
   { path: 'home', component: WelcomeComponent },
   { path: 'register', component: LoginFormComponent },
-  { path: 'videos-list', component: VideosListComponent }
+  { path: 'videos-list', component: VideosListComponent },
+  { path: 'examgrades-report', component: ExamgradesReportComponent },  
 ];
 
 @NgModule({

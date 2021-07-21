@@ -218,6 +218,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   onEdit(examGrade_id, parameterGrade_id){
     this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   }
+  onGraph(examGrade_id){
+    this.router.navigate(['/examgrades-report',{examGrade_id:examGrade_id}]);
+  }  
   gotoLogin() {
     this.router.navigate(['/loginForm']);
   }  

@@ -50,7 +50,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { VideosListComponent } from './videos-list/videos-list.component';
-import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component'; 
+import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component';
+import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component'; 
 
 
 @NgModule({
@@ -74,7 +75,8 @@ import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component
     LoginSelectorComponent,
     WelcomeComponent,
     VideosListComponent,
-    AppVjsPlayerComponent
+    AppVjsPlayerComponent,
+    ExamgradesReportComponent
   ],
   imports: [
     BrowserModule,
