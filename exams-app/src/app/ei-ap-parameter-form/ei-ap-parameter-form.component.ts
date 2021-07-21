@@ -166,7 +166,7 @@ export class EiApParameterFormComponent implements OnInit {
 
         var p = e.parameterGrades[0]
 
-        this.isDisabled = p.completed
+        this.isDisabled = p.completed && this.userLoginService.hasRole("admin") == false
 
         if( this.isDisabled ){
           this.examGrade.get("title").disable()
@@ -430,7 +430,7 @@ export class EiApParameterFormComponent implements OnInit {
       },
       error => {
         this.submitting = false
-        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+        alert("error updating comentario"  + error.errorCode + " " + error.errorMessage)
       })    
     },
     error => {
@@ -456,7 +456,7 @@ export class EiApParameterFormComponent implements OnInit {
         this.router.navigate(['/ExamenesImprovisacion']);
       },
       error => {
-        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+        alert("error close"  + error.errorCode + " " + error.errorMessage)
         this.submitting = false
       })    
     },
@@ -507,7 +507,7 @@ export class EiApParameterFormComponent implements OnInit {
         this.router.navigate(['/ExamenesImprovisacion']);
       },
       error => {
-        alert("error adicionando comentario"  + error.errorCode + " " + error.errorMessage)
+        alert("error updateHeader"  + error.errorCode + " " + error.errorMessage)
         this.submitting = false
       })    
     },
