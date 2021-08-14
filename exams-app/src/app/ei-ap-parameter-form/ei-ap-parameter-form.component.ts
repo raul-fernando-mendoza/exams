@@ -269,7 +269,7 @@ export class EiApParameterFormComponent implements OnInit {
     question_array.push(g)
 
   }
-  onChangeAspect(a){
+  onChangeAspect(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
     console.log("a:" +JSON.stringify(a.value))
     if ( a.controls.score.value <= 0.75){
       a.controls.medalDescription.setValue(null)
@@ -293,13 +293,22 @@ export class EiApParameterFormComponent implements OnInit {
     }
     
     var req:AspectGradeRequest = {
-      aspectGrades:{
-        id:a.controls.id.value,
-        isGraded:a.controls.isGraded.value,
-        score:Number(a.controls.score.value),
-        hasMedal:a.controls.hasMedal.value,
-        medalDescription:a.controls.medalDescription.value,
-        missingElements:a.controls.missingElements.value
+      examGrades:{
+        id:e.controls.id.value,
+        parameterGrades:{
+          id:p.controls.id.value,
+          criteriaGrades:{
+            id:c.controls.id.value,
+            aspectGrades:{
+              id:a.controls.id.value,
+              isGraded:a.controls.isGraded.value,
+              score:Number(a.controls.score.value),
+              hasMedal:a.controls.hasMedal.value,
+              medalDescription:a.controls.medalDescription.value,
+              missingElements:a.controls.missingElements.value
+            }
+          }
+        }
       }
     }
     
@@ -311,6 +320,7 @@ export class EiApParameterFormComponent implements OnInit {
       },
       error => {
         alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
+        console.log( "error:" + error.error )
       
       }) 
     },
@@ -321,18 +331,27 @@ export class EiApParameterFormComponent implements OnInit {
 
   }
 
-  onChangeStarts(a){
+  onChangeStarts(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
     console.log("changed to:" + a)
 
     this.submitting = true
     var req:AspectGradeRequest = {
-      aspectGrades:{
-        id:a.controls.id.value,
-        isGraded:true,
-        score:Number(a.controls.score.value),
-        hasMedal:null,
-        medalDescription:null,
-        missingElements:null
+      examGrades:{
+        id:e.controls.id.value,
+        parameterGrades:{
+          id:p.controls.id.value,
+          criteriaGrades:{
+            id:c.controls.id.value,
+            aspectGrades:{
+              id:a.controls.id.value,
+              isGraded:true,
+              score:Number(a.controls.score.value),
+              hasMedal:null,
+              medalDescription:null,
+              missingElements:null
+            }
+          }
+        }
       }
     }
     
@@ -405,7 +424,7 @@ export class EiApParameterFormComponent implements OnInit {
         var parameterGrades_array = this.examGrade.controls.parameterGrades as FormArray
         var parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
         parameterGrade.controls.evaluator_comment.setValue(result) 
-        this.updateComment() 
+        this.updateComment( this.examGrade, parameterGrade) 
       }
       else{
         this.close()
@@ -414,14 +433,17 @@ export class EiApParameterFormComponent implements OnInit {
     });
   }
 
-  updateComment(): void{
+  updateComment(e:FormGroup, p:FormGroup): void{
     console.log("updateComment")
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
     var parameter:FormGroup = parameterGrade_arr.controls[0] as FormGroup
     var req:ParameterGradeRequest = {
-      parameterGrades:{
-        id: parameter.controls.id.value,
-        evaluator_comment:parameter.controls.evaluator_comment.value,
+      examGrades:{
+        id:e.controls.id.value,
+        parameterGrades:{
+          id:p.controls.id.value,
+          evaluator_comment:parameter.controls.evaluator_comment.value
+        }
       }
     }
     this.userLoginService.getUserIdToken().then( token => { 
@@ -444,10 +466,13 @@ export class EiApParameterFormComponent implements OnInit {
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
     var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
     var req:ParameterGradeRequest = {
-      parameterGrades:{
-        id: parameterGrade.controls.id.value,
-        score: parameterGrade.controls.score.value,
-        completed:true
+      examGrades:{
+        id:this.examGrade.controls.id.value,
+        parameterGrades:{
+          id: parameterGrade.controls.id.value,
+          score: parameterGrade.controls.score.value,
+          completed:true
+        }
       }
     }
     this.userLoginService.getUserIdToken().then( token => { 

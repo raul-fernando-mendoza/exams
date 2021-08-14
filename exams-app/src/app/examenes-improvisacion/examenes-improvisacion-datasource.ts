@@ -101,12 +101,14 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'student_name': return compare(a.student_name, b.student_name, isAsc);
         case 'materia': return compare(a.materia, b.materia, isAsc);
         case 'title': return compare(a.title, b.title, isAsc);
+        case 'estudiante': return compare(a.student_name, b.student_name, isAsc);
         case 'maestro': return compare(a.maestro, b.maestro, isAsc);
-        case 'parametro': return compare(+a.parametro, +b.parametro, isAsc);
-        case 'fechaApplicacion': return compare(+Date.parse(a.fechaApplicacion), +Date.parse(b.fechaApplicacion), isAsc);
+        case 'tipo': return compare(a.tipo, b.tipo, isAsc);
+        case 'parametro': return compare(a.parametro, b.parametro, isAsc);
+        case 'fechaApplicacion': return compare(Date.parse(a.fechaApplicacion), Date.parse(b.fechaApplicacion), isAsc);
+        case 'completed': return compare((new Boolean(a.completed)).toString(), (new Boolean(b.completed)).toString(), isAsc);        
         default: return 0;
       }
     });

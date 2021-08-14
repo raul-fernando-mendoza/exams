@@ -9,6 +9,7 @@ import { UserLoginService } from '../user-login.service';
 import { ExamGrade, ExamGradeMultipleRequest, ParameterGrade, ParameterGradeRequest } from '../exams/exams.module';
 import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { stringify } from '@angular/compiler/src/util';
 
 
 
@@ -147,12 +148,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         ]
       }]
     }
-    if (applicationDate == null){
-      request["orderBy"]={
-        "applicationDate":"asc",
-        "id":"asc"
-      }      
-    }
       
     this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
       result => { 
@@ -201,6 +196,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }
         else{
           alert("ha habido un error al leer la lista de examenes:" + error.error)
+          console.log("error:" + error.error)
         }
       }
     )        
@@ -230,8 +226,11 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     }    
     this.submitting=true
     var request:ParameterGradeRequest = {
-      parameterGrades:{
-        id:row.parameterGrade_id
+      examGrades:{
+        id:row["examGrade_id"],
+        parameterGrades:{
+          id:row["parameterGrade_id"]
+        }  
       }
     }
 

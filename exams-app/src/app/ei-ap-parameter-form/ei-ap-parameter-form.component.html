@@ -32,13 +32,13 @@
                     
                     <div *ngIf="p.controls.scoreType.value == 'starts'">
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
-                        <app-star-slider [enabled]="!isDisabled" formControlName="score" (valueChange)="onChangeStarts(a)"></app-star-slider>
+                        <app-star-slider [enabled]="!isDisabled" formControlName="score" (valueChange)="onChangeStarts(examGrade,p,c,a)"></app-star-slider>
                     </div>
                     <div  *ngIf="p.controls.scoreType.value != 'starts'" class="padded" >
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
 
                         <div>
-                        <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(a)">
+                        <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(examGrade,p,c,a)">
                             <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
                             <mat-icon>not_interested</mat-icon>
                             </mat-button-toggle>
@@ -63,13 +63,13 @@
                         <div *ngIf="a.controls.score.value > 0.75">
                             <mat-form-field appearance="legacy" >
                                 <mat-label>Medalla</mat-label>
-                                <input matInput placeholder="Razón para dar una medalla" maxlength="200" formControlName="medalDescription" (change)="onChangeAspect(a)" >
+                                <input matInput placeholder="Razón para dar una medalla" maxlength="200" formControlName="medalDescription" (change)="onChangeAspect(examGrade,p,c,a)" >
                             </mat-form-field> 
                             <mat-icon color="primary" *ngIf="a.controls.hasMedal.value">military_tech</mat-icon>                   
                         </div>
                         <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
-                            <input matInput placeholder="Elementos faltantes" maxlength="200" formControlName="missingElements" (change)="onChangeAspect(a)" >
+                            <input matInput placeholder="Elementos faltantes" maxlength="200" formControlName="missingElements" (change)="onChangeAspect(examGrade,p,c,a)" >
                         </mat-form-field> 
 
                     </div>

@@ -64,37 +64,34 @@ export interface ExamMultipleRequest{
   }
 }
 
-export interface ExamParameterRequest{
+export interface ParameterRequest{
   exams:{
     id:string
     parameters:Parameter
   }
 }
 
-export interface ParameterCriteriaRequest{
-  parameters:{
-    id:string
-    criterias:Criteria
-  }
-}
-
-export interface CriteriaAspectRequest{
-  criterias:{
-    id:string
-    aspects:Aspect
-  }
-}
-
-export interface ParameterRequest{
-  parameters:Parameter
-}
-
 export interface CriteriaRequest{
-  criterias:Criteria
+  exams:{
+    id:string,
+    parameters:{
+      id:string
+      criterias:Criteria
+    }
+  }
 }
 
 export interface AspectRequest{
-  aspects:Aspect
+  exams:{
+    id:string,
+    parameters:{      
+      id: string, 
+      criterias:{  
+        id:string
+        aspects:Aspect
+      }
+    }
+  }
 }
 
 export interface AspectGrade{
@@ -160,13 +157,32 @@ export interface ExamGrade{
   parameterGrades?:ParameterGrade[]
 }
 export interface AspectGradeRequest{
-  aspectGrades:AspectGrade
+  examGrades:{
+    id:string,
+    parameterGrades:{
+      id:string,
+      criteriaGrades:{
+        id:string,
+        aspectGrades:AspectGrade
+      }
+    }
+  }
 }
 export interface CriteriaGradeRequest{
-  criteriaGrades:CriteriaGrade
+  examGrades:{
+    id:string,
+    parameterGrades:{
+      id:string,
+      criteriaGrades:CriteriaGrade      
+    }
+  }  
+  
 }
 export interface ParameterGradeRequest{
-  parameterGrades:ParameterGrade
+  examGrades:{
+    id:string,
+    parameterGrades:ParameterGrade
+  }
 }
 export interface ExamGradeRequest{
   examGrades:ExamGrade
