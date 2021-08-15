@@ -311,6 +311,7 @@ export class EiApParameterFormComponent implements OnInit {
         }
       }
     }
+    console.log(JSON.stringify(req,null,2))
     
     this.userLoginService.getUserIdToken().then( token => {
 
