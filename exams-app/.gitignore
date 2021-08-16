@@ -49,3 +49,4 @@ Thumbs.db
 *.log
 ../private*
 *.cache
+../credentials*

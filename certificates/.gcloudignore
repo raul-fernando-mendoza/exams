@@ -1,0 +1,5 @@
+venv
+*_test.py
+readme.txt
+*.jpg 
+__pycache__
