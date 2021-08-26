@@ -1,0 +1,136 @@
+<html lang="en">
+  <head>
+   <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+  </head>
+  <body>
+	<div id="g_id_onload"
+		data-client_id="80335332365-tvqimj9qachc5nufjpnagvkgg8d3bh6h.apps.googleusercontent.com"
+		data-login_uri="https://www.raxacademy.com"
+		data-auto_prompt="false"
+		>
+	</div>
+	<div class="g_id_signin"
+		data-type="standard"
+		data-size="large"
+		data-theme="outline"
+		data-text="sign_in_with"
+		data-shape="rectangular"
+		data-logo_alignment="left">
+	</div>
+	<div id="openViduControls">
+	<input type="button" id="startOpenVidu" value="start" onClick="StartOpenVidu();" />
+	</div>
+	
+	<script>
+
+		apiURL="https://cheneque-dev-4ee34.uc.r.appspot.com/api"
+
+		function enableCompute(){
+			console.log("EnableCompute")
+			document.getElementById('openViduControls').style.visibility = 'visible'
+		}
+		function disableCompute(){
+			console.log("disableCompute")
+			document.getElementById('openViduControls').style.visibility = 'hidden'
+		}
+
+        async function getUser(url, data){
+
+			const response = await  fetch(url, 
+			{
+				method: "POST", 
+				headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+				},            
+				body: JSON.stringify(data)
+			})
+
+			response.json().then(data => {
+					console.log("Request complete! response:", data.result);
+					user = data.result
+					if ( user["custom_claims"] != null){
+						for(var i=0;i< user["custom_claims"].length ;i++){
+							c = user["custom_claims"][i]
+							if ( c.hasOwnProperty('admin') && c['admin'] == true){
+								enableCompute()
+								break;
+							}
+							else{
+								disableCompute()
+							}
+						}
+					}
+			})
+			.catch(error => {
+				console.error("el usuario no fue encontrado")
+				disableCompute()
+			});
+		}
+
+		function parseJwt(credentials){
+			console.log("received:" +  credentials )
+			j =  JSON.parse(atob(credentials.split('.')[1]));
+			console.log( "j:" + JSON.stringify(j, null, 2))
+			return j
+		}
+
+		function handleCredentialResponse(response) {
+			// decodeJwtResponse() is a custom function defined by you
+			// to decode the credential response.
+			responsePayload = parseJwt(response.credential);
+
+			console.log("ID: " + responsePayload.sub);
+			console.log('Full Name: ' + responsePayload.name);
+			console.log('Given Name: ' + responsePayload.given_name);
+			console.log('Family Name: ' + responsePayload.family_name);
+			console.log("Image URL: " + responsePayload.picture);
+			console.log("Email: " + responsePayload.email);
+
+			
+
+			token = response.credential
+			clientId = "80335332365-tvqimj9qachc5nufjpnagvkgg8d3bh6h.apps.googleusercontent.com"
+
+			req = {
+					'service': 'identity', 
+					'action': 'getUserByToken', 
+					'token': token,
+					'clientId': clientId
+			}   
+
+			getUser(apiURL, req)
+		}
+
+		async function StartOpenVidu(){
+
+			
+			data = {
+				action:"getComputeInstanceStart",
+        		project:"cheneque-dev-4ee34",
+        		zone:"us-central1-a",
+        		instanceName:"instance-1"			
+			}
+
+			const response = await  fetch(apiURL, 
+			{
+				method: "POST", 
+				headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+				},            
+				body: JSON.stringify(data)
+			})
+
+			response.json().then(data => {
+					console.log("Request complete! response:", data.result);
+			})
+			.catch(error => {
+				console.error("fail when starting openvidu")
+				disableCompute()
+			});
+		}
+	</script>
+	  
+  </body>
+</html>

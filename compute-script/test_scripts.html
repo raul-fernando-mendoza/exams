@@ -1,0 +1,63 @@
+<html lang="en">
+  <head>
+  </head>
+  <body>
+	<script>
+
+        async function post(url, data){
+
+            const response = await  fetch(url, {
+            method: "POST", 
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },            
+            body: JSON.stringify(data)
+            })
+            
+            response.json().then(data => {
+                console.log("Request complete! response:", data.result);
+            });
+        }
+
+		function parseJwt(credentials){
+            console.log("received:" +  credentials )
+            j =  JSON.parse(atob(credentials.split('.')[1]));
+            console.log( "j:" + JSON.stringify(j, null, 2))
+            return j
+		}
+		function handleCredentialResponse(response) {
+		   // decodeJwtResponse() is a custom function defined by you
+		   // to decode the credential response.
+		   responsePayload = parseJwt(response.credential);
+	  
+		   console.log("ID: " + responsePayload.sub);
+		   console.log('Full Name: ' + responsePayload.name);
+		   console.log('Given Name: ' + responsePayload.given_name);
+		   console.log('Family Name: ' + responsePayload.family_name);
+		   console.log("Image URL: " + responsePayload.picture);
+		   console.log("Email: " + responsePayload.email);
+
+            apiURL="https://celtic-bivouac-307316.uc.r.appspot.com/api"
+
+            token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlZjRiZDkwODU5MWY2OTdhOGE5Yjg5M2IwM2U2YTc3ZWIwNGU1MWYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2Mjk4NTM1NjYsImF1ZCI6IjY3MTE3MzQwOTQ4Ni0zb250ZmpmcGozMmJqZm10bXBwOXRlY2xudGRwOWp2Yi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwMDEwNTA1MjgwNDkxMDg4MDYwMCIsImVtYWlsIjoicmZtaDI0aHJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjY3MTE3MzQwOTQ4Ni0zb250ZmpmcGozMmJqZm10bXBwOXRlY2xudGRwOWp2Yi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsIm5hbWUiOiJyZm1oMjRociBNZW5kb3phIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBVFhBSnhBLWF2cVlxRHJhWVAzci1iRGt5ajZKaGpEaExEdFFhNTRKcXhQPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6InJmbWgyNGhyIiwiZmFtaWx5X25hbWUiOiJNZW5kb3phIiwiaWF0IjoxNjI5ODUzODY2LCJleHAiOjE2Mjk4NTc0NjYsImp0aSI6IjFkMWFkNWE5ZTdlZjZmNDY0MjE3ZWY5OGU5NzE1Y2I1OGUzZDQxYjkifQ.nCHOyovzafYpoQuxiaVgsYcDcRIXPs2mzchUbHurciZx0yeu-V8qPJJw7mwnObNHOJWTs4gVCNDlOzDpdMFkbO431KqAq8RnueCS2ciA6RuZTWpaR-jU1W5yQ3BWUz29T9-eA_qRU_ta12MW_HanbtrOR-kve6pAb4wRntPPEKfwYkHa72eUhC--SETkcRpOBtK4PgOm7S6F_Caqe6qqIQVYQ7tPzTrlfCjqUiVUUt5oHtTakNTv7d5KbO61T-1nIOZVlRiowuPp3kQNepdAj9bE2Iy6cYaD5pl-Kwb7ciUEMkDb36fwi52qb5lm7h45464Xu7jp6p80VLBV9n-Hsg"
+            clientId = "671173409486-3ontfjfpj32bjfmtmpp9teclntdp9jvb.apps.googleusercontent.com"
+
+            req = {
+                    'service': 'identity', 
+                    'action': 'getUserByToken', 
+                    'token': token,
+                    'clientId': clientId
+            }   
+
+            post(apiURL, req)
+		}
+        c = { 
+                "credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjgxOWQxZTYxNDI5ZGQzZDNjYWVmMTI5YzBhYzJiYWU4YzZkNDZmYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2Mjk4Mzg3OTEsImF1ZCI6IjY3MTE3MzQwOTQ4Ni0zb250ZmpmcGozMmJqZm10bXBwOXRlY2xudGRwOWp2Yi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwMDEwNTA1MjgwNDkxMDg4MDYwMCIsImVtYWlsIjoicmZtaDI0aHJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjY3MTE3MzQwOTQ4Ni0zb250ZmpmcGozMmJqZm10bXBwOXRlY2xudGRwOWp2Yi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsIm5hbWUiOiJyZm1oMjRociBNZW5kb3phIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBVFhBSnhBLWF2cVlxRHJhWVAzci1iRGt5ajZKaGpEaExEdFFhNTRKcXhQPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6InJmbWgyNGhyIiwiZmFtaWx5X25hbWUiOiJNZW5kb3phIiwiaWF0IjoxNjI5ODM5MDkxLCJleHAiOjE2Mjk4NDI2OTEsImp0aSI6IjNlN2RlMTFkNTRiYzYyYzk0OTNhYjBjN2Q0MGNiNTQzM2U5N2M0MjcifQ.N-sNoPlyguUCDAan0C5hjBk9mZ1NwtBoAmVhnF6HIGTucg0oDctoBMReOGxwmoyXLBGF1RcH8O7wpSSHqAhdtXq6jKYXjQEuLAmPIVDE77eduoJGFHlZ043q-l1qZUy1cTMNx7BayPQqVhuo--BDJaEo3tIXtslU8VHaqR81SHXN3KSXM8edXxgPQlgrK5DjN5Yg8ge8lVg7R_y00L1BwIAYwzmHp24Ztjh7txzwCFyzL3tYF786dM5mZjrPfo9ZEwLUNRwmnp_onMuMciCeZcUVRGux5t2-dN7JoPwYUr7ZFTIq6paW_B8D2231kObiyo7Wayv2UAUQHuiXeodPmw" 
+            }
+
+		handleCredentialResponse(c)
+	</script>
+	  
+  </body>
+</html>
