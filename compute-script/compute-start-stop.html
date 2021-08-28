@@ -1,12 +1,15 @@
 <html lang="en">
   <head>
-   <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+   <script src="https://accounts.google.com/gsi/client" async defer></script> 
   </head>
   <body>
+
+	
 	<div id="g_id_onload"
-		data-client_id="80335332365-tvqimj9qachc5nufjpnagvkgg8d3bh6h.apps.googleusercontent.com"
+		data-client_id="80335332365-d8pkglpm2ta3fvielcqon0e9fidepgqe.apps.googleusercontent.com"
 		data-login_uri="https://www.raxacademy.com"
 		data-auto_prompt="false"
+		data-callback="handleCredentialResponse"
 		>
 	</div>
 	<div class="g_id_signin"
@@ -17,13 +20,31 @@
 		data-shape="rectangular"
 		data-logo_alignment="left">
 	</div>
+
+	<style>
+	div.openViduControls {
+		visibility: 'hidden'
+	}
+	</style>
+
 	<div id="openViduControls">
-	<input type="button" id="startOpenVidu" value="start" onClick="StartOpenVidu();" />
+		<input type="button" id="startOpenVidu" value="start OpenVidu" onClick="StartOpenVidu();" />
+		<input type="button" id="stopOpenVidu" value="stop Openvidu" onClick="StopOpenVidu();" />
+		<input type="button" id="computeInstanceList" value="computeInstanceList" onClick="computeInstanceList();" />
+		<textarea id="instancesStatus" name="instancesStatus">Working....</textarea>
+		<div id="status"></div>
 	</div>
+	
+
 	
 	<script>
 
 		apiURL="https://cheneque-dev-4ee34.uc.r.appspot.com/api"
+		clientId = "80335332365-d8pkglpm2ta3fvielcqon0e9fidepgqe.apps.googleusercontent.com"
+		accessToken = null
+		user = null
+		instanceName = "instance-1"
+		project = "cheneque-dev-4ee34"
 
 		function enableCompute(){
 			console.log("EnableCompute")
@@ -89,13 +110,12 @@
 
 			
 
-			token = response.credential
-			clientId = "80335332365-tvqimj9qachc5nufjpnagvkgg8d3bh6h.apps.googleusercontent.com"
+			accessToken = response.credential
 
 			req = {
 					'service': 'identity', 
 					'action': 'getUserByToken', 
-					'token': token,
+					'token': accessToken,
 					'clientId': clientId
 			}   
 
@@ -103,14 +123,14 @@
 		}
 
 		async function StartOpenVidu(){
-
-			
 			data = {
-				action:"getComputeInstanceStart",
-        		project:"cheneque-dev-4ee34",
+				service: 'compute', 
+				action:"computeInstanceStart",
+        		project:project,
         		zone:"us-central1-a",
-        		instanceName:"instance-1"			
+        		instanceName:instanceName			
 			}
+			document.getElementById("status").innerHTML = "starting open vidu";
 
 			const response = await  fetch(apiURL, 
 			{
@@ -124,12 +144,91 @@
 
 			response.json().then(data => {
 					console.log("Request complete! response:", data.result);
+					document.getElementById("status").innerHTML = "start request completed";
 			})
 			.catch(error => {
-				console.error("fail when starting openvidu")
-				disableCompute()
+				console.error("fail when starting openvidu:" + error)
+				document.getElementById("status").innerHTML = "start request failed";
 			});
 		}
+		async function StopOpenVidu(){
+			data = {
+				service: 'compute', 
+				action:"computeInstanceStop",
+        		project:project,
+        		zone:"us-central1-a",
+        		instanceName:instanceName
+			}
+
+			document.getElementById("status").innerHTML = "stop request is been sent";
+
+			const response = await  fetch(apiURL, 
+			{
+				method: "POST", 
+				headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+				},            
+				body: JSON.stringify(data)
+			})
+
+			response.json().then(data => {
+					console.log("Request complete! response:", data.result);
+					document.getElementById("status").innerHTML = "stop request completed";
+			})
+			.catch(error => {
+				console.error("fail when starting openvidu:" + error)
+				document.getElementById("status").innerHTML = "stop request failed";
+			});
+		}
+
+
+		async function computeInstanceList(){
+			data = {
+				service: 'compute', 
+				action:"computeInstanceList",
+        		project:project,
+        		zone:"us-central1-a"
+			}
+
+            document.getElementById("status").innerHTML = "getting status";
+
+			const response = await fetch(apiURL, 
+			{
+				method: "POST", 
+				headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+				},            
+				body: JSON.stringify(data)
+			})
+
+			response.json().then(data => {
+					console.log("Request complete! response:", data.result);
+					result = null
+					for( var i = 0; i<data.result.length; i++){
+						instanceStatus=data.result[i]
+						if( instanceStatus["name"] == instanceName ){
+							result = instanceName + " " + instanceStatus["status"]	
+						}
+					}
+					document.getElementById('instancesStatus').value = result;
+                    document.getElementById("status").innerHTML = "get status completed";
+			})
+			.catch(error => {
+				console.error("fail when retriving status de openvidu")
+                document.getElementById("status").innerHTML = "get status failed";
+				
+			});
+
+            
+		}
+
+        computeInstanceList()
+        var intervalId = setInterval(function() {
+            computeInstanceList()
+        }, 30000);
+
 	</script>
 	  
   </body>

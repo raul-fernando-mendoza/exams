@@ -8,10 +8,12 @@ import string
 def calculateSizeString(str, s):
         w = 0
         for c in str:
-                if c.isupper():
-                        w = w + s/2 
+                if c == 'i':
+                        w = w + s/3
+                elif c.isupper():
+                        w = w + s 
                 elif c.islower():
-                        w = w + s/3.5
+                        w = w + s/2.5
                 elif c in string.punctuation:
                         w = w + s/2
                 else:
@@ -29,8 +31,8 @@ def createStorageCertificate( storage_client, file_name, student, title):
         
         bucket = storage_client.get_bucket(bucket_name)
 
-        w = 600
-        h = 462
+        w = 1100
+        h = 850
         f = 35
 
         # creating a image object 
@@ -51,7 +53,7 @@ def createStorageCertificate( storage_client, file_name, student, title):
 
         
         # specified font size
-        font = ImageFont.truetype('Yellowtail-Regular.ttf', f) 
+        font = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f) 
         
 
         left = ( w/2 ) - calculateSizeString(student, f) / 2
@@ -62,7 +64,7 @@ def createStorageCertificate( storage_client, file_name, student, title):
 
 
         left_t = ( w/2 ) - (calculateSizeString(title, f)/2)
-        top_t = (h * (8/10)) - f 
+        top_t = (h * (23/40))
         
         draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 
 
@@ -70,8 +72,8 @@ def createStorageCertificate( storage_client, file_name, student, title):
         issue = "Fecha de expedicion:" + str(today) + "\n" + \
                 "Fecha de expiracion:" + str( datetime.date(today.year + 1, today.month, today.day))
         f_i = 10
-        left_i =f_i * 3 
-        top_i = (h * (9/10)) - f_i 
+        left_i =w * (3/20) 
+        top_i = (h * (16/20)) 
         font_i = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f_i)
         
         draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
