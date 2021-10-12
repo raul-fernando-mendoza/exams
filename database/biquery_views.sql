@@ -110,7 +110,7 @@ select
 examGrades.examGrades_id, applicationDate, exam_label, materia, title,   expression,  exam_score, student_name, completed, 
 parameterGrades.parameterGrades_id, parameterGrades_idx, parameter_label, parameter_description, parameter_completed, evaluator_name,  evaluator_comment,  parameter_score,
 criteriaGrades.criteriaGrades_id, criteriaGrades_idx, criteria_label, criteria_description, criteria_score,
-aspectGrades_id, aspectGrades_idx, aspectGrades_label, aspectGrades_description, medalDescription, missingElements, aspectGrades_score
+aspectGrades_id, aspectGrades_idx, aspectGrades_label, aspectGrades_description, COALESCE(medalDescription,""), COALESCE(missingElements,""), aspectGrades_score
 FROM celtic-bivouac-307316.exams.examGrades as examGrades,
 celtic-bivouac-307316.exams.parameterGrades as parameterGrades,
 celtic-bivouac-307316.exams.criteriaGrades as criteriaGrades,

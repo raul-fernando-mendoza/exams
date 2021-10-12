@@ -126,6 +126,7 @@ export interface ParameterGrade{
   score?:number
   evaluator_uid?:string
   evaluator_name?:string
+  evaluator_email?:string
   evaluator_comment?:string
 
   completed?:boolean
@@ -146,6 +147,7 @@ export interface ExamGrade{
   applicationDate?:Date
 
   student_uid?:string
+  student_email?:string
   student_name?:string
 
   title?:string

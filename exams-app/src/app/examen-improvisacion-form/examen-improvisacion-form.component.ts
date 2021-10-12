@@ -15,6 +15,8 @@ import { ExamFormService } from '../exam-form.service';
   styleUrls: ['./examen-improvisacion-form.component.css']
 })
 export class ExamenImprovisacionFormComponent {
+
+
   submitting = false
 
   parameter_label 
@@ -27,12 +29,15 @@ export class ExamenImprovisacionFormComponent {
   students:User[] 
   evaluators:User[] 
 
+
+ 
+
   examGrade = this.fb.group({
     id: [null],
     course:[null,Validators.required],
     completed:[false, Validators.required],
     applicationDate: [null, Validators.required],
-    student_uid: [null, Validators.required],
+    student_email: [null, Validators.required],
     student_name:[null,Validators.required],
 
     exam_id: [null, Validators.required],
@@ -42,6 +47,16 @@ export class ExamenImprovisacionFormComponent {
     expression:[null], 
     parameterGrades: new FormArray([])
   });
+
+
+  constructor(private fb: FormBuilder,private route: ActivatedRoute
+    , private router: Router
+    , private examImprovisacionService: ExamenesImprovisacionService
+    , private formBuilder: FormBuilder
+    , private userLoginService:UserLoginService
+    , private examFormService:ExamFormService) {
+
+  }
 
   getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
     if( fg == null){
@@ -54,16 +69,12 @@ export class ExamenImprovisacionFormComponent {
     return fa.controls as FormGroup[]
   }
   
-  constructor(private fb: FormBuilder,private route: ActivatedRoute
-    , private router: Router
-    , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: FormBuilder
-    , private userLoginService:UserLoginService
-    , private examFormFormService:ExamFormService) {
 
-  }
 
   ngOnInit() {
+
+
+
     this.userLoginService.getUserIdToken().then( token => {
       this.initialize(token)
     },
@@ -231,7 +242,8 @@ export class ExamenImprovisacionFormComponent {
       score: [null],
       evaluator_uid:[null, Validators.required],
       evaluator_name:[null, Validators.required],
-      student_uid:[null],
+      evaluator_email:[null, Validators.required],
+      student_email:[null],
       student_name:[null],
       completed: [false],
       isSelected:[true],
@@ -275,7 +287,7 @@ export class ExamenImprovisacionFormComponent {
       idx:[a.idx],
       label:[a.label],
       description:[a.description],
-      isGraded:[true],
+      isGraded:[false],
       score:[null],
       hasMedal:[false],
       medalDescription:[null]
@@ -330,7 +342,7 @@ export class ExamenImprovisacionFormComponent {
     else{
       var data = this.examGrade.value
       
-      var json0:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormFormService.replacer, 4) )
+      var json0:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormService.replacer, 4) )
       var json:ExamGrade = JSON.parse( JSON.stringify(json0, this.replacerRemoveUnselectedParameters, 4) )
 
 
@@ -372,7 +384,8 @@ export class ExamenImprovisacionFormComponent {
     for( let i =0; i< this.students.length; i++){
       let student:User = this.students[i]
       if( student.uid == studentId ){
-        this.examGrade.controls.student_name.setValue( this.getUserDisplayName(student) )
+        this.examGrade.controls.student_email.setValue( student.email )
+        this.examGrade.controls.student_name.setValue( student.displayName )
         break;
       } 
     }
@@ -383,7 +396,8 @@ export class ExamenImprovisacionFormComponent {
     for( let i =0; i< this.evaluators.length; i++){
       let evaluator:User = this.evaluators[i]
       if( evaluator.uid == evaluatorId ){
-        parameter.controls.evaluator_name.setValue( this.getUserDisplayName(evaluator) )
+        parameter.controls.evaluator_name.setValue( evaluator.displayName )
+        parameter.controls.evaluator_email.setValue( evaluator.email )
         console.log( "evaluator:" + parameter.controls.evaluator_name.value )
         break;
       } 
@@ -392,14 +406,10 @@ export class ExamenImprovisacionFormComponent {
   onParameterChange(p){
     console.log("parameterChange")
     if( !p.value.isSelected){
-      //p.controls.evaluator_uid.clearValidators()
       p.controls.evaluator_uid.disable()
-      p.controls.evaluator_name.disable()
     }
     else{
-      //p.controls.evaluator_uid.setValidators(Validators.required)
       p.controls.evaluator_uid.enable()
-      p.controls.evaluator_name.enable()
     }
   }
 }

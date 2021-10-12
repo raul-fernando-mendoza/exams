@@ -30,8 +30,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
   
 
-  evaluador_uid = null
+  evaluator_name = null
+  evaluator_email = null
   student_uid = null
+  student_email = null
   hideCompleted = true
   periodicRefresh = false
   applicationDates = []
@@ -62,16 +64,19 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     if( this.isAdmin() || this.isReadOnly() ){
       
-      this.evaluador_uid = null
+      this.evaluator_email = null
+      this.student_email = null
       
     }
     else if ( this.isEvaluador() ){
       this.hideCompleted = true
-      this.evaluador_uid = this.userLoginService.getUserUid()
+      this.evaluator_email = this.userLoginService.getUserEmail()
+      this.student_email = null
     }
     else{
       this.hideCompleted = false
-      this.student_uid = this.userLoginService.getUserUid()
+      this.evaluator_email = null
+      this.student_email = this.userLoginService.getUserEmail()
     }
 
     if( this.isReadOnly() ){
@@ -86,7 +91,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted, this.evaluator_name, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
@@ -99,7 +104,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )
   }
 
-  updateList( token , hideCompleted, evaluador_uid , applicationDate){
+  updateList( token , hideCompleted, evaluator_name , applicationDate){
     var showClosed = null
     if ( hideCompleted == true ){
       showClosed = false
@@ -123,7 +128,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         completed: null,
         applicationDate:applicationDate,
       
-        student_uid:this.student_uid,
+        student_email:this.student_email,
         student_name:null,
       
         title:null,
@@ -139,7 +144,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             label: null,
             scoreType: null,
             score:null,
-            evaluator_uid:evaluador_uid,
+            evaluator_uid:null,
+            evaluator_email:this.evaluator_email,
             evaluator_name:null,
          
             completed:showClosed
@@ -148,9 +154,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         ]
       }]
     }
+
+    var startTime =  new Date().getTime();
       
     this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
       result => { 
+        var endTime = new Date().getTime()
+        const diffTime = Math.abs(endTime - startTime);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        console.log(diffTime + " milliseconds");
+
         var examImprovisationArray:ExamGrade[] = result["result"];
         let datavalues: ExamenesImprovisacionItem[] = [];
 
@@ -295,7 +308,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted, this.evaluador_uid, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted, this.evaluator_name, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){

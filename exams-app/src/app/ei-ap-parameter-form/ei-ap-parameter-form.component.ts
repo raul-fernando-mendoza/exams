@@ -34,33 +34,14 @@ export class EiApParameterFormComponent implements OnInit {
     , private formBuilder: FormBuilder
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
-    , private examFormService:ExamFormService) { 
+    , private examFormService:ExamFormService ) { 
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
+      
     }
   
    
-  examGrade:FormGroup = this.fb.group({
-    id: [null],
-    exam_id:[null],
-    exam_label:[null],
-
-    course:[null, Validators.required],
-    completed: [null],
-    applicationDate:[null, Validators.required],
-
-    student_uid:[null, Validators.required],
-    student_name:[null],
-
-
-    title: [null],
-    expression: [null],
-    score:[null],
-
-    
-    parameterGrades: new FormArray([])        
-  })
-
+  examGrade:FormGroup 
   
 
   submitting = false
@@ -146,9 +127,32 @@ export class EiApParameterFormComponent implements OnInit {
 
 
     this.userLoginService.getUserIdToken().then( token => {
+    
 
       this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(data => { 
         var e:ExamGrade = data["result"]
+
+        this.examGrade = this.fb.group({
+          id: [null],
+          exam_id:[null],
+          exam_label:[null],
+      
+          course:[null, Validators.required],
+          completed: [null],
+          applicationDate:[null, Validators.required],
+      
+          student_uid:[null, Validators.required],
+          student_name:[null],
+      
+      
+          title: [{value:null,disabled:!this.isAdmin()}],
+          expression: [null],
+          score:[null],
+      
+          
+          parameterGrades: new FormArray([])        
+        })
+  
 
         this.examGrade.controls.id.setValue(e.id)
         this.examGrade.controls.exam_id.setValue(e.exam_id)
@@ -377,6 +381,7 @@ export class EiApParameterFormComponent implements OnInit {
     console.log("submit called")
     this.submitting = true
     this.updateScore()
+    this.saveGrades()
     this.openCommentDialog()
   }
   updateScore(){
@@ -462,6 +467,73 @@ export class EiApParameterFormComponent implements OnInit {
       
     })
   }  
+
+
+  
+
+  selector(key, value) {
+    const toSaveFields = new Set(["id","isGraded","score","hasMedal", "medalDescription","missingElements"])    
+    var firstShot = typeof value;
+    if (firstShot === 'object') {
+        return value;
+    } 
+    else if (value.constructor === [].constructor) {
+        return value;
+    }
+    else if (value.constructor === {}.constructor) {
+        return value;
+    }
+    else {
+        if ( toSaveFields.has(key) )
+         return value;
+    } 
+    return null;
+  } 
+
+  selectKeys(json,parentId, toSaveFields){
+    var outJson = {id:null}
+    var keys = Object.keys(json)
+    for( var key of keys){
+      var value = json[key]
+      if ( value != null && (value.constructor === [].constructor) ){
+        outJson[key] = []
+        for(var i =0; i< value.length; i++){
+          var obj = this.selectKeys(json[key][i], key, toSaveFields);
+          outJson[key].push(obj)
+        } 
+      }  
+      else if ( value != null && (value.constructor === {}.constructor)){
+        var obj = this.selectKeys(json[key], key, toSaveFields);
+        outJson[key] = obj
+      }
+      else {
+          if ( key == "id" || toSaveFields.has(parentId + "." + key) == true )
+            outJson[key] = json[key]
+      } 
+    }
+    return outJson
+  }
+
+  saveGrades(){
+    var data = this.examGrade.value
+
+    var json:ExamGrade = JSON.parse( JSON.stringify(data) )
+    const toSaveFields = new Set(["parameterGrades.score","aspectGrades.id","aspectGrades.isGraded","aspectGrades.score","aspectGrades.hasMedal", "aspectGrades.medalDescription","aspectGrades.missingElements"])    
+
+    var jsonToSave:ExamGrade = this.selectKeys(json, "examGrades", toSaveFields)
+
+    console.log(JSON.stringify(jsonToSave, null, 2))
+
+    var req :ExamGradeRequest = {
+      "examGrades":jsonToSave
+    }
+    
+    this.userLoginService.getUserIdToken()
+    .then( token => this.examImprovisacionService.firestoreApiInterface("update", token, req).toPromise() )
+    .then( result => console.log("success writting rates" + result) )
+    .catch( error => { alert("Error in token:" + error.errorCode + " " + error.errorMessage) })
+  }
+
   close(): void{
     console.log("close")
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
@@ -530,7 +602,6 @@ export class EiApParameterFormComponent implements OnInit {
     this.userLoginService.getUserIdToken().then( token => { 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         this.submitting = false
-        this.router.navigate(['/ExamenesImprovisacion']);
       },
       error => {
         alert("error updateHeader"  + error.errorCode + " " + error.errorMessage)

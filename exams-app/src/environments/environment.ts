@@ -7,25 +7,23 @@ import "firebase/auth";
 
 export const environment = { 
   production: false,
-  firebase: {
-    apiKey: "AIzaSyAIggZ3hyq4iHi5SiBhGXQ7tnzs0kmmNH4",
-    authDomain: "celtic-bivouac-307316.firebaseapp.com",
-    //authDomain: "examenes.raxacademy.com",
-    databaseURL: "https://celtic-bivouac-307316-default-rtdb.firebaseio.com",
-    projectId: "celtic-bivouac-307316",
-    storageBucket: "celtic-bivouac-307316.appspot.com",
-    messagingSenderId: "671173409486",
-    appId: "1:671173409486:web:7a9521ddf9ec974f33ae9f",
-    measurementId: "G-ZHNWBMKVQ2"
-   // apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
+  firebase:{
+      apiKey: "AIzaSyCpjqfjNiZJoTksBgLtL2JQnWV5ONjFa1k",
+      authDomain: "cheneque-dev-4ee34.firebaseapp.com",
+      projectId: "cheneque-dev-4ee34",
+      storageBucket: "cheneque-dev-4ee34.appspot.com",
+      messagingSenderId: "80335332365",
+      appId: "1:80335332365:web:bdefd12feed59e6dc4e144"
   },
   apiURL:"https://cheneque-dev-4ee34.uc.r.appspot.com/api"
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 
-firebase.initializeApp(environment.firebase)
+const app = firebase.initializeApp(environment.firebase)
 
 const auth = firebase.auth();
+
+  
 //const db = firebase.firestore();
 
 if (location.hostname === "localhost") {

@@ -82,7 +82,7 @@ export class UserLoginService {
       this.login(userCredentials)
     })
     .catch( error =>{
-      alert("Error in loging:" + error.errorCode + " " + error.errorMessage)
+      alert("Error in loging:" + error.code + " " + error.message)
     })
      
 
