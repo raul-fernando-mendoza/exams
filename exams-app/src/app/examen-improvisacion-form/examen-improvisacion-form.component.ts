@@ -326,6 +326,20 @@ export class ExamenImprovisacionFormComponent {
     return value;
   }  
 
+  replacerRemoveUnselectedCriterias(key, value:[]) {
+    // Filtrando propiedades 
+    if (key === "criteriaGrades") {
+      let criteriaGrade_array = []
+      for(let i=0; i<value.length; i++){
+        if( value[i]["isSelected"] == true){
+          criteriaGrade_array.push(value[i])
+        }
+      }
+      return criteriaGrade_array;
+    }
+    return value;
+  } 
+
   onSubmit() {
     this.submitting = true
     if( this.examGrade.invalid ){
@@ -343,7 +357,8 @@ export class ExamenImprovisacionFormComponent {
       var data = this.examGrade.value
       
       var json0:ExamGrade = JSON.parse( JSON.stringify(data, this.examFormService.replacer, 4) )
-      var json:ExamGrade = JSON.parse( JSON.stringify(json0, this.replacerRemoveUnselectedParameters, 4) )
+      var json1:ExamGrade = JSON.parse( JSON.stringify(json0, this.replacerRemoveUnselectedCriterias, 4) )
+      var json:ExamGrade = JSON.parse( JSON.stringify(json1, this.replacerRemoveUnselectedParameters, 4) )
 
 
       var req :ExamGradeRequest = {

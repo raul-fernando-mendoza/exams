@@ -44,10 +44,11 @@ JSON_EXTRACT_SCALAR(data, "$.evaluator_name") AS evaluator_name,
 JSON_EXTRACT_SCALAR(data, "$.evaluator_comment") AS evaluator_comment,
 JSON_EXTRACT_SCALAR(data, "$.isSelected") AS isSelected,
 JSON_EXTRACT_SCALAR(data, "$.completed") AS parameter_completed,
-ROUND (SAFE_CAST( JSON_EXTRACT_SCALAR(data, "$.score") AS NUMERIC ) , 2) AS parameter_score, 
+ROUND (SAFE_CAST( JSON_EXTRACT_SCALAR(data, "$.score") AS NUMERIC ) , 2) AS parameter_score,
+JSON_EXTRACT_SCALAR(data, "$.scoreType") AS scoreType 
 FROM celtic-bivouac-307316.exams.parameterGrades_raw_latest
 
-select parameterGrades_id, parameterGrades_idx, parameter_label, parameter_description, parameter_completed, evaluator_name,  evaluator_comment,  parameter_score
+select parameterGrades_id, parameterGrades_idx, parameter_label, parameter_description, parameter_completed, evaluator_name,  evaluator_comment,  parameter_score, scoreType
 from celtic-bivouac-307316.exams.parameterGrades
 
 {"description":"",
@@ -108,9 +109,9 @@ drop view exams.examsAll
 create view celtic-bivouac-307316.exams.examsAll as 
 select 
 examGrades.examGrades_id, applicationDate, exam_label, materia, title,   expression,  exam_score, student_name, completed, 
-parameterGrades.parameterGrades_id, parameterGrades_idx, parameter_label, parameter_description, parameter_completed, evaluator_name,  evaluator_comment,  parameter_score,
+parameterGrades.parameterGrades_id, parameterGrades_idx, parameter_label, parameter_description, parameter_completed, evaluator_name,  evaluator_comment,  parameter_score, scoreType
 criteriaGrades.criteriaGrades_id, criteriaGrades_idx, criteria_label, criteria_description, criteria_score,
-aspectGrades_id, aspectGrades_idx, aspectGrades_label, aspectGrades_description, COALESCE(medalDescription,""), COALESCE(missingElements,""), aspectGrades_score
+aspectGrades_id, aspectGrades_idx, aspectGrades_label, aspectGrades_description, COALESCE(medalDescription,"") as medalDescription, COALESCE(missingElements,"") as missingElements, aspectGrades_score
 FROM celtic-bivouac-307316.exams.examGrades as examGrades,
 celtic-bivouac-307316.exams.parameterGrades as parameterGrades,
 celtic-bivouac-307316.exams.criteriaGrades as criteriaGrades,
