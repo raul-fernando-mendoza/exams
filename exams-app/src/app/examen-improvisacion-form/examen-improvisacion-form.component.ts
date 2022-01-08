@@ -275,10 +275,16 @@ export class ExamenImprovisacionFormComponent {
     })
     criteriaGrade_array.push(g)
 
+    var aspectGrades_arr = g.controls.aspectGrades as FormArray
     for(let i=0; i<c.aspects.length; i++){
       let aspect:Aspect = c.aspects[i]
-      this.addAspect(g.controls.aspectGrades as FormArray, aspect)
+      this.addAspect(aspectGrades_arr as FormArray, aspect)
     }
+    aspectGrades_arr.controls.sort( (a, b) => {
+      var afg:FormGroup = a as FormGroup 
+      var bfg:FormGroup = b as FormGroup
+      return  afg.controls.idx.value - bfg.controls.idx.value 
+    }) 
   }
 
   addAspect(question_array:FormArray, a: Aspect ){

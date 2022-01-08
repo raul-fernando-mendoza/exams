@@ -45,8 +45,11 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.*
 *.log
-../private*
 *.cache
-../credentials*
+credentials*
+fileaclchange*
+certificates/.vscode/
+certificates/__pycache__/
+.firebaserc
+.vscode
