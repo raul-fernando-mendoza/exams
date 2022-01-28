@@ -1,4 +1,5 @@
 <form [formGroup]="e" >
+    <span>Editar tipo de examen</span>
     <mat-form-field appearance="legacy">
         <mat-label>Tipo de Examen</mat-label>
         <input matInput formControlName="label" width="80%" (change)="onChangeExam(e)">
@@ -39,7 +40,7 @@
                         <mat-icon>remove_red_eye</mat-icon>
                     </mat-button-toggle>
                     <mat-button-toggle value="starts" aria-label="calificar usando statuses">
-                        <mat-icon >start</mat-icon>
+                        <mat-icon >stars</mat-icon>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
                 </div>

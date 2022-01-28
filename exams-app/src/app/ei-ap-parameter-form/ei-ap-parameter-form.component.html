@@ -1,5 +1,6 @@
 <div [formGroup]="examGrade">
     <div class="header">
+    <span>Applicación de examen</span>
     <span>estudiante: {{examGrade.controls.student_name.value}}</span>
     <span>Materia: {{examGrade.controls.course.value}}</span>
     <span>Tipo de Examen: {{examGrade.controls.exam_label.value}}</span>
@@ -42,17 +43,17 @@
                             <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
                             <mat-icon>not_interested</mat-icon>
                             </mat-button-toggle>
-                            <mat-button-toggle value="0.5" aria-label="Text align left">
+                            <mat-button-toggle value="0.6" aria-label="Text align left">
                             <mat-icon color="warn">report_problem</mat-icon>
                             </mat-button-toggle>
-                            <mat-button-toggle value="0.75"  aria-label="insuficiente">
+                            <mat-button-toggle value="0.72"  aria-label="insuficiente">
                             <mat-icon>build</mat-icon>
                                               
                             </mat-button-toggle>
-                            <mat-button-toggle value="0.8"  aria-label="casi bien">
+                            <mat-button-toggle value="0.86"  aria-label="casi bien">
                             <mat-icon color="accent">thumb_up</mat-icon>
                             </mat-button-toggle>
-                            <mat-button-toggle value="0.95"  aria-label="muy bien">
+                            <mat-button-toggle value="1.0"  aria-label="muy bien">
                             <mat-icon color="primary">verified</mat-icon>
                             </mat-button-toggle>
 
@@ -60,13 +61,6 @@
                         </div>
                      <!--   <div class="example-selected-value">Selected value: {{group.value}}</div> -->
                         
-                        <div *ngIf="a.controls.score.value > 0.75">
-                            <mat-form-field appearance="legacy" >
-                                <mat-label>Medalla</mat-label>
-                                <input matInput placeholder="Razón para dar una medalla" maxlength="200" formControlName="medalDescription" (change)="onChangeAspect(examGrade,p,c,a)" >
-                            </mat-form-field> 
-                            <mat-icon color="primary" *ngIf="a.controls.hasMedal.value">military_tech</mat-icon>                   
-                        </div>
                         <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
                             <input matInput placeholder="Elementos faltantes" maxlength="200" formControlName="missingElements" (change)="onChangeAspect(examGrade,p,c,a)" >

@@ -101,8 +101,6 @@ export interface AspectGrade{
   description?:string
   isGraded?:boolean
   score?:number
-  hasMedal?:boolean
-  medalDescription?:string
   missingElements?:string
 }
 

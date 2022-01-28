@@ -116,8 +116,6 @@ export class EiApParameterFormComponent implements OnInit {
               description:null,
               isGraded:null,
               score:null,
-              hasMedal:null,
-              medalDescription:null,
               missingElements:null
             }]         
           }]        
@@ -253,7 +251,7 @@ export class EiApParameterFormComponent implements OnInit {
     }
     else if(this.parameterGrade_scoreType == 'status'){
       if( a.score == null){
-        score = '0.95'
+        score = "1.0"
       }
       else{
         score = a.score.toString()
@@ -266,8 +264,6 @@ export class EiApParameterFormComponent implements OnInit {
       description:[a.description],
       isGraded:[a.isGraded],
       score:[{ value:score, disabled:this.isDisabled}],
-      hasMedal:[{ value:a.hasMedal, disabled:this.isDisabled}],
-      medalDescription:[{ value:a.medalDescription, disabled:this.isDisabled}],
       missingElements:[{ value:a.missingElements, disabled:this.isDisabled}]
     })
     question_array.push(g)
@@ -275,20 +271,6 @@ export class EiApParameterFormComponent implements OnInit {
   }
   onChangeAspect(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
     console.log("a:" +JSON.stringify(a.value))
-    if ( a.controls.score.value <= 0.75){
-      a.controls.medalDescription.setValue(null)
-      a.controls.hasMedal.setValue(false)
-      a.controls.medalDescription.disable()
-    }
-    else{
-      a.controls.medalDescription.enable()
-      if( a.controls.medalDescription.value && a.controls.medalDescription.value.length){
-        a.controls.hasMedal.setValue(true)
-      }
-      else{
-        a.controls.hasMedal.setValue(false)
-      }
-    }
     if (a.controls.score.value > 0){
       a.controls.isGraded.setValue(true)
     }
@@ -307,8 +289,6 @@ export class EiApParameterFormComponent implements OnInit {
               id:a.controls.id.value,
               isGraded:a.controls.isGraded.value,
               score:Number(a.controls.score.value),
-              hasMedal:a.controls.hasMedal.value,
-              medalDescription:a.controls.medalDescription.value,
               missingElements:a.controls.missingElements.value
             }
           }
@@ -351,8 +331,6 @@ export class EiApParameterFormComponent implements OnInit {
               id:a.controls.id.value,
               isGraded:true,
               score:Number(a.controls.score.value),
-              hasMedal:null,
-              medalDescription:null,
               missingElements:null
             }
           }
@@ -400,9 +378,6 @@ export class EiApParameterFormComponent implements OnInit {
           totalPoints = totalPoints + 1
           let aspectGrade:FormGroup = aspectGrade_array.controls[j] as FormGroup
           earnedPoints = earnedPoints + Number(aspectGrade.controls.score.value)
-          if( aspectGrade.controls.hasMedal && aspectGrade.controls.hasMedal.value == true){
-            earnedPoints = earnedPoints + 0.05
-          }
         }
       }
     }
@@ -472,7 +447,7 @@ export class EiApParameterFormComponent implements OnInit {
   
 
   selector(key, value) {
-    const toSaveFields = new Set(["id","isGraded","score","hasMedal", "medalDescription","missingElements"])    
+    const toSaveFields = new Set(["id","isGraded","score","missingElements"])    
     var firstShot = typeof value;
     if (firstShot === 'object') {
         return value;
@@ -518,7 +493,7 @@ export class EiApParameterFormComponent implements OnInit {
     var data = this.examGrade.value
 
     var json:ExamGrade = JSON.parse( JSON.stringify(data) )
-    const toSaveFields = new Set(["parameterGrades.score","aspectGrades.id","aspectGrades.isGraded","aspectGrades.score","aspectGrades.hasMedal", "aspectGrades.medalDescription","aspectGrades.missingElements"])    
+    const toSaveFields = new Set(["parameterGrades.score","aspectGrades.id","aspectGrades.isGraded","aspectGrades.score","aspectGrades.missingElements"])    
 
     var jsonToSave:ExamGrade = this.selectKeys(json, "examGrades", toSaveFields)
 
