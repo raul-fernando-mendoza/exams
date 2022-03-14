@@ -70,6 +70,12 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     ];
 
     return merge(...dataMutations).pipe(map(() => {
+      console.log("sort:" + this.sort.active + " " + this.sort.direction)
+      var jsonExamenesSort = { 
+        "active":this.sort.active,
+        "direction":this.sort.direction
+      }
+      localStorage.setItem("jsonExamenesSort",JSON.stringify(jsonExamenesSort))
       return this.getPagedData(this.getSortedData([...this.data]));
     }));
   }

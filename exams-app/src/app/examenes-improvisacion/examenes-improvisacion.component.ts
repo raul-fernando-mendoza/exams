@@ -196,6 +196,17 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }  
         
         this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
+        var examenesSort = localStorage.getItem('jsonExamenesSort')
+        if( examenesSort ){
+          var jsonExamenesSort = JSON.parse(examenesSort)
+          this.sort.active = jsonExamenesSort["active"]
+          this.sort.direction = jsonExamenesSort["direction"]  
+        }
+        else{
+          this.sort.active = 'materia'
+          this.sort.direction = 'asc'
+        }
+
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;  
