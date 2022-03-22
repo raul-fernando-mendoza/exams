@@ -75,11 +75,64 @@ export class UserLoginService {
     });
   }  
 
+  loginAnonymously(){
+    this.reset()
+
+    firebase.auth().signInAnonymously().then(userCredentials => {
+      let user = userCredentials.user;
+      //now get the id token
+      firebase.auth().currentUser.getIdToken(true).then(idToken => {
+        //id token retrieved
+        console.log("idToken:" + idToken)
+        
+        this.LoginEvent(user)
+        
+      }).catch(function(error) {
+        alert("the id token could not be retrieved")
+      });
+  
+    })
+    .catch( error =>{
+      alert("Error in loging:" + error.code + " " + error.message)
+    })
+  }
+
+
   loginWithEmail(email, password){
     this.reset()
 
     firebase.auth().signInWithEmailAndPassword(email, password).then(userCredentials => {
-      this.login(userCredentials)
+      let user = userCredentials.user;
+    
+      this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
+      localStorage.setItem('user', JSON.stringify( this.user ) )
+  
+      console.log("user.email" + this.user.email)
+      console.log("user.uid:" + this.user.uid)
+      
+  
+      //now get the id token
+      firebase.auth().currentUser.getIdToken(true).then(idToken => {
+        //id token retrieved
+        console.log("idToken:" + idToken)
+        this.user_idtoken = idToken
+        localStorage.setItem('user_idtoken',this.user_idtoken)
+        //now get the roles
+        firebase.auth().currentUser.getIdTokenResult()
+        .then((idTokenResult) => {
+          console.log(idTokenResult.claims)
+          this.user_claims = idTokenResult.claims
+          
+          localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
+          this.LoginEvent(this.user)
+        })
+        .catch((error) => {
+         alert("error retriving claims"+ error);
+        });         
+      }).catch(function(error) {
+        alert("the id token could not be retrieved")
+      });
+  
     })
     .catch( error =>{
       alert("Error in loging:" + error.code + " " + error.message)
@@ -88,6 +141,8 @@ export class UserLoginService {
 
 
   }  
+
+  
 
 
   signInWithPopup(){
@@ -128,7 +183,7 @@ export class UserLoginService {
         this.user_claims = idTokenResult.claims
         
         localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
-        this.LoginEvent(this.user.email)
+        this.LoginEvent(this.user)
       })
       .catch((error) => {
        alert("error retriving claims"+ error);
@@ -166,6 +221,13 @@ export class UserLoginService {
   onLoginEvent(): Observable<any> {
       return this.loginSubject;
   } 
+
+  isAnonymous(): boolean{
+    if( firebase && firebase.auth() && firebase.auth().currentUser && firebase.auth().currentUser.isAnonymous ){
+      return true;
+    }
+    else return false
+  }
 
   hasRole(role){
     if(this.user_claims!=null && this.user_claims[role] == true)

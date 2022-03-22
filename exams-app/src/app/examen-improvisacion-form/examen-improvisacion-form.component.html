@@ -49,9 +49,12 @@
                 <mat-select formControlName="evaluator_uid" (selectionChange)="examEvaluatorChange(p, $event)">
                   <mat-option *ngFor="let m of getExamEvaluators()" [value]="m.uid">
                     {{getUserDisplayName(m)}}
-                  </mat-option>
+                  </mat-option>                 
                 </mat-select>
               </mat-form-field>
+            
+             
+              
               <mat-checkbox formControlName="isSelected" (change)="onParameterChange(p)"></mat-checkbox>
               
               <div *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let ci=index" >
@@ -70,6 +73,4 @@
     </mat-card-actions> 
   </mat-card>  
     
-   <!-- {{ getformValue() }} -->
-
 </form>

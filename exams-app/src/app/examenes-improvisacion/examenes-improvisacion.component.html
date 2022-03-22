@@ -58,8 +58,8 @@
     <ng-container matColumnDef="completed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>completed</th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completed != 1 && (isEvaluador() || isAdmin() )">Edit</button> 
-        <span *ngIf="row.completed == 1">{{ row.calificacion }}</span>
+        <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completed != true && (isEvaluador() || isAdmin() )">Edit</button> 
+        <span *ngIf="row.completed == true">{{ row.calificacion }}</span>
       </td>
     </ng-container> 
 
@@ -82,7 +82,7 @@
             <mat-icon>visibility</mat-icon>
             <span>ver</span>
           </button>  
-          <button  mat-menu-item color="primary" (click)="onGraph(row.examGrade_id)" [disabled]="submitting">
+          <button  mat-menu-item color="primary" (click)="onGraph(row.student_email,row.fechaApplicacion )" [disabled]="submitting">
             <mat-icon>assessment</mat-icon>
             <span>grafico</span>
           </button>                                  

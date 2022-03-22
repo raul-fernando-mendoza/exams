@@ -1,0 +1,38 @@
+<mat-card *ngFor="let e of exams; let i=index">
+    <mat-toolbar>
+        <span> {{ e.title }}</span>
+    </mat-toolbar>      
+    <p>Materia: {{ e.course }}</p>
+    <p>Fecha: {{ e.applicationDate }}</p>
+    <p>Estudiante: {{ e.student_name }}</p>
+    <p>Expression: {{ e.expression }}</p>
+    <p>Calificacion: <b>{{ e.score }}</b> </p>
+    <mat-card *ngFor="let p of e.parameterGrades">
+        <p>{{p.label}}</p>
+        <p>comentario: {{p.evaluator_comment}}</p>
+
+
+        
+        <mat-expansion-panel (opened)="panelOpenState = true"
+                            (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+        <mat-panel-title>
+        Aspectos:
+        </mat-panel-title>
+        <mat-panel-description>
+        Calificaciones 
+        </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div *ngFor="let c of p.criteriaGrades">
+            <div *ngFor="let a of c.aspectGrades">
+                {{ a.label }} : {{a.score}}
+            </div> 
+        </div>  
+        </mat-expansion-panel>        
+        
+    </mat-card>
+    <mat-card>
+        <app-examgrades-report [exam]="e" ></app-examgrades-report>
+    </mat-card>
+
+</mat-card>

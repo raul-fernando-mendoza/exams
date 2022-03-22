@@ -26,6 +26,9 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { VideosListComponent } from './videos-list/videos-list.component';
 import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component';
+import { ExamTableComponent } from './exam-table/exam-table.component';
+import { GradesListComponent } from './grades-list/grades-list.component';
+
 const routes: Routes = [
   
   /*
@@ -53,7 +56,8 @@ const routes: Routes = [
   { path: 'home', component: WelcomeComponent },
   { path: 'register', component: LoginFormComponent },
   { path: 'videos-list', component: VideosListComponent },
-  { path: 'examgrades-report', component: ExamgradesReportComponent },  
+  { path: 'examgrades-report', component: GradesListComponent }, 
+  { path: 'grades', component: ExamTableComponent },  
 ];
 
 @NgModule({

@@ -1,82 +1,53 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Chart } from 'node_modules/chart.js'
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { Exam, ExamGrade, ExamGradeRequest, ExamRequest } from '../exams/exams.module';
+import { Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
-
+//http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
 
 @Component({
   selector: 'app-examgrades-report',
   templateUrl: './examgrades-report.component.html',
   styleUrls: ['./examgrades-report.component.css']
 })
-export class ExamgradesReportComponent implements OnInit {
+export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
-  examGrade_id = null;
+  @Input() exam: ExamGrade;
+  @Input() canvas_id: string;
 
-  t:ExamGrade
+  id = null
+
 
   constructor(
-    private userLoginService: UserLoginService
-    , private examImprovisacionService: ExamenesImprovisacionService
-    , private route: ActivatedRoute
-
 
   ) {
-    this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')    
+   
+
    }
 
-  ngOnInit(): void {
-    if( this.examGrade_id ){
-      var req:ExamGradeRequest = {
-        examGrades:{
-          id:this.examGrade_id,
-          exam_label:null,
-          course:null,
-          completed:null,
-          applicationDate:null,
-          student_name:null,
-          title:null,
-          expression:null,
-          score:null,
-          parameterGrades:[{
-            id:null,
-            idx:null,
-            label:null,
-            description:null,
-            score:null,
-          }],
-        }
-      }
-      
-      this.userLoginService.getUserIdToken().then( token => {
-
-        this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(
-          data => { 
-            this.t = data["result"];
-            let labels = []
-            let scores = []
-            for( let i=0; i< this.t.parameterGrades.length; i++){
-              let p = this.t.parameterGrades[i]
-              labels[i] = p.label
-              scores[i] = p.score
-            }
-            this.createGraph(this.t.student_name, labels, scores)
-          },     
-          error => {
-            alert("error loading impro type")
-            console.log("Error loading ExamType:" + error.error)
-          }
-        )
-      },
-      error => {
-        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      }) 
+  ngAfterViewInit(): void {
+    var e:ExamGrade = this.exam
+    let labels = []
+    let scores = []
+    for( let i=0; i< e.parameterGrades.length; i++){
+      let p = e.parameterGrades[i]
+      labels[i] = p.label
+      scores[i] = p.score
     }
+    
+    
+    this.createGraph(e.student_name, labels, scores)
   }
+
+  ngOnInit(): void {
+    
+  }
+  
+
   createGraph(label, labels, data){
-    var myChart = new Chart("myChart", {
+    var name = this.exam.id
+    var myChart = new Chart(name, {
       type: 'bar',
       data: {
           labels: labels,
@@ -117,5 +88,6 @@ export class ExamgradesReportComponent implements OnInit {
   });
 
   }
+  
 
 }

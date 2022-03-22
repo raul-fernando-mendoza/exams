@@ -1,0 +1,71 @@
+<mat-toolbar>
+
+  <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
+  
+  <button mat-button value="refresh" (click)="applicationFilterChange(null)"><mat-icon>refresh</mat-icon></button>
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">auto</mat-slide-toggle>
+  
+
+  <mat-form-field appearance="fill">
+    <mat-label>date: </mat-label>
+    <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="released" (change)="applicationFilterChange($event)" aria-label="examenes released solamente">Released</mat-slide-toggle>
+
+</mat-toolbar>
+
+<div class="mat-elevation-z8">
+  <table mat-table class="full-width-table" matSort aria-label="Elements">
+    <!-- Id Column -->
+    <ng-container matColumnDef="titulo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Titulo</th>
+      <td mat-cell *matCellDef="let row"><app-grades [exam]="row"></app-grades></td>
+    </ng-container>
+
+    <ng-container matColumnDef="completed">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed</th>
+      <td mat-cell *matCellDef="let row">
+        <ng-template [ngIf]="row.completed" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
+        <ng-template #notCompleted><p>No completado</p></ng-template>
+      </td>
+    </ng-container>    
+ 
+    <ng-container matColumnDef="released">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Released</th>
+      <td mat-cell *matCellDef="let row">
+        <ng-template [ngIf]="row.released" [ngIfElse]="notReleased"><p>Liberado</p></ng-template>
+        <ng-template #notReleased><p>No Liberado</p></ng-template>
+      </td>  
+    </ng-container>    
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="release">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Release</th>
+      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, true)">Liberar</button></td>
+    </ng-container>
+    <ng-container matColumnDef="unrelease">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>UnRelease</th>
+      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, false)">Detener</button></td>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Borrar</th>
+      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="onDelete(row.title, row.id)">Borrar</button></td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator #paginator
+      [length]="dataSource?.data.length"
+      [pageIndex]="0"
+      [pageSize]="50"
+      [pageSizeOptions]="[25, 50, 100, 250]">
+  </mat-paginator>
+</div>
+
+

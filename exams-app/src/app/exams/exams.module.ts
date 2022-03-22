@@ -141,7 +141,7 @@ export interface ExamGrade{
   exam_label?:string
 
   course?: string
-  completed?: string
+  completed?: boolean
   applicationDate?:Date
 
   student_uid?:string
@@ -153,6 +153,8 @@ export interface ExamGrade{
 
   score?:number
   certificate_url?:string
+
+  released?:boolean
 
   parameterGrades?:ParameterGrade[]
 }

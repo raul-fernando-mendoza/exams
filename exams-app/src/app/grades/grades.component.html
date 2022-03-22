@@ -1,0 +1,33 @@
+
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+      <button mat-icon-button disabled></button>
+       {{node.item}}: {{node.score}}
+      <button mat-icon-button [matMenuTriggerFor]="menu" >
+        <mat-icon>more_vert</mat-icon>
+      </button>  
+      <mat-menu #menu="matMenu" >
+        <button mat-menu-item color="primary" (click)="onEdit(node.exam_id, node.parameter_id)"  >
+          <mat-icon>edit</mat-icon>
+          <span>Corregir</span>
+        </button>
+        <button mat-menu-item color="primary" (click)="onClean(node.exam_id, node.parameter_id)"  >
+          <mat-icon>keyboard</mat-icon>
+          <span>Limpiar</span>
+        </button>
+      </mat-menu >
+
+    </mat-tree-node>
+
+  
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+      <button mat-icon-button matTreeNodeToggle
+              [attr.aria-label]="'Toggle ' + node.item">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+      {{node.item}}: {{node.score}}
+    </mat-tree-node>
+  </mat-tree>
+  

@@ -251,7 +251,7 @@ export class EiApParameterFormComponent implements OnInit {
     }
     else if(this.parameterGrade_scoreType == 'status'){
       if( a.score == null){
-        score = "1.0"
+        score = "1"
       }
       else{
         score = a.score.toString()

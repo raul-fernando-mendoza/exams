@@ -3,65 +3,34 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
+import { ExamGrade, ExamGradeMultipleRequest } from '../exams/exams.module';
 
-function formatDate(date) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
 
-  if (month.length < 2) 
-      month = '0' + month;
-  if (day.length < 2) 
-      day = '0' + day;
 
-  return [year, month, day].join('-');
-}
-
-// TODO: Replace this with your own data model type
-export interface ExamenesImprovisacionItem {
-  examGrade_id: string
-  parameterGrade_id:string
-  materia:string
-  title:string
- 
-
-  student_name: string
-  student_email: string
-  maestro: string
-  tipo:string
-  parametro: string
-
-  fechaApplicacion: string
-  completed:boolean
-  calificacion:number
-  certificate_url:string
-}
-
-// TODO: replace this with real data from your application
-const EXAMPLE_DATA: ExamenesImprovisacionItem[] = [];
+const EXAMPLE_DATA: ExamGrade[] = [];
 
 /**
- * Data source for the ExamenesImprovisacion view. This class should
+ * Data source for the ExamTable view. This class should
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
-export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovisacionItem> {
-  data: ExamenesImprovisacionItem[] = EXAMPLE_DATA;
+export class ExamTableDataSource extends DataSource<ExamGrade> {
+  data: ExamGrade[] = EXAMPLE_DATA;
   paginator: MatPaginator;
   sort: MatSort;
 
-  constructor(newdata: ExamenesImprovisacionItem[]) {
+  constructor(newdata: ExamGrade[]) {
     super();
     this.data = newdata;
   }
+
 
   /**
    * Connect this data source to the table. The table will only update when
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<ExamenesImprovisacionItem[]> {
+  connect(): Observable<ExamGrade[]> {
     // Combine everything that affects the rendered data into one update
     // stream for the data-table to consume.
     const dataMutations = [
@@ -71,12 +40,6 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     ];
 
     return merge(...dataMutations).pipe(map(() => {
-      console.log("sort:" + this.sort.active + " " + this.sort.direction)
-      var jsonExamenesSort = { 
-        "active":this.sort.active,
-        "direction":this.sort.direction
-      }
-      localStorage.setItem("jsonExamenesSort",JSON.stringify(jsonExamenesSort))
       return this.getPagedData(this.getSortedData([...this.data]));
     }));
   }
@@ -91,7 +54,7 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getPagedData(data: ExamenesImprovisacionItem[]) {
+  private getPagedData(data: ExamGrade[]) {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     return data.splice(startIndex, this.paginator.pageSize);
   }
@@ -100,7 +63,7 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
    * Sort the data (client-side). If you're using server-side sorting,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getSortedData(data: ExamenesImprovisacionItem[]) {
+  private getSortedData(data: ExamGrade[]) {
     if (!this.sort.active || this.sort.direction === '') {
       return data;
     }
@@ -108,14 +71,8 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'materia': return compare(a.materia, b.materia, isAsc);
-        case 'title': return compare(a.title, b.title, isAsc);
-        case 'estudiante': return compare(a.student_name, b.student_name, isAsc);
-        case 'maestro': return compare(a.maestro, b.maestro, isAsc);
-        case 'tipo': return compare(a.tipo, b.tipo, isAsc);
-        case 'parametro': return compare(a.parametro, b.parametro, isAsc);
-        case 'fechaApplicacion': return compare(Date.parse(a.fechaApplicacion), Date.parse(b.fechaApplicacion), isAsc);
-        case 'completed': return compare((new Boolean(a.completed)).toString(), (new Boolean(b.completed)).toString(), isAsc);        
+        case 'titulo': return compare(a.exam_label, b.exam_label, isAsc);
+        case 'released': return compare(+a.released, +b.released, isAsc);
         default: return 0;
       }
     });

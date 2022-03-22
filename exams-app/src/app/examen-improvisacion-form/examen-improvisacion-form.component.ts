@@ -43,7 +43,7 @@ export class ExamenImprovisacionFormComponent {
     exam_id: [null, Validators.required],
     exam_label: [null, Validators.required],
 
-    title:[null], 
+    title:[null, Validators.required], 
     expression:[null], 
     parameterGrades: new FormArray([])
   });
@@ -89,7 +89,10 @@ export class ExamenImprovisacionFormComponent {
       "exams":[{
           "id":null,
           "label":null
-      }]
+      }],
+      "orderBy":{
+        "label":"asc"
+      }
     }  
 
 
@@ -122,7 +125,7 @@ export class ExamenImprovisacionFormComponent {
         let obj:User = {
           "uid":estudiante.uid,
           "email":estudiante.email,
-          "displayName":(estudiante.displayName != null)? estudiante.displayName : estudiante.email,
+          "displayName":(estudiante.displayName != null && estudiante.displayName != '')? estudiante.displayName : estudiante.email,
           "claims":estudiante.claims
         }
         this.students.push(obj)
@@ -228,9 +231,6 @@ export class ExamenImprovisacionFormComponent {
       return  afg.controls.idx.value - bfg.controls.idx.value 
     })       
   }
-
-
-
   addParameter(parameterGrade_array:FormArray, p:Parameter){
 
     var g=this.fb.group({
@@ -241,14 +241,28 @@ export class ExamenImprovisacionFormComponent {
       scoreType: [p.scoreType],
       score: [null],
       evaluator_uid:[null, Validators.required],
-      evaluator_name:[null, Validators.required],
-      evaluator_email:[null, Validators.required],
+      evaluator_name:[null],
+      evaluator_email:[null],
       student_email:[null],
       student_name:[null],
       completed: [false],
       isSelected:[true],
       criteriaGrades: new FormArray([])         
     })
+
+    g.valueChanges.subscribe(parameter => {
+      if(parameter) {
+        if( parameter.isSelected == true){
+          g.controls.evaluator_uid.setValidators([Validators.required]);
+        }
+        else{
+          g.controls.evaluator_uid.clearValidators();
+        }
+      }
+    });   
+
+    g.controls["evaluator_uid"].setErrors({ 'incorrect': true});
+
     parameterGrade_array.push(g) 
 
     var criteriaGrades_Array = g.controls.criteriaGrades as FormArray
@@ -315,8 +329,13 @@ export class ExamenImprovisacionFormComponent {
     return obj.constructor.name;
   }   
   getformValue(){
-    return JSON.stringify(this.examGrade.value)
+    //return JSON.stringify(this.examGrade.value)
+    return this.examGrade.invalid
   }  
+
+  tojson(value){
+    return JSON.stringify(value)
+  }
 
   replacerRemoveUnselectedParameters(key, value:[]) {
     // Filtrando propiedades 
@@ -393,9 +412,6 @@ export class ExamenImprovisacionFormComponent {
   } 
 
   getUserDisplayName(user:User){
-    if(user.claims && "displayName" in user.claims ){
-      return user.claims["displayName"]
-    } 
     return user.displayName
   }
 

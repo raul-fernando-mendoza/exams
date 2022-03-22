@@ -24,17 +24,20 @@ export class NavigationComponent {
     , private userLoginService: UserLoginService) {}
 
   ngOnInit() {
-    this.userLoginService.onLoginEvent().subscribe(
-      (user_name) => {
-          if (user_name) {
-            console.log("navigation has received notification that login has Completed:" + user_name)
-            this.router.navigate(['/home']);
-          } else {
-            console.log("navigation Logout has been received")
-            this.router.navigate(['/home']);
-          }
-      }
-    );    
+    
+      this.userLoginService.onLoginEvent().subscribe(
+        (user) => {
+            if (user && user.email) {
+              console.log("navigation has received notification that login has Completed:")
+              this.router.navigate(['/home']);
+            }
+            if (user == null) {
+              console.log("navigation Logout has been received")
+              this.router.navigate(['/home']);
+            }
+        }
+      ); 
+         
   }
 
   login(){

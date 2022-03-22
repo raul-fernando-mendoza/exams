@@ -38,11 +38,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   periodicRefresh = false
   applicationDates = []
   applicationDate = null
+  releasedOnly = null
 
   constructor( 
-      private fb: FormBuilder 
-    , private route: ActivatedRoute
-    , private router: Router
+      private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
     ) {
@@ -62,11 +61,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     
     this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
 
-    if( this.isAdmin() || this.isReadOnly() ){
+    if( this.isAdmin() ){
       
       this.evaluator_email = null
       this.student_email = null
       
+    }
+    else if ( this.isReadOnly() ){
+      this.evaluator_email = null
+      this.student_email = null 
+      this.releasedOnly = true
     }
     else if ( this.isEvaluador() ){
       this.hideCompleted = true
@@ -91,7 +95,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted, this.evaluator_name, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted,  this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
@@ -104,7 +108,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )
   }
 
-  updateList( token , hideCompleted, evaluator_name , applicationDate){
+  updateList( token , hideCompleted,  applicationDate){
     var showClosed = null
     if ( hideCompleted == true ){
       showClosed = false
@@ -112,12 +116,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     else{
       showClosed = null
     }
+
     if( applicationDate == null || applicationDate == "" ){
       applicationDate = null
     }
     else{
       applicationDate = applicationDate.toISOString().split('T')[0]
     }
+
     var request:ExamGradeMultipleRequest = {
       examGrades:[{
         id:null,
@@ -130,12 +136,15 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       
         student_email:this.student_email,
         student_name:null,
+        student_uid:null,
       
         title:null,
         expression:null,
 
         score:null,
         certificate_url:null,
+
+        released:this.releasedOnly,
       
         parameterGrades:[
           {
@@ -187,10 +196,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
               fechaApplicacion:application_date_src, 
               completed: parameterGrade.completed,
               calificacion:(parameterGrade.score)?parameterGrade.score:0,
-              certificate_url:examGrade.certificate_url
+              certificate_url:examGrade.certificate_url,
+              student_email:examGrade.student_email
             }
             datavalues.push(obj)
-
           }
           
         }  
@@ -238,8 +247,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   onEdit(examGrade_id, parameterGrade_id){
     this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   }
-  onGraph(examGrade_id){
-    this.router.navigate(['/examgrades-report',{examGrade_id:examGrade_id}]);
+  onGraph(student_email:string,applicationDate:Date ){
+    this.router.navigate(['/examgrades-report',{student_email:student_email,applicationDate:applicationDate }]);
   }  
   gotoLogin() {
     this.router.navigate(['/loginForm']);
@@ -319,7 +328,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted, this.evaluator_name, this.applicationDate ? this.applicationDate: null)
+        this.updateList(token, this.hideCompleted, this.applicationDate ? this.applicationDate: null)
       },
       error => {
         if( error.status == 401 ){
