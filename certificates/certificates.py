@@ -5,7 +5,8 @@ import datetime
 import io
 import string 
 
-def calculateSizeString(str, s):
+def calculateSizeStringOld(str, s):
+        
         w = 0
         for c in str:
                 if c == 'i':
@@ -21,7 +22,9 @@ def calculateSizeString(str, s):
         
         return w                       
 
-
+def calculateWidthString(text, font):
+    (x,y) = font.getsize(text)
+    return x
 
 def createStorageCertificate( storage_client, file_name, student, title):
 
@@ -53,17 +56,19 @@ def createStorageCertificate( storage_client, file_name, student, title):
 
         
         # specified font size
+        f = 25
         font = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f) 
         
 
-        left = ( w/2 ) - calculateSizeString(student, f) / 2
+        left = ( w/2 ) - calculateWidthString(student,  font) / 2
         top = (h * (5/10)) - f 
         
         draw.text((left, top), student, fill ="black", font = font, align ="center") 
 
 
-
-        left_t = ( w/2 ) - (calculateSizeString(title, f)/2)
+        f = 35
+        font = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f) 
+        left_t = ( w/2 ) - (calculateWidthString(title, font)/2)
         top_t = (h * (23/40))
         
         draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 

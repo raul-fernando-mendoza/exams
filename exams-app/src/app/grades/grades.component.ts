@@ -18,6 +18,7 @@ import { UserLoginService } from '../user-login.service';
   exam_id:string;
   parameter_id:string;
   released: boolean;
+  course:string;
 }
 
 /** Flat to-do item node with expandable and level information */
@@ -28,6 +29,7 @@ export class TodoItemFlatNode {
   exam_id:string;
   parameter_id:string;  
   expandable: boolean;
+  course:string;
 }
 
 
@@ -59,11 +61,12 @@ export class ChecklistDatabase {
       var student_name = exam.student_name ? exam.student_name: exam.student_email
 
       var p:TodoItemNode = {
-        item:exam.title + " | " + student_name, 
+        item:exam.title + " | " + student_name + ' | ' + exam.course, 
         released:true, 
         score:exam.score, 
         exam_id:exam.id,
         parameter_id:null,
+        course:exam.course,
         children:[]
       }
       var total = 0.0
@@ -74,6 +77,7 @@ export class ChecklistDatabase {
                                       released:true, 
                                       exam_id:exam.id,
                                       parameter_id:parameter.id,
+                                      course:exam.course,
                                       children:[]});
                                       total = total + parameter.score
                                     }

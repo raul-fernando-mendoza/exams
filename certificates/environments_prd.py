@@ -19,5 +19,5 @@ config = {
     "database_host":"35.209.18.214",
     "database_password":"Argos4905",    
     "database":"entities",
-    "cred":credentials.Certificate('celtic-bivouac-307316-firebase-adminsdk-pbsww-2ccfde6abd.json')    
+#    "cred":credentials.Certificate('celtic-bivouac-307316-firebase-adminsdk-pbsww-2ccfde6abd.json')    
 }

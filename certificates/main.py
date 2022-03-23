@@ -11,7 +11,7 @@ logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.E
 log = logging.getLogger("exams")
 log.setLevel(logging.ERROR)
 
-def examgradesparameterupdate(event, context):
+def examgradesupdate(event, context):
     """Triggered by a change to a Firestore document.
     Args:
          event (dict): Event payload.
@@ -48,15 +48,20 @@ def closeExamGrade(db, documentId):
             else:
                 isCompleted = False
                 break
-        if isCompleted == True:
+        if isCompleted == True and examGrade["released"]:
             grade = total / len(parameters_arr)
             url = None
             if grade >= 7:
                 storage_client = storage.Client()
-                url = createStorageCertificate(storage_client, examGrade["id"] + ".jpg",examGrade["student_name"],examGrade["exam_label"])   
+                url = createStorageCertificate(storage_client, examGrade["id"] + ".jpg",examGrade["student_name"],examGrade["course"])   
             doc_ref.update({
                 u'score': grade,
                 u'completed': True,
                 u"certificate_url":url
-            })             
+            })
+        else:
+            doc_ref.update({
+                u"certificate_url":None
+            })
+
     

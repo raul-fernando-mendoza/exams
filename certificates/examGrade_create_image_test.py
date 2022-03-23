@@ -5,7 +5,7 @@ import logging
 import firebase_admin
 from firebase_admin import credentials
 import environments
-firebase_admin.initialize_app(environments.config["cred"] )
+firebase_admin.initialize_app()
 
 from google.cloud import storage
 import certificates
@@ -18,8 +18,8 @@ class TestFireStore(unittest.TestCase):
             storage_client = storage.Client()
             
             #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
-            certificates.createStorageCertificate( storage_client, "claudia_certificate.jpg" , 'Raul Mendoza',
-        title = "Coordinación y Resistencia"
+            certificates.createStorageCertificate( storage_client, "raul_certificate.jpg" , 'Raul Mendoza',
+        title = "Coco * con MUCHOS - y RaRos"
         #title = "Coordinación"
         #title="Técnica 2 «Ejercicio de competencia T2»"
         )
