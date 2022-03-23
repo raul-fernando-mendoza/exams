@@ -42,6 +42,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     
+    var saved_applicationDate = localStorage.getItem('applicationDate')
+    if (saved_applicationDate && saved_applicationDate != 'null'){
+      this.applicationDate = new Date( saved_applicationDate )
+    }
 
     this.released = localStorage.getItem('released') === 'true' ? true : false
 

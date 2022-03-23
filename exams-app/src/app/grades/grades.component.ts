@@ -56,9 +56,10 @@ export class ChecklistDatabase {
     const data = []
 
     if( exam != null){
+      var student_name = exam.student_name ? exam.student_name: exam.student_email
 
       var p:TodoItemNode = {
-        item:exam.title, 
+        item:exam.title + " | " + student_name, 
         released:true, 
         score:exam.score, 
         exam_id:exam.id,
@@ -224,7 +225,6 @@ export class GradesComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    console.debug( this.exam ) 
     this._database.initialize( this.exam )
   }
 

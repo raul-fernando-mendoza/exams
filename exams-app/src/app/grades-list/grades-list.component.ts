@@ -45,6 +45,7 @@ export class GradesListComponent implements OnInit {
           title:null,
           expression:null,
           score:null,
+          certificate_url:null,
           released:true,
           parameterGrades:[{
             id:null,
@@ -75,7 +76,7 @@ export class GradesListComponent implements OnInit {
             this.exams = data["result"].sort( (a, b) => {
               var ae:ExamGrade = a as ExamGrade 
               var be:ExamGrade = b as ExamGrade
-              return  a.label > a.label 
+              return  ae.title > be.title 
             })      
           },     
           error => {
@@ -91,5 +92,8 @@ export class GradesListComponent implements OnInit {
   */    
   
     }
+  }
+  scoreFormat( score ){
+    return Number( score * 10 ).toFixed(2)
   }
 }
