@@ -8,14 +8,22 @@ import "firebase/auth";
 export const environment = { 
   production: false,
   firebase:{
-      apiKey: "AIzaSyCpjqfjNiZJoTksBgLtL2JQnWV5ONjFa1k",
-      authDomain: "cheneque-dev-4ee34.firebaseapp.com",
-      projectId: "cheneque-dev-4ee34",
-      storageBucket: "cheneque-dev-4ee34.appspot.com",
-      messagingSenderId: "80335332365",
-      appId: "1:80335332365:web:bdefd12feed59e6dc4e144"
+    apiKey: "AIzaSyDB_dPrLkmeIm3-n_4TNxpt94BrUqn0_Rk",
+
+    authDomain: "thoth-qa.firebaseapp.com",
+  
+    databaseURL: "https://thoth-qa-default-rtdb.firebaseio.com",
+  
+    projectId: "thoth-qa",
+  
+    storageBucket: "thoth-qa.appspot.com",
+  
+    messagingSenderId: "357669808993",
+  
+    appId: "1:357669808993:web:87f3ec430f556b05683320"
+  
   },
-  apiURL:"https://cheneque-dev-4ee34.uc.r.appspot.com/api"
+  apiURL:"https://thoth-qa.uc.r.appspot.com/api"
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 

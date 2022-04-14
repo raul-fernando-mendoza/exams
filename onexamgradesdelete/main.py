@@ -1,4 +1,4 @@
-#gcloud functions deploy onExamGradesParameterDelete --region=us-central1 --entry-point onExamGradesParameterDelete --runtime python39 --trigger-event "providers/cloud.firestore/eventTypes/document.delete"  --trigger-resource "projects/celtic-bivouac-307316/databases/(default)/documents/examGrades/{examGradeId}/parameterGrades/{parameterGradeId}" 
+
 from google.cloud import firestore
 
 def onExamGradesParameterDelete(event, context):
