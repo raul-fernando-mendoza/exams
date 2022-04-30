@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { ExamGrade, ExamGradeMultipleRequest } from '../exams/exams.module';
+import { SortingService } from '../sorting.service';
 import { UserLoginService } from '../user-login.service';
 
 @Component({
@@ -18,7 +19,8 @@ export class GradesListComponent implements OnInit {
   
   constructor(private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private route: ActivatedRoute) {
+    , private route: ActivatedRoute
+    , private sortingService: SortingService) {
       this.student_email = this.route.snapshot.paramMap.get('student_email')   
       this.applicationDate = this.route.snapshot.paramMap.get('applicationDate')
   
@@ -56,11 +58,14 @@ export class GradesListComponent implements OnInit {
             evaluator_comment:null,
             criteriaGrades:[{
               id:null,
+              idx:null,
               label:null,
               aspectGrades:[{
                 id:null,
+                idx:null,
                 label:null,
-                score:null
+                score:null,
+                missingElements:null
               }]
             }]
           }]
@@ -73,11 +78,7 @@ export class GradesListComponent implements OnInit {
        
         this.examImprovisacionService.firestoreApiInterface("get", "token", req).subscribe(
           data => { 
-            this.exams = data["result"].sort( (a, b) => {
-              var ae:ExamGrade = a as ExamGrade 
-              var be:ExamGrade = b as ExamGrade
-              return  ae.title > be.title 
-            })      
+            this.exams = data["result"]
           },     
           error => {
             alert("error loading impro type")
@@ -96,4 +97,5 @@ export class GradesListComponent implements OnInit {
   scoreFormat( score ){
     return Number( score * 10 ).toFixed(2)
   }
+
 }

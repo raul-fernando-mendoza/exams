@@ -1,5 +1,9 @@
 <div *ngIf="exams; else elseBlock">
-    <mat-card *ngFor="let e of exams; let i=index">
+    <div *ngIf="exams.length == 0" >
+        sus calificaciones no han sido liberadas todavia.
+    </div>    
+    
+    <mat-card *ngFor="let e of sortingService.sortBy(exams,'title'); let i=index">
         <mat-toolbar>
             <span> {{ e.title }}</span>
         </mat-toolbar>      
@@ -8,21 +12,24 @@
         <p>Estudiante: {{ e.student_name }}</p>
         <p>Expression: {{ e.expression }}</p>
         <p>Calificacion: <b>{{ e.score }}</b> </p>
-        <mat-card *ngFor="let p of e.parameterGrades">
+        <mat-card *ngFor="let p of sortingService.sortBy(e.parameterGrades,'idx')">
             <mat-expansion-panel (opened)="panelOpenState = true"
                                 (closed)="panelOpenState = false">
             <mat-expansion-panel-header>
             <mat-panel-title>
-                {{p.label}} calificacion:{{p.score}}
+               {{p.label}} calificacion:{{p.score}}
             </mat-panel-title>
             <mat-panel-description> 
             </mat-panel-description>
             </mat-expansion-panel-header>
-            <div *ngFor="let c of p.criteriaGrades">
+            <div *ngFor="let c of sortingService.sortBy(p.criteriaGrades,'idx')">
                 {{ c.label }}
                 <mat-card>
-                    <div *ngFor="let a of c.aspectGrades">
+                    <div *ngFor="let a of sortingService.sortBy(c.aspectGrades,'idx')">
                         {{ a.label }} : {{ scoreFormat(a.score) }}
+                        <div class="comment" *ngIf="a.missingElements != null">
+                            {{ a.missingElements }}
+                        </div>
                     </div> 
                 </mat-card>
             </div> 
@@ -36,4 +43,7 @@
 
     </mat-card>
 </div>
-<ng-template #elseBlock>Cargando Calificaciones.</ng-template>
+<ng-template #elseBlock>
+    Cargando Calificaciones.
+    <mat-spinner></mat-spinner>
+</ng-template>

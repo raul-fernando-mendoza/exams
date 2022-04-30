@@ -55,6 +55,7 @@ import { ExamgradesReportComponent } from './examgrades-report/examgrades-report
 import { GradesComponent } from './grades/grades.component';
 import { ExamTableComponent } from './exam-table/exam-table.component';
 import { GradesListComponent } from './grades-list/grades-list.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -117,7 +118,8 @@ import { GradesListComponent } from './grades-list/grades-list.component';
     MatTabsModule,
     MatExpansionModule,
     MatButtonToggleModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     UserLoginService
