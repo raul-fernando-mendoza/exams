@@ -110,6 +110,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         certificate_url:null,
 
         released:null,
+           
       
         parameterGrades:[
           {

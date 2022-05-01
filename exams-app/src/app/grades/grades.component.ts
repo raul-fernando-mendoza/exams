@@ -19,6 +19,9 @@ import { UserLoginService } from '../user-login.service';
   parameter_id:string;
   released: boolean;
   course:string;
+  certificate_url:string;
+  applicationDate:Date;
+  student_email:string;
 }
 
 /** Flat to-do item node with expandable and level information */
@@ -30,6 +33,9 @@ export class TodoItemFlatNode {
   parameter_id:string;  
   expandable: boolean;
   course:string;
+  certificate_url:string;
+  applicationDate:Date;
+  student_email:string;
 }
 
 
@@ -67,6 +73,9 @@ export class ChecklistDatabase {
         exam_id:exam.id,
         parameter_id:null,
         course:exam.course,
+        certificate_url:exam.certificate_url,
+        applicationDate:exam.applicationDate,
+        student_email:exam.student_email,
         children:[]
       }
       var total = 0.0
@@ -78,6 +87,9 @@ export class ChecklistDatabase {
                                       exam_id:exam.id,
                                       parameter_id:parameter.id,
                                       course:exam.course,
+                                      certificate_url:exam.certificate_url,
+                                      applicationDate:exam.applicationDate,
+                                      student_email:exam.student_email,
                                       children:[]});
                                       total = total + parameter.score
                                     }
@@ -201,6 +213,9 @@ export class GradesComponent implements OnInit {
      flatNode.exam_id = node.exam_id
      flatNode.parameter_id = node.parameter_id
      flatNode.expandable = !!node.children?.length;
+     flatNode.certificate_url = node.certificate_url,
+     flatNode.applicationDate = node.applicationDate,
+     flatNode.student_email = node.student_email,     
      this.flatNodeMap.set(flatNode, node);
      this.nestedNodeMap.set(node, flatNode);
      return flatNode;
@@ -316,5 +331,10 @@ export class GradesComponent implements OnInit {
 
 
   }
-
+  onGraph(student_email:string,applicationDate:Date ){
+    this.router.navigate(['/examgrades-report',{student_email:student_email,applicationDate:applicationDate }]);
+  }
+  onCertificate(url){
+    console.log("url:" + url)
+  }
 }

@@ -1,6 +1,6 @@
 <div *ngIf="exams; else elseBlock">
     <div *ngIf="exams.length == 0" >
-        sus calificaciones no han sido liberadas todavia.
+        sus calificaciones No han sido liberadas todavia.
     </div>    
     
     <mat-card *ngFor="let e of sortingService.sortBy(exams,'title'); let i=index">

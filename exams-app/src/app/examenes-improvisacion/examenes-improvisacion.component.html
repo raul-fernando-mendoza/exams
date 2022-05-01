@@ -70,10 +70,7 @@
           <mat-icon>more_vert</mat-icon>
         </button>                                    
         <mat-menu #menu="matMenu" >
-          <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onRemove(row)" [disabled]="submitting" >
-            <mat-icon>delete</mat-icon>
-            <span>borrar</span>
-          </button>
+
           <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
             <mat-icon>edit</mat-icon>
             <span>Corregir</span>
@@ -82,14 +79,6 @@
             <mat-icon>visibility</mat-icon>
             <span>ver</span>
           </button>  
-          <button  mat-menu-item color="primary" (click)="onGraph(row.student_email,row.fechaApplicacion )" [disabled]="submitting">
-            <mat-icon>assessment</mat-icon>
-            <span>grafico</span>
-          </button>                                  
-          <button *ngIf="row.certificate_url != null" mat-menu-item color="primary" (click)="onCertificate(row.certificate_url)" [disabled]="submitting">
-            <mat-icon>beenhere</mat-icon>
-            <a target="_blank" href="{{row.certificate_url}}">cerficado</a>
-          </button>                         
         </mat-menu>         
       </td>
     </ng-container>

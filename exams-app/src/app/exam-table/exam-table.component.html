@@ -52,7 +52,9 @@
     </ng-container>
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Borrar</th>
-      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="onDelete(row.title, row.id)">Borrar</button></td>
+      <td mat-cell *matCellDef="let row">
+        <button mat-raised-button color="primary" (click)="onDelete(row.title, row.id)">Borrar</button>
+      </td>
     </ng-container>
 
 

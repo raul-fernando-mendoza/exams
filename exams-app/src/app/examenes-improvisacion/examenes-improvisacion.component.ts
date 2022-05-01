@@ -253,38 +253,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   gotoLogin() {
     this.router.navigate(['/loginForm']);
   }  
-  onRemove(row){
-    if( !confirm("Esta seguro de querer borrar el examen:" + row.materia + " " + row.estudiante + " " + row.maestro + " " + row.tipo + " " +  row.parametro + " " + row.fechaApplicacion) ){
-      return
-    }    
-    this.submitting=true
-    var request:ParameterGradeRequest = {
-      examGrades:{
-        id:row["examGrade_id"],
-        parameterGrades:{
-          id:row["parameterGrade_id"]
-        }  
-      }
-    }
-
-    
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("delete", token, request).subscribe(
-        data => {
-          this.submitting=false
-          console.log("delete compled successfully")
-          this.ngOnInit()
-        },
-        error =>{
-          this.submitting=false
-          alert("error en delete:" + error.error)
-        }
-      )
-    },
-    error => {
-      alert("ERROR al leer lista de examenes:" + error.errorCode + " " + error.errorMessage)
-    })
-  }  
   
   isAdmin(){
     return this.userLoginService.hasRole("admin")
@@ -339,8 +307,5 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }
       }
     )    
-  }
-  onCertificate(url){
-    console.log("url:" + url)
   }
 }
