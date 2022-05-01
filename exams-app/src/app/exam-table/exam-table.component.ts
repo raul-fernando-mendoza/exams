@@ -299,4 +299,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         , 7000);
     }
   } 
+  onCreate(){
+    this.router.navigate(['/ExamenImprovisacionFormComponent']);
+  }  
 }
