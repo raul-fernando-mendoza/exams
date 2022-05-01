@@ -4,10 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {take} from 'rxjs/operators';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
-import { Observable } from 'rxjs';
-import { Exam, Parameter, Criteria, Aspect, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest} from 'src/app/exams/exams.module'
+import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest} from 'src/app/exams/exams.module'
 
 
 @Component({
@@ -104,10 +103,12 @@ export class EiTipoEditComponent implements OnInit {
           }],
         }
       }
+      this.submitting = true
       this.userLoginService.getUserIdToken().then( token => {
 
         this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(
           data => { 
+            this.submitting = false
             let t:Exam = data["result"];
             this.e.controls.id.setValue(t.id)
             this.e.controls.label.setValue(t.label)
@@ -126,6 +127,7 @@ export class EiTipoEditComponent implements OnInit {
             })
           },     
           error => {
+            this.submitting = false
             alert("error loading impro type")
             console.log("Error loading ExamType:" + error.error)
           }

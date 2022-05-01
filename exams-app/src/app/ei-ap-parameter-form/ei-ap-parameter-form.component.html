@@ -63,7 +63,8 @@
                         
                         <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
-                            <input matInput placeholder="Elementos faltantes" maxlength="200" formControlName="missingElements" (change)="onChangeAspect(examGrade,p,c,a)" >
+                            <textarea  matInput maxlength="700" rows="3" placeholder="Elementos faltantes"  formControlName="missingElements" (change)="onChangeAspect(examGrade,p,c,a)">
+                            </textarea>
                         </mat-form-field> 
 
                     </div>

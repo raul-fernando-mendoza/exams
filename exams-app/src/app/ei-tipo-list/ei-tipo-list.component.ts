@@ -56,8 +56,9 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       orderBy:
         { label:"asc" }
     }
+    this.submitting = true
     this.userLoginService.getUserIdToken().then( token => {
-
+      this.submitting = false
       this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe( data =>{
         var result:Exam[] = data["result"] //ex_types.push( {id:t["id"],name:t["label"]} )
         this.dataSource = new EiApplicationTableDataSource(result)
@@ -70,6 +71,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
       })
     },
     error => {
+      this.submitting = false
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })  
 

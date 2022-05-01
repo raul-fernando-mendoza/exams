@@ -1,3 +1,4 @@
+<div *ngIf="submitting == false; else elseBlock">
 <form [formGroup]="e" >
     <span>Editar tipo de examen</span>
     <mat-form-field appearance="legacy">
@@ -206,4 +207,8 @@
  <!--  {{ getformValue() }}  --> 
   
   </form>
-  
+</div>
+  <ng-template #elseBlock>
+    Cargando Typo.
+    <mat-spinner></mat-spinner>
+  </ng-template>

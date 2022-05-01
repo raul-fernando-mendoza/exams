@@ -5,7 +5,8 @@
       <span>Crear nuevo tipo de examen</span>
     </button>
   </mat-toolbar>  
-  <table mat-table class="full-width-table" matSort aria-label="Elements">
+  <div *ngIf="submitting == false; else elseBlock"></div>
+  <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting">
    
     <ng-container matColumnDef="label">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -46,3 +47,7 @@
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
 </div>
+<ng-template #elseBlock>
+  Cargando Typos.
+  <mat-spinner></mat-spinner>
+</ng-template>
