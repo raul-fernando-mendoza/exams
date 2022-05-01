@@ -1,8 +1,14 @@
 # ExamsApp
 #to execute use
 npm start
+#helpful commands
+firebase help
+firebase login
+firebase projects:list  
+
 # use the followng to select the hosting option.
 firebase init
+
 
 #use to deploy the app first compile for deployment
 ng build --prod 

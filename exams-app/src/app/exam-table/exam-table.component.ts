@@ -188,19 +188,24 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       }
     }
     console.log(JSON.stringify(req,null,2))
+
+    this.submmiting = true
     
     this.userLoginService.getUserIdToken().then( token => {
 
       this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(data => {
+        this.submmiting = false
         console.log("examgrade removed")
         this.applicationFilterChange(null)
       },
       error => {
+        this.submmiting = false
         alert("error examgrade removed"  + error.errorCode + " " + error.errorMessage)
         console.log( "error:" + error.error )      
       }) 
     },
     error => {
+      this.submmiting = false
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })  
 
