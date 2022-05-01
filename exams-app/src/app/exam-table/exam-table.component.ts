@@ -30,6 +30,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   applicationDates = []
   applicationDate = null
 
+  submmiting = false
+
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
@@ -130,11 +132,12 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       }]
     }
 
-
+    this.submmiting = true
     var startTime =  new Date().getTime();
       
     this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
       result => { 
+        this.submmiting = false
         var endTime = new Date().getTime()
         const diffTime = Math.abs(endTime - startTime);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 

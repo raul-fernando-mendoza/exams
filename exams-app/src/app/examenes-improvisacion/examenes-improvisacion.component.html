@@ -1,97 +1,108 @@
-<mat-toolbar>
 
-  <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
-  
-  <button mat-button value="refresh" (click)="applicationFilterChange(null)"><mat-icon>refresh</mat-icon></button>
-  <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">auto</mat-slide-toggle>
-  
 
-  <mat-form-field appearance="fill">
-    <mat-label>date: </mat-label>
-    <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
-  
-  <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange($event)" aria-label="examenes abiertos solamente">Edit</mat-slide-toggle>
-
-</mat-toolbar>
  
-<div class="mat-elevation-z8">
-  <table mat-table class="full-width-table" matSort aria-label="Elements">
+  <mat-toolbar>
 
-    <ng-container matColumnDef="materia">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>materia</th>
-      <td mat-cell *matCellDef="let row">{{row.materia}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>titulo</th>
-      <td mat-cell *matCellDef="let row">{{row.title}}</td>
-    </ng-container>    
-
-    <ng-container matColumnDef="estudiante">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-      <td mat-cell *matCellDef="let row">{{row.student_name}}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="maestro">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>maestro</th>
-      <td mat-cell *matCellDef="let row">{{row.maestro}}</td>
-    </ng-container>   
-
-    <ng-container matColumnDef="tipo">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>tipo</th>
-      <td mat-cell *matCellDef="let row">{{row.tipo}}</td>
-    </ng-container> 
-
-    <ng-container matColumnDef="parametro">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>parametro</th>
-      <td mat-cell *matCellDef="let row">{{row.parametro}}</td>
-    </ng-container>     
-
-    <ng-container matColumnDef="fechaApplicacion">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Applicacion</th>
-      <td mat-cell *matCellDef="let row">{{row.fechaApplicacion}}</td>
-    </ng-container>
+    <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
     
-    <ng-container matColumnDef="completed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>completed</th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completed != true && (isEvaluador() || isAdmin() )">Edit</button> 
-        <span *ngIf="row.completed == true">{{ row.calificacion }}</span>
-      </td>
-    </ng-container> 
+    <button mat-button value="refresh" (click)="applicationFilterChange(null)"><mat-icon>refresh</mat-icon></button>
+    <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">auto</mat-slide-toggle>
+    
 
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-      <td mat-cell *matCellDef="let row"> 
-        <button mat-icon-button [matMenuTriggerFor]="menu" >
-          <mat-icon>more_vert</mat-icon>
-        </button>                                    
-        <mat-menu #menu="matMenu" >
+    <mat-form-field appearance="fill">
+      <mat-label>date: </mat-label>
+      <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    
+    <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange($event)" aria-label="examenes abiertos solamente">Edit</mat-slide-toggle>
 
-          <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
-            <mat-icon>edit</mat-icon>
-            <span>Corregir</span>
-          </button> 
-          <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
-            <mat-icon>visibility</mat-icon>
-            <span>ver</span>
-          </button>  
-        </mat-menu>         
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+  </mat-toolbar>
+  
+  <div class="mat-elevation-z8">
+    <div *ngIf="submitting == false; else elseBlock"></div>
+    
+    <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting">
 
-  <mat-paginator #paginator
-      [length]="dataSource?.data.length"
-      [pageIndex]="0"
-      [pageSize]="50"
-      [pageSizeOptions]="[25, 50, 100, 250]">
-  </mat-paginator>
+      <ng-container matColumnDef="materia">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>materia</th>
+        <td mat-cell *matCellDef="let row">{{row.materia}}</td>
+      </ng-container>
 
-</div>
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>titulo</th>
+        <td mat-cell *matCellDef="let row">{{row.title}}</td>
+      </ng-container>    
 
+      <ng-container matColumnDef="estudiante">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
+        <td mat-cell *matCellDef="let row">{{row.student_name}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="maestro">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>maestro</th>
+        <td mat-cell *matCellDef="let row">{{row.maestro}}</td>
+      </ng-container>   
+
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>tipo</th>
+        <td mat-cell *matCellDef="let row">{{row.tipo}}</td>
+      </ng-container> 
+
+      <ng-container matColumnDef="parametro">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>parametro</th>
+        <td mat-cell *matCellDef="let row">{{row.parametro}}</td>
+      </ng-container>     
+
+      <ng-container matColumnDef="fechaApplicacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Applicacion</th>
+        <td mat-cell *matCellDef="let row">{{row.fechaApplicacion}}</td>
+      </ng-container>
+      
+      <ng-container matColumnDef="completed">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>completed</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completed != true && (isEvaluador() || isAdmin() )">Edit</button> 
+          <span *ngIf="row.completed == true">{{ row.calificacion }}</span>
+        </td>
+      </ng-container> 
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+        <td mat-cell *matCellDef="let row"> 
+          <button mat-icon-button [matMenuTriggerFor]="menu" >
+            <mat-icon>more_vert</mat-icon>
+          </button>                                    
+          <mat-menu #menu="matMenu" >
+
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+              <mat-icon>edit</mat-icon>
+              <span>Corregir</span>
+            </button> 
+            <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+              <mat-icon>visibility</mat-icon>
+              <span>ver</span>
+            </button>  
+          </mat-menu>         
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    
+    
+
+    <mat-paginator #paginator
+        [length]="dataSource?.data.length"
+        [pageIndex]="0"
+        [pageSize]="50"
+        [pageSizeOptions]="[25, 50, 100, 250]">
+    </mat-paginator>
+
+  </div>
+
+<ng-template #elseBlock>
+  Cargando Calificaciones.
+  <mat-spinner></mat-spinner>
+</ng-template>

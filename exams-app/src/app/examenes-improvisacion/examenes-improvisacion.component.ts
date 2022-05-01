@@ -164,10 +164,12 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }]
     }
 
+    this.submitting = true
     var startTime =  new Date().getTime();
       
     this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
       result => { 
+        this.submitting = false
         var endTime = new Date().getTime()
         const diffTime = Math.abs(endTime - startTime);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -223,6 +225,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     
       },
       error => {
+        this.submitting = false
         if( error.error && error.error instanceof String && error.error.search("token")){
           console.log("ERROR al leer lista de examenes:" + error.status + " " + error.error)
           this.router.navigate(['/loginForm'])

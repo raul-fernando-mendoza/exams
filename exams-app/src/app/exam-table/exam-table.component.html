@@ -18,7 +18,8 @@
 </mat-toolbar>
 
 <div class="mat-elevation-z8">
-  <table mat-table class="full-width-table" matSort aria-label="Elements">
+  <div *ngIf="submmiting == false; else elseBlock"></div>
+  <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submmiting">
     <!-- Id Column -->
     <ng-container matColumnDef="titulo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Titulo</th>
@@ -69,5 +70,7 @@
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
 </div>
-
-
+<ng-template #elseBlock>
+  Cargando Calificaciones.
+  <mat-spinner></mat-spinner>
+</ng-template>
