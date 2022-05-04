@@ -44,26 +44,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     
-    var saved_applicationDate = localStorage.getItem('applicationDate')
-    if (saved_applicationDate && saved_applicationDate != 'null'){
-      this.applicationDate = new Date( saved_applicationDate )
-    }
 
-    this.released = localStorage.getItem('released') === 'true' ? true : false
-
-    this.userLoginService.getUserIdToken().then(
-      token => {
-        this.updateList(token,  this.released, this.applicationDate ? this.applicationDate: null)
-      },
-      error => {
-        if( error.status == 401 ){
-          this.router.navigate(['/loginForm']);
-        }
-        else{
-          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
-        }
-      }
-    )    
+        this.updateList()
+   
   }
 
   ngAfterViewInit() {
@@ -72,110 +55,127 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     this.table.dataSource = this.dataSource;
   }
 
-  updateList( token ,  released:boolean , applicationDate){
+  updateList(){
     
+    var saved_applicationDate = localStorage.getItem('applicationDate')
+    if (saved_applicationDate && saved_applicationDate != 'null'){
+      this.applicationDate = new Date( saved_applicationDate )
+    }
+
+    this.released = localStorage.getItem('released') === 'true' ? true : false
+
+    this.userLoginService.getUserIdToken().then(
+      token => { 
    
-   
-    var hideReleased = null
-    if( released ){
-      hideReleased = true
-    }
-
-
-    if( applicationDate == null || applicationDate == "" ){
-      applicationDate = null
-    }
-    else{
-      applicationDate = applicationDate.toISOString().split('T')[0]
-    }
-
-
-    var request:ExamGradeMultipleRequest = {
-    
-
-      examGrades:[{
-        id:null,
-        exam_id:null,
-        exam_label:null,
-
-        course: null,
-        completed: null,
-        applicationDate:applicationDate,
-      
-        student_email:null,
-        student_name:null,
-      
-        title:null,
-        expression:null,
-
-        score:null,
-        certificate_url:null,
-
-        released:null,
-           
-      
-        parameterGrades:[
-          {
-            id: null,
-            idx: null,
-            label: null,
-            scoreType: null,
-            score:null,
-            evaluator_uid:null,
-            evaluator_email:null,
-            evaluator_name:null,
-         
-            completed:null
-          
-          }
-        ]
-      }]
-    }
-
-    this.submmiting = true
-    var startTime =  new Date().getTime();
-      
-    this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
-      result => { 
-        this.submmiting = false
-        var endTime = new Date().getTime()
-        const diffTime = Math.abs(endTime - startTime);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        console.log(diffTime + " milliseconds");
-
-        var examGradeArray:ExamGrade[] = result["result"];
-    
-        this.dataSource = new ExamTableDataSource(examGradeArray);
-        var examenesSort = localStorage.getItem('jsonExamenesSort')
-        if( examenesSort ){
-          var jsonExamenesSort = JSON.parse(examenesSort)
-          this.sort.active = jsonExamenesSort["active"]
-          this.sort.direction = jsonExamenesSort["direction"]  
-        }
-        else{
-          this.sort.active = 'materia'
-          this.sort.direction = 'asc'
-        }
-
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.table.dataSource = this.dataSource;  
-        console.log("update completed")          
-    
-      },
-      error => {
-        if( error.error && error.error instanceof String && error.error.search("token")){
-          console.log("ERROR al leer lista de examenes:" + error.status + " " + error.error)
-          this.router.navigate(['/loginForm'])
-        }
-        else{
-          alert("ha habido un error al leer la lista de examenes:" + error.error)
-          console.log("error:" + error.error)
-        }
+      var showReleased = false
+      if( this.released ){
+        showReleased = null
       }
-    )        
-  }  
 
+
+      if( this.applicationDate == null || this.applicationDate == "" ){
+        this.applicationDate = null
+      }
+      else{
+        this.applicationDate = this.applicationDate.toISOString().split('T')[0]
+      }
+
+
+      var request:ExamGradeMultipleRequest = {
+      
+
+        examGrades:[{
+          id:null,
+          exam_id:null,
+          exam_label:null,
+
+          course: null,
+          completed: null,
+          applicationDate:this.applicationDate,
+        
+          student_email:null,
+          student_name:null,
+        
+          title:null,
+          expression:null,
+
+          score:null,
+          certificate_url:null,
+
+          released:showReleased,
+            
+        
+          parameterGrades:[
+            {
+              id: null,
+              idx: null,
+              label: null,
+              scoreType: null,
+              score:null,
+              evaluator_uid:null,
+              evaluator_email:null,
+              evaluator_name:null,
+          
+              completed:null
+            
+            }
+          ]
+        }]
+      }
+
+      this.submmiting = true
+      var startTime =  new Date().getTime();
+        
+      this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
+        result => { 
+          this.submmiting = false
+          var endTime = new Date().getTime()
+          const diffTime = Math.abs(endTime - startTime);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+          console.log(diffTime + " milliseconds");
+
+          var examGradeArray:ExamGrade[] = result["result"];
+      
+          this.dataSource = new ExamTableDataSource(examGradeArray);
+          var examenesSort = localStorage.getItem('jsonExamenesSort')
+          if( examenesSort ){
+            var jsonExamenesSort = JSON.parse(examenesSort)
+            this.sort.active = jsonExamenesSort["active"]
+            this.sort.direction = jsonExamenesSort["direction"]  
+          }
+          else{
+            this.sort.active = 'materia'
+            this.sort.direction = 'asc'
+          }
+
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          this.table.dataSource = this.dataSource;  
+          console.log("update completed")          
+      
+        },
+        error => {
+          if( error.error && error.error instanceof String && error.error.search("token")){
+            console.log("ERROR al leer lista de examenes:" + error.status + " " + error.error)
+            this.router.navigate(['/loginForm'])
+          }
+          else{
+            alert("ha habido un error al leer la lista de examenes:" + error.error)
+            console.log("error:" + error.error)
+          }
+        }
+      )        
+
+    },
+    error => {
+      if( error.status == 401 ){
+        this.router.navigate(['/loginForm']);
+      }
+      else{
+        alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
+      }
+    })   
+  }
   onDelete(title, id){
 
     if( !confirm("Esta seguro de querer borrar todos los examenes de::" + title ) ){
@@ -235,7 +235,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         console.log("examgrade release")
         row.released = value
-        
+        this.updateList()        
       },
       error => {
         alert("error examgrade release"  + error.errorCode + " " + error.errorMessage)
@@ -264,7 +264,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token,  this.released, this.applicationDate ? this.applicationDate: null)
+        this.updateList()
       },
       error => {
         if( error.status == 401 ){

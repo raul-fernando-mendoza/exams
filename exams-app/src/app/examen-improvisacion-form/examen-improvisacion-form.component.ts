@@ -29,9 +29,8 @@ export class ExamenImprovisacionFormComponent {
   students:User[] 
   evaluators:User[] 
 
-
- 
-
+  
+  
   examGrade = this.fb.group({
     id: [null],
     course:[null,Validators.required],
@@ -45,7 +44,12 @@ export class ExamenImprovisacionFormComponent {
 
     title:[null, Validators.required], 
     expression:[null], 
-    parameterGrades: new FormArray([])
+    parameterGrades: new FormArray([]),
+    active:[true],
+    createdon:[this.today],
+    updateon:[this.today],
+    released:[false]
+
   });
 
 
