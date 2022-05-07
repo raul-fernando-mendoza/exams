@@ -13,7 +13,8 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
   
-  <mat-slide-toggle class="filter_element"  [(ngModel)]="released" (change)="applicationFilterChange($event)" aria-label="examenes released solamente">Released</mat-slide-toggle>
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="released" (change)="applicationFilterChange($event)" aria-label="examenes released solamente">Mostrar Liberados</mat-slide-toggle>
+  <mat-slide-toggle class="filter_element"  [(ngModel)]="showDeleted" (change)="applicationFilterChange($event)" aria-label="mostrar los borrados">Mostrar Borrados</mat-slide-toggle>
 
 </mat-toolbar>
 

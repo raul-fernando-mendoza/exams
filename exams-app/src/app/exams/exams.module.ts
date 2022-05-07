@@ -155,6 +155,7 @@ export interface ExamGrade{
   certificate_url?:string
 
   released?:boolean
+  isDeleted?:boolean
 
   parameterGrades?:ParameterGrade[]
 }

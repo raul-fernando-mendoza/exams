@@ -31,7 +31,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   applicationDate = null
 
   submmiting = false
-
+  showDeleted = false
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
@@ -103,6 +103,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
           certificate_url:null,
 
           released:showReleased,
+          isDeleted:this.showDeleted?true:false,
             
         
           parameterGrades:[
@@ -184,7 +185,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
     var req:ExamGradeRequest = {
       examGrades:{
-        id:id
+        id:id,
+        isDeleted:true
       }
     }
     console.log(JSON.stringify(req,null,2))
@@ -193,7 +195,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(data => {
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         this.submmiting = false
         console.log("examgrade removed")
         this.applicationFilterChange(null)
