@@ -18,10 +18,16 @@ class TestFireStore(unittest.TestCase):
             storage_client = storage.Client()
             
             #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
-            certificates.createStorageCertificate( storage_client, "raul_certificate.jpg" , 'Raul Mendoza',
-        title = "Coco * con MUCHOS - y RaRos"
+            certificates.createStorageCertificate( storage_client, "raul_certificate.jpg" , 'CLAUDIA GAMBOA VILLA',
+        #title = "Coco * con MUCHOS - y RaRos"
         #title = "Coordinación"
-        #title="Técnica 2 «Ejercicio de competencia T2»"
+        "Candelabro",
+        "Habilidad",
+        "Candelabro",
+        "",
+        "WWW.RAXACADEMY.COM",
+        "#d9ad43",
+        "#D40000"
         )
 
             #self.assertTrue(obj["id"] == "test1")           

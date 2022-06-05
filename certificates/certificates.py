@@ -4,6 +4,7 @@ from PIL import Image, ImageFont, ImageDraw
 import datetime
 import io
 import string 
+import math
 
 def calculateSizeStringOld(str, s):
         
@@ -26,7 +27,60 @@ def calculateWidthString(text, font):
     (x,y) = font.getsize(text)
     return x
 
-def createStorageCertificate( storage_client, file_name, student, title):
+def angleToPositive( angle:int):
+        while angle<0:
+            angle +=360
+        return angle
+
+
+    
+def draw_text_angle (str:string, into:Image, at:int, down:bool):
+        circle_width = 40
+        full_circle_grades = 240
+        font_size=36
+        if at==2:
+                font_size = 30
+        font = ImageFont.truetype('AzeretMono-Bold.ttf', font_size) 
+        # Measure the text area
+        logo_w, logo_h = into.size
+        mid_x = int( logo_w/2 )
+        mid_y = int( logo_h/2 )
+        radio = (logo_w - circle_width * 0.9)/2
+        if at==2:
+            radio = (logo_w - circle_width * 2.9 )/2    
+        width = calculateWidthString(str,font)
+        perimeter = 3.1416 * radio 
+        start = (width/2) * full_circle_grades / perimeter
+        start_angle = -start
+
+        for i in range(len(str)):
+                print(f"{str[:i+1]}")
+                
+                w = calculateWidthString(str[:i+1],font)
+                s = (w * full_circle_grades) / perimeter
+                angle = start_angle + s               
+
+                text_to_be_rotated = str[i]
+                mark_width, mark_height = font.getsize(text_to_be_rotated)
+                watermark = Image.new('RGBA', (mark_width, mark_height), (0, 0, 0, 0))
+                draw = ImageDraw.Draw(watermark)
+                draw.text((0, 0), text=text_to_be_rotated, font=font, fill=(255, 255, 255, 256))
+                #angle = math.degrees(math.atan(logo_h/logo_w))
+                if down==False:
+                        watermark = watermark.rotate(-angle, expand=True)
+                else:
+                        watermark = watermark.rotate(angle, expand=True)
+                #into = img_rotated.rotate (start, expand = False)
+                # merge
+                wx, wy = watermark.size
+                px = int(radio * math.cos(math.radians(angleToPositive(angle-90))))
+                py = int(radio * math.sin(math.radians(angleToPositive(angle-90))))
+                if down==True:
+                        py = -py
+                into.paste(watermark, (mid_x + px - int(wx/2),mid_y + py - int(wy/2), mid_x + px - int(wx/2) + wx, mid_y + py - int(wy/2) + wy), watermark)
+        return into
+
+def createStorageCertificate( storage_client, file_name:string, student:string, title:string, t1:string, t2:string, t3:string, t4:string,color1:string, color2:string):
 
 
 
@@ -34,55 +88,88 @@ def createStorageCertificate( storage_client, file_name, student, title):
         
         bucket = storage_client.get_bucket(bucket_name)
 
-        w = 1100
-        h = 850
-        f = 35
+
 
         # creating a image object 
         url = 'gs://certificates.raxacademy.com/rax_certificate.jpg'
 
-
-        
         blob = bucket.blob("rax_certificate.jpg")
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
         image = Image.open(b)
        
-        #image = Image.open("rax_certificate.jpg")
+        image = Image.open("rax_certificate.jpg")
 
+        w,h = image.size       
+        f = 35
         
-        
+        #creating the draw object
         draw = ImageDraw.Draw(image) 
 
         
-        # specified font size
-        f = 25
-        font = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f) 
+        # writing student
+        f = 150
+        font = ImageFont.truetype('SecularOne-Regular.ttf', f) 
         
 
         left = ( w/2 ) - calculateWidthString(student,  font) / 2
-        top = (h * (5/10)) - f 
+        top = (h * (9/20)) - f 
         
         draw.text((left, top), student, fill ="black", font = font, align ="center") 
 
 
-        f = 35
-        font = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f) 
+        #writing the title
+        f = 130
+        font = ImageFont.truetype('SecularOne-Regular.ttf', f) 
         left_t = ( w/2 ) - (calculateWidthString(title, font)/2)
-        top_t = (h * (23/40))
+        top_t = (h * (24/40))
         
         draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 
 
+        #writing expiration date
         today = datetime.date.today()
-        issue = "Fecha de expedicion:" + str(today) + "\n" + \
+        issue = "Fecha de expedicion:" + str(today)  + " " + \
                 "Fecha de expiracion:" + str( datetime.date(today.year + 1, today.month, today.day))
-        f_i = 10
+        f_i = 40
         left_i =w * (3/20) 
-        top_i = (h * (16/20)) 
+        top_i = (h * (19/20)) 
         font_i = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f_i)
         
         draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
         
+
+        #add the logo
+
+        img_logo = Image.open('rax_logo_no_text_500.jpg', 'r')
+        logo_w, logo_h = img_logo.size
+
+        line_size = 40
+
+        shape = [(0, 0), (logo_w, logo_h)]
+        draw = ImageDraw.Draw(img_logo)
+        draw.arc(shape, start = 0, end = 360, fill = color1, width = line_size+2) 
+
+        shape2 = [(line_size, line_size), (logo_w - line_size, logo_h - line_size)]
+        draw.arc(shape2, start = 0, end = 360, fill = color2, width = line_size) 
+
+        img_logo = draw_text_angle(t1,img_logo,1,down=False)
+        img_logo = draw_text_angle(t2,img_logo,2,down=False)
+        img_logo = draw_text_angle(t3,img_logo,2,down=True)
+        img_logo = draw_text_angle(t4,img_logo,1,down=True)
+        
+        #setup in final size and position
+        final_size = img_logo.size
+        img_logo = img_logo.resize( final_size )
+
+
+        offset = (int((w - img_logo.size[0] - 100)), int((h - img_logo.size[1]) - 100))
+
+        
+
+        image.paste(img_logo, offset)
+        image.save('result.png') 
+
+        #save to the cloud storage     
         
         b = io.BytesIO()
         image.save(b,'jpeg')
@@ -92,46 +179,5 @@ def createStorageCertificate( storage_client, file_name, student, title):
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
         return blob.public_url
-"""
-def createLocalCertificate():
-        w = 600
-        h = 462
-        f = 40
-
-        # creating a image object 
-        image = Image.open(r'/mnt/c/home/odroid/certificates/rax_certificate.jpg') 
         
-        draw = ImageDraw.Draw(image) 
-
         
-        # specified font size
-        font = ImageFont.truetype('Yellowtail-Regular.ttf', f) 
-        
-        student = 'Claudia Gamboa'
-        title = 'Belly Dancer Coreographer'
-
-        left = ( w/2 ) - (len(student) * (f/5)) 
-        top = (h * (5/10)) - f 
-        
-        draw.text((left, top), student, fill ="black", font = font, align ="center") 
-
-
-
-        left_t = ( w/2 ) - (len(title) * (f/5)) 
-        top_t = (h * (8/10)) - f 
-        
-        draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 
-
-        today = datetime.date.today()
-        issue = "Fecha de expedicion:" + str(today) + "\n" + \
-                "Fecha de expiracion:" + str( datetime.date(today.year + 1, today.month, today.day))
-        f_i = 10
-        left_i =f_i * 3 
-        top_i = (h * (9/10)) - f_i 
-        font_i = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f_i)
-        
-        draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
-        
-        image.save("/mnt/c/home/odroid/certificates/rax_certificate_written.jpg")
-
-"""
