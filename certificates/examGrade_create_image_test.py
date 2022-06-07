@@ -4,21 +4,32 @@ import logging
 
 import firebase_admin
 from firebase_admin import credentials
-import environments
 firebase_admin.initialize_app()
 
 from google.cloud import storage
 import certificates
 
 log = logging.getLogger("cheneque")
-
+"""
+{
+    "certificateId":"raul_test" ,
+    "studentName":"Claudia Gamboa",
+    "materiaName":"Salsa",
+    "label1":"Salsa",
+    "label2":"X",
+    "label3":"Otros",
+    "label4":"www.rax.com",
+    "color1":"blue",
+    "color2":"red"
+}
+"""
 class TestFireStore(unittest.TestCase):
 
     def test01_addDocument(self):
-            storage_client = storage.Client()
+        storage_client = storage.Client()
             
-            #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
-            certificates.createStorageCertificate( storage_client, "raul_certificate.jpg" , 'CLAUDIA GAMBOA VILLA',
+        #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
+        data = certificates.createStorageCertificate( storage_client, "certificates/companyid_userid_certificateid" , 'CLAUDIA GAMBOA VILLA',
         #title = "Coco * con MUCHOS - y RaRos"
         #title = "Coordinación"
         "Candelabro",
@@ -29,8 +40,9 @@ class TestFireStore(unittest.TestCase):
         "#d9ad43",
         "#D40000"
         )
+        print(json.dumps(data))
 
-            #self.assertTrue(obj["id"] == "test1")           
+        #self.assertTrue(obj["id"] == "test1")           
 
 
 

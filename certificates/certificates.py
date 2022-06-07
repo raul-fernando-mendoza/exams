@@ -84,21 +84,19 @@ def createStorageCertificate( storage_client, file_name:string, student:string, 
 
 
 
-        bucket_name = "certificates.raxacademy.com"
+        bucket_name = "certificates-" + storage_client.project
         
         bucket = storage_client.get_bucket(bucket_name)
 
 
 
         # creating a image object 
-        url = 'gs://certificates.raxacademy.com/rax_certificate.jpg'
-
         blob = bucket.blob("rax_certificate.jpg")
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
         image = Image.open(b)
        
-        image = Image.open("rax_certificate.jpg")
+        #image = Image.open("rax_certificate.jpg")
 
         w,h = image.size       
         f = 35
@@ -132,15 +130,19 @@ def createStorageCertificate( storage_client, file_name:string, student:string, 
                 "Fecha de expiracion:" + str( datetime.date(today.year + 1, today.month, today.day))
         f_i = 40
         left_i =w * (3/20) 
-        top_i = (h * (19/20)) 
+        top_i = (h -f_i - 4) 
         font_i = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f_i)
         
         draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
         
 
         #add the logo
+        blob = bucket.blob("rax_logo_no_text_500.jpg")
+        bytes = blob.download_as_bytes()
+        b = io.BytesIO(bytes)
+        img_logo = Image.open(b)        
 
-        img_logo = Image.open('rax_logo_no_text_500.jpg', 'r')
+        #img_logo = Image.open('rax_logo_no_text_500.jpg', 'r')
         logo_w, logo_h = img_logo.size
 
         line_size = 40
@@ -167,17 +169,31 @@ def createStorageCertificate( storage_client, file_name:string, student:string, 
         
 
         image.paste(img_logo, offset)
-        image.save('result.png') 
+        #image.save('result.png') 
 
-        #save to the cloud storage     
+
+        #save the badge to cloud storage
+         
+        b = io.BytesIO()
+        img_logo.save(b,'jpeg')
+        #img_logo.close()
+
+        blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 
+        blob_logo.upload_from_string(b.getvalue(), content_type="image/jpeg")
+        blob_logo.make_public() 
+         
+
+        #save to the diploma cloud storage     
         
         b = io.BytesIO()
         image.save(b,'jpeg')
         image.close()
 
-        blob = bucket.blob(file_name) 
+        blob = bucket.blob(file_name + "_certificate" + ".jpeg") 
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
-        return blob.public_url
+        return {"certificate_url":blob.public_url,"certificate_logo_url":blob_logo.public_url}
+
+             
         
         
