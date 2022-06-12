@@ -47,8 +47,8 @@ def createCertificate(request):
     
     except Exception as e:
         log.error("**** processRequest Exception:" + str(e))
-        return json.dumps({"error":str(e)}), 401, {'Content-Type': 'application/json'}
-    return json.dumps({"result":data}), 200, {'Content-Type': 'application/json'}
+        return json.dumps({"****** error":request}), 401, {'Content-Type': 'application/json'}
+    return json.dumps({"***** result":data}), 200, {'Content-Type': 'application/json'}
 
 
 
