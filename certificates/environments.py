@@ -1,1 +1,0 @@
-from environments_prd import config

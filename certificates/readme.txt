@@ -1,3 +1,23 @@
+#deploy function to cloud functions
+gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated
+
+
+#to list the projects
+gcloud project list
+
+#to list the credentials
+gcloud auth list
+
+#login 
+gcloud auth login
+
+#switch project 
+gcloud config set project PROJECT_ID
+
+#to set the active account
+gcloud config set account `ACCOUNT`
+
+
 #to install pil
 python -m pip install pillow --global-option="build_ext" --global-option="--enable-zlib" --global-option="--enable-jpeg" --global-option="--enable-tiff" --global-option="--enable-freetype" --global-option="--enable-webp" --global-option="--enable-webpmux" --global-option="--enable-jpeg2000"
 

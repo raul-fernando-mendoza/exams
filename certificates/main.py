@@ -1,8 +1,11 @@
 #gcloud functions deploy examgradesparameterupdate --region=us-central1 --entry-point examgradesparameterupdate --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.update"  --trigger-resource "projects/celtic-bivouac-307316/databases/(default)/documents/examGrades/{examGradeId}/parameterGrades/{parameterGradeId}" 
+import flask
+
 from google.cloud import firestore
 from google.cloud import storage
-from certificates import createStorageCertificate
+import json
 import logging
+import certificates
 
 
 
@@ -10,6 +13,44 @@ logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.E
 
 log = logging.getLogger("exams")
 log.setLevel(logging.ERROR)
+
+
+
+def createCertificate(request):
+    obj = None
+    try:
+        obj = request.get_json(force=True)
+        storage_client = storage.Client()
+
+        certificateId = obj["certificateId"]
+        studentName = obj["studentName"]
+        materiaName = obj["materiaName"]
+        label1 = obj["label1"]
+        label2 = obj["label2"]
+        label3 = obj["label3"]
+        label4 = obj["label4"]
+        color1 = obj["color1"]
+        color2 = obj["color2"]
+
+
+        data = certificates.createStorageCertificate( storage_client, 
+        "certificates/" + certificateId ,
+         studentName,
+        materiaName,
+        label1,
+        label2,
+        label3,
+        label4,
+        color1,
+        color2
+        )        
+    
+    except Exception as e:
+        log.error("**** processRequest Exception:" + str(e))
+        return json.dumps({"error":str(e)}), 401, {'Content-Type': 'application/json'}
+    return json.dumps({"result":data}), 200, {'Content-Type': 'application/json'}
+
+
 
 def examgradesupdate(event, context):
     """Triggered by a change to a Firestore document.

@@ -1,4 +1,6 @@
 venv
+.vscode
+*.png
 *_test.py
 readme.txt
 *.jpg 
