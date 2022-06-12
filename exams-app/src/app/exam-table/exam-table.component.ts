@@ -213,19 +213,19 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   }
   
-  updateRelease(row:ExamGrade, value:boolean){
+  updateRelease(examGrade:ExamGrade, value:boolean){
 
     //calculate average
     var total = 0.0
-    row.parameterGrades.forEach( parameter => {                              
+    examGrade.parameterGrades.forEach( parameter => {                              
                                     total = total + parameter.score
                                   }
                                 )
-    var score = Number((total / row.parameterGrades.length).toFixed(2))
+    var score = Number((total / examGrade.parameterGrades.length).toFixed(2))
 
     var req:ExamGradeRequest = {
       examGrades:{
-        id:row["id"],
+        id:examGrade["id"],
         released:value,
         score:score
       }
@@ -236,8 +236,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         console.log("examgrade release")
-        row.released = value
-        this.updateList()        
+        examGrade.released = value
+        this.crearCertificado(examGrade,)        
       },
       error => {
         alert("error examgrade release"  + error.errorCode + " " + error.errorMessage)
@@ -254,6 +254,50 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   isAdmin(){
     return this.userLoginService.hasRole("admin")
   }
+
+  crearCertificado(examGrade:ExamGrade){
+
+    var req = {
+      "certificateId":"raul_test" ,
+      "studentName":examGrade.student_name,
+      "materiaName":examGrade.course,
+      "label1":"www.raxacademy.com",
+      "label2":"",
+      "label3":examGrade.course,
+      "label4":examGrade.student_name,
+      "color1":"blue",
+      "color2":"red"
+    }
+
+
+    console.log(JSON.stringify(req,null,2))
+    
+    this.userLoginService.getUserIdToken().then( token => {
+
+      this.examImprovisacionService.certificateInterface("create", token, req).subscribe(data => {
+        if( data["result"] ){
+          console.log("certification created" + data["result"])
+          this.updateList()
+        } 
+        else{
+          alert("Error:" + data["error"])
+        }       
+      },
+      error => {
+        alert("Error creando certificado"  + error.statusText)
+        console.log( "error:" + error.statusText )
+      
+      }) 
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    
+    })  
+
+  }
+
+
+
   applicationFilterChange(e){
     if ( e instanceof MatDatepickerInputEvent ){
       if ( e.value == null ){
