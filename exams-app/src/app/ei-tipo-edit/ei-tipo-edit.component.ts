@@ -2,11 +2,12 @@ import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
-import {CdkTextareaAutosize} from '@angular/cdk/text-field';
-import {take} from 'rxjs/operators';
+import { CdkTextareaAutosize} from '@angular/cdk/text-field';
+import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
-import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest} from 'src/app/exams/exams.module'
+import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, TypeCertificate} from 'src/app/exams/exams.module'
+
 
 
 @Component({
@@ -25,13 +26,19 @@ export class EiTipoEditComponent implements OnInit {
   e = this.fb.group({
     id: [null, Validators.required],
     label:["nombre tipo de examen", Validators.required],   
+    typeCertificate:["", Validators.required],
     description:[""],
     parameters: new FormArray([])
-  });
+  })
   
-  id;
-  submitting = false;
-  
+  id
+  submitting = false
+
+  typeCertificates: TypeCertificate[] = [
+    { label:"Habilidades", value:"habilidades" }, 
+    { label:"Tecnica Coreografia", value:"tecnicaCoreografia" }
+  ]  
+
   constructor(private fb: FormBuilder
     , private route: ActivatedRoute
     , private router: Router
@@ -80,6 +87,7 @@ export class EiTipoEditComponent implements OnInit {
         exams:{
           id:this.id,
           label:null,
+          typeCertificate:null,
           description:null,
           parameters:[{
             id:null,
@@ -113,6 +121,7 @@ export class EiTipoEditComponent implements OnInit {
             this.e.controls.id.setValue(t.id)
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
+            this.e.controls.typeCertificate.setValue( t.typeCertificate ? t.typeCertificate : "" )
             var parameter_arr:FormArray = this.e.controls.parameters as FormArray
 
             for( let i =0;t.parameters && i<t.parameters.length; i++){
@@ -515,6 +524,7 @@ export class EiTipoEditComponent implements OnInit {
       exams:{
         id:e.controls.id.value,
         label:e.controls.label.value,
+        typeCertificate:e.controls.typeCertificate.value,
         description:e.controls.description.value
       }
     }

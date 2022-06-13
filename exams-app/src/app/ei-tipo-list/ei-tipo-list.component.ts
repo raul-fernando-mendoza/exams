@@ -54,7 +54,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
         label:null
       }],
       orderBy:
-        { label:"asc" }
+        { field:"label" }
     }
     this.submitting = true
     this.userLoginService.getUserIdToken().then( token => {

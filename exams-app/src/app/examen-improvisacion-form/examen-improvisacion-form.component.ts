@@ -95,7 +95,7 @@ export class ExamenImprovisacionFormComponent {
           "label":null
       }],
       "orderBy":{
-        "label":"asc"
+        "field":"label"
       }
     }  
 

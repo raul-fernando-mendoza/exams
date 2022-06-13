@@ -93,14 +93,14 @@ public gsApiInterface(action, token, data): Observable<Object> {
 }
 /*
 var request_data = {
-    "certificateId":"raul_test" ,
+    "certificateId":"102" ,
     "studentName":"Claudia Gamboa",
     "materiaName":"Salsa",
-    "label1":"Salsa",
-    "label2":"X",
-    "label3":"Otros",
-    "label4":"www.rax.com",
-    "color1":"blue",
+    "label1":"www.raxacademy.com",
+    "label2":"Experta",
+    "label3":"Abanicos",
+    "label4":"Virginia Gamboa",
+    "color1":"black",
     "color2":"red"
   }
 */

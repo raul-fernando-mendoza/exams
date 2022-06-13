@@ -48,6 +48,7 @@ export interface Exam{
   id:string
   label?:string
   description?:string
+  typeCertificate?:string
   parameters?: Parameter[]
 
 }
@@ -59,8 +60,10 @@ export interface ExamRequest{
 export interface ExamMultipleRequest{
   exams:Exam[]
   orderBy?:{
-    id?:string,
-    label?:string
+    field:string
+    direction?:string
+    startAfterId?:string
+    pageSize?:string
   }
 }
 
@@ -194,7 +197,14 @@ export interface ExamGradeRequest{
 export interface ExamGradeMultipleRequest{
   examGrades:ExamGrade[]
   orderBy?:{
-    applicationDate?:string
-    id?:string
+    field:string
+    direction?:string
+    startAfterId?:string
+    pageSize?:string
   }
+}
+
+export interface TypeCertificate{
+  value: string
+  label: string
 }
