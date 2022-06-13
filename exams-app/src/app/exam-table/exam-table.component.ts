@@ -6,10 +6,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { ExamenesImprovisacionItem } from '../examenes-improvisacion/examenes-improvisacion-datasource';
 import { ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { ExamTableDataSource } from './exam-table-datasource';
+
 
 @Component({
   selector: 'app-exam-table',
@@ -215,6 +215,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   
   updateRelease(examGrade:ExamGrade, value:boolean){
 
+    this.crearCertificado(examGrade,value)
+  }
+
+  updateExamReleased(examGrade:ExamGrade, value:boolean){
     //calculate average
     var total = 0.0
     examGrade.parameterGrades.forEach( parameter => {                              
@@ -222,12 +226,14 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
                                   }
                                 )
     var score = Number((total / examGrade.parameterGrades.length).toFixed(2))
+    var url = examGrade.certificate_url
 
     var req:ExamGradeRequest = {
       examGrades:{
         id:examGrade["id"],
         released:value,
-        score:score
+        score:score,
+        certificate_url:url
       }
     }
     console.log(JSON.stringify(req,null,2))
@@ -236,8 +242,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         console.log("examgrade release")
-        examGrade.released = value
-        this.crearCertificado(examGrade,)        
+        examGrade.released = value   
+        this.updateList()   
       },
       error => {
         alert("error examgrade release"  + error.errorCode + " " + error.errorMessage)
@@ -255,10 +261,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     return this.userLoginService.hasRole("admin")
   }
 
-  crearCertificado(examGrade:ExamGrade){
+  crearCertificado(examGrade:ExamGrade, value:boolean){
 
     var req = {
-      "certificateId":"raul_test" ,
+      "certificateId":examGrade.exam_id + " " + examGrade.id + "_" + examGrade.student_uid,
       "studentName":examGrade.student_name,
       "materiaName":examGrade.course,
       "label1":"www.raxacademy.com",
@@ -276,8 +282,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
       this.examImprovisacionService.certificateInterface("create", token, req).subscribe(data => {
         if( data["result"] ){
-          console.log("certification created" + data["result"])
-          this.updateList()
+          console.log("certification created" + data["result"].certificate_logo_url + " " + data["result"].certificate_url)
+          examGrade.certificate_url = data["result"].certificate_url
+          this.updateExamReleased(examGrade, value)
         } 
         else{
           alert("Error:" + data["error"])
@@ -286,6 +293,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       error => {
         alert("Error creando certificado"  + error.statusText)
         console.log( "error:" + error.statusText )
+        this.updateExamReleased(examGrade,value)
       
       }) 
     },

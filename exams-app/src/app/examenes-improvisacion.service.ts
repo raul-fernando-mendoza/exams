@@ -92,7 +92,7 @@ public gsApiInterface(action, token, data): Observable<Object> {
   return this.http.post(url, request_data, {headers: myheaders})
 }
 /*
-{
+var request_data = {
     "certificateId":"raul_test" ,
     "studentName":"Claudia Gamboa",
     "materiaName":"Salsa",
@@ -104,17 +104,15 @@ public gsApiInterface(action, token, data): Observable<Object> {
     "color2":"red"
   }
 */
-public certificateInterface(action, token, data): Observable<Object> {
+public certificateInterface(action, token, request_data): Observable<Object> {
 
   var url = environment.certificatesURL 
 
-  var request_data =  data
-
   console.log( JSON.stringify(request_data, null, 2))
-  var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+  var myheaders = new HttpHeaders({'Content-Type': 'application/json' });
 
 
-  return this.http.post(url, request_data, {headers: myheaders})
+  return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
 }
 
 
