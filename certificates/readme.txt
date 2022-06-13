@@ -1,6 +1,19 @@
 #deploy function to cloud functions
-gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated
+gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
 
+curl -m 70 -X POST -H "Content-Type:application/json" -d "{\"certificateId\":\"raul_test\",\"studentName\":\"Claudia Gamboa\",\"materiaName\":\"Salsa\",\"label1\":\"Salsa\",\"label2\":\"X\",\"label3\":\"Otros\",\"label4\":\"www.rax.com\",\"color1\":\"blue\",\"color2\":\"red\"}" https://us-central1-thoth-qa.cloudfunctions.net/createCertificate 
+
+{
+    "certificateId":"raul_test" ,
+    "studentName":"Claudia Gamboa",
+    "materiaName":"Salsa",
+    "label1":"Salsa",
+    "label2":"X",
+    "label3":"Otros",
+    "label4":"www.rax.com",
+    "color1":"blue",
+    "color2":"red"
+}
 
 #to list the projects
 gcloud project list

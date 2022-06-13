@@ -38,8 +38,17 @@
     <ng-container matColumnDef="released">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Released</th>
       <td mat-cell *matCellDef="let row">
-        <ng-template [ngIf]="row.released" [ngIfElse]="notReleased"><p>Liberado</p></ng-template>
+        <ng-template [ngIf]="row.released" [ngIfElse]="notReleased">
+          <p>Liberado</p>
+          <div *ngIf="row.certificate_url">
+            <a href="{{ row.certificate_url }}"><mat-icon aria-hidden="false" aria-label="link to certificate">history_edu</mat-icon></a>
+           <!-- <button [cdkCopyToClipboard]="row.certificate_url"><mat-icon>pending_actions</mat-icon>></button> -->
+          </div>
+
+        </ng-template>
         <ng-template #notReleased><p>No Liberado</p></ng-template>
+        
+       
       </td>  
     </ng-container>    
 

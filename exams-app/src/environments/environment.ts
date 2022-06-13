@@ -23,7 +23,10 @@ export const environment = {
     appId: "1:357669808993:web:87f3ec430f556b05683320"
   
   },
-  apiURL:"https://thoth-qa.uc.r.appspot.com/api"
+  apiURL:"https://thoth-qa.uc.r.appspot.com/api",
+  certificatesURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificate"
+
+ 
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 

@@ -9,7 +9,9 @@ import { environment } from 'src/environments/environment';
 })
 export class ExamenesImprovisacionService {
   
-  private apiURL: string = environment.apiURL;
+  
+
+  
   constructor(private http: HttpClient) { 
 
   }
@@ -37,7 +39,7 @@ export class ExamenesImprovisacionService {
 */
 public firestoreApiInterface(action, token, data): Observable<Object> {
 
-  var url = this.apiURL 
+  var url = environment.apiURL
 
   var request_data = {
     "service":"firestore",
@@ -56,7 +58,7 @@ public firestoreApiInterface(action, token, data): Observable<Object> {
 
 public authApiInterface(action, token, data): Observable<Object> {
 
-  var url = this.apiURL 
+  var url = environment.apiURL
 
   var request_data = {
     "service":"auth",
@@ -74,7 +76,7 @@ public authApiInterface(action, token, data): Observable<Object> {
 
 public gsApiInterface(action, token, data): Observable<Object> {
 
-  var url = this.apiURL 
+  var url = environment.apiURL
 
   var request_data = {
     "service":"gs",
@@ -88,6 +90,29 @@ public gsApiInterface(action, token, data): Observable<Object> {
 
 
   return this.http.post(url, request_data, {headers: myheaders})
+}
+/*
+var request_data = {
+    "certificateId":"raul_test" ,
+    "studentName":"Claudia Gamboa",
+    "materiaName":"Salsa",
+    "label1":"Salsa",
+    "label2":"X",
+    "label3":"Otros",
+    "label4":"www.rax.com",
+    "color1":"blue",
+    "color2":"red"
+  }
+*/
+public certificateInterface(action, token, request_data): Observable<Object> {
+
+  var url = environment.certificatesURL 
+
+  console.log( JSON.stringify(request_data, null, 2))
+  var myheaders = new HttpHeaders({'Content-Type': 'application/json' });
+
+
+  return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
 }
 
 

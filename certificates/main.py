@@ -1,13 +1,9 @@
 #gcloud functions deploy examgradesparameterupdate --region=us-central1 --entry-point examgradesparameterupdate --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.update"  --trigger-resource "projects/celtic-bivouac-307316/databases/(default)/documents/examGrades/{examGradeId}/parameterGrades/{parameterGradeId}" 
-import flask
-
 from google.cloud import firestore
 from google.cloud import storage
 import json
 import logging
 import certificates
-
-
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.ERROR)
 
@@ -15,11 +11,48 @@ log = logging.getLogger("exams")
 log.setLevel(logging.ERROR)
 
 
+    
 
 def createCertificate(request):
+    log.error("**** create certificates receive:" + str(request))
+    log.error("**** create certificates type:" + str(type(request)))
+    log.error("**** create certificates method:" + str(request.method))
+    log.error("**** create certificates content-type:" + str(request.content_type))
+    log.error("**** create certificates mimetype:" + str(request.mimetype))    
+    log.error("**** create certificates is_json:" + str(request.is_json))      
+    log.error("**** create certificates get content_encoding:" + str(request.content_encoding))    
+    log.error("**** create certificates get data:" + str(type(request.get_data())))
+    log.error("**** create certificates decode:" + str(request.get_data().decode()))
+
+    # For more information about CORS and CORS preflight requests, see:
+    # https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request
+
+    # Set CORS headers for the preflight request
+    if request.method == 'OPTIONS':
+        # Allows GET requests from any origin with the Content-Type
+        # header and caches preflight response for an 3600s
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+
+        return ('', 204, headers)
+
+    # Set CORS headers for the main request
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
+
     obj = None
     try:
-        obj = request.get_json(force=True)
+        obj = request.get_json(force=True, silent=False)
+        if obj == None:
+            log.error("***** request can not be read as json")
+            raise Exception("json cannot be read")
+        else:
+            log.error("***** request was read as json")
         storage_client = storage.Client()
 
         certificateId = obj["certificateId"]
@@ -47,62 +80,8 @@ def createCertificate(request):
     
     except Exception as e:
         log.error("**** processRequest Exception:" + str(e))
-        return json.dumps({"****** error":request}), 401, {'Content-Type': 'application/json'}
-    return json.dumps({"***** result":data}), 200, {'Content-Type': 'application/json'}
+        return ({"error":str(e)}, 200, headers)
+    return ({"result":data}, 200, headers)
 
 
 
-def examgradesupdate(event, context):
-    """Triggered by a change to a Firestore document.
-    Args:
-         event (dict): Event payload.
-         context (google.cloud.functions.Context): Metadata for the event.
-    """
-    resource_string = context.resource
-    # print out the resource string that triggered the function
-    log.debug("*** Function triggered by change to: {resource_string}.")
-    # now print out the entire event object
-    log.debug("*** event:" + str(event))
-    log.debug("*** context:" + str(context))
-    resource_arr = resource_string.split("/")
-    documentId = resource_arr[6]
-    log.debug("*** documentId:" + documentId)  
-
-    db = firestore.Client()
-    closeExamGrade(db, documentId)
-
-def closeExamGrade(db, documentId):  
-    
-    doc_ref = db.collection(u'examGrades').document(documentId)
-    examGrade = doc_ref.get().to_dict()  
-
-    parameters_arr = doc_ref.collection("parameterGrades").get()
-
-    
-    if len(parameters_arr) > 0 :
-        isCompleted = True
-        total = 0.0
-        for parameter in parameters_arr:
-            p = parameter.to_dict()
-            if p["completed"] == True:
-                total = total + p["score"]
-            else:
-                isCompleted = False
-                break
-        if isCompleted == True and examGrade["released"]:
-            grade = total / len(parameters_arr)
-            url = None
-            if grade >= 7:
-                storage_client = storage.Client()
-                url = createStorageCertificate(storage_client, examGrade["id"] + ".jpg",examGrade["student_name"],examGrade["course"])   
-            doc_ref.update({
-                u'score': grade,
-                u'completed': True,
-                u"certificate_url":url
-            })
-        else:
-            doc_ref.update({
-                u"certificate_url":None
-            })
-
-    

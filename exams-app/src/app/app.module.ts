@@ -55,8 +55,8 @@ import { ExamgradesReportComponent } from './examgrades-report/examgrades-report
 import { GradesComponent } from './grades/grades.component';
 import { ExamTableComponent } from './exam-table/exam-table.component';
 import { GradesListComponent } from './grades-list/grades-list.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -119,7 +119,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatExpansionModule,
     MatButtonToggleModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    ClipboardModule
   ],
   providers: [
     UserLoginService

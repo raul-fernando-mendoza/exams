@@ -6,10 +6,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { ExamenesImprovisacionItem } from '../examenes-improvisacion/examenes-improvisacion-datasource';
 import { ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { ExamTableDataSource } from './exam-table-datasource';
+
 
 @Component({
   selector: 'app-exam-table',
@@ -213,21 +213,27 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   }
   
-  updateRelease(row:ExamGrade, value:boolean){
+  updateRelease(examGrade:ExamGrade, value:boolean){
 
+    this.crearCertificado(examGrade,value)
+  }
+
+  updateExamReleased(examGrade:ExamGrade, value:boolean){
     //calculate average
     var total = 0.0
-    row.parameterGrades.forEach( parameter => {                              
+    examGrade.parameterGrades.forEach( parameter => {                              
                                     total = total + parameter.score
                                   }
                                 )
-    var score = Number((total / row.parameterGrades.length).toFixed(2))
+    var score = Number((total / examGrade.parameterGrades.length).toFixed(2))
+    var url = examGrade.certificate_url
 
     var req:ExamGradeRequest = {
       examGrades:{
-        id:row["id"],
+        id:examGrade["id"],
         released:value,
-        score:score
+        score:score,
+        certificate_url:url
       }
     }
     console.log(JSON.stringify(req,null,2))
@@ -236,8 +242,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         console.log("examgrade release")
-        row.released = value
-        this.updateList()        
+        examGrade.released = value   
+        this.updateList()   
       },
       error => {
         alert("error examgrade release"  + error.errorCode + " " + error.errorMessage)
@@ -254,6 +260,52 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   isAdmin(){
     return this.userLoginService.hasRole("admin")
   }
+
+  crearCertificado(examGrade:ExamGrade, value:boolean){
+
+    var req = {
+      "certificateId":examGrade.exam_id + " " + examGrade.id + "_" + examGrade.student_uid,
+      "studentName":examGrade.student_name,
+      "materiaName":examGrade.course,
+      "label1":"www.raxacademy.com",
+      "label2":"",
+      "label3":examGrade.course,
+      "label4":examGrade.student_name,
+      "color1":"blue",
+      "color2":"red"
+    }
+
+
+    console.log(JSON.stringify(req,null,2))
+    
+    this.userLoginService.getUserIdToken().then( token => {
+
+      this.examImprovisacionService.certificateInterface("create", token, req).subscribe(data => {
+        if( data["result"] ){
+          console.log("certification created" + data["result"].certificate_logo_url + " " + data["result"].certificate_url)
+          examGrade.certificate_url = data["result"].certificate_url
+          this.updateExamReleased(examGrade, value)
+        } 
+        else{
+          alert("Error:" + data["error"])
+        }       
+      },
+      error => {
+        alert("Error creando certificado"  + error.statusText)
+        console.log( "error:" + error.statusText )
+        this.updateExamReleased(examGrade,value)
+      
+      }) 
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    
+    })  
+
+  }
+
+
+
   applicationFilterChange(e){
     if ( e instanceof MatDatepickerInputEvent ){
       if ( e.value == null ){
