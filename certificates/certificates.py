@@ -80,7 +80,7 @@ def draw_text_angle (str:string, into:Image, at:int, down:bool):
                 into.paste(watermark, (mid_x + px - int(wx/2),mid_y + py - int(wy/2), mid_x + px - int(wx/2) + wx, mid_y + py - int(wy/2) + wy), watermark)
         return into
 
-def createStorageCertificate( storage_client, file_name:string, student:string, title:string, t1:string, t2:string, t3:string, t4:string,color1:string, color2:string):
+def createStorageCertificate( storage_client, master_name:string, logo_name:string, file_name:string, student:string, title:string, t1:string, t2:string, t3:string, t4:string,color1:string, color2:string):
 
 
 
@@ -91,7 +91,7 @@ def createStorageCertificate( storage_client, file_name:string, student:string, 
 
 
         # creating a image object 
-        blob = bucket.blob("rax_certificate.jpg")
+        blob = bucket.blob(master_name)
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
         image = Image.open(b)
@@ -137,7 +137,7 @@ def createStorageCertificate( storage_client, file_name:string, student:string, 
         
 
         #add the logo
-        blob = bucket.blob("rax_logo_no_text_500.jpg")
+        blob = bucket.blob(logo_name)
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
         img_logo = Image.open(b)        

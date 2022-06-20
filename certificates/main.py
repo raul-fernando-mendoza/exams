@@ -1,4 +1,4 @@
-#gcloud functions deploy examgradesparameterupdate --region=us-central1 --entry-point examgradesparameterupdate --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.update"  --trigger-resource "projects/celtic-bivouac-307316/databases/(default)/documents/examGrades/{examGradeId}/parameterGrades/{parameterGradeId}" 
+#gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
 from google.cloud import firestore
 from google.cloud import storage
 import json
@@ -56,6 +56,8 @@ def createCertificate(request):
         storage_client = storage.Client()
 
         certificateId = obj["certificateId"]
+        masterName = obj["masterName"]
+        logoName = obj["logoName"]
         studentName = obj["studentName"]
         materiaName = obj["materiaName"]
         label1 = obj["label1"]
@@ -67,6 +69,8 @@ def createCertificate(request):
 
 
         data = certificates.createStorageCertificate( storage_client, 
+        "certificates_master/" + masterName,
+        "certificates_logos/" + logoName,
         "certificates/" + certificateId ,
          studentName,
         materiaName,
