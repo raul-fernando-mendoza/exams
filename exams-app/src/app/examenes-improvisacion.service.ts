@@ -16,27 +16,7 @@ export class ExamenesImprovisacionService {
 
   }
   
- /*
-  public chenequeApiInterface(action, token, data): Observable<Object> {
-
-    var url = this.apiURL 
-
-    var request_data = {
-      "service":"cheneque",
-      "database":"entities",
-      "action":action,
-      "token":token,
-      "data":data
-    }
-
-
-   
-    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
-
-
-    return this.http.post(url, request_data, {headers: myheaders})
-  }
-*/
+ 
 public firestoreApiInterface(action, token, data): Observable<Object> {
 
   var url = environment.apiURL
@@ -55,6 +35,7 @@ public firestoreApiInterface(action, token, data): Observable<Object> {
 
   return this.http.post(url, request_data, {headers: myheaders})
 }
+
 
 public authApiInterface(action, token, data): Observable<Object> {
 
@@ -76,11 +57,12 @@ public authApiInterface(action, token, data): Observable<Object> {
 
 public gsApiInterface(action, token, data): Observable<Object> {
 
-  var url = environment.apiURL
+  var url = environment.gsApiUrl
+  var bucket = environment.certificatesBucket
 
   var request_data = {
     "service":"gs",
-    "bucket":"celtic-bivouac-307316.appspot.com",
+    "bucket":bucket,
     "action":action,
     "token":token,
     "data":data

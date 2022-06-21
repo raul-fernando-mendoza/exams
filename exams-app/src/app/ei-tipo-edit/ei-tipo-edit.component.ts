@@ -7,6 +7,7 @@ import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
 import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, TypeCertificate} from 'src/app/exams/exams.module'
+import { MatSelectChange } from '@angular/material/select';
 
 
 
@@ -25,8 +26,10 @@ export class EiTipoEditComponent implements OnInit {
 
   e = this.fb.group({
     id: [null, Validators.required],
+    isDeleted:[false],
     label:["nombre tipo de examen", Validators.required],   
     typeCertificate:["", Validators.required],
+    iconCertificate:["", Validators.required],
     description:[""],
     parameters: new FormArray([])
   })
@@ -38,6 +41,12 @@ export class EiTipoEditComponent implements OnInit {
     { label:"Habilidades", value:"habilidades" }, 
     { label:"Tecnica Coreografia", value:"tecnicaCoreografia" }
   ]  
+
+  iconCertificates = [
+    { label:"escarabajo", value:"escarabajo" }, 
+    { label:"abanico", value:"abanico" }
+  ]  
+
 
   constructor(private fb: FormBuilder
     , private route: ActivatedRoute
@@ -70,7 +79,77 @@ export class EiTipoEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadMastersList()
+    this.loadIconList()
     this.loadExamType()
+  }
+
+  loadMastersList(){
+    this.typeCertificates = []
+
+    var req = {
+      "path":"certificates_master"
+    }
+    this.submitting = true
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
+        data => { 
+          this.submitting = false
+          var listIcons = data["result"];
+          listIcons.forEach(m => {
+            this.typeCertificates.push(
+              {
+                label:m["name"].split("/")[1],
+                value:m["name"].split("/")[1]  
+              }  
+            )          
+          });
+        },     
+        error => {
+          this.submitting = false
+          alert("error loading impro type")
+          console.log("Error loading ExamType:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    }) 
+  }
+
+
+
+  loadIconList(){
+    this.iconCertificates = []
+
+    var req = {
+      "path":"certificates_logos"
+    }
+    this.submitting = true
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
+        data => { 
+          this.submitting = false
+          var listIcons = data["result"];
+          listIcons.forEach(icon => {
+            this.iconCertificates.push(
+              {
+                label:icon["name"].split("/")[1],
+                value:icon["name"].split("/")[1]  
+              }  
+            )          
+          });
+        },     
+        error => {
+          this.submitting = false
+          alert("error loading impro type")
+          console.log("Error loading ExamType:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    }) 
   }
 
   loadExamType(): void {
@@ -88,6 +167,7 @@ export class EiTipoEditComponent implements OnInit {
           id:this.id,
           label:null,
           typeCertificate:null,
+          iconCertificate:null,
           description:null,
           parameters:[{
             id:null,
@@ -122,6 +202,7 @@ export class EiTipoEditComponent implements OnInit {
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
             this.e.controls.typeCertificate.setValue( t.typeCertificate ? t.typeCertificate : "" )
+            this.e.controls.iconCertificate.setValue( t.iconCertificate ? t.iconCertificate : "" )
             var parameter_arr:FormArray = this.e.controls.parameters as FormArray
 
             for( let i =0;t.parameters && i<t.parameters.length; i++){
@@ -544,6 +625,32 @@ export class EiTipoEditComponent implements OnInit {
     })
 
   }
+
+  onChangeExamProperty(event:MatSelectChange, exam:FormGroup){
+    console.log("exam")
+    var propertyName = event.source.ngControl.name
+    var req:ExamRequest = {
+      exams:{
+        id:exam.controls.id.value
+      }
+    }
+    req.exams[propertyName] = event.value
+
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(
+        data => {
+          console.log(" type update has completed")
+        },
+        error => {
+          alert("error:" + error.error)
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    })
+
+  }  
 
   onChangeParameter(e:FormGroup, p:FormGroup){
     console.log("parameter")

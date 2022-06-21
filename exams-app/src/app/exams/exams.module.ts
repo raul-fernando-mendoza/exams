@@ -49,6 +49,7 @@ export interface Exam{
   label?:string
   description?:string
   typeCertificate?:string
+  iconCertificate?:string
   parameters?: Parameter[]
 
 }
@@ -143,6 +144,10 @@ export interface ExamGrade{
   exam_id?:string
   exam_label?:string
 
+  exam_typeCertificate?:string
+  exam_iconCertificate?:string
+
+
   course?: string
   completed?: boolean
   applicationDate?:Date
@@ -159,6 +164,8 @@ export interface ExamGrade{
 
   released?:boolean
   isDeleted?:boolean
+
+  exams?:Exam
 
   parameterGrades?:ParameterGrade[]
 }

@@ -24,7 +24,9 @@ export const environment = {
   
   },
   apiURL:"https://thoth-qa.uc.r.appspot.com/api",
-  certificatesURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificate"
+  certificatesURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificate",
+  gsApiUrl:"https://us-central1-thoth-qa.cloudfunctions.net/processRequest",
+  certificatesBucket:"certificates-thoth-qa"
 
  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"

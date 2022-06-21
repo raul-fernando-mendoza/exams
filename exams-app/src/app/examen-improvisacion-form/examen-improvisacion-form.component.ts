@@ -33,14 +33,19 @@ export class ExamenImprovisacionFormComponent {
   
   examGrade = this.fb.group({
     id: [null],
+    isDeleted: [false],
     course:[null,Validators.required],
     completed:[false, Validators.required],
     applicationDate: [null, Validators.required],
     student_email: [null, Validators.required],
     student_name:[null,Validators.required],
+    student_uid:[null,Validators.required],
 
     exam_id: [null, Validators.required],
     exam_label: [null, Validators.required],
+
+    exam_iconCertificate: [null, Validators.required],
+    exam_typeCertificate: [null, Validators.required],
 
     title:[null, Validators.required], 
     expression:[null], 
@@ -92,7 +97,9 @@ export class ExamenImprovisacionFormComponent {
     var req:ExamMultipleRequest = {
       "exams":[{
           "id":null,
-          "label":null
+          "label":null,
+          "typeCertificate":null,
+          "iconCertificate":null
       }],
       "orderBy":{
         "field":"label"
@@ -107,7 +114,9 @@ export class ExamenImprovisacionFormComponent {
       for( let i =0; i<r.length; i++){
         let obj:Exam = {
           "id":r[i].id,
-          "label":r[i].label
+          "label":r[i].label,
+          "typeCertificate":r[i].typeCertificate,
+          "iconCertificate":r[i].iconCertificate
         }
         this.exams.push(obj)
       }
@@ -176,6 +185,10 @@ export class ExamenImprovisacionFormComponent {
       if( exam.id == examId ){
         this.examGrade.controls.exam_id.setValue(exam.id)
         this.examGrade.controls.exam_label.setValue(exam.label)
+        this.examGrade.controls.isDeleted.setValue(false)
+        this.examGrade.controls.exam_typeCertificate.setValue(exam.typeCertificate)
+        this.examGrade.controls.exam_iconCertificate.setValue(exam.iconCertificate)
+
       } 
     }
 
@@ -186,6 +199,8 @@ export class ExamenImprovisacionFormComponent {
       exams:{
           id:examId,
           label:null,
+          typeCertificate:null,
+          iconCertificate:null,
           parameters:[{
             id:null,
             idx:null,
@@ -249,6 +264,7 @@ export class ExamenImprovisacionFormComponent {
       evaluator_email:[null],
       student_email:[null],
       student_name:[null],
+      student_uid:[null],
       completed: [false],
       isSelected:[true],
       criteriaGrades: new FormArray([])         
@@ -427,6 +443,7 @@ export class ExamenImprovisacionFormComponent {
       if( student.uid == studentId ){
         this.examGrade.controls.student_email.setValue( student.email )
         this.examGrade.controls.student_name.setValue( student.displayName )
+        this.examGrade.controls.student_uid.setValue( student.uid )
         break;
       } 
     }

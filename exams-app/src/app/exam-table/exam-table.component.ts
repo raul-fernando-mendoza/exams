@@ -10,6 +10,7 @@ import { ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade }
 import { UserLoginService } from '../user-login.service';
 import { ExamTableDataSource } from './exam-table-datasource';
 
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-exam-table',
@@ -81,13 +82,15 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       }
 
 
-      var request:ExamGradeMultipleRequest = {
+      var request :ExamGradeMultipleRequest = {
       
 
         examGrades:[{
           id:null,
           exam_id:null,
           exam_label:null,
+          exam_typeCertificate:null,
+          exam_iconCertificate:null,
 
           course: null,
           completed: null,
@@ -95,6 +98,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         
           student_email:null,
           student_name:null,
+          student_uid:null,
         
           title:null,
           expression:null,
@@ -104,8 +108,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
           released:showReleased,
           isDeleted:this.showDeleted?true:false,
-            
-        
+
           parameterGrades:[
             {
               id: null,
@@ -215,7 +218,11 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   
   updateRelease(examGrade:ExamGrade, value:boolean){
 
-    this.crearCertificado(examGrade,value)
+    if( value )
+      this.crearCertificado(examGrade,value)
+    else
+      this.updateExamReleased(examGrade, value)
+
   }
 
   updateExamReleased(examGrade:ExamGrade, value:boolean){
@@ -264,14 +271,16 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   crearCertificado(examGrade:ExamGrade, value:boolean){
 
     var req = {
-      "certificateId":examGrade.exam_id + " " + examGrade.id + "_" + examGrade.student_uid,
+      "certificateId":examGrade.exam_id + "_" + examGrade.id + "_" + examGrade.student_uid + "_" + uuid.v4(),
+      "masterName":examGrade.exam_typeCertificate,
+      "logoName":examGrade.exam_iconCertificate,
       "studentName":examGrade.student_name,
       "materiaName":examGrade.course,
-      "label1":"www.raxacademy.com",
-      "label2":"",
-      "label3":examGrade.course,
-      "label4":examGrade.student_name,
-      "color1":"blue",
+      "label1":examGrade.exam_typeCertificate.split(".")[0],
+      "label2":examGrade.exam_label,
+      "label3":"",
+      "label4":"WWW.RAXACADEMY.COM",
+      "color1":"black",
       "color2":"red"
     }
 

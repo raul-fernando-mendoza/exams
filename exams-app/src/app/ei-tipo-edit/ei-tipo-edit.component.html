@@ -18,13 +18,21 @@
     </p>
     <p>
         <mat-form-field appearance="legacy">
-            <mat-label>tipo de certificado</mat-label>
-            <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onChangeExam(e)">
+            <mat-label>Master de certificado</mat-label>
+            <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onChangeExamProperty($event, e)">
               <mat-option *ngFor="let tc of typeCertificates" [value]="tc.value">
                 {{tc.label}}
               </mat-option>
             </mat-select>
-          </mat-form-field>
+        </mat-form-field>
+        <mat-form-field appearance="legacy">
+            <mat-label>Icono de certificado</mat-label>
+            <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onChangeExamProperty($event, e)">
+              <mat-option *ngFor="let ic of iconCertificates" [value]="ic.value">
+                {{ic.label}}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>        
     </p>
      
     
