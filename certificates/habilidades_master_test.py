@@ -7,8 +7,7 @@ from firebase_admin import credentials
 firebase_admin.initialize_app()
 
 from google.cloud import storage
-import certificates
-import uuid
+import certificates_master_generation
 
 log = logging.getLogger("cheneque")
 """
@@ -30,20 +29,18 @@ class TestFireStore(unittest.TestCase):
         storage_client = storage.Client()
             
         #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
-        data = certificates.createStorageCertificate( storage_client, 
-        "certificates_master/habilidades_certificate.jpeg",
-        "certificates_logos/abanico_icon.jpg",
-        "certificates/" + str(uuid.uuid4()) , 
-        'CLAUDIA GAMBOA VILLA',
-        #title = "Coco * con MUCHOS - y RaRos"
-        #title = "Coordinación"
-        "Candelabro contemporaneo",
-        "www.raxacademy.com",
+        data = certificates_master_generation.createStorageCertificate( storage_client, 
+        "certificates_master/certificate_master_habilidades.jpg",
+        "certificates_logos/empty_icon.jpg",
+        "certificates_master/habilidades" , 
+        '',
         "",
-        "doble espada",
-        "Maria Velasco",
-        "blue",
-        "yellow"
+        "",
+        "",
+        "",
+        "",
+        "black",
+        "red"
         )
         print(json.dumps(data))
 

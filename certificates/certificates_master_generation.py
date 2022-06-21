@@ -62,9 +62,9 @@ def draw_text_angle (str:string, into:Image, at:int, down:bool):
 
                 text_to_be_rotated = str[i]
                 mark_width, mark_height = font.getsize(text_to_be_rotated)
-                watermark = Image.new('RGBA', (mark_width, mark_height), (0, 0, 0, 255))
+                watermark = Image.new('RGBA', (mark_width, mark_height), (0, 0, 0, 0))
                 draw = ImageDraw.Draw(watermark)
-                draw.text((0, 0), text=text_to_be_rotated, font=font, fill=(255, 255, 255, 255))
+                draw.text((0, 0), text=text_to_be_rotated, font=font, fill=(255, 255, 255, 256))
                 #angle = math.degrees(math.atan(logo_h/logo_w))
                 if down==False:
                         watermark = watermark.rotate(-angle, expand=True)
@@ -126,13 +126,14 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
 
         #writing expiration date
         today = datetime.date.today()
-        issue = "Fecha de expedición:" + str(today)  + " " + "Fecha de expiración:" + str( datetime.date(today.year + 1, today.month, today.day))
+        issue = "Fecha de expedicion:" + str(today)  + " " + \
+                "Fecha de expiracion:" + str( datetime.date(today.year + 1, today.month, today.day))
         f_i = 40
         left_i =w * (3/20) 
         top_i = (h -f_i - 4) 
         font_i = ImageFont.truetype('Quicksand-VariableFont_wght.ttf', f_i)
         
-        draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
+        #draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
         
 
         #add the logo
@@ -147,38 +148,27 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         line_size = 40
 
         shape = [(0, 0), (logo_w, logo_h)]
-        
-        #create mask for logo
-        
-        #mask_im = Image.new('RGBA', img_logo.size, (255, 255, 255, 0))
-        mask_im =Image.new("L", img_logo.size, 0)
-
-        mask = ImageDraw.Draw(mask_im)
-
-        mask.ellipse((100, 100, 400, 400), fill=255)
-
-        #mask.arc(shape, start = 0, end = 360, fill = 0, width = line_size+2) 
+        draw = ImageDraw.Draw(img_logo)
+        draw.arc(shape, start = 0, end = 360, fill = color1, width = line_size+2) 
 
         shape2 = [(line_size, line_size), (logo_w - line_size, logo_h - line_size)]
-        #mask.arc(shape2, start = 0, end = 360, fill = 0, width = line_size) 
+        draw.arc(shape2, start = 0, end = 360, fill = color2, width = line_size) 
 
-        mask_im = draw_text_angle(t1,mask_im,1,down=False)
-        mask_im = draw_text_angle(t2,mask_im,2,down=False)
-        mask_im = draw_text_angle(t3,mask_im,2,down=True)
-        mask_im = draw_text_angle(t4,mask_im,1,down=True)
+        img_logo = draw_text_angle(t1,img_logo,1,down=False)
+        img_logo = draw_text_angle(t2,img_logo,2,down=False)
+        img_logo = draw_text_angle(t3,img_logo,2,down=True)
+        img_logo = draw_text_angle(t4,img_logo,1,down=True)
         
         #setup in final size and position
         final_size = img_logo.size
-        #img_logo = img_logo.resize( final_size )
-        #mask_final = mask_im.resize( final_size )
+        img_logo = img_logo.resize( final_size )
 
-        
 
         offset = (int((w - img_logo.size[0] - 100)), int((h - img_logo.size[1]) - 100))
 
         
 
-        image.paste(img_logo, offset, mask_im)
+        image.paste(img_logo, offset)
         #image.save('result.png') 
 
 
@@ -199,7 +189,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         image.save(b,'jpeg')
         image.close()
 
-        blob = bucket.blob(file_name + "_certificate" + ".jpeg") 
+        blob = bucket.blob(file_name + ".jpeg") 
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
         return {"certificate_url":blob.public_url,"certificate_logo_url":blob_logo.public_url}
