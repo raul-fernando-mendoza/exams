@@ -86,7 +86,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
     var req:ExamRequest = {
       exams:{
         id:null,
-        label:"Tipo de Examen nuevo"
+        label:"Nueva Materia"
       }
     }
 

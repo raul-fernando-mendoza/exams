@@ -276,10 +276,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       "logoName":examGrade.exam_iconCertificate,
       "studentName":examGrade.student_name,
       "materiaName":examGrade.course,
-      "label1":examGrade.exam_typeCertificate.split(".")[0],
+      "label1":"",
       "label2":examGrade.exam_label,
       "label3":"",
-      "label4":"WWW.RAXACADEMY.COM",
+      "label4":"",
       "color1":"black",
       "color2":"red"
     }

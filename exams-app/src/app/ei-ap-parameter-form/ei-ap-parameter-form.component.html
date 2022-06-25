@@ -2,8 +2,8 @@
     <div class="header">
     <span>Applicación de examen</span>
     <span>estudiante: {{examGrade.controls.student_name.value}}</span>
-    <span>Materia: {{examGrade.controls.course.value}}</span>
-    <span>Tipo de Examen: {{examGrade.controls.exam_label.value}}</span>
+    <span>Curso: {{examGrade.controls.course.value}}</span>
+    <span>Titulo: {{examGrade.controls.exam_label.value}}</span>
     <mat-form-field class="example-full-width" (change)="updateHeader()">
         <mat-label>Titulo</mat-label>
         <input matInput  formControlName="title">

@@ -4,7 +4,7 @@ Editar Examen
   <mat-card >
     <mat-card-content > 
       <mat-form-field appearance="fill" > 
-        <mat-label>Tipo de examen</mat-label>
+        <mat-label>Materia</mat-label>
         <mat-select formControlName="exam_id" (selectionChange)="examChange($event)">
           <mat-option *ngFor="let t of getExamTypes()" [value]="t.id" >
             {{t.label}} 
@@ -27,7 +27,7 @@ Editar Examen
         <mat-datepicker #picker1></mat-datepicker>
       </mat-form-field>
       <mat-form-field class="example-full-width">
-        <mat-label>Materia</mat-label>
+        <mat-label>Curso</mat-label>
         <input matInput placeholder="" value="" formControlName="course">
       </mat-form-field>
 
