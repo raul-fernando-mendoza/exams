@@ -27,7 +27,7 @@ export class EiTipoEditComponent implements OnInit {
   e = this.fb.group({
     id: [null, Validators.required],
     isDeleted:[false],
-    label:["titulo del examen", Validators.required],   
+    label:["Nombre de la materia", Validators.required],   
     typeCertificate:["", Validators.required],
     iconCertificate:["", Validators.required],
     description:[""],
