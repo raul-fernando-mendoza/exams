@@ -67,12 +67,12 @@ export class ChecklistDatabase {
       var student_name = exam.student_name ? exam.student_name: exam.student_email
 
       var p:TodoItemNode = {
-        item:exam.title + " | " + student_name + ' | ' + exam.course, 
+        item:exam.title + " | " + student_name + ' | ' + exam.exam_label, 
         released:true, 
         score:exam.score, 
         exam_id:exam.id,
         parameter_id:null,
-        course:exam.course,
+        course:exam.exam_label,
         certificate_url:exam.certificate_url,
         applicationDate:exam.applicationDate,
         student_email:exam.student_email,
@@ -86,7 +86,7 @@ export class ChecklistDatabase {
                                       released:true, 
                                       exam_id:exam.id,
                                       parameter_id:parameter.id,
-                                      course:exam.course,
+                                      course:exam.exam_label,
                                       certificate_url:exam.certificate_url,
                                       applicationDate:exam.applicationDate,
                                       student_email:exam.student_email,

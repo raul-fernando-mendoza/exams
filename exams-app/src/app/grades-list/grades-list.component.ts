@@ -41,7 +41,6 @@ export class GradesListComponent implements OnInit {
           student_email:this.student_email,
           applicationDate:this.applicationDate,
           exam_label:null,
-          course:null,
           completed:null,
           student_name:null,
           title:null,

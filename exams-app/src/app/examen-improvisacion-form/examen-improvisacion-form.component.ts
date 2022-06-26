@@ -34,7 +34,6 @@ export class ExamenImprovisacionFormComponent {
   examGrade = this.fb.group({
     id: [null],
     isDeleted: [false],
-    course:[null,Validators.required],
     completed:[false, Validators.required],
     applicationDate: [null, Validators.required],
     student_email: [null, Validators.required],

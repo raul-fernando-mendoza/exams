@@ -147,8 +147,6 @@ export interface ExamGrade{
   exam_typeCertificate?:string
   exam_iconCertificate?:string
 
-
-  course?: string
   completed?: boolean
   applicationDate?:Date
 

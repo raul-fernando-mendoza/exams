@@ -130,7 +130,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         exam_id:null,
         exam_label:null,
 
-        course: null,
         completed: null,
         applicationDate:applicationDate,
       
@@ -189,7 +188,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             var obj:ExamenesImprovisacionItem = {
               examGrade_id:examGrade.id,
               parameterGrade_id: parameterGrade.id, 
-              materia: examGrade.course,
+              materia: examGrade.exam_label,
               title: examGrade.title,
               student_name: examGrade.student_name,
               maestro:parameterGrade.evaluator_name,

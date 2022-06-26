@@ -91,8 +91,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
           exam_label:null,
           exam_typeCertificate:null,
           exam_iconCertificate:null,
-
-          course: null,
+          
           completed: null,
           applicationDate:this.applicationDate,
         
@@ -275,7 +274,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       "masterName":examGrade.exam_typeCertificate,
       "logoName":examGrade.exam_iconCertificate,
       "studentName":examGrade.student_name,
-      "materiaName":examGrade.course,
+      "materiaName":examGrade.exam_label,
       "label1":"",
       "label2":examGrade.exam_label,
       "label3":"",
