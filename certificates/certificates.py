@@ -188,9 +188,9 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         img_logo.save(b,'jpeg')
         #img_logo.close()
 
-        blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 
-        blob_logo.upload_from_string(b.getvalue(), content_type="image/jpeg")
-        blob_logo.make_public() 
+        #blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 
+        #blob_logo.upload_from_string(b.getvalue(), content_type="image/jpeg")
+        #blob_logo.make_public() 
          
 
         #save to the diploma cloud storage     
@@ -202,7 +202,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         blob = bucket.blob(file_name + "_certificate" + ".jpeg") 
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
-        return {"certificate_url":blob.public_url,"certificate_logo_url":blob_logo.public_url}
+        return {"certificate_url":blob.public_url}
 
              
         
