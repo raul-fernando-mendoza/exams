@@ -3,15 +3,27 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
+import { FormGroup } from '@angular/forms';
 
 // TODO: Replace this with your own data model type
-export interface EiApplicationTableItem {
-  label: string;
-  id: number;
+
+
+
+
+export interface MateriaItem {
+  id: string
+  label: string
+  materia_id:string
+  materia_name:string
+
+  docente_requerido:boolean
+  ejecutante_requerido:boolean
+  nodeClass:string
+  formGroup:FormGroup
 }
 
 // TODO: replace this with real data from your application
-const EXAMPLE_DATA: EiApplicationTableItem[] = [
+const EXAMPLE_DATA: MateriaItem[] = [
   /*
   {id: 1, name: 'Hydrogen'},
   {id: 2, name: 'Helium'},
@@ -23,8 +35,8 @@ const EXAMPLE_DATA: EiApplicationTableItem[] = [
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
-export class EiApplicationTableDataSource extends DataSource<EiApplicationTableItem> {
-  data: EiApplicationTableItem[] = EXAMPLE_DATA;
+export class EiApplicationTableDataSource extends DataSource<MateriaItem> {
+  data: MateriaItem[] = EXAMPLE_DATA;
   paginator: MatPaginator;
   sort: MatSort; 
 
@@ -38,7 +50,7 @@ export class EiApplicationTableDataSource extends DataSource<EiApplicationTableI
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<EiApplicationTableItem[]> {
+  connect(): Observable<MateriaItem[]> {
     // Combine everything that affects the rendered data into one update
     // stream for the data-table to consume.
     const dataMutations = [
@@ -62,7 +74,7 @@ export class EiApplicationTableDataSource extends DataSource<EiApplicationTableI
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getPagedData(data: EiApplicationTableItem[]) {
+  private getPagedData(data: MateriaItem[]) {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     return data.splice(startIndex, this.paginator.pageSize);
   }
@@ -71,7 +83,7 @@ export class EiApplicationTableDataSource extends DataSource<EiApplicationTableI
    * Sort the data (client-side). If you're using server-side sorting,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getSortedData(data: EiApplicationTableItem[]) {
+  private getSortedData(data: MateriaItem[]) {
     if (!this.sort.active || this.sort.direction === '') {
       return data;
     }

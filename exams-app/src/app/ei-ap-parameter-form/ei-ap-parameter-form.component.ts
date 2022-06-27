@@ -78,7 +78,6 @@ export class EiApParameterFormComponent implements OnInit {
         exam_id:null,
         exam_label:null,
       
-        course: null,
         completed: null,
         applicationDate:null,
       
@@ -155,7 +154,6 @@ export class EiApParameterFormComponent implements OnInit {
         this.examGrade.controls.id.setValue(e.id)
         this.examGrade.controls.exam_id.setValue(e.exam_id)
         this.examGrade.controls.exam_label.setValue(e.exam_label)
-        this.examGrade.controls.course.setValue(e.course)
         this.examGrade.controls.completed.setValue(e.completed)
         this.examGrade.controls.applicationDate.setValue(e.applicationDate)
         this.examGrade.controls.student_uid.setValue(e.student_uid)
@@ -588,6 +586,8 @@ export class EiApParameterFormComponent implements OnInit {
     })
   }
 }
+
+/* do not forget to add the dialog to the app.module.ts*/
 @Component({
   selector: 'ei-ap-parameter-comentario-dlg',
   templateUrl: 'ei-ap-parameter-comentario-dlg.html',

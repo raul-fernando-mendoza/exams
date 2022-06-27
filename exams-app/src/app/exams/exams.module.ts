@@ -46,6 +46,8 @@ export interface Parameter{
 }
 export interface Exam{
   id:string
+  materia_id?:string
+  materia_label?:string
   label?:string
   description?:string
   typeCertificate?:string
@@ -53,6 +55,25 @@ export interface Exam{
   parameters?: Parameter[]
 
 }
+
+export interface Materia{
+  id:string
+  label:string
+}
+
+export interface MateriaRequest{
+  materia:Materia
+}
+export interface MateriaMultipleRequest{
+  materia:Materia[]
+  orderBy?:{
+    field:string
+    direction?:string
+    startAfterId?:string
+    pageSize?:string
+  }
+}
+
 
 export interface ExamRequest{
   exams:Exam

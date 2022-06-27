@@ -39,7 +39,7 @@ import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDia
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { MatTabsModule} from '@angular/material/tabs';
-import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
+import { DialogMateriaDialog, EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { StarSliderComponent } from './star-slider/star-slider.component';
@@ -83,7 +83,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     ExamgradesReportComponent,
     GradesComponent,
     ExamTableComponent,
-    GradesListComponent
+    GradesListComponent,
+    DialogMateriaDialog
   ],
   imports: [
     BrowserModule,
@@ -128,7 +129,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
   ],
   entryComponents: [
     DialogOverviewExampleDialog,
-    DescriptionDialog
+    DescriptionDialog,
+    DialogMateriaDialog
   ],
   bootstrap: [AppComponent]
 })

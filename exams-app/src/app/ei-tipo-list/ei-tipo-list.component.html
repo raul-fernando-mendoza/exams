@@ -1,19 +1,42 @@
+
+<form  [formGroup]="materiasList" >
+Listar Materias
 <div class="mat-elevation-z8">
   <mat-toolbar>
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon" [disabled]="submitting" (click)="createType()">
+    <button mat-icon-button  [disabled]="submitting" (click)="createType()">
       <mat-icon>library_add</mat-icon>
-      <span>Crear nueva materia</span>
     </button>
+    <button mat-icon-button  [disabled]="submitting" (click)="onCreateMateria()">
+      <mat-icon>library_add</mat-icon>
+    </button>    
   </mat-toolbar>  
   <div *ngIf="submitting == false; else elseBlock"></div>
-  <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting">
+  <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting" >
    
     <ng-container matColumnDef="label">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-      <td mat-cell *matCellDef="let row"><button mat-button (click)="editar(row.id)">{{row.label}}</button></td>
+      <td mat-cell *matCellDef="let row">
+        <div [class]="row.nodeClass"> 
+          <button mat-button (click)="editar(row.id)">{{row.label}}</button>
+        </div>
+      </td>
     </ng-container>
-
     
+    <ng-container matColumnDef="docente_requerido">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Docente</th>
+      <td mat-cell *matCellDef="let row" [formGroup]="row.formGroup">
+        
+      <mat-checkbox formControlName="docente_requerido" (change)="onChange(row)"></mat-checkbox>
+  
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="ejecutante_requerido">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ejecutante</th>
+      <td mat-cell *matCellDef="let row" [formGroup]="row.formGroup">
+        <mat-checkbox formControlName="docente_requerido" (change)="onChange(row)"></mat-checkbox>
+      </td>    
+    </ng-container> 
+           
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header></th> 
       <td mat-cell *matCellDef="let row">
@@ -51,3 +74,5 @@
   Cargando Typos.
   <mat-spinner></mat-spinner>
 </ng-template>
+
+</form> 
