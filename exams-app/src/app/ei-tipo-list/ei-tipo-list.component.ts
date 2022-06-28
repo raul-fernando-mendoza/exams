@@ -55,6 +55,8 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
   updateList(){
 
+
+
     var req:MateriaMultipleRequest = {
       materia:[{
         id:null,

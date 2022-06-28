@@ -75,6 +75,8 @@ export interface MateriaMultipleRequest{
 }
 
 
+
+
 export interface ExamRequest{
   exams:Exam
 }
@@ -88,7 +90,6 @@ export interface ExamMultipleRequest{
     pageSize?:string
   }
 }
-
 export interface ParameterRequest{
   exams:{
     id:string
@@ -233,4 +234,23 @@ export interface ExamGradeMultipleRequest{
 export interface TypeCertificate{
   value: string
   label: string
+}
+
+export interface Organization{
+  id:string
+  organization_name?:string
+  isDeleted?:boolean
+}
+
+export interface OrganizationRequest{
+  materia:Organization
+}
+export interface OrganizationMultipleRequest{
+  materia:Organization[]
+  orderBy?:{
+    field:string
+    direction?:string
+    startAfterId?:string
+    pageSize?:string
+  }
 }

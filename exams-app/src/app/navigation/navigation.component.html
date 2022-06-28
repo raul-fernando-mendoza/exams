@@ -45,7 +45,15 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">RaxAcademy.com TOTH ver 2.5</a>
+      <a class="main_link" routerLink="/home">TOTH ver 2.5</a>
+      <mat-form-field appearance="fill">
+        <mat-label>Organizations</mat-label>
+        <mat-select [(value)]="organizationId" (selectionChange)="onOrganizationChange($event)">
+          <mat-option *ngFor="let organization of organizations" [value]="organization.id">
+            {{organization.organization_name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <span class="example-spacer"></span>
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Login

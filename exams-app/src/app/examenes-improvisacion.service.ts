@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { db, environment } from 'src/environments/environment';
+import { Organization } from './exams/exams.module';
 
 
 @Injectable({
@@ -12,9 +13,9 @@ export class ExamenesImprovisacionService {
   
 
   
-  constructor(private http: HttpClient) { 
+constructor(private http: HttpClient) { 
 
-  }
+}
   
  
 public firestoreApiInterface(action, token, data): Observable<Object> {
@@ -96,6 +97,5 @@ public certificateInterface(action, token, request_data): Observable<Object> {
 
   return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
 }
-
 
 }
