@@ -11,6 +11,8 @@ import { stringify } from '@angular/compiler/src/util';
 import { materialize } from 'rxjs/operators';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { db } from 'src/environments/environment';
+import { UserPreferencesService } from '../user-preferences.service';
 
 var ex_types: MateriaItem[] = [];
 
@@ -26,7 +28,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
   @ViewChild(MatTable) table: MatTable<MateriaItem>;
   dataSource: EiApplicationTableDataSource;
 
-  materia_new = "Hola"
+
  
   materiaItems:Array<MateriaItem> = new Array()
 
@@ -39,6 +41,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
     , private userLoginService:UserLoginService
     , private fb: FormBuilder
     , public dialog: MatDialog
+    , private userPreferencesService:UserPreferencesService
   ) {}
 
   materiasList:FormGroup = this.fb.group({
@@ -55,123 +58,46 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
   updateList(){
 
+    db.collection("materias").where("owners","array-contains","uZP1VwpZJCg8zjMrnHNwh7s2Q3e2").where("isDeleted","==",false).get().then( 
+      snapshot =>{
+        var docs = snapshot.forEach(doc =>{
+          var materiaItem:MateriaItem = {
+            materia_id:doc.id,
+            materia_name:doc.data().materia_name,            
+            nivel_id:doc.data().nivel_id,
+            nivel_name:doc.data().nivel_name,
 
-
-    var req:MateriaMultipleRequest = {
-      materia:[{
-        id:null,
-        label:null,
-      }],
-      orderBy:
-        { field:"label" }
-    }
-    this.submitting = true
-    this.userLoginService.getUserIdToken().then( token => {
-      this.submitting = false
-      this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe( data =>{
-        var materiaList:Materia[] = data["result"]
-        materiaList.forEach( m => {
-          var i:MateriaItem = {
-            id:m.id,
-            label:m.label,
-            materia_id:m.id,
-            materia_name:m.label,            
-            docente_requerido:false,
-            ejecutante_requerido:false,
-            nodeClass:"Materia",
-            formGroup:null            
+            docente_requerido:doc.data().docente_requerido,
+            ejecutante_requerido:doc.data().ejecutante_requerido,
+            interprete_requerido:doc.data().interprete_requerido,
+            organization_id:doc.data().organization_id,
+            formGroup:this.fb.group({
+              docente_requerido:[doc.data().docente_requerido],
+              ejecutante_requerido:[doc.data().ejecutante_requerido], 
+              interprete_requerido:[doc.data().interprete_requerido]
+            })
           }
-          this.materiaItems.push(i)
-          this.loadExamList( m.id, m.label )
+          this.materiaItems.push(
+            materiaItem
+          )
+          console.log( doc.id  )
+          console.log( doc.data() )      
         })
         this.dataSource = new EiApplicationTableDataSource(this.materiaItems)
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;          
-
-      })
-    })
-
-  }
-
-  loadExamList(materia_id, materia_label){
-
-    var req:ExamMultipleRequest = {
-      exams:[{
-        id:null,
-        label:null,
-        materia_id:materia_id,
-        materia_label:materia_label
-      }],
-      orderBy:
-        { field:"label" }
-    }
-    this.submitting = true
-    this.userLoginService.getUserIdToken().then( token => {
-      this.submitting = false
-      this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe( data =>{
-        var result:Exam[] = data["result"] //ex_types.push( {id:t["id"],name:t["label"]} )
-        this.materiaItems= new Array() 
-        var previousMateria = ""
-
-        result.forEach( e => {
-          if (e.materia_label == null){
-            e.materia_id = "abanicos"
-            e.materia_label = "abanicos"
-          }
-
-           
-          var g = this.fb.group({
-            id:e.id,          
-            docente_requerido:true,
-            ejecutante_requerido:true
-          })
-
-          if( e.materia_label != previousMateria){
-            var m:MateriaItem = {
-              id:e.id,
-              label:e.materia_label,
-              materia_id:e.materia_id,
-              materia_name:e.materia_label,            
-              docente_requerido:true,
-              ejecutante_requerido:true,
-              nodeClass:"root",
-              formGroup:g            
-            }
-           
-            this.materiaItems.push(m)
-            var fa:FormArray = this.materiasList.controls.materias as FormArray
-            fa.controls.push(g)
-            previousMateria = e.materia_label
-          }
-          var m:MateriaItem = {
-            id:e.id,
-            label:e.label,
-            materia_id:e.materia_id,
-            materia_name:e.materia_label,            
-            docente_requerido:true,
-            ejecutante_requerido:true,
-            nodeClass:"leaf",
-            formGroup:g            
-          }
-          
-          this.materiaItems.push(m)
-          var fa:FormArray = this.materiasList.controls.materias as FormArray
-          fa.controls.push(g)
-
-        })     
+        console.log( "***DONE***" )
       },
-      error => {
-        alert("Error loading improvisation exam types"+ error.error)
-      })
-    },
-    error => {
-      this.submitting = false
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })  
+      reason => {
+        alert(reason)
+      }
+    )  
 
+        
   }
 
+  
   editar(row_id){
     this.router.navigate(['/ei-tipo-edit',{id:row_id}]);
   }
@@ -265,18 +191,20 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
 
   onCreateMateria(){
+    var materia_name:string = ""
+    var nivel:number = 1
  
     const dialogRef = this.dialog.open(DialogMateriaDialog, {
       height: '400px',
       width: '250px',
-      data: {name:""}
+      data: {materia_name:materia_name, nivel:nivel }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       if( result != undefined ){
         console.debug( result )
-        this.createMateria(result)
+        this.createMateria(result.materia_name, result.nivel)
       }
       else{
         console.debug("none")
@@ -286,37 +214,29 @@ export class EiTipoListComponent implements AfterViewInit, OnInit {
 
   }
   
-  createMateria(materia_label){
+  async createMateria(materia_name:string, nivel:number){
     this.submitting = true
-    var req:MateriaRequest = {
-      materia:{
-        id:null,
-        label:materia_label
-      }
-    }
 
-    this.userLoginService.getUserIdToken().then( token =>{
-      this.examImprovisacionService.firestoreApiInterface("add", token, req).subscribe(
-        data => {
-          console.log("Materia Adicionada con existo")
-          this.submitting = false
-          this.updateList()
-        },
-        error => {
-          alert("error:" + error.error)
-          this.submitting = false
-        }
-      )   
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })
+    const res = await  db.collection('materias').add({
+      id:null,
+      materia_name:materia_name,
+      nivel:nivel,
+      owners:[this.userLoginService.getUserUid()],
+    
+      docente_requerido:false,
+      ejecutante_requerido:false,
+      interprete_requerido:false,
+
+      isDeleted:false,
+      organization_id:this.userPreferencesService.getCurrentOrganizationId()
+    });
+    this.submitting = false
   }
-
 }
 
 export interface DialogMateriaData {
-  name: string
+  materia_name: string
+  nivel:string
 }
 
 /* do not forget to add the dialog to the app.module.ts*/

@@ -11,14 +11,16 @@ import { FormGroup } from '@angular/forms';
 
 
 export interface MateriaItem {
-  id: string
-  label: string
   materia_id:string
   materia_name:string
 
+  nivel_id:string
+  nivel_name:string
+
   docente_requerido:boolean
   ejecutante_requerido:boolean
-  nodeClass:string
+  interprete_requerido:boolean
+  organization_id:string
   formGroup:FormGroup
 }
 
@@ -91,8 +93,7 @@ export class EiApplicationTableDataSource extends DataSource<MateriaItem> {
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'label': return compare(a.label, b.label, isAsc);
-        case 'id': return compare(+a.id, +b.id, isAsc);
+        case 'label': return compare(a.materia_name, b.materia_name, isAsc);
         default: return 0;
       }
     });

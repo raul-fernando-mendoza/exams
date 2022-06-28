@@ -85,8 +85,6 @@ export class NavigationComponent {
   }
 
   updateOrganizations(){
-    
-
     db.collection("organizations").where("owners","array-contains","uZP1VwpZJCg8zjMrnHNwh7s2Q3e2").where("isDeleted","==",false).get().then( 
       snapshot =>{
         var docs = snapshot.forEach(doc =>{

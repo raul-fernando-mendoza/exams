@@ -58,7 +58,16 @@ export interface Exam{
 
 export interface Materia{
   id:string
-  label:string
+  materia_name:string
+  nivel:number
+  isDeleted:boolean
+  owners:Array<string>
+
+  docente_requerido:boolean
+  ejecutante_requerido:boolean
+  interprete_requerido:boolean
+
+  organization_id:string
 }
 
 export interface MateriaRequest{
@@ -73,9 +82,6 @@ export interface MateriaMultipleRequest{
     pageSize?:string
   }
 }
-
-
-
 
 export interface ExamRequest{
   exams:Exam
