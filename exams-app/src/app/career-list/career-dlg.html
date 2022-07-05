@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Nueva Carrera</h1>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>nombre de la carrera</mat-label>
+    <input  matInput [(ngModel)]="data.career_name">
+  </mat-form-field>      
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button> 
+   
+  <button [disabled]="data.career_name.length < 1 || data.career_name.length > 200" mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</mat-dialog-actions>
+
+
+
+ 

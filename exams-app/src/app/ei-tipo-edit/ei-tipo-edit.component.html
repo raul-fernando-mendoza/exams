@@ -1,41 +1,21 @@
 <div *ngIf="submitting == false; else elseBlock">
 <form [formGroup]="e" >
-    <span>Editar Materia</span>
+    <span>Editar Tipo Examen</span>
     <p>
     <mat-form-field appearance="legacy">
-        <mat-label>Nombre de Materia</mat-label>
+        <mat-label>Nombre del Examen</mat-label>
         <input matInput formControlName="label" width="80%" (change)="onChangeExam(e)">
     </mat-form-field>
     </p>
     <p>
     <mat-form-field appearance="legacy">
-        <mat-label>Materia descripcion</mat-label>
+        <mat-label>Descripcion del examen</mat-label>
         <textarea matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="1"
         cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeExam(e)"></textarea>
     </mat-form-field> 
     </p>
-    <p>
-        <mat-form-field appearance="legacy">
-            <mat-label>Certificado Maestro</mat-label>
-            <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onChangeExamProperty($event, e)">
-              <mat-option *ngFor="let tc of typeCertificates" [value]="tc.value">
-                {{tc.label}}
-              </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="legacy">
-            <mat-label>Icono de certificado</mat-label>
-            <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onChangeExamProperty($event, e)">
-              <mat-option *ngFor="let ic of iconCertificates" [value]="ic.value">
-                {{ic.label}}
-              </mat-option>
-            </mat-select>
-        </mat-form-field>        
-    </p>
-     
-    
     <div *ngFor="let p of getFormGroupArray(e,'parameters'); let i=index">
         
         <div class="parameter" [formGroup]="p">

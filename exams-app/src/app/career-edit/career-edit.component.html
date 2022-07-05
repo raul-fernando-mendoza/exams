@@ -1,0 +1,7 @@
+Editar Career 
+<form [formGroup]="c" >
+    <mat-form-field appearance="legacy">
+        <mat-label>Nombre de la carrera</mat-label>
+        <input matInput formControlName="career_name" width="80%" (change)="onChange(c)">
+    </mat-form-field>
+</form>

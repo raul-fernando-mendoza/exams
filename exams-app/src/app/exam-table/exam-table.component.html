@@ -1,4 +1,4 @@
-Exam Table
+Calificaciones
 <mat-toolbar>
 
   <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
@@ -56,11 +56,11 @@ Exam Table
     <!-- Name Column -->
     <ng-container matColumnDef="release">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Release</th>
-      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, true)">Crear certificado</button></td>
+      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, true)">Liberar Calificacion</button></td>
     </ng-container>
     <ng-container matColumnDef="unrelease">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>UnRelease</th>
-      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, false)">Borrar certificado</button></td>
+      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, false)">no liberar</button></td>
     </ng-container>
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Borrar</th>

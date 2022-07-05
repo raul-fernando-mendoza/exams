@@ -42,9 +42,7 @@ export class ExamenImprovisacionFormComponent {
 
     exam_id: [null, Validators.required],
     exam_label: [null, Validators.required],
-
-    exam_iconCertificate: [null, Validators.required],
-    exam_typeCertificate: [null, Validators.required],
+    materia_id:[null,Validators.required],
 
     title:[null, Validators.required], 
     expression:[null], 
@@ -97,8 +95,7 @@ export class ExamenImprovisacionFormComponent {
       "exams":[{
           "id":null,
           "label":null,
-          "typeCertificate":null,
-          "iconCertificate":null
+          "materia_id":null
       }],
       "orderBy":{
         "field":"label"
@@ -114,8 +111,7 @@ export class ExamenImprovisacionFormComponent {
         let obj:Exam = {
           "id":r[i].id,
           "label":r[i].label,
-          "typeCertificate":r[i].typeCertificate,
-          "iconCertificate":r[i].iconCertificate
+          "materia_id":r[i].materia_id
         }
         this.exams.push(obj)
       }
@@ -185,8 +181,7 @@ export class ExamenImprovisacionFormComponent {
         this.examGrade.controls.exam_id.setValue(exam.id)
         this.examGrade.controls.exam_label.setValue(exam.label)
         this.examGrade.controls.isDeleted.setValue(false)
-        this.examGrade.controls.exam_typeCertificate.setValue(exam.typeCertificate)
-        this.examGrade.controls.exam_iconCertificate.setValue(exam.iconCertificate)
+        this.examGrade.controls.materia_id.setValue(exam.materia_id)
 
       } 
     }
@@ -198,8 +193,7 @@ export class ExamenImprovisacionFormComponent {
       exams:{
           id:examId,
           label:null,
-          typeCertificate:null,
-          iconCertificate:null,
+          materia_id:null,
           parameters:[{
             id:null,
             idx:null,

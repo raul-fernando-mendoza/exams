@@ -6,7 +6,7 @@ import { CdkTextareaAutosize} from '@angular/cdk/text-field';
 import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
-import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, TypeCertificate} from 'src/app/exams/exams.module'
+import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest} from 'src/app/exams/exams.module'
 import { MatSelectChange } from '@angular/material/select';
 
 
@@ -28,8 +28,6 @@ export class EiTipoEditComponent implements OnInit {
     id: [null, Validators.required],
     isDeleted:[false],
     label:["Nombre de la materia", Validators.required],   
-    typeCertificate:["", Validators.required],
-    iconCertificate:["", Validators.required],
     description:[""],
     parameters: new FormArray([])
   })
@@ -37,15 +35,7 @@ export class EiTipoEditComponent implements OnInit {
   id
   submitting = false
 
-  typeCertificates: TypeCertificate[] = [
-    { label:"Habilidades", value:"habilidades" }, 
-    { label:"Tecnica Coreografia", value:"tecnicaCoreografia" }
-  ]  
 
-  iconCertificates = [
-    { label:"escarabajo", value:"escarabajo" }, 
-    { label:"abanico", value:"abanico" }
-  ]  
 
 
   constructor(private fb: FormBuilder
@@ -79,78 +69,9 @@ export class EiTipoEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadMastersList()
-    this.loadIconList()
     this.loadExamType()
   }
 
-  loadMastersList(){
-    this.typeCertificates = []
-
-    var req = {
-      "path":"certificates_master"
-    }
-    this.submitting = true
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
-        data => { 
-          this.submitting = false
-          var listIcons = data["result"];
-          listIcons.forEach(m => {
-            this.typeCertificates.push(
-              {
-                label:m["name"].split("/")[1],
-                value:m["name"].split("/")[1]  
-              }  
-            )          
-          });
-        },     
-        error => {
-          this.submitting = false
-          alert("error loading impro type")
-          console.log("Error loading ExamType:" + error.error)
-        }
-      )
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    }) 
-  }
-
-
-
-  loadIconList(){
-    this.iconCertificates = []
-
-    var req = {
-      "path":"certificates_logos"
-    }
-    this.submitting = true
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
-        data => { 
-          this.submitting = false
-          var listIcons = data["result"];
-          listIcons.forEach(icon => {
-            this.iconCertificates.push(
-              {
-                label:icon["name"].split("/")[1],
-                value:icon["name"].split("/")[1]  
-              }  
-            )          
-          });
-        },     
-        error => {
-          this.submitting = false
-          alert("error loading impro type")
-          console.log("Error loading ExamType:" + error.error)
-        }
-      )
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    }) 
-  }
 
   loadExamType(): void {
 
@@ -166,8 +87,6 @@ export class EiTipoEditComponent implements OnInit {
         exams:{
           id:this.id,
           label:null,
-          typeCertificate:null,
-          iconCertificate:null,
           description:null,
           parameters:[{
             id:null,
@@ -201,8 +120,6 @@ export class EiTipoEditComponent implements OnInit {
             this.e.controls.id.setValue(t.id)
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
-            this.e.controls.typeCertificate.setValue( t.typeCertificate ? t.typeCertificate : "" )
-            this.e.controls.iconCertificate.setValue( t.iconCertificate ? t.iconCertificate : "" )
             var parameter_arr:FormArray = this.e.controls.parameters as FormArray
 
             for( let i =0;t.parameters && i<t.parameters.length; i++){
@@ -296,7 +213,7 @@ export class EiTipoEditComponent implements OnInit {
         }
       }
     }
-    this.submitting = true;
+    
     
     this.userLoginService.getUserIdToken().then( token => {
 
@@ -305,11 +222,11 @@ export class EiTipoEditComponent implements OnInit {
           console.log(" parameter add has completed")
           var p:Parameter = data["result"]
           this.addParameter( p , parameters_array)  
-          this.submitting = false;      
+              
         },
         error => {
           alert("error nuevo parametro:" + error.error)
-          this.submitting = false; 
+          
         }
       )
     },
@@ -319,7 +236,7 @@ export class EiTipoEditComponent implements OnInit {
   }
 
   newCriteria( e:FormGroup, p:FormGroup  ){
-    this.submitting = true; 
+   
     var criteria_array:FormArray = p.controls.criterias as FormArray
     var req:CriteriaRequest = {
       exams:{
@@ -344,11 +261,11 @@ export class EiTipoEditComponent implements OnInit {
           console.log(" criteria add has completed")
           var c = data["result"]
           this.addCriteria(c, criteria_array)
-          this.submitting = false;         
+                  
         },
         error => {
           alert("error nuevo criterio:" + error.error)
-          this.submitting = false; 
+          
         }
       )
     },
@@ -358,7 +275,7 @@ export class EiTipoEditComponent implements OnInit {
   }
 
   newAspect( e:FormGroup, p:FormGroup, c:FormGroup  ){
-    this.submitting = true; 
+    
     var question_array:FormArray = c.controls.aspects as FormArray
     var req:AspectRequest = {
       exams:{
@@ -384,11 +301,11 @@ export class EiTipoEditComponent implements OnInit {
           console.log(" aspects add has completed")
           var a = data["result"]
           this.addAspect(a, question_array)
-          this.submitting = false;        
+                 
         },
         error => {
           alert("error nueva pregunta:" + error.error)
-          this.submitting = false; 
+         
         }
       )
     },
@@ -605,7 +522,6 @@ export class EiTipoEditComponent implements OnInit {
       exams:{
         id:e.controls.id.value,
         label:e.controls.label.value,
-        typeCertificate:e.controls.typeCertificate.value,
         description:e.controls.description.value
       }
     }

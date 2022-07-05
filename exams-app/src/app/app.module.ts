@@ -39,7 +39,7 @@ import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDia
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { MatTabsModule} from '@angular/material/tabs';
-import { DialogMateriaDialog, EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
+import { DialogExamDialog, DialogGroupDialog, DialogNivelDialog, EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { StarSliderComponent } from './star-slider/star-slider.component';
@@ -57,6 +57,10 @@ import { ExamTableComponent } from './exam-table/exam-table.component';
 import { GradesListComponent } from './grades-list/grades-list.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { CareerDialog, CareerListComponent } from './career-list/career-list.component';
+import { CareerEditComponent } from './career-edit/career-edit.component';
+import { DialogMateriaDialog } from './materia-edit/materia-edit';
+import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +88,14 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     GradesComponent,
     ExamTableComponent,
     GradesListComponent,
-    DialogMateriaDialog
+    DialogMateriaDialog,
+    DialogExamDialog,
+    CareerListComponent,
+    CareerEditComponent,
+    CareerDialog,
+    DialogGroupDialog,
+    DialogNivelDialog,
+    MateriaCertificatesComponent
   ],
   imports: [
     BrowserModule,
@@ -130,7 +141,11 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
   entryComponents: [
     DialogOverviewExampleDialog,
     DescriptionDialog,
-    DialogMateriaDialog
+    DialogMateriaDialog,
+    DialogExamDialog,
+    CareerDialog,
+    DialogGroupDialog,
+    DialogNivelDialog
   ],
   bootstrap: [AppComponent]
 })

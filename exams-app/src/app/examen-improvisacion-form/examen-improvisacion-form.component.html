@@ -4,7 +4,7 @@ Editar Examen
   <mat-card >
     <mat-card-content > 
       <mat-form-field appearance="fill" > 
-        <mat-label>Materia</mat-label>
+        <mat-label>Tipo de Examen</mat-label>
         <mat-select formControlName="exam_id" (selectionChange)="examChange($event)">
           <mat-option *ngFor="let t of getExamTypes()" [value]="t.id" >
             {{t.label}} 

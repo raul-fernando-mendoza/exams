@@ -3,49 +3,49 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
-import { FormGroup } from '@angular/forms';
-import { Materia } from '../exams/exams.module';
-import { ChildrenOutletContexts } from '@angular/router';
 
 // TODO: Replace this with your own data model type
-
-export interface MateriaItemNode {
-  nivel_id:string
-  nivel_name:string
-  group_id?:string
-  group_name?:string
-  materia_id?:string
-  materia_name?:string
-  exam_id?:string
-  exam_name?:string
-  required_in_carrers_ids:Array<string>
-  nodeClass:string  
-  children:Array<MateriaItemNode>
+export interface MateriaCertificatesItem {
+  name: string;
+  id: number;
 }
 
 // TODO: replace this with real data from your application
-const EXAMPLE_DATA: MateriaItemNode[] = [
-  /*
+const EXAMPLE_DATA: MateriaCertificatesItem[] = [
   {id: 1, name: 'Hydrogen'},
   {id: 2, name: 'Helium'},
-  */
+  {id: 3, name: 'Lithium'},
+  {id: 4, name: 'Beryllium'},
+  {id: 5, name: 'Boron'},
+  {id: 6, name: 'Carbon'},
+  {id: 7, name: 'Nitrogen'},
+  {id: 8, name: 'Oxygen'},
+  {id: 9, name: 'Fluorine'},
+  {id: 10, name: 'Neon'},
+  {id: 11, name: 'Sodium'},
+  {id: 12, name: 'Magnesium'},
+  {id: 13, name: 'Aluminum'},
+  {id: 14, name: 'Silicon'},
+  {id: 15, name: 'Phosphorus'},
+  {id: 16, name: 'Sulfur'},
+  {id: 17, name: 'Chlorine'},
+  {id: 18, name: 'Argon'},
+  {id: 19, name: 'Potassium'},
+  {id: 20, name: 'Calcium'},
 ];
 
 /**
- * Data source for the EiApplicationTable view. This class should
+ * Data source for the MateriaCertificates view. This class should
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
-export class EiApplicationTableDataSource extends DataSource<MateriaItemNode> {
-  data: MateriaItemNode[] = EXAMPLE_DATA;
+export class MateriaCertificatesDataSource extends DataSource<MateriaCertificatesItem> {
+  data: MateriaCertificatesItem[] = EXAMPLE_DATA;
   paginator: MatPaginator;
-  sort: MatSort; 
+  sort: MatSort;
 
-  constructor(customized_data) {
+  constructor() {
     super();
-    var flattened_data:Array<MateriaItemNode> = []
-    this.MateriaItemNodeFlattener( customized_data ,flattened_data)
-    this.data = flattened_data
   }
 
   /**
@@ -53,13 +53,13 @@ export class EiApplicationTableDataSource extends DataSource<MateriaItemNode> {
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<MateriaItemNode[]> {
+  connect(): Observable<MateriaCertificatesItem[]> {
     // Combine everything that affects the rendered data into one update
     // stream for the data-table to consume.
     const dataMutations = [
       observableOf(this.data),
-      //this.paginator.page,
-      //this.sort.sortChange
+      this.paginator.page,
+      this.sort.sortChange
     ];
 
     return merge(...dataMutations).pipe(map(() => {
@@ -77,18 +77,16 @@ export class EiApplicationTableDataSource extends DataSource<MateriaItemNode> {
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getPagedData(data: MateriaItemNode[]) {
-    //const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    //return data.splice(startIndex, this.paginator.pageSize);
-    return data
+  private getPagedData(data: MateriaCertificatesItem[]) {
+    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+    return data.splice(startIndex, this.paginator.pageSize);
   }
 
   /**
    * Sort the data (client-side). If you're using server-side sorting,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getSortedData(data: MateriaItemNode[]) {
-    /*
+  private getSortedData(data: MateriaCertificatesItem[]) {
     if (!this.sort.active || this.sort.direction === '') {
       return data;
     }
@@ -96,20 +94,11 @@ export class EiApplicationTableDataSource extends DataSource<MateriaItemNode> {
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'label': return compare(a.materia_name, b.materia_name, isAsc);
+        case 'name': return compare(a.name, b.name, isAsc);
+        case 'id': return compare(+a.id, +b.id, isAsc);
         default: return 0;
       }
     });
-    */
-    return data
-  }
-
-  MateriaItemNodeFlattener(node_array:MateriaItemNode[], result:Array<MateriaItemNode>){
-    for(var idx=0; idx<node_array.length; idx++){
-      var node = node_array[idx]
-      result.push(node)
-      var list = this.MateriaItemNodeFlattener( node.children, result)     
-    };
   }
 }
 

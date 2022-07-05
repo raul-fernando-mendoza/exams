@@ -45,43 +45,61 @@ export interface Parameter{
   
 }
 export interface Exam{
-  id:string
   materia_id?:string
-  materia_label?:string
+
+  id:string
   label?:string
   description?:string
-  typeCertificate?:string
-  iconCertificate?:string
+  owners?:Array<string>
+  isDeleted?:boolean
+
   parameters?: Parameter[]
 
+  required_in_carrers_ids?:Array<string>
 }
 
 export interface Materia{
+  group_id?:string
+
   id:string
-  materia_name:string
-  nivel:number
-  isDeleted:boolean
-  owners:Array<string>
+  materia_name?:string
+  isDeleted?:boolean
+  owners?:Array<string>
 
-  docente_requerido:boolean
-  ejecutante_requerido:boolean
-  interprete_requerido:boolean
+  typeCertificate?:string
+  iconCertificate?:string
 
-  organization_id:string
 }
 
-export interface MateriaRequest{
-  materia:Materia
+export interface Group{
+  nivel_id?: string
+
+  id:string
+  group_name?:string
+  owners?:Array<string>
+  isDeleted?:false
+
+  evaluation_type?:number
 }
-export interface MateriaMultipleRequest{
-  materia:Materia[]
-  orderBy?:{
-    field:string
-    direction?:string
-    startAfterId?:string
-    pageSize?:string
-  }
+
+export interface Nivel{
+  organization_id?:string
+
+  id:string
+  nivel_name?:string
+  owners?:Array<string>
+  isDeleted?:boolean
 }
+
+export interface Career{
+  organization_id?:string
+
+  id:string
+  career_name?:string
+  isDeleted?:boolean
+  owners?:Array<string>
+}
+
 
 export interface ExamRequest{
   exams:Exam
@@ -171,6 +189,8 @@ export interface ExamGrade{
 
   exam_id?:string
   exam_label?:string
+
+  materia_id?:string
 
   exam_typeCertificate?:string
   exam_iconCertificate?:string

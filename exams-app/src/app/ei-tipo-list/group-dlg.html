@@ -1,0 +1,24 @@
+<h1 mat-dialog-title>Grupo</h1>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Nombre del grupo</mat-label>
+    <input  matInput [(ngModel)]="data.group_name">
+  </mat-form-field>  
+  <mat-form-field>
+    <mat-label>Typo de evaluacion del grupo</mat-label>       
+    <mat-select [(ngModel)]="data.evaluation_type" >
+      <mat-option *ngFor="let t of evaluationTypes" [value]="t.id" >
+        {{t.name}} 
+      </mat-option>
+    </mat-select>  
+  </mat-form-field> 
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button> 
+   
+  <button [disabled]="data.group_name.length < 1 || data.group_name.length > 200" mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</mat-dialog-actions>
+
+
+
+ 

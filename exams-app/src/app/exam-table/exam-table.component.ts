@@ -217,9 +217,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   
   updateRelease(examGrade:ExamGrade, value:boolean){
 
-    if( value )
-      this.crearCertificado(examGrade,value)
-    else
+ 
       this.updateExamReleased(examGrade, value)
 
   }

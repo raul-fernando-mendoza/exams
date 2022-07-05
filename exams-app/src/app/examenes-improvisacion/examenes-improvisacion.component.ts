@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@ang
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { stringify } from '@angular/compiler/src/util';
 
-
+import { db } from 'src/environments/environment';
 
 
 @Component({
@@ -27,7 +27,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['materia', "title", 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
+  displayedColumns = [ "title", 'materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
   
 
   evaluator_name = null
@@ -129,6 +129,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         id:null,
         exam_id:null,
         exam_label:null,
+        materia_id:null,
 
         completed: null,
         applicationDate:applicationDate,
@@ -167,7 +168,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     var startTime =  new Date().getTime();
       
     this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
-      result => { 
+      async result => { 
         this.submitting = false
         var endTime = new Date().getTime()
         const diffTime = Math.abs(endTime - startTime);
@@ -181,6 +182,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
         for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
           let examGrade:ExamGrade = examImprovisationArray[i]
+
+          const doc = await db.collection("materias").doc(examGrade.materia_id).get() 
           for( var j=0; j< examGrade.parameterGrades.length; j++){
             let parameterGrade:ParameterGrade = examGrade.parameterGrades[j]
             let application_date_src = examGrade.applicationDate.toString().substring(0, 10)
@@ -188,7 +191,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
             var obj:ExamenesImprovisacionItem = {
               examGrade_id:examGrade.id,
               parameterGrade_id: parameterGrade.id, 
-              materia: examGrade.exam_label,
+              materia: doc.data().materia_name,
               title: examGrade.title,
               student_name: examGrade.student_name,
               maestro:parameterGrade.evaluator_name,

@@ -1,41 +1,53 @@
 
-<form  [formGroup]="materiasList" >
 Listar Materias
 <div class="mat-elevation-z8">
   <mat-toolbar>
-    <button mat-icon-button  [disabled]="submitting" (click)="createType()">
-      <mat-icon>library_add</mat-icon>
-    </button>
-    <button mat-icon-button  [disabled]="submitting" (click)="onCreateMateria()">
+    <button mat-icon-button  [disabled]="submitting" (click)="onCreateNivel()">
       <mat-icon>library_add</mat-icon>
     </button>    
   </mat-toolbar>  
   <div *ngIf="submitting == false; else elseBlock"></div>
   <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting" >
    
-    <ng-container matColumnDef="label">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+
+    <ng-container matColumnDef="nivel">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel</th>
       <td mat-cell *matCellDef="let row">
-        <div [class]="row.nodeClass"> 
-          <button mat-button (click)="editar(row.id)">{{row.materia_name}}</button>
+        <div *ngIf="row.nodeClass=='nivel'"> 
+          <button mat-button (click)="onNivelEdit(row)">{{row.nivel_name}}</button>
         </div>
       </td>
     </ng-container>
-    
-    <ng-container matColumnDef="docente_requerido">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Docente</th>
-      <td mat-cell *matCellDef="let row" [formGroup]="row.formGroup">
-        
-      <mat-checkbox formControlName="docente_requerido" (change)="onChange(row)"></mat-checkbox>
-  
+
+    <ng-container matColumnDef="group">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Grupo</th>
+      <td mat-cell *matCellDef="let row">
+        <div *ngIf="row.nodeClass=='group'"> 
+          <button mat-button (click)="onGroupEdit(row)">{{row.group_name}}</button>
+        </div>
       </td>
-    </ng-container>
-    <ng-container matColumnDef="ejecutante_requerido">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ejecutante</th>
-      <td mat-cell *matCellDef="let row" [formGroup]="row.formGroup">
-        <mat-checkbox formControlName="docente_requerido" (change)="onChange(row)"></mat-checkbox>
-      </td>    
+    </ng-container>    
+    
+    <ng-container matColumnDef="materia_name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Materia</th>
+      <td mat-cell *matCellDef="let row">
+        <div [class]="row.nodeClass"> 
+          
+          <button *ngIf="row.nodeClass=='materia'" mat-button (click)="onEditMateria(row)">{{row.materia_name}}</button>
+          <button *ngIf="row.nodeClass=='exam'" mat-button (click)="onEdit(row.exam_id)">{{row.exam_name}}</button>
+        </div>
+      </td>
     </ng-container> 
+    
+    <ng-container *ngFor="let career of careerList; let i=index" matColumnDef="{{career.career_name}}">
+      <th mat-header-cell *matHeaderCellDef>{{career.career_name}}</th>
+      <td mat-cell *matCellDef="let row">
+        
+        
+        <mat-checkbox *ngIf="row.nodeClass=='exam'" [ngModel]="row.required_in_carrers_ids.includes(career.id)" (change)="onChange(row, career.id)"></mat-checkbox>
+        
+      </td>    
+    </ng-container>     
            
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header></th> 
@@ -44,11 +56,25 @@ Listar Materias
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" >
-          <button mat-menu-item (click)="borrar(row.id)" [disabled]="submitting">
+          <button *ngIf="row.nodeClass=='nivel'" mat-menu-item (click)="onCreateGroup(row)" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Crear grupo</span>
+          </button>            
+          <button *ngIf="row.nodeClass=='group'" mat-menu-item (click)="onCreateMateria(row)" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Crear Materia</span>
+          </button> 
+
+          <button *ngIf="row.nodeClass=='materia'" mat-menu-item (click)="onCreateExam(row)" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Crear Examen</span>
+          </button>            
+          
+          <button *ngIf="row.nodeClass=='exam'" mat-menu-item (click)="onDeleteExam(row.exam_id)" [disabled]="submitting">
             <mat-icon>delete</mat-icon>
             <span>Borrar</span>
           </button>      
-          <button mat-menu-item (click)="onCopy(row)" [disabled]="submitting">
+          <button *ngIf="row.nodeClass=='exam'" mat-menu-item (click)="onDuplicateExam(row)" [disabled]="submitting">
             <mat-icon>content_copy</mat-icon>
             <span>Duplicar</span>
           </button>          
@@ -62,17 +88,17 @@ Listar Materias
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   </table>
-
+<!--
   <mat-paginator #paginator
       [length]="dataSource?.data.length"
       [pageIndex]="0"
       [pageSize]="50"
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
+-->
 </div>
 <ng-template #elseBlock>
   Cargando Typos.
   <mat-spinner></mat-spinner>
 </ng-template>
 
-</form> 

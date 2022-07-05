@@ -97,10 +97,8 @@ export class NavigationComponent {
             organization
           )
           console.log( doc.id  )
-          console.log( doc.data() )
-      
+          console.log( doc.data() )      
         })
-        console.log( "***DONE***" )
       },
       reason => {
         alert(reason)
