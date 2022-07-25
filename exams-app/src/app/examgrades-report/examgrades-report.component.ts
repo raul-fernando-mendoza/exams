@@ -37,7 +37,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     }
     
     
-    this.createGraph(e.student_name, labels, scores)
+    //this.createGraph(e.student_name, labels, scores)
   }
 
   ngOnInit(): void {

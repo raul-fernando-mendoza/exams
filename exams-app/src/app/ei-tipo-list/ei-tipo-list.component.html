@@ -10,29 +10,14 @@ Listar Materias
   <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting" >
    
 
-    <ng-container matColumnDef="nivel">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nivel</th>
-      <td mat-cell *matCellDef="let row">
-        <div *ngIf="row.nodeClass=='nivel'"> 
-          <button mat-button (click)="onNivelEdit(row)">{{row.nivel_name}}</button>
-        </div>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="group">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Grupo</th>
-      <td mat-cell *matCellDef="let row">
-        <div *ngIf="row.nodeClass=='group'"> 
-          <button mat-button (click)="onGroupEdit(row)">{{row.group_name}}</button>
-        </div>
-      </td>
-    </ng-container>    
+   
     
     <ng-container matColumnDef="materia_name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Materia</th>
       <td mat-cell *matCellDef="let row">
         <div [class]="row.nodeClass"> 
-          
+          <button *ngIf="row.nodeClass=='nivel'" mat-button (click)="onNivelEdit(row)">{{row.nivel_name}}</button>
+          <button *ngIf="row.nodeClass=='group'" mat-button (click)="onGroupEdit(row)">{{row.group_name}}</button>
           <button *ngIf="row.nodeClass=='materia'" mat-button (click)="onEditMateria(row)">{{row.materia_name}}</button>
           <button *ngIf="row.nodeClass=='exam'" mat-button (click)="onEdit(row.exam_id)">{{row.exam_name}}</button>
         </div>

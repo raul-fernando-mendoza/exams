@@ -3,6 +3,3 @@
 /venv
 /install
 .vscode
-*_test.py
-*.jpg
-*.png

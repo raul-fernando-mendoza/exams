@@ -1,3 +1,7 @@
+#deploy to trigger when exam is completed
+gcloud functions deploy generateMateriaCertificate --region=us-central1 --entry-point generateMateriaCertificate --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.update"  --trigger-resource "projects/thoth-qa/databases/(default)/documents/examGrades/{examGradeId}" 
+
+
 #deploy function to cloud functions
 gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
 

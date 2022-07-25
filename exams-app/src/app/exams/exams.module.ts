@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormGroup } from '@angular/forms';
 
-
+import * as uuid from 'uuid';
 
 @NgModule({
   declarations: [],
@@ -11,13 +12,57 @@ import { CommonModule } from '@angular/common';
 })
 export class ExamsModule { }
 
+export function copyObj( to:{}, from:{} ) {
+  var result = {}
+  for(const i in Object.keys(to)){
+    const key = Object.keys(to)[i]
 
+    if( key in from ){
+      if( 
+         typeof from[key] == "string" ||
+         typeof from[key] == "number" ||         
+         typeof from[key] == "boolean" ||
+         (from[key] instanceof Date) ||        
+         Array.isArray(from[key]) && from[key].every(i => (typeof i === "string"))
+        ){
+          result[key] = from[key]
+          to[key] = from[key]
+      }
+      else if( from[key]!= null && "seconds" in from[key]  ){
+        result[key] = new Date(from[key].toDate())
+        to[key] = new Date(from[key].toDate())
+      }
+    }
+  }
+  return result
+}
 
-export interface User{
-  uid:string
-  email:string
-  displayName?:string
-  claims?:{}
+export function copyFromForm(to:{}, from:FormGroup) {
+  var result = {}
+  for(const i in Object.keys(to)){
+    const key = Object.keys(to)[i]
+
+    if( key in from.controls ){
+      if( 
+         typeof from.controls[key].value == "string" ||
+         typeof from.controls[key].value == "number" ||         
+         typeof from.controls[key].value == "boolean" ||
+         (from.controls[key].value instanceof Date) ||
+         Array.isArray(from.controls[key].value) && from.controls[key].value.every(i => (typeof i === "string"))
+      ){
+          result[key] = from.controls[key].value
+          to[key] = from.controls[key].value
+      }      
+    }
+  }
+  return result
+}
+
+export class User{
+  uid:string = null
+  email:string = null
+  displayName:string = null
+  claims:{}
 }
 
 export interface Aspect{
@@ -58,16 +103,18 @@ export interface Exam{
   required_in_carrers_ids?:Array<string>
 }
 
-export interface Materia{
-  group_id?:string
+export class Materia{
 
-  id:string
-  materia_name?:string
-  isDeleted?:boolean
-  owners?:Array<string>
 
-  typeCertificate?:string
-  iconCertificate?:string
+  group_id?:string = null
+
+  id:string = null
+  materia_name:string = null
+  isDeleted?:boolean = false
+  owners:Array<string> = null
+
+  typeCertificate:string = null
+  iconCertificate?:string = null
 
 }
 
@@ -100,6 +147,23 @@ export interface Career{
   owners?:Array<string>
 }
 
+export class Student{
+  organization_id?:string
+  id:string
+  student_name?:string
+  email?:string
+  isActive?:boolean
+  owners?:Array<string>
+}
+
+export class MateriaEnrollment{
+  organization_id?:string
+  id:string
+  materia_id:string
+  student_id:string
+  isActive?:boolean
+  owners?:Array<string>
+}
 
 export interface ExamRequest{
   exams:Exam
@@ -144,76 +208,71 @@ export interface AspectRequest{
   }
 }
 
-export interface AspectGrade{
-  id:string
-  idx?:number  
-  label?: string
-  description?:string
-  isGraded?:boolean
-  score?:number
-  missingElements?:string
+export class AspectGrade{
+  id:string = null
+  idx:number = null 
+  label: string = null
+  description:string = null
+  isGraded?:boolean = null
+  score:number = null
+  missingElements:string = null
 }
 
-export interface CriteriaGrade{
-  id:string
-  idx?:number  
-  label?: string
-  description?: string
-  isSelected?:boolean  
-  score?:number  
-  aspectGrades?: AspectGrade[]
+export class CriteriaGrade{
+  id:string = uuid.v4()
+  idx:number  = null
+  label: string = null
+  description: string = null
+  isSelected?:boolean = null
+  score:number = null
+  aspectGrades: AspectGrade[] = []
 }
 
-export interface ParameterGrade{
-  id: string
-  idx?: number
-  label?: string
-  description?:string
-  type?:string
-  scoreType?: string
-  score?:number
-  evaluator_uid?:string
-  evaluator_name?:string
-  evaluator_email?:string
-  evaluator_comment?:string
+export type ScoreType =  "starts" | "status"
 
-  completed?:boolean
-  
+export class ParameterGrade{
+  id:string = uuid.v4()
 
-  criteriaGrades?: CriteriaGrade[] 
+
+  grade_id:string = null
+  owners:Array<string> = null;
+  idx: number = null
+  label: string = null
+  description:string = null
+  scoreType:ScoreType = null
+  score:number = null
+  evaluator_uid:string = null
+
+  isCompleted:boolean = false
+
+  criteriaGrades: CriteriaGrade[] = []
 }
 
 
-export interface ExamGrade{
-  id: string
+export class ExamGrade{
+  id:string = uuid.v4()
+  owners:Array<string> = null;
 
-  exam_id?:string
-  exam_label?:string
+  exam_id:string = null;
 
-  materia_id?:string
+  materia_id:string = null;
 
-  exam_typeCertificate?:string
-  exam_iconCertificate?:string
+  isCompleted: boolean = false
+  applicationDate:Date = null
 
-  completed?: boolean
-  applicationDate?:Date
+  student_uid:string = null
 
-  student_uid?:string
-  student_email?:string
-  student_name?:string
+  title:string = null
+  expression:string = null
 
-  title?:string
-  expression?:string
+  score:number = 0
+  certificate_url:string = null
 
-  score?:number
-  certificate_url?:string
 
-  released?:boolean
-  isDeleted?:boolean
-
-  exams?:Exam
-
-  parameterGrades?:ParameterGrade[]
+  isDeleted:boolean = false
+  isReleased:boolean = false
+  isApproved:boolean = false
+  parameterGrades:ParameterGrade[] = []
 }
 export interface AspectGradeRequest{
   examGrades:{

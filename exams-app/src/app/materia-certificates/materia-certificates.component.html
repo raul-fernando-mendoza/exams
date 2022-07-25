@@ -1,15 +1,61 @@
+Certificados
+<mat-toolbar>
+  
+</mat-toolbar>  
 <div class="mat-elevation-z8">
   <table mat-table class="full-width-table" matSort aria-label="Elements">
     <!-- Id Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-      <td mat-cell *matCellDef="let row">{{row.id}}</td>
+    <ng-container matColumnDef="student_name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Estudiante</th>
+      <td mat-cell *matCellDef="let row">
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass=='User'">
+          <button  mat-button  (click)="onStudentClick(row)">
+            <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
+          </button>
+          {{row.obj.claims.displayName || row.obj.displayName || row.obj.email}}
+        </div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass=='MateriaEnrollment'">
+          <button  mat-button  (click)="onMateriaClick(row)">
+            <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
+          </button>
+          {{row.obj.materia_name }}
+        </div>    
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Exam'">
+          {{row.obj.label }}
+        </div>           
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="approved">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Aprovado</th>
+      <td mat-cell *matCellDef="let row">
+        <div *ngIf="row.nodeClass=='User'">
+          {{row.obj.id}}
+        </div>
+        <div *ngIf="row.nodeClass=='MateriaEnrollment'">
+          
+          <button *ngIf="row.obj.certificate_url" [cdkCopyToClipboard]="row.obj.certificate_url">Copiar certificado url</button>
+        </div>    
+        <div *ngIf="row.nodeClass=='Exam'">
+          {{ row.obj.isReleased ? 'completado' : 'faltante' }}
+        </div>           
+      </td>
     </ng-container>
 
     <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-      <td mat-cell *matCellDef="let row">{{row.name}}</td>
+    <ng-container matColumnDef="certificate_url">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Certificate</th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" >
+          <button *ngIf="row.nodeClass=='User'" mat-menu-item (click)="onMateriaEnroll(row)" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Enrolar en Materia</span>
+          </button> 
+        </mat-menu>           
+
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

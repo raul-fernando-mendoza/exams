@@ -6,12 +6,15 @@ import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './ex
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { ExamGrade, ExamGradeMultipleRequest, ParameterGrade, ParameterGradeRequest } from '../exams/exams.module';
+import { copyObj, ExamGrade, ExamGradeMultipleRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { stringify } from '@angular/compiler/src/util';
 
 import { db } from 'src/environments/environment';
+import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
+import * as firebase from 'firebase';
+
 
 
 @Component({
@@ -27,7 +30,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = [ "title", 'materia', 'estudiante', 'maestro', 'tipo', 'parametro', 'fechaApplicacion', 'completed',"id"];
+  displayedColumns = [ "title", 'materia', 'estudiante', 'maestro', 'parametro', 'fechaApplicacion', 'completed',"id"];
   
 
   evaluator_name = null
@@ -40,6 +43,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   applicationDate = null
   releasedOnly = null
 
+  datavalues: ExamenesImprovisacionItem[] = [];  
+
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
@@ -50,6 +55,29 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }
 
   submitting = false
+
+  open_transactions:Set<string> = new Set()
+
+  transactionStart(id){
+    this.open_transactions.add(id)
+  }
+  updateTable(){
+      this.dataSource = new ExamenesImprovisacionDataSource(this.datavalues);
+      var examenesSort = localStorage.getItem('jsonExamenesSort')
+      if( examenesSort ){
+        var jsonExamenesSort = JSON.parse(examenesSort)
+        this.sort.active = jsonExamenesSort["active"]
+        this.sort.direction = jsonExamenesSort["direction"]  
+      }
+      else{
+        this.sort.active = 'materia'
+        this.sort.direction = 'asc'
+      }
+
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      this.table.dataSource = this.dataSource;  
+  }  
   
   ngOnInit() {
     console.log("on init called")
@@ -117,128 +145,96 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       showClosed = null
     }
 
-    if( applicationDate == null || applicationDate == "" ){
-      applicationDate = null
+    let qry = db.collection("examGrades")
+    .where("owners","array-contains",this.userLoginService.getUserUid())
+    .where("isDeleted", "==", false)
+    .where("applicationDate","==", applicationDate)
+
+    if( applicationDate != null ){     
+    //  qry.where("applicationDate","==", applicationDate)
     }
-    else{
-      applicationDate = applicationDate.toISOString().split('T')[0]
-    }
-
-    var request:ExamGradeMultipleRequest = {
-      examGrades:[{
-        id:null,
-        exam_id:null,
-        exam_label:null,
-        materia_id:null,
-
-        completed: null,
-        applicationDate:applicationDate,
-      
-        student_email:this.student_email,
-        student_name:null,
-        student_uid:null,
-      
-        title:null,
-        expression:null,
-
-        score:null,
-        certificate_url:null,
-
-        released:this.releasedOnly,
-      
-        parameterGrades:[
-          {
-            id: null,
-            idx: null,
-            label: null,
-            scoreType: null,
-            score:null,
-            evaluator_uid:null,
-            evaluator_email:this.evaluator_email,
-            evaluator_name:null,
-         
-            completed:showClosed
-          
-          }
-        ]
-      }]
-    }
-
-    this.submitting = true
-    var startTime =  new Date().getTime();
-      
-    this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(
-      async result => { 
-        this.submitting = false
-        var endTime = new Date().getTime()
-        const diffTime = Math.abs(endTime - startTime);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        console.log(diffTime + " milliseconds");
-
-        var examImprovisationArray:ExamGrade[] = result["result"];
-        let datavalues: ExamenesImprovisacionItem[] = [];
-
-        let applicationDates = []
-
-        for(var i=0; examImprovisationArray!=null && i<examImprovisationArray.length;i++){
-          let examGrade:ExamGrade = examImprovisationArray[i]
-
-          const doc = await db.collection("materias").doc(examGrade.materia_id).get() 
-          for( var j=0; j< examGrade.parameterGrades.length; j++){
-            let parameterGrade:ParameterGrade = examGrade.parameterGrades[j]
-            let application_date_src = examGrade.applicationDate.toString().substring(0, 10)
-            //console.log(exam.id)
-            var obj:ExamenesImprovisacionItem = {
-              examGrade_id:examGrade.id,
-              parameterGrade_id: parameterGrade.id, 
-              materia: doc.data().materia_name,
-              title: examGrade.title,
-              student_name: examGrade.student_name,
-              maestro:parameterGrade.evaluator_name,
-              tipo: examGrade.exam_label,
-              parametro:parameterGrade.label,
-              fechaApplicacion:application_date_src, 
-              completed: parameterGrade.completed,
-              calificacion:(parameterGrade.score)?parameterGrade.score:0,
-              certificate_url:examGrade.certificate_url,
-              student_email:examGrade.student_email
-            }
-            datavalues.push(obj)
-          }
-          
-        }  
-        
-        this.dataSource = new ExamenesImprovisacionDataSource(datavalues);
-        var examenesSort = localStorage.getItem('jsonExamenesSort')
-        if( examenesSort ){
-          var jsonExamenesSort = JSON.parse(examenesSort)
-          this.sort.active = jsonExamenesSort["active"]
-          this.sort.direction = jsonExamenesSort["direction"]  
-        }
-        else{
-          this.sort.active = 'materia'
-          this.sort.direction = 'asc'
-        }
-
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.table.dataSource = this.dataSource;  
-        console.log("update completed")          
     
+    this.datavalues.length = 0
+
+    qry.get().then(exams =>{
+
+      var map:Promise<void>[] = exams.docs.map(doc =>{
+
+        let examGrade:ExamGrade = new ExamGrade()
+        copyObj(examGrade, doc.data())
+
+        var student:User = new User()
+        var materia:Materia = new Materia() 
+   
+        this.getUser(examGrade.student_uid).then(user=>{
+          copyObj(student, user)
+        })
+
+        db.collection("materias").doc(examGrade.materia_id).get().then( materiaDoc =>{
+          copyObj(materia, materiaDoc.data())
+        })
+
+        return this.addExam( examGrade, materia, student)  
+
+      })
+      Promise.all(map).then(()=>{
+        this.datavalues.sort( (a,b) =>{
+          if (a.examGrade.title > b.examGrade.title)
+            return 1
+          else if (a.examGrade.title < b.examGrade.title)
+           return -1
+          else if (a.parameterGrade.label > b.parameterGrade.label)
+            return 1
+          else return -1
+        })
+        this.updateTable()
+      })
+
+    },
+    reason =>{
+      console.error("Error:loading exams" + reason)
+    })
+    
+
+  } 
+
+  
+  addExam( examGrade:ExamGrade, materia:Materia, student:User) :Promise<void>{
+    var _resolve 
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      db.collection(`/examGrades/${examGrade.id}/parameterGrades`).get().then( parametersRecordSet =>{
+        var map = parametersRecordSet.docs.map( doc =>{
+          let parameterGrade:ParameterGrade =  new ParameterGrade() 
+          copyObj(parameterGrade,doc.data())
+          var evaluador:User = new User()
+  
+          this.getUser(parameterGrade.evaluator_uid).then(doc =>{
+            copyObj(evaluador,doc)
+          })
+          var obj:ExamenesImprovisacionItem = {
+            examGrade:examGrade,
+            parameterGrade: parameterGrade, 
+            materia: materia,
+            student: student,
+            approver:evaluador,
+            isCompleted:parameterGrade.isCompleted
+          }
+          this.datavalues.push(obj)
+        })
+        Promise.all(map).then( ()=>{
+          _resolve()
+        })
       },
-      error => {
-        this.submitting = false
-        if( error.error && error.error instanceof String && error.error.search("token")){
-          console.log("ERROR al leer lista de examenes:" + error.status + " " + error.error)
-          this.router.navigate(['/loginForm'])
-        }
-        else{
-          alert("ha habido un error al leer la lista de examenes:" + error.error)
-          console.log("error:" + error.error)
-        }
-      }
-    )        
-  }  
+      error=>{
+        console.error("error retriving parameterGrades:" + error)
+      })
+  
+    })
+    
+  }
+
+  
 
   ngAfterViewInit() {
 
@@ -313,4 +309,20 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }
     )    
   }
+  async getUser(uid){
+    var userReq = {
+      "uid":uid
+    }      
+
+    const response = await this.examImprovisacionService.authApiInterface("getUser", null, userReq)
+    const user = response["result"]
+    var result:User = {
+      "uid" : user["uid"],
+      "email" : user["email"],
+      "displayName" : (user["displayName"] != null && user["displayName"] != '')? user["displayName"] : user["email"],
+      "claims" : user["claims"]
+    }
+    
+    return result
+  }  
 }

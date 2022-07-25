@@ -40,7 +40,7 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">    
+    <mat-toolbar color="accent">    
       <button
         type="button"
         aria-label="Toggle sidenav"
@@ -48,7 +48,7 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">TOTH ver 2.5</a>
+      <a class="main_link" routerLink="/home">TOTH ver 3</a>
       <mat-form-field appearance="fill">
         <mat-label>Organizations</mat-label>
         <mat-select [(value)]="organizationId" (selectionChange)="onOrganizationChange($event)">

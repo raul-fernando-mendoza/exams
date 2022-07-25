@@ -6,7 +6,7 @@ import { EiApplicationTableDataSource, MateriaItemNode } from './ei-tipo-list-da
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
-import { Career, Exam,  ExamRequest, Materia, Group, Nivel} from 'src/app/exams/exams.module'
+import { Career, Exam,  ExamRequest, Materia, Group, Nivel, copyObj} from 'src/app/exams/exams.module'
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { db } from 'src/environments/environment';
@@ -39,7 +39,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   careerList:Array<Career> = []
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = [ 'nivel', 'group', 'materia_name'] ;
+  displayedColumns = [  'materia_name'] ;
   submitting = false
   open_transactions:Set<string> = new Set()
 
@@ -255,14 +255,11 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
     this.materiaListener = query.onSnapshot( 
       snapshot =>{
         group.children.length = 0
-        var docs = snapshot.forEach(doc =>{          
-          var materia:Materia = {
-            group_id:doc.data().group_id,
-            id:doc.id,
-            materia_name:doc.data().materia_name,            
-            isDeleted:doc.data().isDeleted,
-            owners:doc.data().owners,
-          }
+        var docs = snapshot.forEach(doc =>{   
+                 
+          var materia:Materia = new Materia()
+          copyObj(materia, doc.data())
+
 
           var materiaItem:MateriaItemNode = this.MateriaItemBuilder(nivel, group, materia)
 
@@ -527,12 +524,8 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
 
   async onEditMateria(row){
     const doc = await db.collection('materias').doc(row.materia_id).get()
-    var materia:Materia = {
-      id:doc.data().id,
-      materia_name:doc.data().materia_name,
-      iconCertificate:doc.data().iconCertificate,
-      typeCertificate:doc.data().typeCertificate      
-    }
+    var materia:Materia = new Materia()
+    copyObj(materia,doc.data())
 
     const dialogRef = this.dialog.open(DialogMateriaDialog, {
       height: '400px',

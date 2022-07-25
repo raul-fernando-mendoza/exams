@@ -24,9 +24,10 @@ export const environment = {
     appId: "1:357669808993:web:87f3ec430f556b05683320"
   
   },
-  apiURL:"https://thoth-qa.uc.r.appspot.com/api",
+  chenequeURL:"https://us-central1-thoth-qa.cloudfunctions.net/chenequeRequest",
+  authURL:"https://us-central1-thoth-qa.cloudfunctions.net/authRequest",
   certificatesURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificate",
-  gsApiUrl:"https://us-central1-thoth-qa.cloudfunctions.net/processRequest",
+  gsApiUrl: "https://us-central1-thoth-qa.cloudfunctions.net/gsRequest" ,
   certificatesBucket:"certificates-thoth-qa"
 
  

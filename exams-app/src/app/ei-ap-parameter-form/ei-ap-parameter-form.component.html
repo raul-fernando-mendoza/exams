@@ -1,19 +1,15 @@
-<div [formGroup]="examGrade">
-    <div class="header">
-    <span>Applicación de examen</span>
-    <span>estudiante: {{examGrade.controls.student_name.value}}</span>
-    <span>Curso: {{examGrade.controls.course.value}}</span>
-    <span>Titulo: {{examGrade.controls.exam_label.value}}</span>
-    <mat-form-field class="example-full-width" (change)="updateHeader()">
+<div *ngIf="examGrade" [formGroup]="examGrade">
+    <div>Applicación de examen</div>
+    <div>id: {{ examGrade.controls.id.value }}</div>
+    <div>estudiante: {{ examGrade.controls.student_name.value  }}</div>
+    <div>Materia: {{  examGrade.controls.materia_name.value }}</div>
+    <mat-form-field appearance="standard" (change)="updateHeader($event)">
         <mat-label>Titulo</mat-label>
-        <input matInput  formControlName="title">
+        <input matInput type="text"  formControlName="title">
     </mat-form-field>   
 
-    <span *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</span>
-    <span>Fecha de Applicación: {{examGrade.controls.applicationDate.value}}</span>
-
-    
-    </div>
+    <div *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</div>
+    <div>Fecha de Applicación: {{examGrade.controls.applicationDate.value}}</div> 
 
     <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index" >
         <div>Maestra: {{p.controls.evaluator_name.value}}</div>
@@ -39,6 +35,7 @@
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
 
                         <div>
+                            {{ a.controls.score.value }}
                         <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(examGrade,p,c,a)">
                             <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
                             <mat-icon>not_interested</mat-icon>
@@ -59,7 +56,7 @@
 
                         </mat-button-toggle-group>
                         </div>
-                     <!--   <div class="example-selected-value">Selected value: {{group.value}}</div> -->
+
                         
                         <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
@@ -75,5 +72,6 @@
 
         <button mat-raised-button *ngIf="!isDisabled" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
     </div>
+
 </div>
 

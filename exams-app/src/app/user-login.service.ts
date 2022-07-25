@@ -274,4 +274,6 @@ export class UserLoginService {
   getIsEmailVerified(){
     return (this.user)?this.user.emailVerified:false
   }
+
+
 }

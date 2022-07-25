@@ -25,47 +25,45 @@ Calificaciones
     <!-- Id Column -->
     <ng-container matColumnDef="titulo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Titulo</th>
-      <td mat-cell *matCellDef="let row"><app-grades [exam]="row"></app-grades></td>
+      <td mat-cell *matCellDef="let row">
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'examGrade'">{{ row.obj.title }}</div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'parameterGrade'">{{ row.obj.label }}</div>
+      </td>
     </ng-container>
+    <ng-container matColumnDef="score">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>score</th>
+      <td mat-cell *matCellDef="let row">{{ row.obj.score }}</td>
+    </ng-container>    
 
     <ng-container matColumnDef="completed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed</th>
       <td mat-cell *matCellDef="let row">
-        <ng-template [ngIf]="row.completed" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
+        <ng-template [ngIf]="row.obj.isCompleted" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
         <ng-template #notCompleted><p>No completado</p></ng-template>
       </td>
     </ng-container>    
  
-    <ng-container matColumnDef="released">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Released</th>
-      <td mat-cell *matCellDef="let row">
-        <ng-template [ngIf]="row.released" [ngIfElse]="notReleased">
-          <p>Liberado</p>
-          <div *ngIf="row.certificate_url">
-            <a href="{{ row.certificate_url }}"><mat-icon aria-hidden="false" aria-label="link to certificate">history_edu</mat-icon></a>
-           <!-- <button [cdkCopyToClipboard]="row.certificate_url"><mat-icon>pending_actions</mat-icon>></button> -->
-          </div>
-
-        </ng-template>
-        <ng-template #notReleased><p>No Liberado</p></ng-template>
-        
-       
-      </td>  
-    </ng-container>    
-
     <!-- Name Column -->
     <ng-container matColumnDef="release">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Release</th>
-      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, true)">Liberar Calificacion</button></td>
+      <td mat-cell *matCellDef="let row">
+        <div *ngIf="row.nodeClass == 'examGrade'">
+          <button *ngIf="row.obj.isCompleted && !row.obj.isReleased" mat-raised-button color="primary" (click)="updateRelease(row, true)">Liberar Calificacion</button>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="unrelease">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>UnRelease</th>
-      <td mat-cell *matCellDef="let row"><button mat-raised-button color="primary" (click)="updateRelease(row, false)">no liberar</button></td>
+      <td mat-cell *matCellDef="let row">
+        <div *ngIf="row.nodeClass == 'examGrade'">
+          <button *ngIf="row.obj.isReleased == true" mat-raised-button color="primary" (click)="updateRelease(row, false)">no liberar</button>
+        </div>
+      </td>
     </ng-container>
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Borrar</th>
       <td mat-cell *matCellDef="let row">
-        <button mat-raised-button color="primary" (click)="onDelete(row.title, row.id)">Borrar</button>
+        <button *ngIf="row.nodeClass == 'examGrade'" mat-raised-button color="primary" (click)="onDelete(row.obj.title, row.obj.id)">Borrar</button>
       </td>
     </ng-container>
 

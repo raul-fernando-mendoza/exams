@@ -125,8 +125,53 @@ export class DialogMateriaDialog implements OnInit{
       var propertyName = event.source.ngControl.name
       var value = event.source.ngControl.value      
       this.data[propertyName] = value
+
+      var values = {
+        "label1":"",
+        "label2":"",
+        "label3":"",
+        "label4":"",
+        "color1":"red", 
+        "color2":"black"
+      }
+      if( propertyName == "typeCertificate"){
+        switch(value){
+          case "Experta.jpeg": 
+            values["label1"] = "RAKS SHARKI"
+            values["label2"] = ""
+            values["label3"] = ""
+            values["label4"] = "Danza Oriental y Fusiones"
+            values["color1"] = "#d9ad43"
+            values["color2"] = "black"
+            break;
+          case "Especialista.jpeg": 
+            values["label1"] = "RAKS SHARKI"
+            values["label2"] = ""
+            values["label3"] = ""
+            values["label4"] = "Danza Oriental y Fusiones"
+            values["color1"] = "#5b2383"
+            values["color2"] = "black"
+            break;
+          case "habilidades_tecnicas.jpeg": 
+            values["label1"] = ""
+            values["label2"] = this.data.materia_name
+            values["label3"] = ""
+            values["label4"] = "WWW.RAXACADEMY.COM"
+            values["color1"] = "#5b2383"
+            values["color2"] = "black"
+            break;    
+          case "habilidades_tematicas.jpeg": 
+            values["label1"] = ""
+            values["label2"] = this.data.materia_name
+            values["label3"] = ""
+            values["label4"] = "WWW.RAXACADEMY.COM"
+            values["color1"] = "#5b2383"
+            values["color2"] = "red"
+            break;                      
+
+        }
+      }
       if( id ){   
-        var values = {}
         values[propertyName]=value                       
         await db.collection('materias').doc(id).update(values)
       }

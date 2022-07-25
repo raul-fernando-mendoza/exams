@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
+import { Exam, ExamGrade, Materia, ParameterGrade, User } from '../exams/exams.module';
 
 function formatDate(date) {
   var d = new Date(date),
@@ -20,22 +21,12 @@ function formatDate(date) {
 
 // TODO: Replace this with your own data model type
 export interface ExamenesImprovisacionItem {
-  examGrade_id: string
-  parameterGrade_id:string
-  materia:string
-  title:string
- 
-
-  student_name: string
-  student_email: string
-  maestro: string
-  tipo:string
-  parametro: string
-
-  fechaApplicacion: string
-  completed:boolean
-  calificacion:number
-  certificate_url:string
+  examGrade:ExamGrade
+  parameterGrade:ParameterGrade
+  materia:Materia
+  student:User
+  approver:User
+  isCompleted:boolean
 }
 
 // TODO: replace this with real data from your application
@@ -108,14 +99,15 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'materia': return compare(a.materia, b.materia, isAsc);
-        case 'title': return compare(a.title, b.title, isAsc);
+        case 'materia': return compare(a.materia.materia_name, b.materia.materia_name, isAsc);
+        /*
+        case 'title': return compare(a.materia.title, b.title, isAsc);
         case 'estudiante': return compare(a.student_name, b.student_name, isAsc);
         case 'maestro': return compare(a.maestro, b.maestro, isAsc);
-        case 'tipo': return compare(a.tipo, b.tipo, isAsc);
         case 'parametro': return compare(a.parametro, b.parametro, isAsc);
         case 'fechaApplicacion': return compare(Date.parse(a.fechaApplicacion), Date.parse(b.fechaApplicacion), isAsc);
         case 'completed': return compare((new Boolean(a.completed)).toString(), (new Boolean(b.completed)).toString(), isAsc);        
+        */
         default: return 0;
       }
     });

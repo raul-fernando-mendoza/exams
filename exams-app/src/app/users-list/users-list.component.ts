@@ -47,7 +47,7 @@ export class UsersListComponent implements OnInit {
     var request = {
     }
 
-    this.examImprovisacionService.authApiInterface("getUserList", token, request).subscribe(
+    this.examImprovisacionService.authApiInterface("getUserList", token, request).then(
       data => {
         var users = data["result"]
         for( const user of users){
@@ -109,7 +109,7 @@ export class UsersListComponent implements OnInit {
     }
     reques_addroles["claims"][role_id] = true
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.authApiInterface("addClaim", token, reques_addroles).subscribe(
+      this.examImprovisacionService.authApiInterface("addClaim", token, reques_addroles).then(
         data => {
           var role_fg:FormGroup = this.fb.group({
             id:[role_id]
@@ -132,7 +132,7 @@ export class UsersListComponent implements OnInit {
         claim:role
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("removeClaim", token, request).subscribe(
+      this.examImprovisacionService.authApiInterface("removeClaim", token, request).then(
         data => {
         var roles_fa: FormArray = user.controls.claims as FormArray
         for( let i =0 ; i< roles_fa.controls.length; i++){
@@ -162,7 +162,7 @@ export class UsersListComponent implements OnInit {
         }
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("addClaim", token, req).subscribe(
+      this.examImprovisacionService.authApiInterface("addClaim", token, req).then(
         data => {
           console.log("displayName changed")
         },
@@ -184,7 +184,7 @@ export class UsersListComponent implements OnInit {
         email:userEmail
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("removeUser", token, request).subscribe(
+      this.examImprovisacionService.authApiInterface("removeUser", token, request).then(
         data => {
           console.log("user removed")
           this.reloadUserList(token)

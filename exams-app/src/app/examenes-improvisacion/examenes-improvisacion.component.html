@@ -24,49 +24,41 @@
     <div *ngIf="submitting == false; else elseBlock"></div>
     
     <table mat-table class="full-width-table" matSort aria-label="Elements" [hidden]="submitting">
-
-
-
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>titulo</th>
-        <td mat-cell *matCellDef="let row">{{row.title}}</td>
+        <td mat-cell *matCellDef="let row">{{row.examGrade.title}}</td>
       </ng-container>    
 
       <ng-container matColumnDef="materia">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Materia</th>
-        <td mat-cell *matCellDef="let row">{{row.materia}}</td>
+        <td mat-cell *matCellDef="let row">{{row.materia.materia_name}}</td>
       </ng-container>
 
       <ng-container matColumnDef="estudiante">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-        <td mat-cell *matCellDef="let row">{{row.student_name}}</td>
+        <td mat-cell *matCellDef="let row">{{row.student.displayName}}</td>
       </ng-container>
 
       <ng-container matColumnDef="maestro">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>maestro</th>
-        <td mat-cell *matCellDef="let row">{{row.maestro}}</td>
+        <td mat-cell *matCellDef="let row">{{row.approver.displayName}}</td>
       </ng-container>   
-
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>tipo</th>
-        <td mat-cell *matCellDef="let row">{{row.tipo}}</td>
-      </ng-container> 
 
       <ng-container matColumnDef="parametro">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>parametro</th>
-        <td mat-cell *matCellDef="let row">{{row.parametro}}</td>
+        <td mat-cell *matCellDef="let row">{{row.parameterGrade.label}}</td>
       </ng-container>     
 
       <ng-container matColumnDef="fechaApplicacion">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Applicacion</th>
-        <td mat-cell *matCellDef="let row">{{row.fechaApplicacion}}</td>
+        <td mat-cell *matCellDef="let row">{{row.examGrade.applicationDate.toISOString().split('T')[0]}}</td>
       </ng-container>
       
       <ng-container matColumnDef="completed">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>completed</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-raised-button color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" *ngIf="row.completed != true && (isEvaluador() || isAdmin() )">Edit</button> 
-          <span *ngIf="row.completed == true">{{ row.calificacion }}</span>
+          <button mat-raised-button color="primary" (click)="onEdit(row.examGrade.id, row.parameterGrade.id)" *ngIf="row.isCompleted != true && (isEvaluador() || isAdmin() )">Edit</button> 
+          <span *ngIf="row.isCompleted == true">{{ row.parameterGrade.score }}</span>
         </td>
       </ng-container> 
 
@@ -78,11 +70,11 @@
           </button>                                    
           <mat-menu #menu="matMenu" >
 
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade.id, row.parameterGrade.id)" [disabled]="submitting">
               <mat-icon>edit</mat-icon>
               <span>Corregir</span>
             </button> 
-            <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade_id, row.parameterGrade_id)" [disabled]="submitting">
+            <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade.id, row.parameterGrade.id)" [disabled]="submitting">
               <mat-icon>visibility</mat-icon>
               <span>ver</span>
             </button>  

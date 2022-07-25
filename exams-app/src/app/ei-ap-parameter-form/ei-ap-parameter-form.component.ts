@@ -5,8 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { UserLoginService } from '../user-login.service';
 import { ExamFormService } from '../exam-form.service';
-import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  CriteriaGrade, ExamGrade, ExamGradeRequest, ParameterGradeRequest } from '../exams/exams.module';
+import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaGrade, ExamGrade, ExamGradeRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 
+import { db } from 'src/environments/environment';
 
 export interface DialogData {
   calificacion: number,
@@ -40,23 +41,23 @@ export class EiApParameterFormComponent implements OnInit {
       
     }
   
-   
-  examGrade:FormGroup 
-  
-
-  submitting = false
-  
   examGrade_id = null
-  parameterGrade_id = null
-  parameterGrade_scoreType = null
+  parameterGrade_id = null  
 
-  comentario = ""
-
-  isDisabled = null
-
+  examGrade=null
   
+  submitting = false
+
+  isDisabled = false
+  
+ 
   nvl(val1, val2){
-    return (val1!=null)?val1:val2
+    if( val1 != undefined && val1 != null){
+      return val1
+    }
+    else{
+      return val2
+    }
   }
 
   getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
@@ -71,295 +72,211 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    var request:ExamGradeRequest = {
-      examGrades:{
-        id: this.examGrade_id,
 
-        exam_id:null,
-        exam_label:null,
-      
-        completed: null,
-        applicationDate:null,
-      
-        student_uid:null,
-        student_name:null,
-      
-        title:null,
-        expression:null,
-
-        score:null,
-        parameterGrades:[{
-          id: this.parameterGrade_id,
-          idx: null,
-          label: null,
-          description: null,
-          score: null,
-          evaluator_uid:null,
-          evaluator_name:null,
-          scoreType:null,
-          evaluator_comment:null,
-
-          completed:null,
-        
-          criteriaGrades:[{
-            id:null,
-            idx:null,  
-            label: null,
-            isSelected:null,  
-            score:null,
-            description: null,
-            aspectGrades:[{
-              id:null,
-              idx:null,  
-              label: null,
-              description:null,
-              isGraded:null,
-              score:null,
-              missingElements:null
-            }]         
-          }]        
-        }]
-      }
-    }
-
-
-    this.userLoginService.getUserIdToken().then( token => {
+    const examGradeQry = db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
+      let e = doc.data()
+      this.examGrade =  this.fb.group({
+        id: [e.id],
+        exam_id:[e.exam_id], 
+        exam_label:[e.exam_label],
     
+        completed: [e.completed],
+        applicationDate:[this.examFormService.formatDate(e.applicationDate.toDate())],
+    
+        student_uid:[e.student_uid, Validators.required],
+        student_name:[null],
 
-      this.examImprovisacionService.firestoreApiInterface("get", token, request).subscribe(data => { 
-        var e:ExamGrade = data["result"]
-
-        this.examGrade = this.fb.group({
-          id: [null],
-          exam_id:[null],
-          exam_label:[null],
-      
-          course:[null, Validators.required],
-          completed: [null],
-          applicationDate:[null, Validators.required],
-      
-          student_uid:[null, Validators.required],
-          student_name:[null],
-      
-      
-          title: [{value:null,disabled:!this.isAdmin()}],
-          expression: [null],
-          score:[null],
-      
-          
-          parameterGrades: new FormArray([])        
-        })
-  
-
-        this.examGrade.controls.id.setValue(e.id)
-        this.examGrade.controls.exam_id.setValue(e.exam_id)
-        this.examGrade.controls.exam_label.setValue(e.exam_label)
-        this.examGrade.controls.completed.setValue(e.completed)
-        this.examGrade.controls.applicationDate.setValue(e.applicationDate)
-        this.examGrade.controls.student_uid.setValue(e.student_uid)
-        this.examGrade.controls.student_name.setValue(e.student_name)
-        this.examGrade.controls.title.setValue(e.title)
-
+        materia_id:[e.materia_id, Validators.required],
+        materia_name:[null],        
+    
+    
+        title: [{value:e.title,disabled:!this.isAdmin()}],
+        expression: [e.expression],
+        score:[e.score],
+        isApproved:[e.isApproved],
         
-        this.examGrade.controls.expression.setValue(e.expression)
-        this.examGrade.controls.score.setValue(e.score)
+        parameterGrades: new FormArray([])        
+      })
 
-        var p = e.parameterGrades[0]
+      var userReq = {
+        "uid":doc.data().student_uid
+      }      
+    
+      this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
+        const user = response["result"]
+        let student_name = (user["displayName"] != null && user["displayName"] != '') ? user["displayName"] : user["email"]
+        this.examGrade.controls.student_name.setValue(student_name)
+      })
+ 
+      db.collection("materias").doc(doc.data().materia_id).get().then( doc => {
+        this.examGrade.controls.materia_name.setValue(  doc.data().materia_name )
+      })
+      this.addParameterGrades(doc.data().id, this.examGrade.controls.parameterGrades )
+    })
+  }  
 
-        this.isDisabled = p.completed && this.userLoginService.hasRole("admin") == false
-
-        if( this.isDisabled ){
-          this.examGrade.get("title").disable()
-        }        
-
-        this.parameterGrade_scoreType = p.scoreType
-
+  addParameterGrades( examGrade_id:string, parameterGrades:FormArray):Promise<void>{
+    var _resolve
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).get().then( doc =>{
+        let p = doc.data()
         var g = this.fb.group({
           id:[p.id],
           idx:[p.idx],
           label:[p.label],
           description:[p.description],
           scoreType:[p.scoreType],
-          score:[{value:p.score, disable: this.isDisabled}],
+          score:[{value:p.score, disable: !this.isAdmin()}],
           evaluator_uid:[p.evaluator_uid],
-          evaluator_name:[p.evaluator_name],
+          evaluator_name:[null],
           evaluator_comment:[p.evaluator_comment],
           completed:[p.completed],
           criteriaGrades: new FormArray([])
         })
 
-        var parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
-        parameterGrades_array.clear()
-        parameterGrades_array.push(g)
-    
-        var criteriaGrades_Array = g.controls.criteriaGrades as FormArray
-        for( let i=0; i<p.criteriaGrades.length; i++){
-          let criteriaGrade:CriteriaGrade = p.criteriaGrades[i]
-          this.addCriteriaGrade(criteriaGrades_Array, criteriaGrade)
-        }
-        criteriaGrades_Array.controls.sort( (a, b) => {
-          var afg:FormGroup = a as FormGroup 
-          var bfg:FormGroup = b as FormGroup
-          return  afg.controls.idx.value - bfg.controls.idx.value 
-        })      },
-      error => {
-        alert("ERROR al leer:"+ error.message)
-      });
-    },
-    error => {
-      alert("Error en token:" + error.errorCode + " " + error.errorMessage)
-    })
-    
-  }
-
-  addCriteriaGrade(criteriaGrade_array:FormArray, c:CriteriaGrade){
-    var g = this.fb.group({
-      id:[c.id],
-      idx:[c.idx],
-      label:[c.label],
-      description:[c.description],
-      score:[c.score],
-      isSelected:[ c.isSelected ],
-      aspectGrades: new FormArray([])
-    })
-    criteriaGrade_array.push(g)
-
-    var apectGrades_array = g.controls.aspectGrades as FormArray
-
-    for(let i=0; i<c.aspectGrades.length; i++){
-      let aspectGrade:AspectGrade = c.aspectGrades[i]
-      this.addAspectGrade(apectGrades_array, aspectGrade)
-    }
-    apectGrades_array.controls.sort( (a, b) => {
-      var afg:FormGroup = a as FormGroup 
-      var bfg:FormGroup = b as FormGroup
-      return  afg.controls.idx.value - bfg.controls.idx.value 
-    })       
-  }
-
-  addAspectGrade(question_array:FormArray, a: AspectGrade ){
-    var score:any = null
-    if ( this.parameterGrade_scoreType == 'starts'){
-      if( a.score == null){
-        score = 1
-      }
-      else{
-        score = a.score
-      }
-    }
-    else if(this.parameterGrade_scoreType == 'status'){
-      if( a.score == null){
-        score = "1"
-      }
-      else{
-        score = a.score.toString()
-      }
-    }
-    var g = this.fb.group({
-      id:[a.id],
-      idx:[a.idx],
-      label:[a.label],
-      description:[a.description],
-      isGraded:[a.isGraded],
-      score:[{ value:score, disabled:this.isDisabled}],
-      missingElements:[{ value:a.missingElements, disabled:this.isDisabled}]
-    })
-    question_array.push(g)
-
-  }
-  onChangeAspect(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
-    console.log("a:" +JSON.stringify(a.value))
-    if (a.controls.score.value > 0){
-      a.controls.isGraded.setValue(true)
-    }
-    else{
-      a.controls.isGraded.setValue(false)
-    }
-    
-    var req:AspectGradeRequest = {
-      examGrades:{
-        id:e.controls.id.value,
-        parameterGrades:{
-          id:p.controls.id.value,
-          criteriaGrades:{
-            id:c.controls.id.value,
-            aspectGrades:{
-              id:a.controls.id.value,
-              isGraded:a.controls.isGraded.value,
-              score:Number(a.controls.score.value),
-              missingElements:a.controls.missingElements.value
-            }
-          }
-        }
-      }
-    }
-    console.log(JSON.stringify(req,null,2))
-    
-    this.userLoginService.getUserIdToken().then( token => {
-
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
-        console.log("aspect updated")
-        
-      },
-      error => {
-        alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
-        console.log( "error:" + error.error )
+        var userReq = {
+          "uid":p.evaluator_uid
+        }      
       
-      }) 
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    
-    })  
+        this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
+          const user = response["result"]
+          let user_displayName = (user["displayName"] != null && user["displayName"] != '') ? user["displayName"] : user["email"]
+          g.controls.evaluator_name.setValue(user_displayName)
+        })
 
+        parameterGrades.push(g)
+        this.addCriteriaGrades(examGrade_id, p.id, g.controls.criteriaGrades as FormArray).then( () =>{
+          parameterGrades.controls.sort( (a, b)=>{
+            if( a.get("idx").value > b.get("idx").value )
+              return 1
+            else return -1
+          })
+          _resolve()
+        })
+      })
+    })
+
+  } 
+
+  addCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades:FormArray):Promise<void>{
+    var _resolve 
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades`).get().then( set =>{
+        var map = set.docs.map( doc =>{
+          let c = doc.data()
+          var g = this.fb.group({
+            id:[c.id],
+            idx:[c.idx],
+            label:[c.label],
+            description:[c.description],
+            score:[c.score],
+            isSelected:[ c.isSelected ],
+  
+            aspectGrades: new FormArray([])
+          })
+  
+          criteriaGrades.push(g)
+          return this.addAspectGrades(examGrade_id, parameterGrade_id, doc.data().id, g.controls.aspectGrades as FormArray)
+        })
+        Promise.all(map).then( () => {
+          criteriaGrades.controls.sort( (a, b)=>{
+            if( a.get("idx").value > b.get("idx").value )
+              return 1
+            else return -1
+          })          
+          _resolve()
+        })        
+      },
+      reason =>{
+        console.error("ERROR loading criteria:" + reason)
+      })
+    })
+    
+  } 
+
+  addAspectGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades_id:string, aspectGrades:FormArray):Promise<void>{
+    return new Promise((resolve, reject)=>{
+      db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades/${criteriaGrades_id}/aspectGrades`).get().then( set =>{
+        var map = set.docs.map( doc =>{
+          let a = doc.data()
+          var g = this.fb.group({
+            id:[a.id],
+            idx:[a.idx],
+            label:[a.label],
+            description:[a.description],
+            isGraded:[this.nvl(a.isGraded, false)],
+            score:[{ value:String(this.nvl(a.score,"1")), disabled:this.isDisabled}],
+            missingElements:[{ value:this.nvl(a.missingElements,""), disabled:this.isDisabled}]
+          })
+          aspectGrades.push(g)
+        })
+        aspectGrades.controls.sort( (a, b)=>{
+          if( a.get("idx").value > b.get("idx").value )
+            return 1
+          else return -1
+        })          
+        resolve()
+      })  
+    })
+  } 
+
+    
+    
+  onChangeAspect(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+
+    let examGrade_id = e.controls.id.value
+    let parameterGrade_id = p.controls.id.value
+    let criteriaGrades_id = c.controls.id.value
+    let aspectGrades_id = a.controls.id.value
+
+    let values = {
+      id:a.controls.id.value,
+      isGraded:a.controls.isGraded.value,
+      score:Number(a.controls.score.value),
+      missingElements:a.controls.missingElements.value
+    }    
+
+    db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades/${criteriaGrades_id}/aspectGrades`).doc(aspectGrades_id).update(values).then( 
+      doc =>{
+        console.debug("aspect updated:" + doc)
+      },
+      reason =>{
+        console.log("error updating aspect:" + reason )
+      })
   }
 
   onChangeStarts(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
-    console.log("changed to:" + a)
 
-    this.submitting = true
-    var req:AspectGradeRequest = {
-      examGrades:{
-        id:e.controls.id.value,
-        parameterGrades:{
-          id:p.controls.id.value,
-          criteriaGrades:{
-            id:c.controls.id.value,
-            aspectGrades:{
-              id:a.controls.id.value,
-              isGraded:true,
-              score:Number(a.controls.score.value),
-              missingElements:null
-            }
-          }
-        }
-      }
-    }
-    
-    this.userLoginService.getUserIdToken().then( token => {
+    let examGrade_id = e.controls.id.value
+    let parameterGrade_id = p.controls.id.value
+    let criteriaGrades_id = c.controls.id.value
+    let aspectGrades_id = a.controls.id.value
 
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
-        console.log("aspect updated")
-        this.submitting = false
+    let values = {
+      isGraded:true,
+      score:Number(a.controls.score.value)
+    }    
+
+    db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades/${criteriaGrades_id}/aspectGrades`).doc(aspectGrades_id).update(values).then( 
+      doc =>{
+        console.debug("aspect updated:" + doc)
       },
-      error => {
-        alert("error updating calification"  + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
-      }) 
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      this.submitting = false
-    })  
-
+      reason =>{
+        console.log("error updating aspect:" + reason )
+      })    
   }
   submit(){
     console.log("submit called")
     this.submitting = true
     this.updateScore()
-    this.saveGrades()
-    this.openCommentDialog()
+    this.updateExamGrade().then(()=>{
+      this.openCommentDialog()
+    })
+    
   }
+  
   updateScore(){
     console.log("update score")
     var totalPoints:number= 0;
@@ -380,8 +297,12 @@ export class EiApParameterFormComponent implements OnInit {
       }
     }
     finalScore = Number( ((earnedPoints / totalPoints) * 10 ).toFixed(2) )
-    parameterGrade.controls.score.setValue( finalScore )   
+    parameterGrade.controls.score.setValue( finalScore ) 
+    if( finalScore > 7 ){
+      this.examGrade.controls.isApproved.setValue( true )
+    }  
   }
+
 
   openCommentDialog(){
     console.log("openCommentDialog")
@@ -413,6 +334,26 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   updateComment(e:FormGroup, p:FormGroup): void{
+
+    let examGrade_id = e.controls.id.value
+    let parameterGrade_id = p.controls.id.value
+
+    let comment = p.controls.evaluator_comment.value
+
+    let values = {
+      evaluator_comment:comment
+    }    
+
+    db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(parameterGrade_id).update(values).then( 
+      doc =>{
+        console.debug("aspect updated:" + doc)
+        this.close() 
+      },
+      reason =>{
+        console.log("error updating aspect:" + reason )
+      })
+  
+    /*
     console.log("updateComment")
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
     var parameter:FormGroup = parameterGrade_arr.controls[0] as FormGroup
@@ -439,6 +380,7 @@ export class EiApParameterFormComponent implements OnInit {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
       
     })
+    */
   }  
 
 
@@ -487,40 +429,27 @@ export class EiApParameterFormComponent implements OnInit {
     return outJson
   }
 
-  saveGrades(){
-    var data = this.examGrade.value
-
-    var json:ExamGrade = JSON.parse( JSON.stringify(data) )
-    const toSaveFields = new Set(["parameterGrades.score","aspectGrades.id","aspectGrades.isGraded","aspectGrades.score","aspectGrades.missingElements"])    
-
-    var jsonToSave:ExamGrade = this.selectKeys(json, "examGrades", toSaveFields)
-
-    console.log(JSON.stringify(jsonToSave, null, 2))
-
-    var req :ExamGradeRequest = {
-      "examGrades":jsonToSave
-    }
-    
-    this.userLoginService.getUserIdToken()
-    .then( token => this.examImprovisacionService.firestoreApiInterface("update", token, req).toPromise() )
-    .then( result => console.log("success writting rates" + result) )
-    .catch( error => { alert("Error in token:" + error.errorCode + " " + error.errorMessage) })
-  }
-
   close(): void{
     console.log("close")
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
     var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
-    var req:ParameterGradeRequest = {
-      examGrades:{
-        id:this.examGrade.controls.id.value,
-        parameterGrades:{
-          id: parameterGrade.controls.id.value,
+    let values = {
           score: parameterGrade.controls.score.value,
-          completed:true
+          isCompleted:true
         }
-      }
-    }
+    
+    db.collection(`examGrades/${this.examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).update(values).then( 
+      doc =>{
+        console.debug("aspect updated:" + doc)
+        this.router.navigate(['/ExamenesImprovisacion']);
+      },
+      reason =>{
+        console.log("error updating aspect:" + reason )
+      })        
+      
+    
+
+    /*
     this.userLoginService.getUserIdToken().then( token => { 
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
         this.submitting = false
@@ -534,6 +463,7 @@ export class EiApParameterFormComponent implements OnInit {
     error => {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })
+    */
   }
 
   showDescription(desc){
@@ -551,7 +481,7 @@ export class EiApParameterFormComponent implements OnInit {
   }  
 
   getformValue(){
-    return JSON.stringify(this.examGrade.value)
+    return JSON.stringify(this.examGrade)
   }  
 
   isAdmin(){
@@ -563,30 +493,101 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   updateHeader(){
+    
     console.log("close")
     var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
     var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
-    var req:ExamGradeRequest = {
-      examGrades:{
-        id: this.examGrade.controls.id.value,
+    let values = {
         title: this.examGrade.controls.title.value
-      }
     }
-    this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
-        this.submitting = false
+    
+
+    db.collection(`examGrades`).doc(this.examGrade_id).update(values).then( 
+      doc =>{
+        console.debug("title updated:" + doc)
+
       },
-      error => {
-        alert("error updateHeader"  + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
-      })    
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      reason =>{
+        console.log("error updating title:" + reason )
+      })        
+  }
+
+
+updateExamGrade():Promise<void>{
+
+  let examGrade_id = this.examGrade.controls.id.value
+  var parameter_resolve = null
+  return new Promise<void>((resolve, reject) =>{  
+    parameter_resolve = resolve
+    let parameterGrades = this.examGrade.controls.parameterGrades as FormArray
+    let pa = parameterGrades.controls.map(e =>{       
+      let p = e as FormGroup
+      return this.updateParameterGrade(examGrade_id, p)
+    })
+    Promise.all(pa).then( () =>{
+      console.log("End updating parameters")
+      parameter_resolve()
+    }) 
+    .catch(reason =>{
+      console.error("Error waiting for parameters:" + reason)
+    })  
+  })        
+}
+ 
+
+
+  updateParameterGrade(examGrade_id:string, pFG:FormGroup):Promise<void>{
+    let parameterGrade_id = pFG.controls.id.value
+    let json = {
+      score:pFG.controls.score.value,
+      isCompleted:true
+    }
+
+    var parameter_resolve = null
+    return new Promise<void>((resolve, reject) =>{
+      parameter_resolve = resolve
+      db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(parameterGrade_id).update(json).then(()=>{
+    
+        console.log("adding parameterGrade" + pFG.controls.id.value)
+        let criteriaGradesFA = pFG.controls.criteriaGrades as FormArray
+        
+        let cm = criteriaGradesFA.controls.map( c => {
+            return this.updateCriteriaGrades(examGrade_id, parameterGrade_id, c as FormGroup)             
+        })
+        Promise.all(cm).then( () =>{
+          parameter_resolve()
+        })
+        .catch(reason =>{
+          console.error("Error waiting for criteria:" + reason)
+        })        
+      },
+      reason => {
+        console.error("ERROR:parameterGrade not created " + reason )
+        reject()
+      }) 
     })
   }
-}
 
+  updateCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGradeFG:FormGroup):Promise<void>{
+    let criteriaGrade_id = criteriaGradeFG.controls.id.value
+    let cg:CriteriaGrade = new CriteriaGrade()
+    let json = {
+      score:criteriaGradeFG.controls.score.value
+    }
+    var criteria_resolve = null    
+    return new Promise<void>((resolve, reject) =>{
+      criteria_resolve = resolve    
+      db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades`).doc(criteriaGrade_id).update(json).then(()=>{
+        console.log("adding CriteriaGrade" + criteriaGrade_id)
+        criteria_resolve()        
+      },
+      reason => {
+        alert("ERROR:criteriaGrade not created " + reason )
+        reject()
+      })       
+    })         
+  }
+}
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
   selector: 'ei-ap-parameter-comentario-dlg',

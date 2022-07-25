@@ -3,14 +3,7 @@ Editar Examen
 
   <mat-card >
     <mat-card-content > 
-      <mat-form-field appearance="fill" > 
-        <mat-label>Tipo de Examen</mat-label>
-        <mat-select formControlName="exam_id" (selectionChange)="examChange($event)">
-          <mat-option *ngFor="let t of getExamTypes()" [value]="t.id" >
-            {{t.label}} 
-          </mat-option>
-        </mat-select>
-      </mat-form-field>             
+
       <mat-form-field appearance="fill" >
         <mat-label>selecciona estudiante</mat-label>
         <mat-select formControlName="student_uid" (selectionChange)="examStudentChange($event)">
@@ -18,7 +11,25 @@ Editar Examen
             {{getUserDisplayName(e)}}
           </mat-option>
         </mat-select>
-      </mat-form-field> 
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" > 
+        <mat-label>Materia</mat-label>
+        <mat-select formControlName="materia_id" (selectionChange)="materiaChange($event)">
+          <mat-option *ngFor="let m of materias" [value]="m.id" >
+            {{m.materia_name}} 
+          </mat-option>
+        </mat-select>
+      </mat-form-field>         
+      <mat-form-field appearance="fill" > 
+        <mat-label>Tipo de Examen</mat-label>
+        <mat-select formControlName="exam_id" (selectionChange)="examChange($event)">
+          <mat-option *ngFor="let t of exams" [value]="t.id" >
+            {{t.label}} 
+          </mat-option>
+        </mat-select>
+      </mat-form-field>             
+ 
 
       <mat-form-field color="accent" appearance="fill">
         <mat-label>Seleccione una fecha de applicacion del examen</mat-label>
@@ -57,7 +68,7 @@ Editar Examen
               
               <div *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let ci=index" >
                 <div  [formGroup]="c">
-                  id:{{  c.controls.id.value }}
+                 
                   {{ c.controls.label.value }}
                   <mat-checkbox formControlName="isSelected"></mat-checkbox>
                 </div>

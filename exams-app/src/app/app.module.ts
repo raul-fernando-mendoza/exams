@@ -52,15 +52,13 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { VideosListComponent } from './videos-list/videos-list.component';
 import { AppVjsPlayerComponent } from './app-vjs-player/app-vjs-player.component';
 import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component';
-import { GradesComponent } from './grades/grades.component';
 import { ExamTableComponent } from './exam-table/exam-table.component';
-import { GradesListComponent } from './grades-list/grades-list.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { CareerDialog, CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
 import { DialogMateriaDialog } from './materia-edit/materia-edit';
-import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
+import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 
 @NgModule({
   declarations: [
@@ -85,9 +83,7 @@ import { MateriaCertificatesComponent } from './materia-certificates/materia-cer
     VideosListComponent,
     AppVjsPlayerComponent,
     ExamgradesReportComponent,
-    GradesComponent,
     ExamTableComponent,
-    GradesListComponent,
     DialogMateriaDialog,
     DialogExamDialog,
     CareerListComponent,
@@ -95,7 +91,8 @@ import { MateriaCertificatesComponent } from './materia-certificates/materia-cer
     CareerDialog,
     DialogGroupDialog,
     DialogNivelDialog,
-    MateriaCertificatesComponent
+    MateriaCertificatesComponent,
+    DialogEnrollMateriaDialog
   ],
   imports: [
     BrowserModule,
@@ -145,7 +142,8 @@ import { MateriaCertificatesComponent } from './materia-certificates/materia-cer
     DialogExamDialog,
     CareerDialog,
     DialogGroupDialog,
-    DialogNivelDialog
+    DialogNivelDialog,
+    DialogEnrollMateriaDialog
   ],
   bootstrap: [AppComponent]
 })

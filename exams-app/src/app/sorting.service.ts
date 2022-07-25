@@ -19,4 +19,16 @@ export class SortingService {
     })    
     return ordered
   }
+  sortBySubObject(arr,obj:string, fields:Array<string>){
+    var ordered = arr.sort( (a, b) => {
+      for( var i=0; i<fields.length; i++){
+        if(  a[obj][fields[i]] > b[obj][fields[i]] )
+          return 1
+        else if( a[obj][fields[i]] < b[obj][fields[i]] )
+          return -1      
+      }
+      return 0
+    })    
+    return ordered
+  }  
 }

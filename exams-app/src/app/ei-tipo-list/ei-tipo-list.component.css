@@ -1,6 +1,18 @@
 .full-width-table {
   width: 100%;
 }
-.exam{
+.nivel{
+  margin-left: 0px;
+  color:blue;
+}
+.group{
   margin-left: 30px;
+  color:red;
+}
+.materia{
+  margin-left: 60px;
+  color:green;
+}
+.exam{
+  margin-left: 90px;
 }
