@@ -89,18 +89,18 @@ export interface Parameter{
 
   
 }
-export interface Exam{
-  materia_id?:string
+export class Exam{
+  materia_id?:string = null
 
-  id:string
-  label?:string
-  description?:string
-  owners?:Array<string>
-  isDeleted?:boolean
+  id:string = null
+  label?:string = null
+  description?:string = null
+  owners?:Array<string> = null
+  isDeleted?:boolean = null
 
-  parameters?: Parameter[]
+  parameters?: Parameter[] = null
 
-  required_in_carrers_ids?:Array<string>
+  required_in_carrers_ids?:Array<string> = null
 }
 
 export class Materia{

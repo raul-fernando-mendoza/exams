@@ -21,6 +21,7 @@ function formatDate(date) {
 
 // TODO: Replace this with your own data model type
 export interface ExamenesImprovisacionItem {
+  exam:Exam
   examGrade:ExamGrade
   parameterGrade:ParameterGrade
   materia:Materia

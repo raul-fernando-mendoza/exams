@@ -509,7 +509,7 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
   async createMateria(group_id:string, materia_name:string, typeCertificate, iconCertificate){
     var id = uuid.v4()
 
-    const materia:Materia = {
+    var materia = {
       group_id:group_id,
       id:id,
       materia_name:materia_name,
@@ -518,6 +518,45 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
       typeCertificate:typeCertificate,
       iconCertificate:iconCertificate
     }
+
+
+
+    switch(typeCertificate){
+      case "Experta.jpeg": 
+        materia["label1"] = "RAKS SHARKI"
+        materia["label2"] = ""
+        materia["label3"] = ""
+        materia["label4"] = "Danza Oriental y Fusiones"
+        materia["color1"] = "#d9ad43"
+        materia["color2"] = "black"
+        break;
+      case "Especialista.jpeg": 
+        materia["label1"] = "RAKS SHARKI"
+        materia["label2"] = ""
+        materia["label3"] = ""
+        materia["label4"] = "Danza Oriental y Fusiones"
+        materia["color1"] = "#5b2383"
+        materia["color2"] = "black"
+        break;
+      case "habilidades_tecnicas.jpeg": 
+        materia["label1"] = ""
+        materia["label2"] = materia_name
+        materia["label3"] = ""
+        materia["label4"] = "WWW.RAXACADEMY.COM"
+        materia["color1"] = "#5b2383"
+        materia["color2"] = "black"
+        break;    
+      case "habilidades_tematicas.jpeg": 
+        materia["label1"] = ""
+        materia["label2"] = materia_name
+        materia["label3"] = ""
+        materia["label4"] = "WWW.RAXACADEMY.COM"
+        materia["color1"] = "#5b2383"
+        materia["color2"] = "red"
+        break;                      
+
+    }
+
     const res = await  db.collection('materias').doc(id).set(materia);
     this.update()
   }

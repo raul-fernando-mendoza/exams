@@ -6,7 +6,7 @@ import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './ex
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { copyObj, ExamGrade, ExamGradeMultipleRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
+import { copyObj, ExamGrade, ExamGradeMultipleRequest, Exam, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { stringify } from '@angular/compiler/src/util';
@@ -165,6 +165,11 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
         var student:User = new User()
         var materia:Materia = new Materia() 
+        var exam = new Exam()
+
+        db.collection("exams").doc(examGrade.exam_id).get().then( doc =>{
+          copyObj(exam,doc.data())
+        })
    
         this.getUser(examGrade.student_uid).then(user=>{
           copyObj(student, user)
@@ -174,7 +179,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
           copyObj(materia, materiaDoc.data())
         })
 
-        return this.addExam( examGrade, materia, student)  
+        return this.addExam( exam, examGrade,  materia, student)  
 
       })
       Promise.all(map).then(()=>{
@@ -199,7 +204,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   } 
 
   
-  addExam( examGrade:ExamGrade, materia:Materia, student:User) :Promise<void>{
+  addExam( exam:Exam, examGrade:ExamGrade, materia:Materia, student:User) :Promise<void>{
     var _resolve 
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
@@ -208,11 +213,14 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
           let parameterGrade:ParameterGrade =  new ParameterGrade() 
           copyObj(parameterGrade,doc.data())
           var evaluador:User = new User()
+
+          
   
           this.getUser(parameterGrade.evaluator_uid).then(doc =>{
             copyObj(evaluador,doc)
           })
           var obj:ExamenesImprovisacionItem = {
+            exam:exam,
             examGrade:examGrade,
             parameterGrade: parameterGrade, 
             materia: materia,
