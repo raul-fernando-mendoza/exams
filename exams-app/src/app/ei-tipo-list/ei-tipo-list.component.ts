@@ -329,29 +329,51 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   onDuplicateExam(materiaItem:MateriaItemNode){
-
-    var req:ExamRequest = {
-      exams:{
-        id:materiaItem["exam_id"],
-        label:materiaItem["exam_name"] + "_Copy" 
-      }
-    }
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("dupDocument", token, req).subscribe(
-        data => { 
-          var exam:Exam = data["result"]
-          this.update()
-        },   
-        error => {
-          alert("error loading impro type")
-          console.log(JSON.stringify(req))
-        }
-      )
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    this.submitting = true
+    
+    this.duplicateExam(materiaItem["exam_id"],materiaItem["materia_id"], materiaItem["exam_name"] + "_Copy").then( () =>{
       this.submitting = false
-    }) 
+      this.update()
+    },
+    reason=>{
+      alert("duplicate failed" + reason)
+    })
+  }
+
+  duplicateExam(exam_id:string, new_materia_id:string, label:string):Promise<void>{
+    var _resolve
+    var _reject
+    return new Promise<null>((resolve, reject)=>{
+      _resolve = resolve
+      _reject = reject
+      var req:ExamRequest = {
+        exams:{
+          id:exam_id,
+          label:label
+        }
+      }
+      this.userLoginService.getUserIdToken().then( token => {
+        this.examImprovisacionService.firestoreApiInterface("dupDocument", token, req).subscribe(
+          data => { 
+            var exam:Exam = data["result"]
+            db.collection("exams").doc(exam.id).update({
+              materia_id:new_materia_id
+            }).then(()=>{
+              _resolve()
+            })
+            
+          },   
+          error => {  
+            console.error( "ERROR: duplicando examen:" + JSON.stringify(req))
+            _reject()
+          }
+        )
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+      }) 
+    })    
   }
 
   onChange(materiaItem:MateriaItemNode, career_id:string){
@@ -619,7 +641,60 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
     this.update()
   
   }
+  onDuplicateMateria(row:MateriaItemNode){
+    this.duplicateMateria(row).then( () =>{
+      console.log("duplication completed")
+      this.update()
+    })
+
+  }
+
+  duplicateMateria(row:MateriaItemNode):Promise<void>{
+    var _resolve
+    return new Promise((resolve, reject) =>{
+      _resolve = resolve
+      db.collection("materias").doc(row.materia_id).get().then( doc =>{      
+        var data = doc.data()
+        data["id"] = uuid.v4()
+        data["materia_name"] = data["materia_name"] + "_copy"
+        db.collection('materias').doc(data["id"]).set(data).then( () =>{
+          // no duplicate all exams
+          db.collection("exams")
+          .where("owners","array-contains",this.userLoginService.getUserUid())
+          .where("materia_id","==",row.materia_id)
+          .where("isDeleted","==",false).get().then(set => {
+            var map = set.docs.map( doc =>{
+              return this.duplicateExam(doc.data().id, data["id"], doc.data().label)
+            })
+            Promise.all(map).then( ()=>{
+              _resolve()
+            })
+          })
+        })
+      },
+      reason => {
+        console.error("materia can not be read:" + reason)
+      })    
+    })
+
+  }
+  onRemoveMateria(row:MateriaItemNode){
+    if( !confirm("Esta seguro de querer borrar la materia:" + row.materia_name) ){
+      return
+    }
+    else{
+      db.collection("materias").doc(row.materia_id).update({"isDeleted":true}).then(()=>{
+        this.update() 
+      })
+
+    }
+    
+  }  
 }
+
+
+
+
 
 /****** Nivel dlg */
 
