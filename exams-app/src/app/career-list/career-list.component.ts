@@ -72,7 +72,7 @@ export class CareerListComponent implements OnInit {
         console.log( "***DONE careers***" )
       },
       reason => {
-        alert(reason)
+        console.error("ERROR: " + reason)
       }
     )  
 

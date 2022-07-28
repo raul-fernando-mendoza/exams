@@ -232,9 +232,7 @@ export type ScoreType =  "starts" | "status"
 
 export class ParameterGrade{
   id:string = uuid.v4()
-
-
-  grade_id:string = null
+  
   owners:Array<string> = null;
   idx: number = null
   label: string = null
@@ -242,6 +240,7 @@ export class ParameterGrade{
   scoreType:ScoreType = null
   score:number = null
   evaluator_uid:string = null
+  applicationDate:Date = null
 
   isCompleted:boolean = false
 

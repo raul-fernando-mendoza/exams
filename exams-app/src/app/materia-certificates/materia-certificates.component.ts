@@ -352,7 +352,9 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       }
     });
   }
-  
+  onCopyToClipboard(){
+    alert("url ha sido copiada al portapapeles")
+  }  
 }
 
 /****** student dlg */
@@ -388,6 +390,8 @@ export class DialogEnrollMateriaDialog implements OnInit{
 
     })
   }
+
+
 
 }
 

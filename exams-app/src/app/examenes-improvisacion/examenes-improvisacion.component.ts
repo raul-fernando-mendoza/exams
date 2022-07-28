@@ -145,41 +145,74 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       showClosed = null
     }
 
-    let qry = db.collection("examGrades")
-    .where("owners","array-contains",this.userLoginService.getUserUid())
-    .where("isDeleted", "==", false)
-    .where("applicationDate","==", applicationDate)
-
-    if( applicationDate != null ){     
-    //  qry.where("applicationDate","==", applicationDate)
+    this.datavalues.length = 0
+    var qry
+    if( this.userLoginService.hasRole("admin")){
+      qry = db.collectionGroup('parameterGrades')
+      .where("owners", "array-contains" ,this.userLoginService.getUserUid())
+      .where("applicationDate","==", applicationDate)
+      .where("isDeleted", "==", false)
+    }
+    else{
+      qry = db.collectionGroup('parameterGrades')
+      .where("evaluator_uid", "==", this.userLoginService.getUserUid())
+      .where("applicationDate","==", applicationDate)
+      .where("isDeleted", "==", false)   
+      .where("isCompleted", '==', false)   
     }
     
-    this.datavalues.length = 0
-
-    qry.get().then(exams =>{
-
-      var map:Promise<void>[] = exams.docs.map(doc =>{
-
+    qry.get().then( snapshot => {
+      console.log("snapshot" + snapshot.docs.length)
+            
+      var map = snapshot.docs.map( doc =>{
         let examGrade:ExamGrade = new ExamGrade()
-        copyObj(examGrade, doc.data())
-
+        var parameterGrade:ParameterGrade = new ParameterGrade()
         var student:User = new User()
         var materia:Materia = new Materia() 
         var exam = new Exam()
+        copyObj(parameterGrade, doc.data())
 
-        db.collection("exams").doc(examGrade.exam_id).get().then( doc =>{
-          copyObj(exam,doc.data())
+        var examGrade_id = doc.ref.path.split("/")[1]
+        var evaluador:User = new User()
+  
+        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
+          copyObj(evaluador,doc)
         })
-   
-        this.getUser(examGrade.student_uid).then(user=>{
-          copyObj(student, user)
+        var obj:ExamenesImprovisacionItem = {
+          exam:exam,
+          examGrade:examGrade,
+          parameterGrade: parameterGrade, 
+          materia: materia,
+          student: student,
+          approver:evaluador,
+          isCompleted:parameterGrade.isCompleted
+        }
+        this.datavalues.push(obj)
+
+        return db.collection("examGrades").doc(examGrade_id).get().then(doc =>{
+          
+          copyObj(examGrade, doc.data())
+
+
+          db.collection("exams").doc(examGrade.exam_id).get().then( doc =>{
+            copyObj(exam,doc.data())
+          })
+    
+          this.getUser(examGrade.student_uid).then(user=>{
+            copyObj(student, user)
+          })
+
+          db.collection("materias").doc(examGrade.materia_id).get().then( materiaDoc =>{
+            copyObj(materia, materiaDoc.data())
+          },
+          reason =>{
+            console.error("ERROR reading materia:" + reason)
+          })
+        },
+        reason =>{
+          console.error("ERROR: reading examGrade")
         })
 
-        db.collection("materias").doc(examGrade.materia_id).get().then( materiaDoc =>{
-          copyObj(materia, materiaDoc.data())
-        })
-
-        return this.addExam( exam, examGrade,  materia, student)  
 
       })
       Promise.all(map).then(()=>{
@@ -194,58 +227,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         })
         this.updateTable()
       })
-
-    },
-    reason =>{
-      console.error("Error:loading exams" + reason)
     })
-    
-
   } 
 
-  
-  addExam( exam:Exam, examGrade:ExamGrade, materia:Materia, student:User) :Promise<void>{
-    var _resolve 
-    return new Promise<void>((resolve, reject) =>{
-      _resolve = resolve
-      db.collection(`/examGrades/${examGrade.id}/parameterGrades`).get().then( parametersRecordSet =>{
-        var map = parametersRecordSet.docs.map( doc =>{
-          let parameterGrade:ParameterGrade =  new ParameterGrade() 
-          copyObj(parameterGrade,doc.data())
-          var evaluador:User = new User()
-
-          
-  
-          this.getUser(parameterGrade.evaluator_uid).then(doc =>{
-            copyObj(evaluador,doc)
-          })
-          var obj:ExamenesImprovisacionItem = {
-            exam:exam,
-            examGrade:examGrade,
-            parameterGrade: parameterGrade, 
-            materia: materia,
-            student: student,
-            approver:evaluador,
-            isCompleted:parameterGrade.isCompleted
-          }
-          this.datavalues.push(obj)
-        })
-        Promise.all(map).then( ()=>{
-          _resolve()
-        })
-      },
-      error=>{
-        console.error("error retriving parameterGrades:" + error)
-      })
-  
-    })
-    
-  }
-
-  
-
   ngAfterViewInit() {
-
   }
   onCreate(){
     this.router.navigate(['/ExamenImprovisacionFormComponent']);

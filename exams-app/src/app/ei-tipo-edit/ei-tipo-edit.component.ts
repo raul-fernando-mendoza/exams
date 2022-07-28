@@ -532,7 +532,7 @@ export class EiTipoEditComponent implements OnInit {
           console.log(" type update has completed")
         },
         error => {
-          alert("error:" + error.error)
+          alert("error type update:" + error.error)
         }
       )
     },
@@ -558,7 +558,7 @@ export class EiTipoEditComponent implements OnInit {
           console.log(" type update has completed")
         },
         error => {
-          alert("error:" + error.error)
+          alert("Error onChangeExamProperty:" + error.error)
         }
       )
     },

@@ -58,6 +58,9 @@ Calificaciones
         <div *ngIf="row.nodeClass == 'examGrade'">
           <button *ngIf="row.obj.isReleased == true" mat-raised-button color="primary" (click)="updateRelease(row, false)">no liberar</button>
         </div>
+        <div *ngIf="row.nodeClass == 'parameterGrade'">
+          <button mat-raised-button color="primary" (click)="onEditParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id)" >Edit</button> 
+        </div>  
       </td>
     </ng-container>
     <ng-container matColumnDef="delete">

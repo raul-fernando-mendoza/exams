@@ -21,11 +21,11 @@
       <a mat-list-item routerLink="/home">home</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/career-list">Carreras</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/ei-tipo-list">Materias</a>
-      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() || isStudent()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
+      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() || isStudent()" mat-list-item routerLink="/ExamenesImprovisacion">Aplicar</a>
        
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar Calificaciones</a>  
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar</a>  
       
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/materiaCertificaciones">Certificaciones</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/materiaCertificaciones">Enrolar y Certificaciones</a>
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/eiReporte">Reportes</a>  
 
@@ -48,7 +48,7 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">TOTH ver 3.1</a>
+      <a class="main_link" routerLink="/home">TOTH ver 3.1.1</a>
       <mat-form-field appearance="fill">
         <mat-label>Organizations</mat-label>
         <mat-select [(value)]="organizationId" (selectionChange)="onOrganizationChange($event)">

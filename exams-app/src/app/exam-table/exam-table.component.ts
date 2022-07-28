@@ -257,7 +257,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
           copyObj(parameterGrade,doc.data())
           let node:NodeTableRow = {
             obj:{
-              "id":examGrade_id,
+              "examGrade_id":examGrade_id,
               "parameterGrade_id":parameterGrade.id,
               "label":parameterGrade.label,
               "score":parameterGrade.score,
@@ -490,5 +490,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   } 
   onCreate(){
     this.router.navigate(['/ExamenImprovisacionFormComponent']);
+  }  
+
+  onEditParameterGrade(examGrade_id, parameterGrade_id){
+    this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   }  
 }

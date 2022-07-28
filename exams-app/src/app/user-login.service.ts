@@ -70,7 +70,7 @@ export class UserLoginService {
     .catch((error) => {
       var errorCode = error.code;
       var errorMessage = error.message;
-      alert("error:" + error)
+      alert("ERROR registering user:" + error)
       // ..
     });
   }  
@@ -199,7 +199,7 @@ export class UserLoginService {
       alert("email sent")
     },
     function(reason:any){
-      alert("ERROR logout reason:" + reason)
+      alert("ERROR send email de verificacion:" + reason)
     });
   }
 

@@ -30,7 +30,7 @@
       </ng-container>    
 
       <ng-container matColumnDef="materia">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Materia</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
         <td mat-cell *matCellDef="let row">{{row.exam.label}}</td>
       </ng-container>
 
@@ -51,7 +51,7 @@
 
       <ng-container matColumnDef="fechaApplicacion">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Applicacion</th>
-        <td mat-cell *matCellDef="let row">{{row.examGrade.applicationDate.toISOString().split('T')[0]}}</td>
+        <td mat-cell *matCellDef="let row">{{row.examGrade.applicationDate ? row.examGrade.applicationDate.toISOString().split('T')[0] : null}}</td>
       </ng-container>
       
       <ng-container matColumnDef="completed">

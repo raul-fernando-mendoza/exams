@@ -33,7 +33,7 @@ Certificados
         </div>
         <div *ngIf="row.nodeClass=='MateriaEnrollment'">
           
-          <button *ngIf="row.obj.certificate_url" [cdkCopyToClipboard]="row.obj.certificate_url">Copiar certificado url</button>
+          <button *ngIf="row.obj.certificate_url" [cdkCopyToClipboard]="row.obj.certificate_url" (click)="onCopyToClipboard()">certificado</button>
         </div>    
         <div *ngIf="row.nodeClass=='Exam'">
           {{ row.obj.isReleased ? 'completado' : 'faltante' }}

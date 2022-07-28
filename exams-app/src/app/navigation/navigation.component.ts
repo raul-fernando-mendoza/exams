@@ -36,11 +36,17 @@ export class NavigationComponent {
         (user) => {
             if (user && user.email) {
               console.log("navigation has received notification that login has Completed:")
-              this.router.navigate(['/home']);
+              this.updateOrganizations().then( ()=>{
+                this.router.navigate(['/home']);
+              })
+              
+              
             }
             if (user == null) {
               console.log("navigation Logout has been received")
-              this.router.navigate(['/home']);
+              this.updateOrganizations().then( () =>{
+                this.router.navigate(['/home']);
+              })
             }
         }
       ); 
@@ -58,6 +64,7 @@ export class NavigationComponent {
     this.router.navigate(['/register',{"isRegister":true}])
   }  
   logout(){
+    this.organizations.length = 0
     this.userLoginService.logout()
     this.router.navigate(['/loginForm']);
   }
@@ -84,26 +91,42 @@ export class NavigationComponent {
     return (this.userLoginService.getDisplayName())?this.userLoginService.getDisplayName():this.userLoginService.getUserEmail()
   }
 
-  updateOrganizations(){
-    db.collection("organizations").where("owners","array-contains","uZP1VwpZJCg8zjMrnHNwh7s2Q3e2").where("isDeleted","==",false).get().then( 
-      snapshot =>{
-        var docs = snapshot.forEach(doc =>{
-          var organization:Organization = {
-            id:doc.id,
-            organization_name:doc.data().organization_name,
-            isDeleted:new Boolean(doc.data().isDeleted).valueOf()
-          }
-          this.organizations.push(
-            organization
-          )
-          console.log( doc.id  )
-          console.log( doc.data() )      
-        })
-      },
-      reason => {
-        alert(reason)
-      }
-    )  
+  updateOrganizations():Promise<void>{
+    var _resolve
+    return new Promise<void>((resolve, reject)=>{
+      _resolve = resolve
+      console.log("current user changed to:" + this.userLoginService.getUserUid())
+      db.collection("organizations")
+      .where("members","array-contains",this.userLoginService.getUserUid())
+      .where("isDeleted","==",false)
+      .get()
+      .then( 
+        snapshot =>{
+          var map = snapshot.docs.map(doc =>{
+            var organization:Organization = {
+              id:doc.id,
+              organization_name:doc.data().organization_name,
+              isDeleted:new Boolean(doc.data().isDeleted).valueOf()
+            }
+            this.organizations.push(
+              organization
+            )
+            console.log( doc.id  )
+            console.log( doc.data() )      
+          })
+          Promise.all(map).then( ()=>{
+            if (this.organizations.length > 0) {
+              this.userPreferencesService.setCurrentOrganizationId(this.organizations[0].id)
+            }
+            _resolve()
+          })
+        },
+        reason => {
+          console.error("ERROR retriving organizations:" + reason)
+        }
+      )  
+  
+    })
   }
 
   onOrganizationChange($event){

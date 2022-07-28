@@ -55,14 +55,15 @@ const routes: Routes = [
   { path: 'ei-tipo-list', component: EiTipoListComponent },
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
-  { path: 'home', component: WelcomeComponent },
+
   { path: 'register', component: LoginFormComponent },
   { path: 'videos-list', component: VideosListComponent },
   { path: 'grades', component: ExamTableComponent },  
   { path: 'career-list', component: CareerListComponent },  
   { path: 'career-edit', component: CareerEditComponent },  
   { path: 'materiaCertificaciones', component: MateriaCertificatesComponent },  
-  
+  { path: 'home', component: WelcomeComponent },
+  { path: '**', component: WelcomeComponent },  
 
 ];
 

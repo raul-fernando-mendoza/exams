@@ -450,6 +450,18 @@ export class ExamenImprovisacionFormComponent {
 
       let examGrade:ExamGrade = new ExamGrade()
       let json = copyFromForm(examGrade, this.examGrade)
+
+      //adding all the evaluators
+      const parametersFA = this.examGrade.controls.parameterGrades as FormArray
+      const evaluators:Array<string> = []
+      for( let i=0; i<parametersFA.controls.length; i++){
+        const parameterFG = parametersFA.controls[i] as FormGroup
+        const evaluator_uid = parameterFG.controls["evaluator_uid"].value
+        evaluators.push( evaluator_uid )
+      }
+      json["evaluators"] = evaluators
+      
+
       db.collection("examGrades").doc(examGrade["id"]).set(json).then(()=>{
         console.log("adding examGrade")
         
@@ -466,7 +478,7 @@ export class ExamenImprovisacionFormComponent {
           console.log("End Saving All")
           alert("Examen Creado!")
           this.router.navigate(['/ExamenesImprovisacion']);
-          this.submitting = false
+
         }) 
         .catch(reason =>{
           console.error("Error waiting for parameters:" + reason)
@@ -484,6 +496,8 @@ export class ExamenImprovisacionFormComponent {
   addParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
     let parameterGrade:ParameterGrade = new ParameterGrade()
     let json = copyFromForm(parameterGrade,pFG)
+    json["applicationDate"] = examGrade.applicationDate
+    json["isDeleted"] = false
 
     var parameter_resolve = null
     return new Promise<void>((resolve, reject) =>{

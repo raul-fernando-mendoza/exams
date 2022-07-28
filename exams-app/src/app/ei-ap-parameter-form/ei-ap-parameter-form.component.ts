@@ -8,6 +8,7 @@ import { ExamFormService } from '../exam-form.service';
 import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaGrade, ExamGrade, ExamGradeRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 
 import { db } from 'src/environments/environment';
+import { NavigationService } from '../navigation.service';
 
 export interface DialogData {
   calificacion: number,
@@ -35,7 +36,8 @@ export class EiApParameterFormComponent implements OnInit {
     , private formBuilder: FormBuilder
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
-    , private examFormService:ExamFormService ) { 
+    , private examFormService:ExamFormService
+    , private navigation: NavigationService ) { 
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
       
@@ -440,30 +442,12 @@ export class EiApParameterFormComponent implements OnInit {
     
     db.collection(`examGrades/${this.examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).update(values).then( 
       doc =>{
-        console.debug("aspect updated:" + doc)
-        this.router.navigate(['/ExamenesImprovisacion']);
+        console.debug("end update score:" + doc)
+        this.navigation.back()
       },
       reason =>{
-        console.log("error updating aspect:" + reason )
+        console.log("ERROR: updating score:" + reason )
       })        
-      
-    
-
-    /*
-    this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
-        this.submitting = false
-        this.router.navigate(['/ExamenesImprovisacion']);
-      },
-      error => {
-        alert("error close"  + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
-      })    
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })
-    */
   }
 
   showDescription(desc){
