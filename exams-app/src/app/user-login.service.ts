@@ -98,44 +98,55 @@ export class UserLoginService {
   }
 
 
-  loginWithEmail(email, password){
-    this.reset()
+  loginWithEmail(email, password):Promise<void>{
+    var _resolve
+    var _reject
+    return new Promise<void>((resolve, reject) => {
+      _resolve = resolve
+      _reject = reject
+      this.reset()
 
-    firebase.auth().signInWithEmailAndPassword(email, password).then(userCredentials => {
-      let user = userCredentials.user;
-    
-      this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
-      localStorage.setItem('user', JSON.stringify( this.user ) )
-  
-      console.log("user.email" + this.user.email)
-      console.log("user.uid:" + this.user.uid)
+      firebase.auth().signInWithEmailAndPassword(email, password).then(userCredentials => {
+        let user = userCredentials.user;
       
+        this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
+        localStorage.setItem('user', JSON.stringify( this.user ) )
+    
+        console.log("user.email" + this.user.email)
+        console.log("user.uid:" + this.user.uid)
+        
+    
+        //now get the id token
+        firebase.auth().currentUser.getIdToken(true).then(idToken => {
+          //id token retrieved
+          console.log("idToken:" + idToken)
+          this.user_idtoken = idToken
+          localStorage.setItem('user_idtoken',this.user_idtoken)
+          //now get the roles
+          firebase.auth().currentUser.getIdTokenResult()
+          .then((idTokenResult) => {
+            console.log(idTokenResult.claims)
+            this.user_claims = idTokenResult.claims
+            
+            localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
+            this.LoginEvent(this.user)
+            _resolve()
+          })
+          .catch((error) => {
+           alert("error retriving claims"+ error);
+           _reject()
+          });         
+        }).catch(function(error) {
+          alert("the id token could not be retrieved")
+          _reject()
+        });
+    
+      })
+      .catch( error =>{
+        alert("Error in loging:" + error.code + " " + error.message)
+        _reject()
+      })
   
-      //now get the id token
-      firebase.auth().currentUser.getIdToken(true).then(idToken => {
-        //id token retrieved
-        console.log("idToken:" + idToken)
-        this.user_idtoken = idToken
-        localStorage.setItem('user_idtoken',this.user_idtoken)
-        //now get the roles
-        firebase.auth().currentUser.getIdTokenResult()
-        .then((idTokenResult) => {
-          console.log(idTokenResult.claims)
-          this.user_claims = idTokenResult.claims
-          
-          localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
-          this.LoginEvent(this.user)
-        })
-        .catch((error) => {
-         alert("error retriving claims"+ error);
-        });         
-      }).catch(function(error) {
-        alert("the id token could not be retrieved")
-      });
-  
-    })
-    .catch( error =>{
-      alert("Error in loging:" + error.code + " " + error.message)
     })
      
 
@@ -209,7 +220,7 @@ export class UserLoginService {
 
     },
     function(reason:any){
-      alert("ERROR logout reason:" + reason)
+      console.error("ERROR logout reason:" + reason)
     });
     this.LoginEvent(null)
   }
@@ -269,7 +280,7 @@ export class UserLoginService {
   }
 
   getIsloggedIn(){
-    return (this.user)?true:false
+    return (this.user != null)?true:false
   }   
   getIsEmailVerified(){
     return (this.user)?this.user.emailVerified:false

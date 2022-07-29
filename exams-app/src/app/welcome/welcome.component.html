@@ -1,6 +1,51 @@
-<p>Bienvenido</p>
-<p *ngIf="!isLoggedIn()">Por favor registrese o ingrese</p>
-<div *ngIf="isLoggedIn() && !isEmailVerified()">
-    Su email no ha sido verificado. si desea enviar un nuevo link presione el boton
-    <button mat-raised-button color="primary" (click)="emailVerify()" >Enviar email</button>
+<mat-card class="action-card" *ngIf="!isLoggedIn()">
+    <mat-card-title>Bienvenido</mat-card-title>
+    <mat-card-content>
+      <p>Por favor presione en login o registrese</p>
+    </mat-card-content>
+</mat-card>
+
+
+<mat-card class="action-card" *ngIf="isLoggedIn() && !isEmailVerified()" >
+    <mat-card-title>Email no ha sido verificado</mat-card-title>
+    <mat-card-content>
+      <p>Su email no ha sido verificado. si desea enviar un nuevo link presione el boton</p>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="emailVerify()" >Enviar email</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+</mat-card>
+
+<div *ngIf="isLoggedIn()">
+
+
+  <h1>Mis Materias</h1>
+
+  <mat-card *ngFor="let me of materiaEnrollments" class="materia-card">
+      <mat-card-title-group>
+          <mat-card-title>{{ me["materia"]["materia_name"] }}</mat-card-title>
+          <mat-card-subtitle>
+            <a *ngIf="me['certificate_url']" href="{{ me['certificate_url'] }}">certificado</a> 
+            <div *ngIf="!me['certificate_url']">No Completado</div>
+          </mat-card-subtitle>
+          <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me['materia']['iconCertificate'] }}">
+                                      
+      </mat-card-title-group>
+      <mat-card-content>
+        <table>
+          <tr cols="2" rowHeight="1:1" *ngFor="let e of me['exams']">
+            <td>{{ e["label"] }}</td>
+            <td>
+              <div *ngIf='e["examGrade"] && e["examGrade"]["score"]'><mat-icon>done</mat-icon></div>
+              <div *ngIf='!(e["examGrade"] && e["examGrade"]["score"])'><mat-icon>error</mat-icon></div>
+            </td>
+
+          </tr>
+        </table>
+      </mat-card-content>
+  </mat-card>
 </div>

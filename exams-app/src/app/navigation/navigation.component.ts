@@ -1,4 +1,4 @@
-import { Component ,OnInit} from '@angular/core';
+import { Component ,OnInit, resolveForwardRef} from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -92,17 +92,24 @@ export class NavigationComponent {
   }
 
   updateOrganizations():Promise<void>{
+    this.organizations.length = 0
+
     var _resolve
     return new Promise<void>((resolve, reject)=>{
       _resolve = resolve
+      if (this.userLoginService.getUserUid() == null){
+        resolve()
+        return
+      }
+
       console.log("current user changed to:" + this.userLoginService.getUserUid())
       db.collection("organizations")
       .where("members","array-contains",this.userLoginService.getUserUid())
       .where("isDeleted","==",false)
       .get()
       .then( 
-        snapshot =>{
-          var map = snapshot.docs.map(doc =>{
+        set =>{
+          var map = set.docs.map(doc =>{
             var organization:Organization = {
               id:doc.id,
               organization_name:doc.data().organization_name,

@@ -29,10 +29,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   dataSource: EiApplicationTableDataSource;
 
 
-  careerListener = null
-  nivelesListener = null
   materiaGroupListener = null  
-  materiaListener = null
  
   materiaItemNodes:Array<MateriaItemNode> = Array()
 
@@ -55,10 +52,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
-    if( this.careerListener ) this.careerListener()
-    if( this.nivelesListener) this.nivelesListener()
-    if( this.materiaGroupListener) this.materiaGroupListener()
-    if( this.materiaListener) this.materiaListener()   
+ 
   }
 
   materiasList:FormGroup = this.fb.group({
@@ -125,10 +119,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   loadCareers(){
     const query = db.collection("careers").where("owners","array-contains",this.userLoginService.getUserUid()).where("isDeleted","==",false).where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     
-    this.careerListener = query.onSnapshot( 
-      snapshot =>{
+    query.get().then( 
+      set =>{
         this.careerList.length = 0
-        var docs = snapshot.forEach(doc =>{
+        var docs = set.forEach(doc =>{
           var career:Career = {
             id:doc.id,
             career_name:doc.data().career_name,           
@@ -184,10 +178,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
       where("isDeleted","==",false).
       where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     this.transactionStart("niveles")
-    this.nivelesListener = query.onSnapshot( 
-      snapshot =>{
+    query.get().then( 
+      set =>{
         this.materiaItemNodes.length = 0
-        var docs = snapshot.forEach(doc =>{          
+        var docs = set.forEach(doc =>{          
           var nivel:Nivel = {
             organization_id:doc.data().organization_id,
             id:doc.id,
@@ -216,10 +210,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
       where("isDeleted","==",false).
       where("nivel_id","==",nivel.nivel_id)
     this.transactionStart("groups")
-    this.materiaGroupListener = query.onSnapshot( 
-      snapshot =>{
+    this.materiaGroupListener = query.get().then( 
+      set =>{
         nivel.children.length = 0
-        var docs = snapshot.forEach(doc =>{          
+        var docs = set.forEach(doc =>{          
           var group:Group = {
             id:doc.id,
             group_name:doc.data().group_name
@@ -252,10 +246,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
     where("isDeleted","==",false).
     where("group_id","==",group.group_id)
     this.transactionStart("materias")
-    this.materiaListener = query.onSnapshot( 
-      snapshot =>{
+    query.get().then( 
+      set =>{
         group.children.length = 0
-        var docs = snapshot.forEach(doc =>{   
+        var docs = set.forEach(doc =>{   
                  
           var materia:Materia = new Materia()
           copyObj(materia, doc.data())
@@ -275,7 +269,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
         console.log( "***DONE***" )
       },
       reason => {
-        alert(reason)
+        console.error("ERROR reading materias:" + reason)
       }
     )  
   }
@@ -287,10 +281,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
     where("isDeleted","==",false).
     where("materia_id","==",materia.materia_id)
     this.transactionStart("exams")
-    this.materiaListener = query.onSnapshot( 
-      snapshot =>{
+    query.get().then( 
+      set =>{
         materia.children.length = 0
-        var docs = snapshot.forEach(doc =>{
+        var docs = set.forEach(doc =>{
           var exam:Exam = {
             materia_id:materia.materia_id, 
 

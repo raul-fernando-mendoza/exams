@@ -29,7 +29,12 @@ export class LoginFormComponent {
   onLoginWithEmail(){
     var user = this.loginForm.controls.username.value
     var password = this.loginForm.controls.password.value
-    this.userLoginService.loginWithEmail(user, password)
+    this.userLoginService.loginWithEmail(user, password).then( () =>{
+      this.router.navigate(['/']);
+    },
+    reason => {
+      console.error("ERROR: " + reason)
+    })
   }
 
   register(){

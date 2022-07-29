@@ -199,9 +199,9 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     where("isDeleted","==",false).
     where("materia_id","==",row.obj["materia_id"])
     this.transactionStart( row.obj["materia_id"])
-    query.get().then( snapshot => {
+    query.get().then( set => {
 
-      var exams = snapshot.docs.map( doc =>{
+      var exams = set.docs.map( doc =>{
 
         var exam = {
           materia_id:doc.data().materia_id,

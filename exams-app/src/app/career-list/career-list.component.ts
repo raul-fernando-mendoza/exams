@@ -54,10 +54,10 @@ export class CareerListComponent implements OnInit {
   loadCareers(){
     const query = db.collection("careers").where("owners","array-contains",this.userLoginService.getUserUid()).where("isDeleted","==",false).where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     
-    this.careerListener = query.onSnapshot( 
-      snapshot =>{
+    this.careerListener = query.get().then( 
+      set =>{
         this.careerList.length = 0
-        var docs = snapshot.forEach(doc =>{
+        var docs = set.forEach(doc =>{
           var career:Career = {
             id:doc.id,
             career_name:doc.data().career_name,           

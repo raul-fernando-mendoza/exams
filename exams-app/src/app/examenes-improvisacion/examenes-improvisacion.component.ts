@@ -161,10 +161,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       .where("isCompleted", '==', false)   
     }
     
-    qry.get().then( snapshot => {
-      console.log("snapshot" + snapshot.docs.length)
+    qry.get().then( set => {
+      console.log("set" + set.docs.length)
             
-      var map = snapshot.docs.map( doc =>{
+      var map = set.docs.map( doc =>{
         let examGrade:ExamGrade = new ExamGrade()
         var parameterGrade:ParameterGrade = new ParameterGrade()
         var student:User = new User()

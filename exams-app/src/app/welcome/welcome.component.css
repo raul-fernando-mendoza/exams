@@ -1,0 +1,14 @@
+.action-card{
+    max-width: 100%;
+    margin: 10px;
+}
+
+.materia-card{
+    max-width:50%;
+}
+
+.mat-card-sm-image{
+    border: 1px;
+    border-style: solid;
+    border-color: black;
+}
