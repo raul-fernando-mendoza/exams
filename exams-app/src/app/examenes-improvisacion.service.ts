@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { db, environment } from 'src/environments/environment';
-import { Organization, User } from './exams/exams.module';
-
+import { MateriaEnrollment, Organization, User } from './exams/exams.module';
+import * as uuid from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -114,5 +114,42 @@ export class ExamenesImprovisacionService {
     
     return result
   }  
+
+  createMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<void>{
+    var id = uuid.v4()
+    var _resolve
+    var _reject
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+
+      db.collection('materiaEnrollments')
+      .where("student_uid", "==", studentId)
+      .where("materia_id", "==", materiaId)
+      .get().then( set =>{
+        if( set.docs.length == 0){
+          const materiaEnrollment:MateriaEnrollment = {
+            id:id,
+            organization_id:organizationId,
+            student_uid:studentId,
+            materia_id:materiaId,
+            owners:[studentId],
+            isActive:true
+          }          
+          db.collection('materiaEnrollments').doc(id).set(materiaEnrollment).then( () =>{
+            _resolve()
+          },
+          reason =>{
+            _reject()
+          })
+        }
+        else{
+          _reject()
+        }
+      })
+    })
+    
+  }
+
 
 }

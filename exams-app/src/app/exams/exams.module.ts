@@ -106,15 +106,19 @@ export class Exam{
 export class Materia{
 
 
-  group_id?:string = null
+  group_id:string = null
 
   id:string = null
   materia_name:string = null
-  isDeleted?:boolean = false
+  isDeleted:boolean = false
   owners:Array<string> = null
 
   typeCertificate:string = null
   iconCertificate?:string = null
+
+  description:string = null
+  videoUrl:string = null
+  isEnrollmentActive:boolean = null
 
 }
 
@@ -160,7 +164,7 @@ export class MateriaEnrollment{
   organization_id?:string
   id:string
   materia_id:string
-  student_id:string
+  student_uid:string
   isActive?:boolean
   owners?:Array<string>
 }

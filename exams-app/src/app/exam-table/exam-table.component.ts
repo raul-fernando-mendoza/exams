@@ -208,7 +208,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
               "id":examGrade.id,
               "materia_id":examGrade.materia_id,
               "materia_name":null,
-              "student_id":examGrade.student_uid,
+              "student_uid":examGrade.student_uid,
               "student_name":null,
               "title":examGrade.title,
               "score":examGrade.score,

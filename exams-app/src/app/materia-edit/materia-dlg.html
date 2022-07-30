@@ -1,8 +1,8 @@
-<h1 mat-dialog-title>Nueva Materia</h1>
+<h1 mat-dialog-title>Materia</h1>
 <form [formGroup]="m" >
 <mat-dialog-content>
   <mat-form-field>
-    <mat-label>Nueva Materia</mat-label>
+    <mat-label>Materia</mat-label>
     <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)">
   </mat-form-field>     
 </mat-dialog-content>
@@ -22,7 +22,27 @@
           {{ic.label}}
         </mat-option>
       </mat-select>
-  </mat-form-field>        
+  </mat-form-field>  
+  <mat-form-field>
+    <mat-label>isEnrollmentActive</mat-label>
+    <mat-select formControlName="isEnrollmentActive"  name="isEnrollmentActive" (selectionChange)="onChangeExamProperty($event, m)">
+      <mat-option value="true">
+        yes
+      </mat-option>
+      <mat-option value="false">
+        no
+      </mat-option>
+    </mat-select>
+  </mat-form-field> 
+  <mat-form-field>
+    <mat-label>video url</mat-label>
+    <input  matInput type="text"  formControlName="videoUrl" (change)="onPropertyChange($event)">
+  </mat-form-field>    
+  <mat-form-field appearance="outline">
+    <mat-label>description</mat-label>
+    <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+  </mat-form-field>      
+  
 </p>
 
 <mat-dialog-actions>

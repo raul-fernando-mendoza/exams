@@ -96,8 +96,7 @@ export class ExamenImprovisacionFormComponent {
     this.materias.length = 0
 
     db.collection("materiaEnrollments")
-    .where("owners","array-contains",this.userLoginService.getUserUid())
-    .where("student_id","==",user_uid)
+    .where("student_uid","==",user_uid)
     .get().then( set =>{
       console.log("materia start")
 

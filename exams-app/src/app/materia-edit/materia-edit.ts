@@ -20,7 +20,10 @@ export class DialogMateriaDialog implements OnInit{
       isDeleted:[this.data.isDeleted],
       materia_name:[this.data.materia_name, Validators.required],
       typeCertificate:[this.data.typeCertificate, Validators.required],
-      iconCertificate:[this.data.iconCertificate, Validators.required]
+      iconCertificate:[this.data.iconCertificate, Validators.required],
+      description:[this.data.description],
+      videoUrl:[this.data.videoUrl],
+      isEnrollmentActive:[this.data.isEnrollmentActive]
     })        
 
     typeCertificates = []
@@ -133,6 +136,12 @@ export class DialogMateriaDialog implements OnInit{
         "label4":"",
         "color1":"red", 
         "color2":"black"
+      }
+      if( value == "true" ){
+        value = true
+      }
+      else if( value == "false"){
+        value = false
       }
       if( propertyName == "typeCertificate"){
         switch(value){

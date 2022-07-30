@@ -115,30 +115,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     }
     
     const query = db.collection("materiaEnrollments").
-    where("owners","array-contains",this.userLoginService.getUserUid()).
     where("isActive","==",true).
-    where("student_id","==",row.obj["uid"])
+    where("student_uid","==",row.obj["uid"])
 
     this.transactionStart(row.obj["uid"])
-/*
-    console.log("start enrollments")
-    query.get().then( recordset =>{
-      const resultMap = recordset.docs.map( (enrollment) => {
-        console.debug("materia" +  enrollment.data())
-        return db.collection("materias").doc(enrollment.data().materia_id).get().then(
-          m => {
-            console.log("materia data:" + m)
-          }
-        )
-      })
-
-      Promise.all(resultMap).then( result =>{
-        console.log("end all")
-      })
-      console.log("end all submaps.")
-    })
-    console.log("end enrollments")
-*/
 
     query.get().then( recordset =>{
       const resultMap = recordset.docs.map( (ref) => {
@@ -149,7 +129,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           organization_id:enrollment.organization_id,
           materia_id:enrollment.materia_id,
           materia_name:null,
-          student_id:enrollment.student_id,
+          student_uid:enrollment.student_uid,
           id:ref.id,
           certificate_url:enrollment.certificate_url
         }
@@ -164,13 +144,16 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           materiaEnrollment.materia_name = ref.data().materia_name
           row.children.push(n)
           row.opened = true 
-          this.transactionComplete(row.obj["materia_id"]+row.obj["student_id"] )        
+          this.transactionComplete(row.obj["materia_id"]+row.obj["student_uid"] )        
         }) 
       })
       Promise.all(resultMap).then( result =>{
         row.children = this.sortingService.sortBySubObject(row.children,"obj",["materia_name"])    
         this.transactionComplete(row.obj["uid"])
       })  
+    },
+    reason =>{
+      console.error("ERROR reading materiaEnrollement:" + reason )
     }) 
   }
 
@@ -220,7 +203,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         
         const grades = db.collection("examGrades").
         where("owners","array-contains",this.userLoginService.getUserUid())
-        .where("student_uid","==", row.obj["student_id"])
+        .where("student_uid","==", row.obj["student_uid"])
         .where("materia_id","==", row.obj["materia_id"])
         .where("exam_id","==",exam.id)
         .where("isDeleted","==",false)
@@ -292,7 +275,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     var materiaEnrollment:MateriaEnrollment = {
       organization_id: this.userPreferencesService.getCurrentOrganizationId(),
       id:null,
-      student_id:row.obj.uid,
+      student_uid:row.obj.uid,
       materia_id:null
     }
 
@@ -306,8 +289,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       console.log('The dialog was closed');
       if( result != undefined ){
         console.debug( result )
-        this.createMateriaEnrollment(result.materia_id, result.student_id)
-        this.loadEnrollmentForRow(row)     
+        this.examImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), result.materia_id, result.student_uid).then( ()=>{
+          this.loadEnrollmentForRow(row)
+        })
+             
       }
       else{
         console.debug("none")
@@ -315,20 +300,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     });
   }
   
-  async createMateriaEnrollment(materiaId:string, studentId:string){
-    var id = uuid.v4()
-  
-    const materiaEnrollment:MateriaEnrollment = {
-      organization_id:this.userPreferencesService.getCurrentOrganizationId(),
-      id:id,
-      student_id:studentId,
-      materia_id:materiaId,
-      owners:[this.userLoginService.getUserUid()],
-      isActive:true
-    }
-    const res = await  db.collection('materiaEnrollments').doc(id).set(materiaEnrollment);
-    
-  }
   
   onEnrollmentEdit(student){
     const dialogRef = this.dialog.open(DialogEnrollMateriaDialog, {

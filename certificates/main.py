@@ -92,7 +92,7 @@ def generateCertificate(db, documentId):
 
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
             .where("materia_id","==", materia["id"]) \
-            .where("student_id","==", student.uid) \
+            .where("student_uid","==", student.uid) \
             .get()
 
         for materiaEnromentDoc in materiaEnrollmentsSet:
@@ -102,7 +102,7 @@ def generateCertificate(db, documentId):
     else:
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
             .where("materia_id","==", materia["id"]) \
-            .where("student_id","==", student.uid) \
+            .where("student_uid","==", student.uid) \
             .get()
 
         for materiaEnromentDoc in materiaEnrollmentsSet:

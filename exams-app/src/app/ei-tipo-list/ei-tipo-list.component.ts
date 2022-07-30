@@ -514,7 +514,13 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
       console.log('The dialog was closed');
       if( result != undefined && result != ''){
         console.debug( result )
-        this.createMateria(group.group_id, result.materia_name, result.typeCertificate, result.iconCertificate)
+        var materia:Materia = result
+        this.createMateria(materia).then( () =>{
+          this.update()
+        },
+        reason => {
+          console.error("ERROR creating materia:" + reason)
+        })
       }
       else{
         console.debug("none")
@@ -522,22 +528,12 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
     });
   }
   
-  async createMateria(group_id:string, materia_name:string, typeCertificate, iconCertificate){
-    var id = uuid.v4()
+  createMateria(materia:Materia):Promise<void>{
+    materia.id = uuid.v4()
+    materia.owners = [this.userLoginService.getUserUid()]
+    materia.isDeleted = false
 
-    var materia = {
-      group_id:group_id,
-      id:id,
-      materia_name:materia_name,
-      owners:[this.userLoginService.getUserUid()],
-      isDeleted:false,
-      typeCertificate:typeCertificate,
-      iconCertificate:iconCertificate
-    }
-
-
-
-    switch(typeCertificate){
+    switch(materia.typeCertificate){
       case "Experta.jpeg": 
         materia["label1"] = "RAKS SHARKI"
         materia["label2"] = ""
@@ -556,7 +552,7 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
         break;
       case "habilidades_tecnicas.jpeg": 
         materia["label1"] = ""
-        materia["label2"] = materia_name
+        materia["label2"] = materia.materia_name
         materia["label3"] = ""
         materia["label4"] = "WWW.RAXACADEMY.COM"
         materia["color1"] = "#5b2383"
@@ -564,7 +560,7 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
         break;    
       case "habilidades_tematicas.jpeg": 
         materia["label1"] = ""
-        materia["label2"] = materia_name
+        materia["label2"] = materia.materia_name
         materia["label3"] = ""
         materia["label4"] = "WWW.RAXACADEMY.COM"
         materia["color1"] = "#5b2383"
@@ -573,8 +569,8 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
 
     }
 
-    const res = await  db.collection('materias').doc(id).set(materia);
-    this.update()
+    return  db.collection('materias').doc(materia.id).set(materia)
+
   }
 
   async onEditMateria(row){

@@ -20,32 +20,72 @@
     </mat-card-footer>
 </mat-card>
 
-<div *ngIf="isLoggedIn()">
+<div >
+  <mat-accordion multi>
+    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" [expanded]="isLoggedIn() && materiaEnrollments.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Mis Materias
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-expansion-panel-content class=".chains">
+        <mat-card *ngFor="let me of materiaEnrollments" class="enrolled-materia-card">
+          <mat-card-title-group>
+              <mat-card-title>{{ me["materia"]["materia_name"] }}</mat-card-title>
+              <mat-card-subtitle>
+                <a *ngIf="me['certificate_url']" href="{{ me['certificate_url'] }}">certificado</a> 
+                <div *ngIf="!me['certificate_url']">No Completado</div>
+              </mat-card-subtitle>
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me['materia']['iconCertificate'] }}">
+                                          
+          </mat-card-title-group>
+          <mat-card-content>
+            <table>
+              <tr cols="2" rowHeight="1:1" *ngFor="let e of me['exams']">
+                <td>
+                  <button *ngIf='e["examGrade"] && e["examGrade"]["isCompleted"]' mat-button (click)='onOpenExamGrade(e["examGrade"]["id"])'>{{ e["label"] }}</button>
+                  <div *ngIf='!(e["examGrade"] && e["examGrade"]["isCompleted"])'>{{ e["label"] }}</div>
+                </td>
+                <td>
+                  <div *ngIf='e["examGrade"] && e["examGrade"]["score"]'><mat-icon>done</mat-icon></div>
+                  <div *ngIf='!(e["examGrade"] && e["examGrade"]["score"])'><mat-icon>error</mat-icon></div>
+                </td>
 
-
-  <h1>Mis Materias</h1>
-
-  <mat-card *ngFor="let me of materiaEnrollments" class="materia-card">
-      <mat-card-title-group>
-          <mat-card-title>{{ me["materia"]["materia_name"] }}</mat-card-title>
-          <mat-card-subtitle>
-            <a *ngIf="me['certificate_url']" href="{{ me['certificate_url'] }}">certificado</a> 
-            <div *ngIf="!me['certificate_url']">No Completado</div>
-          </mat-card-subtitle>
-          <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me['materia']['iconCertificate'] }}">
-                                      
-      </mat-card-title-group>
+              </tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </mat-expansion-panel-content>  
+    </mat-expansion-panel>
+    <mat-expansion-panel [expanded]="!isLoggedIn() || materiaEnrollments.length == 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Materias
+        </mat-panel-title>
+      </mat-expansion-panel-header>
       <mat-card-content>
-        <table>
-          <tr cols="2" rowHeight="1:1" *ngFor="let e of me['exams']">
-            <td>{{ e["label"] }}</td>
-            <td>
-              <div *ngIf='e["examGrade"] && e["examGrade"]["score"]'><mat-icon>done</mat-icon></div>
-              <div *ngIf='!(e["examGrade"] && e["examGrade"]["score"])'><mat-icon>error</mat-icon></div>
-            </td>
-
-          </tr>
-        </table>
-      </mat-card-content>
-  </mat-card>
+        <mat-card *ngFor="let m of materias" class="materia-card">
+          <mat-card-title-group>
+              <mat-card-title class="enroll-card">{{ m.materia_name }}</mat-card-title>
+              <mat-card-subtitle>
+                {{ m.description }}
+              </mat-card-subtitle>
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ m.iconCertificate }}">
+                                          
+          </mat-card-title-group>
+          <mat-card-content>
+        
+            <video *ngIf="m.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+            width="640" height="264" vjs-video vjs-setup="options">
+              <source src="{{ m.videoUrl }}" type='video/mp4' />
+            </video>            
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button *ngIf="isLoggedIn()" color="primary" (click)="onEnrollar(m.id)">Enrollar</button>
+            <button mat-button *ngIf="!isLoggedIn()" color="primary" (click)="onEnrollar(null)">Login o registrese para Enrollarte</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-card-content>  
+    </mat-expansion-panel>    
+  </mat-accordion>
 </div>

@@ -63,6 +63,7 @@ const routes: Routes = [
   { path: 'career-edit', component: CareerEditComponent },  
   { path: 'materiaCertificaciones', component: MateriaCertificatesComponent },  
   { path: 'home', component: WelcomeComponent },
+  { path: 'report', component: ExamgradesReportComponent},
   { path: '**', component: WelcomeComponent },  
 
 ];

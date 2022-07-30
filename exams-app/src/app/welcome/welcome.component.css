@@ -3,12 +3,22 @@
     margin: 10px;
 }
 
-.materia-card{
-    max-width:50%;
+.enrolled-materia-card{
+    max-width:300px;
+    margin:10px;
 }
 
 .mat-card-sm-image{
     border: 1px;
     border-style: solid;
     border-color: black;
+}
+
+.chains mat-card {
+    display: inline-block;
+  }
+
+.materia-card{
+    width: 80%;
+    margin: 10px;
 }

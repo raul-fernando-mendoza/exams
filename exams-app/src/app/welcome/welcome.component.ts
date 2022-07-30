@@ -6,6 +6,8 @@ import { db } from 'src/environments/environment';
 import { copyObj, Exam, ExamGrade, Materia } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
+import { RouteConfigLoadEnd, Router } from '@angular/router';
+import { UserPreferencesService } from '../user-preferences.service';
 
 @Component({
   selector: 'app-welcome',
@@ -14,14 +16,23 @@ import { ExamgradesReportComponent } from '../examgrades-report/examgrades-repor
 })
 export class WelcomeComponent implements OnInit {
 
-  constructor(private userLoginService:UserLoginService
+  constructor(
+      private router: Router
+    , private userLoginService:UserLoginService
     , private examenesImprovisacionService:ExamenesImprovisacionService
-    , private sortingService:SortingService) { }
+    , private sortingService:SortingService
+    , private userPreferencesService:UserPreferencesService) { }
 
   materiaEnrollments = []
+  materias:Array<Materia> = []
 
   ngOnInit(): void {
-    this.loadMateriaEnrollment()   
+    this.update()
+  }
+
+  update(){
+    this.loadMaterias()
+    this.loadMateriaEnrollment()  
   }
   isEmailVerified(): boolean{
     return this.userLoginService.getIsEmailVerified()
@@ -38,8 +49,13 @@ export class WelcomeComponent implements OnInit {
   loadMateriaEnrollment(){
     this.materiaEnrollments.length = 0
 
+    if( !this.isLoggedIn() ){
+      return
+    }
+
     db.collection("materiaEnrollments")
-    .where("student_id","==",this.userLoginService.getUserUid())
+    .where("student_uid","==",this.userLoginService.getUserUid())
+    .where("isActive",'==',true)
     .get().then( set =>{
       console.log("materia start")
       let map:Array<Promise<void>> = set.docs.map( doc =>{
@@ -115,6 +131,14 @@ export class WelcomeComponent implements OnInit {
   
           },
           reason =>{
+            exams.sort((a,b) =>{
+              if( a.label > b.label){
+                return 1
+              }
+              else{
+                return -1
+              }
+            })
             console.error("ERROR reading examGrades:" + reason )
           })
         },
@@ -129,5 +153,42 @@ export class WelcomeComponent implements OnInit {
     })
   }
 
-  
+  onOpenExamGrade( examGrade_id ){
+    this.router.navigate(['/report',{examGrade_id:examGrade_id}]);
+  }
+
+  loadMaterias(){
+    this.materias.length = 0
+    db.collection("materias")
+    .where("isDeleted","==", false)
+    .where("isEnrollmentActive", "==", true)
+    .get().then( set =>{
+      set.docs.map( doc =>{
+        var m = new Materia()
+        copyObj(m, doc.data())
+        this.materias.push( m )
+      })
+      this.materias.sort( (a,b) => {
+        if( a.materia_name > b.materia_name ){
+          return 1
+        }
+        else return -1
+      })
+    })
+  }
+
+  onEnrollar(materia_id){
+    if( this.isLoggedIn() ){
+      this.examenesImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), materia_id,this.userLoginService.getUserUid()).then( () =>{
+        alert("Usted ha sido enrollado en esta materia.")
+        this.update()
+      },
+      reason => {
+        alert("usted ya esta enrollado en esta materia")
+      })
+    }
+    else{
+      this.router.navigate(['/loginForm'])
+    }
+  }
 }
