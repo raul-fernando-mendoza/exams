@@ -34,32 +34,51 @@ def generateMateriaCertificate(event, context):
 def generateCertificate(db, documentId):  
     
     examGrade = db.collection(u'examGrades').document(documentId).get().to_dict()
- 
-    exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
 
+    materia_id = examGrade["materia_id"]
+ 
+    #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
+    materia = db.collection("materias").document(materia_id).get().to_dict()
     #find all exams for materia
     examSet = db.collection("exams") \
     .where("isDeleted","==",False) \
-    .where("materia_id","==",examGrade["materia_id"]) .get()  
+    .where("materia_id","==",materia_id) .get()  
 
-    materia = db.collection("materias").document(examGrade["materia_id"]).get().to_dict()
+    requiredCount = 0
+    requiredReleased = 0
+    optionalCount = 0
+    optionalReleased = 0
 
     student = auth.get_user(examGrade["student_uid"])
     displayName = student.custom_claims["displayName"] if ("displayName" in student.custom_claims) else student.email
 
-    materiaCompleted=True
+
     for examDoc in examSet:
+        exam = examDoc.to_dict()
+        if "isRequired" in exam and exam["isRequired"]:
+            requiredCount += 1
+        else: optionalCount += 1
+
         examGradeSet = db.collection("examGrades") \
-            .where("materia_id", "==", materia["id"]) \
+            .where("materia_id", "==", materia_id) \
             .where("exam_id", "==", examDoc.get("id")) \
             .where("student_uid","==", student.uid) \
             .where("isDeleted","==", False) \
+            .where("isCompleted","==", True) \
+            .where("isReleased","==",True) \
+            .where("isApproved","==",True) \
             .get()
-        for examGradeDoc in examGradeSet:    
-            if not(examGradeDoc.get("isCompleted") and examGradeDoc.get("isApproved") and examGradeDoc.get("isReleased")):
-                materiaCompleted=False
+        for examGradeDoc in examGradeSet:
+            examGrade = examGradeDoc.to_dict()
+            if "isRequired" in exam and exam["isRequired"]:  
+                requiredReleased +=1 
+                break
+            else:
+                optionalReleased +=1
+                break
     #if all has been passed generate the cerfificate
-    if materiaCompleted:
+    if requiredCount == requiredReleased and (
+        optionalCount == 0 or optionalReleased > 0):
         
         storage_client = storage.Client()
 
@@ -91,7 +110,7 @@ def generateCertificate(db, documentId):
         )  
 
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
-            .where("materia_id","==", materia["id"]) \
+            .where("materia_id","==", materia_id) \
             .where("student_uid","==", student.uid) \
             .get()
 
@@ -101,7 +120,7 @@ def generateCertificate(db, documentId):
             })
     else:
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
-            .where("materia_id","==", materia["id"]) \
+            .where("materia_id","==", materia_id) \
             .where("student_uid","==", student.uid) \
             .get()
 
