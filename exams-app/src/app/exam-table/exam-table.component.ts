@@ -28,7 +28,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   dataSource: NodeTableDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['titulo', 'completed', 'score',  'release', 'unrelease','delete'];
+  displayedColumns = ['titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
 
   released = false
   periodicRefresh = false

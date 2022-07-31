@@ -31,7 +31,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
 
   materiaGroupListener = null  
  
-  materiaItemNodes:Array<MateriaItemNode> = Array()
+  materiaItemNodes:Array<MateriaItemNode> = []
 
   careerList:Array<Career> = []
 
@@ -533,42 +533,6 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
     materia.owners = [this.userLoginService.getUserUid()]
     materia.isDeleted = false
 
-    switch(materia.typeCertificate){
-      case "Experta.jpeg": 
-        materia["label1"] = "RAKS SHARKI"
-        materia["label2"] = ""
-        materia["label3"] = ""
-        materia["label4"] = "Danza Oriental y Fusiones"
-        materia["color1"] = "#d9ad43"
-        materia["color2"] = "black"
-        break;
-      case "Especialista.jpeg": 
-        materia["label1"] = "RAKS SHARKI"
-        materia["label2"] = ""
-        materia["label3"] = ""
-        materia["label4"] = "Danza Oriental y Fusiones"
-        materia["color1"] = "#5b2383"
-        materia["color2"] = "black"
-        break;
-      case "habilidades_tecnicas.jpeg": 
-        materia["label1"] = ""
-        materia["label2"] = materia.materia_name
-        materia["label3"] = ""
-        materia["label4"] = "WWW.RAXACADEMY.COM"
-        materia["color1"] = "#5b2383"
-        materia["color2"] = "black"
-        break;    
-      case "habilidades_tematicas.jpeg": 
-        materia["label1"] = ""
-        materia["label2"] = materia.materia_name
-        materia["label3"] = ""
-        materia["label4"] = "WWW.RAXACADEMY.COM"
-        materia["color1"] = "#5b2383"
-        materia["color2"] = "red"
-        break;                      
-
-    }
-
     return  db.collection('materias').doc(materia.id).set(materia)
 
   }
@@ -623,6 +587,7 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
      
       owners:[this.userLoginService.getUserUid()],
       isDeleted:false,
+      isRequired:false,
       required_in_carrers_ids:[]
     }
     const res = await  db.collection('exams').doc(id).set(exam);

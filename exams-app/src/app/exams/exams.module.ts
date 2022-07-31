@@ -60,9 +60,9 @@ export function copyFromForm(to:{}, from:FormGroup) {
 
 export class User{
   uid:string = null
-  email:string = null
-  displayName:string = null
-  claims:{}
+  email?:string = null
+  displayName?:string = null
+  claims?:{}
 }
 
 export interface Aspect{
@@ -95,8 +95,10 @@ export class Exam{
   id:string = null
   label?:string = null
   description?:string = null
+  isRequired?:boolean = null
   owners?:Array<string> = null
   isDeleted?:boolean = null
+  
 
   parameters?: Parameter[] = null
 
@@ -104,8 +106,6 @@ export class Exam{
 }
 
 export class Materia{
-
-
   group_id:string = null
 
   id:string = null
@@ -120,6 +120,12 @@ export class Materia{
   videoUrl:string = null
   isEnrollmentActive:boolean = null
 
+  label1:string = ""
+  label2:string = ""
+  label3:string = ""
+  label4:string = ""
+  color1:string = "" 
+  color2:string = ""  
 }
 
 export interface Group{
@@ -214,22 +220,22 @@ export interface AspectRequest{
 
 export class AspectGrade{
   id:string = null
-  idx:number = null 
-  label: string = null
-  description:string = null
+  idx?:number = null 
+  label?: string = null
+  description?:string = null
   isGraded?:boolean = null
-  score:number = null
-  missingElements:string = null
+  score?:number = null
+  missingElements?:string = null
 }
 
 export class CriteriaGrade{
   id:string = uuid.v4()
-  idx:number  = null
-  label: string = null
-  description: string = null
+  idx?:number  = null
+  label?: string = null
+  description?: string = null
   isSelected?:boolean = null
-  score:number = null
-  aspectGrades: AspectGrade[] = []
+  score?:number = null
+  aspectGrades?: AspectGrade[] = []
 }
 
 export type ScoreType =  "starts" | "status"
@@ -237,45 +243,50 @@ export type ScoreType =  "starts" | "status"
 export class ParameterGrade{
   id:string = uuid.v4()
   
-  owners:Array<string> = null;
-  idx: number = null
-  label: string = null
-  description:string = null
-  scoreType:ScoreType = null
-  score:number = null
-  evaluator_uid:string = null
-  applicationDate:Date = null
+  owners?:Array<string> = null;
+  idx?: number = null
+  label?: string = null
+  description?:string = null
+  scoreType?:ScoreType = null
+  score?:number = null
+  evaluator_uid?:string = null
+  evaluator?:User
+  applicationDate?:Date = null
 
-  isCompleted:boolean = false
+  isCompleted?:boolean = false
+  evaluator_comment?:string
 
-  criteriaGrades: CriteriaGrade[] = []
+  criteriaGrades?: CriteriaGrade[] = []
 }
 
 
 export class ExamGrade{
   id:string = uuid.v4()
-  owners:Array<string> = null;
+  owners?:Array<string> = null;
 
-  exam_id:string = null;
+  exam_id?:string = null;
+  exam?:Exam
 
-  materia_id:string = null;
+  materia_id?:string = null;
+  materia?:Materia;
 
-  isCompleted: boolean = false
-  applicationDate:Date = null
+  isCompleted?: boolean = false
+  applicationDate?:Date = null
 
-  student_uid:string = null
+  student_uid?:string = null
+  student?:User
 
-  title:string = null
-  expression:string = null
+  title?:string = null
+  expression?:string = null
 
-  score:number = 0
-  certificate_url:string = null
+  score?:number = 0
+  certificate_url?:string = null
 
 
-  isDeleted:boolean = false
-  isReleased:boolean = false
-  isApproved:boolean = false
-  parameterGrades:ParameterGrade[] = []
+  isDeleted?:boolean = false
+  isReleased?:boolean = false
+  isApproved?:boolean = false
+  parameterGrades?:ParameterGrade[] = []
 }
 export interface AspectGradeRequest{
   examGrades:{

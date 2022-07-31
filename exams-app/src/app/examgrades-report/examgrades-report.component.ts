@@ -1,13 +1,17 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, resolveForwardRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Chart } from 'node_modules/chart.js'
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { copyObj, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, ParameterGrade } from '../exams/exams.module';
+import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Materia, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
+import { ExamFormService } from '../exam-form.service';
 
 //http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
+
+
+
 
 @Component({
   selector: 'app-examgrades-report',
@@ -22,10 +26,15 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   examGrade_id:string
   exam_label:string
 
+  examGrade:ExamGrade
+
+
+
   constructor(
     private route: ActivatedRoute
     ,private examenesImprovisacionService:ExamenesImprovisacionService
     ,private navigationService:NavigationService
+    ,private examFormService:ExamFormService
   ) {
     this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id') 
 
@@ -33,33 +42,58 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     db.collection("examGrades").doc(this.examGrade_id).get().then( doc =>{
-      var e = copyObj(new ExamGrade() , doc.data())
-      e["parameterGrades"] = []
+      this.examGrade = {
+        id:doc.data().id,
+        exam_id:doc.data().exam_id,
+        title:doc.data().title,
+        student_uid:doc.data().student_uid,
+        applicationDate:doc.data().applicationDate.toDate(),
+        parameterGrades:[]
+      }
+      
+      
+      
       var labels = []
       let scores = []
 
-      db.collection("exams").doc(e["exam_id"]).get().then( doc =>{
+      db.collection("exams").doc(this.examGrade.exam_id).get().then( doc =>{
         this.exam_label = doc.data().label
       })
 
       
-      this.examenesImprovisacionService.getUser(e["student_uid"]).then( user =>{
-        e["student_name"] = user.claims["displayName"] ? user.claims["displayName"] : user.displayName
+      this.examenesImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
+        this.examGrade.student = {
+          uid:user.uid,
+          displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
+        }
 
         db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").get().then( set =>{
 
           set.docs.map( doc =>{
-            var parameterGrade:ParameterGrade = new ParameterGrade()
-            copyObj(parameterGrade, doc.data())
-            e["parameterGrades"].push(parameterGrade)
+            var parameterGrade:ParameterGrade = {
+              id:doc.data().id,
+              label:doc.data().label,
+              score:doc.data().score,
+              applicationDate:doc.data().applicationDate.toDate(),
+              evaluator_comment:doc.data().evaluator_comment,
+              criteriaGrades:[]
+            }
+           
+            this.examGrade.parameterGrades.push(parameterGrade)
+
+            this.addCriteriaGrades(this.examGrade, parameterGrade)
           })
 
-          for( let i=0; i< e["parameterGrades"].length; i++){
-            let p = e["parameterGrades"][i]
+          this.examGrade.parameterGrades.sort((a,b) =>{
+            return a.label > b.label ? 1: -1
+          })
+
+          for( let i=0; i< this.examGrade.parameterGrades.length; i++){
+            let p = this.examGrade.parameterGrades[i]
             labels[i] = p.label
             scores[i] = p.score
           }  
-          this.createGraph(this.examGrade_id, e["student_name"], labels, scores)        
+          this.createGraph(this.examGrade_id, this.examGrade.student.displayName, labels, scores)        
 
         },
         reason =>{
@@ -67,9 +101,6 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         })
 
       })
-      
-
-      
     })
 
     
@@ -129,5 +160,56 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     this.navigationService.back()
   }
   
+  addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade):Promise<void>{
+    var _resolve
+    var _reject
+    return new Promise<void>((resolve,reject) =>{
+      db.collection("examGrades/" + examGrade.id + "/parameterGrades/" + parameterGrade.id + "/criteriaGrades" ).get().then( snapshot =>{
+        
+        
+        var map:Promise<void>[] = snapshot.docs.map( doc => {
+          var criteriaGrade:CriteriaGrade = {
+            id:doc.data().id,
+            idx:doc.data().idx,
+            label:doc.data().label,
+            score:doc.data().score,
+            aspectGrades: []
+          }
+          parameterGrade.criteriaGrades.push(criteriaGrade)
+
+          return this.addAspects(examGrade, parameterGrade, criteriaGrade)
+        })
+        Promise.all(map).then( () => {
+          parameterGrade.criteriaGrades.sort( (a,b) => {return a.idx > b.idx ? 1 : -1})
+          resolve()
+        })
+      },
+      reason =>{
+        console.error("Error")
+      })
+    })
+
+  }
+  addAspects(examGrade:ExamGrade, parameterGrade:ParameterGrade,criteriaGrades:CriteriaGrade):Promise<void>{
+    return new Promise<void>( (resolve, reject) =>{
+      db.collection("examGrades/" + examGrade.id + "/parameterGrades/" + parameterGrade.id + "/criteriaGrades/" + criteriaGrades.id + "/aspectGrades" ).get().then( snapshot =>{
+        snapshot.docs.map( doc =>{
+          var aspectGrade:AspectGrade = {
+            id:doc.data().id,
+            idx:doc.data().idx,
+            label:doc.data().label,
+            score:doc.data().score
+          }
+          criteriaGrades.aspectGrades.push(aspectGrade)
+        })
+      })
+      criteriaGrades.aspectGrades.sort((a,b) => {return a.idx>b.idx? 1:-1})
+      resolve()
+    })
+  }
+
+  formatDate(d){
+    return this.examFormService.formatDate(d)
+  }
 
 }

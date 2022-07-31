@@ -16,6 +16,9 @@
         cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeExam(e)"></textarea>
     </mat-form-field> 
     </p>
+
+    <mat-checkbox formControlName="isRequired" (change)="onChangeExam(e)">Es requerido</mat-checkbox>
+
     <div *ngFor="let p of getFormGroupArray(e,'parameters'); let i=index">
         
         <div class="parameter" [formGroup]="p">

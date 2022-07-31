@@ -29,6 +29,7 @@ export class EiTipoEditComponent implements OnInit {
     isDeleted:[false],
     label:["Nombre de la materia", Validators.required],   
     description:[""],
+    isRequired:[false],
     parameters: new FormArray([])
   })
   
@@ -88,6 +89,7 @@ export class EiTipoEditComponent implements OnInit {
           id:this.id,
           label:null,
           description:null,
+          isRequired:null,
           parameters:[{
             id:null,
             idx:null,
@@ -120,6 +122,7 @@ export class EiTipoEditComponent implements OnInit {
             this.e.controls.id.setValue(t.id)
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
+            this.e.controls.isRequired.setValue(t.isRequired ? t.isRequired : false)
             var parameter_arr:FormArray = this.e.controls.parameters as FormArray
 
             for( let i =0;t.parameters && i<t.parameters.length; i++){
@@ -522,7 +525,8 @@ export class EiTipoEditComponent implements OnInit {
       exams:{
         id:e.controls.id.value,
         label:e.controls.label.value,
-        description:e.controls.description.value
+        description:e.controls.description.value,
+        isRequired:e.controls.isRequired.value
       }
     }
 

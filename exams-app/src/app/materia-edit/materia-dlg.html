@@ -9,7 +9,7 @@
 <p>
   <mat-form-field appearance="legacy">
       <mat-label>Certificado Maestro</mat-label>
-      <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onChangeExamProperty($event, m)">
+      <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onSelectChange($event, m)">
         <mat-option *ngFor="let tc of typeCertificates" [value]="tc.value">
           {{tc.label}}
         </mat-option>
@@ -17,23 +17,16 @@
   </mat-form-field>
   <mat-form-field appearance="legacy">
       <mat-label>Icono de certificado</mat-label>
-      <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onChangeExamProperty($event, m)">
+      <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onSelectChange($event, m)">
         <mat-option *ngFor="let ic of iconCertificates" [value]="ic.value">
           {{ic.label}}
         </mat-option>
       </mat-select>
+      
   </mat-form-field>  
-  <mat-form-field>
-    <mat-label>isEnrollmentActive</mat-label>
-    <mat-select formControlName="isEnrollmentActive"  name="isEnrollmentActive" (selectionChange)="onChangeExamProperty($event, m)">
-      <mat-option value="true">
-        yes
-      </mat-option>
-      <mat-option value="false">
-        no
-      </mat-option>
-    </mat-select>
-  </mat-form-field> 
+  <mat-checkbox formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)">
+    Enrolado activo
+  </mat-checkbox>
   <mat-form-field>
     <mat-label>video url</mat-label>
     <input  matInput type="text"  formControlName="videoUrl" (change)="onPropertyChange($event)">
@@ -48,7 +41,7 @@
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Cancel</button>
    
-  <button [disabled]="m.invalid" mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+  <button [disabled]="m.invalid" mat-button [mat-dialog-close]="materia" cdkFocusInitial>Ok</button>
 </mat-dialog-actions>
 </form>
 

@@ -3,3 +3,12 @@
     height: 80%;
     display:block;
 }
+
+.criteria{
+    border:solid;
+    border-width:1px;
+}
+.aspect{
+    border:solid;
+    border-width:1px;
+}

@@ -1,6 +1,31 @@
-<h2>{{exam_label}}</h2>
+Reporte Examen
+<div *ngIf="examGrade">
+<h2>{{examGrade.title}}</h2>
+{{ formatDate(examGrade.applicationDate) }}
 <div id="report_container">
     <canvas id="{{examGrade_id}}" ></canvas>
 </div>
 <button mat-button (click)="onBack()"><mat-icon>arrow_back</mat-icon></button>
 
+<mat-accordion  class="example-headers-align" multi>
+    <mat-expansion-panel *ngFor="let p of examGrade.parameterGrades">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+         {{ p.label }} {{ p.score }}
+        </mat-panel-title>
+        <mat-panel-description>
+          {{ p.evaluator_comment }}
+          <mat-icon>account_circle</mat-icon>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-expansion-panel-content>
+        <table class="criteria" *ngFor="let c of p.criteriaGrades">
+            <th>{{ c.label }}</th>
+            <tr class="aspect" *ngFor="let a of c.aspectGrades">
+                <td class="aspect_label">{{ a.label }}</td><td class="score" >{{ a.score * 10}}</td>
+            </tr>
+        </table>
+      </mat-expansion-panel-content>
+    </mat-expansion-panel>
+</mat-accordion>  
+</div>

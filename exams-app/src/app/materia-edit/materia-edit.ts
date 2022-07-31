@@ -16,14 +16,14 @@ import { db } from 'src/environments/environment';
 export class DialogMateriaDialog implements OnInit{ 
    
     m = this.fb.group({
-      id: [this.data.id],
-      isDeleted:[this.data.isDeleted],
-      materia_name:[this.data.materia_name, Validators.required],
-      typeCertificate:[this.data.typeCertificate, Validators.required],
-      iconCertificate:[this.data.iconCertificate, Validators.required],
-      description:[this.data.description],
-      videoUrl:[this.data.videoUrl],
-      isEnrollmentActive:[this.data.isEnrollmentActive]
+      id: [this.materia.id],
+      isDeleted:[this.materia.isDeleted],
+      materia_name:[this.materia.materia_name, Validators.required],
+      typeCertificate:[this.materia.typeCertificate, Validators.required],
+      iconCertificate:[this.materia.iconCertificate, Validators.required],
+      description:[this.materia.description],
+      videoUrl:[this.materia.videoUrl],
+      isEnrollmentActive:[this.materia.isEnrollmentActive]
     })        
 
     typeCertificates = []
@@ -34,7 +34,7 @@ export class DialogMateriaDialog implements OnInit{
         private examImprovisacionService: ExamenesImprovisacionService,
         private userLoginService: UserLoginService,
         public dialogRef: MatDialogRef<DialogMateriaDialog>,
-        @Inject(MAT_DIALOG_DATA) public data: Materia) {}
+        @Inject(MAT_DIALOG_DATA) public materia: Materia) {}
   
   
     ngOnInit(): void {
@@ -112,7 +112,7 @@ export class DialogMateriaDialog implements OnInit{
  
       var propertyName = event.srcElement.attributes.formControlname.value
       var value = event.target.value      
-      this.data[propertyName] = value
+      this.materia[propertyName] = value
       if( id ){   
         var values = {}
         values[propertyName]=value                       
@@ -120,71 +120,89 @@ export class DialogMateriaDialog implements OnInit{
       }      
     }
 
-    async onChangeExamProperty(event:MatSelectChange, fg:FormGroup){
-      console.log("onChangeExamProperty")
+    async onCheckboxChange(event){
+      var id =this.m.controls.id.value
+ 
+      var propertyName = event.source.name
+      var value = event.checked     
+      this.materia[propertyName] = value
+      if( id ){   
+        var values = {}
+        values[propertyName]=value                       
+        await db.collection('materias').doc(id).update(values)
+      }      
+    }
+
+
+    async onSelectChange(event:MatSelectChange, fg:FormGroup){
+      console.log("onSelectChange")
 
       var id =fg.controls.id.value
  
       var propertyName = event.source.ngControl.name
       var value = event.source.ngControl.value      
-      this.data[propertyName] = value
+      this.materia[propertyName] = value
 
-      var values = {
-        "label1":"",
-        "label2":"",
-        "label3":"",
-        "label4":"",
-        "color1":"red", 
-        "color2":"black"
-      }
-      if( value == "true" ){
-        value = true
-      }
-      else if( value == "false"){
-        value = false
-      }
+      
+      var values = {}
+
       if( propertyName == "typeCertificate"){
         switch(value){
           case "Experta.jpeg": 
-            values["label1"] = "RAKS SHARKI"
-            values["label2"] = ""
-            values["label3"] = ""
-            values["label4"] = "Danza Oriental y Fusiones"
-            values["color1"] = "#d9ad43"
-            values["color2"] = "black"
-            break;
+            this.materia["label1"] = "RAKS SHARKI"
+            this.materia["label2"] = ""
+            this.materia["label3"] = ""
+            this.materia["label4"] = "Danza Oriental y Fusiones"
+            this.materia["color1"] = "#d9ad43"
+            this.materia["color2"] = "black"
+            break
           case "Especialista.jpeg": 
-            values["label1"] = "RAKS SHARKI"
-            values["label2"] = ""
-            values["label3"] = ""
-            values["label4"] = "Danza Oriental y Fusiones"
-            values["color1"] = "#5b2383"
-            values["color2"] = "black"
-            break;
+            this.materia["label1"] = "RAKS SHARKI"
+            this.materia["label2"] = ""
+            this.materia["label3"] = ""
+            this.materia["label4"] = "Danza Oriental y Fusiones"
+            this.materia["color1"] = "#5b2383"
+            this.materia["color2"] = "black"
+            break            
+
           case "habilidades_tecnicas.jpeg": 
-            values["label1"] = ""
-            values["label2"] = this.data.materia_name
-            values["label3"] = ""
-            values["label4"] = "WWW.RAXACADEMY.COM"
-            values["color1"] = "#5b2383"
-            values["color2"] = "black"
+            this.materia["label1"] = ""
+            this.materia["label2"] = this.materia.materia_name
+            this.materia["label3"] = ""
+            this.materia["label4"] = "WWW.RAXACADEMY.COM"
+            this.materia["color1"] = "#5b2383"
+            this.materia["color2"] = "black"     
             break;    
           case "habilidades_tematicas.jpeg": 
-            values["label1"] = ""
-            values["label2"] = this.data.materia_name
-            values["label3"] = ""
-            values["label4"] = "WWW.RAXACADEMY.COM"
-            values["color1"] = "#5b2383"
-            values["color2"] = "red"
+            this.materia["label1"] = ""
+            this.materia["label2"] = this.materia.materia_name
+            this.materia["label3"] = ""
+            this.materia["label4"] = "WWW.RAXACADEMY.COM"
+            this.materia["color1"] = "#5b2383"
+            this.materia["color2"] = "red"
             break;                      
-
+        }
+        if( id ){
+          values = {
+            typeCertificate:this.materia.typeCertificate,
+            label1:this.materia.label1,
+            label2:this.materia.label2,
+            label3:this.materia.label3,
+            label4:this.materia.label4,
+            color1:this.materia.color1,
+            color2:this.materia.color2
+          }
+          await db.collection('materias').doc(id).update(values)
         }
       }
-      if( id ){   
-        values[propertyName]=value                       
-        await db.collection('materias').doc(id).update(values)
+      else{
+        if( id )                      
+          await db.collection('materias').doc(id).update(values)   
       }
-
-    }    
+    }   
+    
+    getType( variable){
+      console.log( typeof(variable) )
+    }
   }
   
