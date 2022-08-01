@@ -14,6 +14,7 @@ import { stringify } from '@angular/compiler/src/util';
 import { db } from 'src/environments/environment';
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import * as firebase from 'firebase';
+import { assertNotNull } from '@angular/compiler/src/output/output_ast';
 
 
 
@@ -165,45 +166,66 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       console.log("set" + set.docs.length)
             
       var map = set.docs.map( doc =>{
-        let examGrade:ExamGrade = new ExamGrade()
-        var parameterGrade:ParameterGrade = new ParameterGrade()
-        var student:User = new User()
-        var materia:Materia = new Materia() 
-        var exam = new Exam()
-        copyObj(parameterGrade, doc.data())
 
+        var parameterGrade:ParameterGrade = {
+          id:doc.data().id,
+          label:doc.data().label,
+          evaluator_uid:doc.data().evaluator_uid,
+          isCompleted:doc.data().isCompleted,
+          applicationDate:doc.data().applicationDate,
+          criteriaGrades:[]
+        }
+       
+        
+        
         var examGrade_id = doc.ref.path.split("/")[1]
-        var evaluador:User = new User()
+      
   
-        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
-          copyObj(evaluador,doc)
-        })
+
         var obj:ExamenesImprovisacionItem = {
-          exam:exam,
-          examGrade:examGrade,
+          exam:null,
+          examGrade:null,
           parameterGrade: parameterGrade, 
-          materia: materia,
-          student: student,
-          approver:evaluador,
+          materia: null,
+          student: null,
+          approver:null,
           isCompleted:parameterGrade.isCompleted
         }
+
+        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
+          obj.approver = doc
+        })        
         this.datavalues.push(obj)
 
         return db.collection("examGrades").doc(examGrade_id).get().then(doc =>{
           
-          copyObj(examGrade, doc.data())
+          let examGrade:ExamGrade = {
+            id:doc.data().id,
+            title:doc.data().title,
+            exam_id:doc.data().exam_id,
+            materia_id:doc.data().materia_id,
+            student_uid:doc.data().student_uid,
+            applicationDate:doc.data().applicationDate.toDate()
+          }
+          obj.examGrade = examGrade
 
 
           db.collection("exams").doc(examGrade.exam_id).get().then( doc =>{
-            copyObj(exam,doc.data())
+            obj.exam = {
+              id:doc.data().id,
+              label:doc.data().label
+            }
           })
     
           this.getUser(examGrade.student_uid).then(user=>{
-            copyObj(student, user)
+            obj.student = user
           })
 
-          db.collection("materias").doc(examGrade.materia_id).get().then( materiaDoc =>{
-            copyObj(materia, materiaDoc.data())
+          db.collection("materias").doc(examGrade.materia_id).get().then( doc =>{
+            obj.materia ={
+              id:doc.data().id,
+              materia_name:doc.data().materia_name
+            }
           },
           reason =>{
             console.error("ERROR reading materia:" + reason)

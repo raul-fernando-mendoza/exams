@@ -554,7 +554,6 @@ updateExamGrade():Promise<void>{
 
   updateCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGradeFG:FormGroup):Promise<void>{
     let criteriaGrade_id = criteriaGradeFG.controls.id.value
-    let cg:CriteriaGrade = new CriteriaGrade()
     let json = {
       score:criteriaGradeFG.controls.score.value
     }

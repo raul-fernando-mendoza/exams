@@ -251,8 +251,11 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
         group.children.length = 0
         var docs = set.forEach(doc =>{   
                  
-          var materia:Materia = new Materia()
-          copyObj(materia, doc.data())
+          var materia:Materia ={
+            id:doc.data().id,
+            materia_name:doc.data().materia_name,
+            required_in_carrers_ids:doc.data().required_in_carrers_ids
+          }
 
 
           var materiaItem:MateriaItemNode = this.MateriaItemBuilder(nivel, group, materia)
@@ -539,8 +542,11 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
 
   async onEditMateria(row){
     const doc = await db.collection('materias').doc(row.materia_id).get()
-    var materia:Materia = new Materia()
-    copyObj(materia,doc.data())
+    const d = doc.data()
+    var materia:Materia = {
+      id:d.id,
+      materia_name:d.materia_name,    
+    }
 
     const dialogRef = this.dialog.open(DialogMateriaDialog, {
       height: '400px',

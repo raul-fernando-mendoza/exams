@@ -22,42 +22,41 @@
 
 <div >
   <mat-accordion multi>
-    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" [expanded]="isLoggedIn() && materiaEnrollments.length > 0">
+    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" [expanded]="isLoggedIn()">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Mis Materias
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-expansion-panel-content class=".chains">
-        <mat-card *ngFor="let me of materiaEnrollments" class="enrolled-materia-card">
+        <mat-card *ngFor="let me of myEnrollments" class="enrolled-materia-card">
           <mat-card-title-group>
-              <mat-card-title>{{ me["materia"]["materia_name"] }}</mat-card-title>
+              <mat-card-title>{{ me.materia_name }}</mat-card-title>
               <mat-card-subtitle>
-                <a *ngIf="me['certificate_url']" href="{{ me['certificate_url'] }}">certificado</a> 
-                <div *ngIf="!me['certificate_url']">No Completado</div>
+                <a *ngIf="me.certificate_url" href="{{ me.certificate_url }}">certificado</a> 
+                <div *ngIf="!me.certificate_url">No Completado</div>
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me['materia']['iconCertificate'] }}">
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me.iconCertificate }}">
                                           
           </mat-card-title-group>
           <mat-card-content>
             <table>
-              <tr cols="2" rowHeight="1:1" *ngFor="let e of me['exams']">
-                <td>
-                  <button *ngIf='e["examGrade"] && e["examGrade"]["isCompleted"]' mat-button (click)='onOpenExamGrade(e["examGrade"]["id"])'>{{ e["label"] }}</button>
-                  <div *ngIf='!(e["examGrade"] && e["examGrade"]["isCompleted"])'>{{ e["label"] }}</div>
-                </td>
-                <td>
-                  <div *ngIf='e["examGrade"] && e["examGrade"]["score"]'><mat-icon>done</mat-icon></div>
-                  <div *ngIf='!(e["examGrade"] && e["examGrade"]["score"])'><mat-icon>error</mat-icon></div>
-                </td>
-
+              <tr *ngFor="let e of me.exams">
+                  <td>
+                    <button *ngIf='e && e.isReleased' mat-button (click)='onOpenExamGrade(e.examGrade_id)'>{{ e.exam_name }}</button>
+                    <div *ngIf='!(e && e.isReleased)'>{{ e.exam_name }}</div>
+                  </td>
+                  <td>
+                    <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
+                    <div *ngIf='!(e.isReleased)'><mat-icon>error</mat-icon></div>
+                  </td>
               </tr>
-            </table>
+            </table>  
           </mat-card-content>
         </mat-card>
       </mat-expansion-panel-content>  
     </mat-expansion-panel>
-    <mat-expansion-panel [expanded]="!isLoggedIn() || materiaEnrollments.length == 0">
+    <mat-expansion-panel [expanded]="!isLoggedIn() ">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Materias

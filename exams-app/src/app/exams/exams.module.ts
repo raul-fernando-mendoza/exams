@@ -58,10 +58,10 @@ export function copyFromForm(to:{}, from:FormGroup) {
   return result
 }
 
-export class User{
-  uid:string = null
-  email?:string = null
-  displayName?:string = null
+export interface User{
+  uid:string 
+  email?:string 
+  displayName?:string
   claims?:{}
 }
 
@@ -89,43 +89,44 @@ export interface Parameter{
 
   
 }
-export class Exam{
-  materia_id?:string = null
+export interface Exam{
+  materia_id?:string 
 
-  id:string = null
-  label?:string = null
-  description?:string = null
-  isRequired?:boolean = null
-  owners?:Array<string> = null
-  isDeleted?:boolean = null
+  id:string 
+  label?:string 
+  description?:string 
+  isRequired?:boolean 
+  owners?:Array<string> 
+  isDeleted?:boolean 
   
 
-  parameters?: Parameter[] = null
+  parameters?: Parameter[] 
 
-  required_in_carrers_ids?:Array<string> = null
+  required_in_carrers_ids?:Array<string> 
 }
 
-export class Materia{
-  group_id:string = null
+export interface Materia{
+  group_id?:string 
 
-  id:string = null
-  materia_name:string = null
-  isDeleted:boolean = false
-  owners:Array<string> = null
+  id:string 
+  materia_name?:string 
+  isDeleted?:boolean 
+  owners?:Array<string> 
 
-  typeCertificate:string = null
-  iconCertificate?:string = null
+  typeCertificate?:string 
+  iconCertificate?:string 
 
-  description:string = null
-  videoUrl:string = null
-  isEnrollmentActive:boolean = null
+  description?:string 
+  videoUrl?:string 
+  isEnrollmentActive?:boolean 
 
-  label1:string = ""
-  label2:string = ""
-  label3:string = ""
-  label4:string = ""
-  color1:string = "" 
-  color2:string = ""  
+  label1?:string 
+  label2?:string 
+  label3?:string 
+  label4?:string 
+  color1?:string 
+  color2?:string 
+  required_in_carrers_ids?:Array<string>
 }
 
 export interface Group{
@@ -156,7 +157,7 @@ export interface Career{
   isDeleted?:boolean
   owners?:Array<string>
 }
-
+/*
 export class Student{
   organization_id?:string
   id:string
@@ -165,14 +166,18 @@ export class Student{
   isActive?:boolean
   owners?:Array<string>
 }
+*/
 
-export class MateriaEnrollment{
+export interface MateriaEnrollment{
   organization_id?:string
   id:string
-  materia_id:string
-  student_uid:string
+  materia_id?:string
+  materia?:Materia
+  student_uid?:string
+  student?:User
   isActive?:boolean
   owners?:Array<string>
+  certificate_url?:string
 }
 
 export interface ExamRequest{
@@ -218,75 +223,76 @@ export interface AspectRequest{
   }
 }
 
-export class AspectGrade{
-  id:string = null
-  idx?:number = null 
-  label?: string = null
-  description?:string = null
-  isGraded?:boolean = null
-  score?:number = null
-  missingElements?:string = null
+export interface AspectGrade{
+  id:string
+  idx?:number  
+  label?: string 
+  description?:string 
+  isGraded?:boolean 
+  score?:number
+  hasMedal?:boolean
+  missingElements?:string 
 }
 
-export class CriteriaGrade{
-  id:string = uuid.v4()
-  idx?:number  = null
-  label?: string = null
-  description?: string = null
-  isSelected?:boolean = null
-  score?:number = null
-  aspectGrades?: AspectGrade[] = []
+export interface CriteriaGrade{
+  id:string 
+  idx?:number 
+  label?: string 
+  description?: string 
+  isSelected?:boolean 
+  score?:number 
+  aspectGrades?: AspectGrade[] 
 }
 
 export type ScoreType =  "starts" | "status"
 
-export class ParameterGrade{
-  id:string = uuid.v4()
+export interface ParameterGrade{
+  id:string 
   
-  owners?:Array<string> = null;
-  idx?: number = null
-  label?: string = null
-  description?:string = null
-  scoreType?:ScoreType = null
-  score?:number = null
-  evaluator_uid?:string = null
+  owners?:Array<string> 
+  idx?: number 
+  label?: string 
+  description?:string 
+  scoreType?:ScoreType 
+  score?:number 
+  evaluator_uid?:string 
   evaluator?:User
-  applicationDate?:Date = null
+  applicationDate?:Date 
 
-  isCompleted?:boolean = false
+  isCompleted?:boolean 
   evaluator_comment?:string
 
-  criteriaGrades?: CriteriaGrade[] = []
+  criteriaGrades?: CriteriaGrade[] 
 }
 
 
-export class ExamGrade{
-  id:string = uuid.v4()
-  owners?:Array<string> = null;
+export interface ExamGrade{
+  id:string 
+  owners?:Array<string> 
 
-  exam_id?:string = null;
+  exam_id?:string
   exam?:Exam
 
-  materia_id?:string = null;
+  materia_id?:string 
   materia?:Materia;
 
-  isCompleted?: boolean = false
-  applicationDate?:Date = null
+  isCompleted?: boolean 
+  applicationDate?:Date 
 
-  student_uid?:string = null
+  student_uid?:string 
   student?:User
 
-  title?:string = null
-  expression?:string = null
+  title?:string 
+  expression?:string 
 
-  score?:number = 0
-  certificate_url?:string = null
+  score?:number 
+  certificate_url?:string 
 
 
-  isDeleted?:boolean = false
-  isReleased?:boolean = false
-  isApproved?:boolean = false
-  parameterGrades?:ParameterGrade[] = []
+  isDeleted?:boolean 
+  isReleased?:boolean 
+  isApproved?:boolean 
+  parameterGrades?:ParameterGrade[] 
 }
 export interface AspectGradeRequest{
   examGrades:{

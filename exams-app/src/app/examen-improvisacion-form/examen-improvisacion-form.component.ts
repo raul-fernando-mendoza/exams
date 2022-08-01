@@ -105,8 +105,10 @@ export class ExamenImprovisacionFormComponent {
         const materia_id = doc.data().materia_id
         return db.collection("materias").doc(materia_id).get().then( doc=>{
           console.log("materia name:" + doc.data().materia_name)
-          var materia:Materia = new Materia()
-          copyObj(materia, doc.data())
+          var materia:Materia = {
+            id:doc.data().id,
+            materia_name:doc.data().materia_name
+          }
           this.materias.push(materia)
         })      
       })
@@ -350,7 +352,6 @@ export class ExamenImprovisacionFormComponent {
       description:[c.description],
       score:[null],
       isSelected:[ c.initiallySelected ],
-      owners:[this.userLoginService.getUserUid()],
       aspectGrades: new FormArray([])
     })
     criteriaGrade_array.push(g)
@@ -374,10 +375,8 @@ export class ExamenImprovisacionFormComponent {
       label:[a.label],
       description:[a.description],
       isGraded:[false],
-      score:[null],
-      hasMedal:[false],
-      owners:[this.userLoginService.getUserUid()],
-      medalDescription:[null]
+      score:[1.0],
+      hasMedal:[false]
     })
     question_array.push(g)
 
@@ -447,7 +446,34 @@ export class ExamenImprovisacionFormComponent {
     }
     else{
 
-      let examGrade:ExamGrade = new ExamGrade()
+      let examGrade:ExamGrade = {
+        id:null, 
+        owners:null,
+      
+        exam_id:null,
+        exam:null,
+      
+        materia_id:null, 
+        materia:null,
+      
+        isCompleted: null, 
+        applicationDate:null, 
+      
+        student_uid:null, 
+        student:null,
+      
+        title:null,
+        expression:null ,
+      
+        score:null, 
+        certificate_url:null, 
+      
+      
+        isDeleted:null, 
+        isReleased:null, 
+        isApproved:null ,
+        parameterGrades:null      
+      }
       let json = copyFromForm(examGrade, this.examGrade)
 
       //adding all the evaluators
@@ -493,7 +519,24 @@ export class ExamenImprovisacionFormComponent {
 
   
   addParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
-    let parameterGrade:ParameterGrade = new ParameterGrade()
+    let parameterGrade:ParameterGrade = {
+      id:null, 
+  
+      owners:null,
+      idx: null, 
+      label: null,
+      description:null, 
+      scoreType:null, 
+      score:null, 
+      evaluator_uid:null, 
+      evaluator:null,
+      applicationDate:null,
+    
+      isCompleted:null, 
+      evaluator_comment:null,
+    
+      criteriaGrades: null     
+    }
     let json = copyFromForm(parameterGrade,pFG)
     json["applicationDate"] = examGrade.applicationDate
     json["isDeleted"] = false
@@ -524,7 +567,15 @@ export class ExamenImprovisacionFormComponent {
   }
 
   addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:FormGroup):Promise<void>{
-    let cg:CriteriaGrade = new CriteriaGrade()
+    let cg:CriteriaGrade = {
+      id:null,
+      idx:null,
+      label:null,
+      description:null,
+      score:null,
+      isSelected:null,
+      aspectGrades: null     
+    }
     let criteriaGrade = copyFromForm(cg,criteriaGradeFG)
     var criteria_resolve = null
     return new Promise<void>((resolve, reject) =>{
@@ -551,7 +602,15 @@ export class ExamenImprovisacionFormComponent {
   }
 
   addAspectGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGrade:CriteriaGrade, aspectGradeFG:FormGroup):Promise<void>{
-    let aspectoGrade:AspectGrade = new AspectGrade()
+    let aspectoGrade:AspectGrade = {
+      id:null,
+      idx:null,
+      label:null,
+      description:null,
+      isGraded:null,
+      score:null,
+      hasMedal:null
+    }
     let json = copyFromForm(aspectoGrade,aspectGradeFG)
     var aspect_resolve = null
     return new Promise<void>((resolve, reject) =>{

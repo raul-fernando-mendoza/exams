@@ -3,11 +3,25 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
-import { copyObj, Exam, ExamGrade, Materia } from '../exams/exams.module';
+import { copyObj, Exam, ExamGrade, Materia, MateriaEnrollment } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
 import { RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
+
+interface MyExam {
+  examGrade_id:string
+  exam_name:string
+  isReleased:boolean
+}
+
+interface MyEnrollment {
+  enrollment_id:string
+  materia_name:string
+  certificate_url:string
+  iconCertificate:string
+  exams:MyExam[]
+}
 
 @Component({
   selector: 'app-welcome',
@@ -23,7 +37,8 @@ export class WelcomeComponent implements OnInit {
     , private sortingService:SortingService
     , private userPreferencesService:UserPreferencesService) { }
 
-  materiaEnrollments = []
+  
+  myEnrollments:MyEnrollment[] = []
   materias:Array<Materia> = []
 
   ngOnInit(): void {
@@ -47,7 +62,7 @@ export class WelcomeComponent implements OnInit {
 
 
   loadMateriaEnrollment(){
-    this.materiaEnrollments.length = 0
+    this.myEnrollments.length = 0
 
     if( !this.isLoggedIn() ){
       return
@@ -60,22 +75,42 @@ export class WelcomeComponent implements OnInit {
       console.log("materia start")
       let map:Array<Promise<void>> = set.docs.map( doc =>{
         console.log("processing enrollment:" + doc.data())
-        var json = doc.data()
-        json["materia"] = new Materia()
-        this.materiaEnrollments.push(json)
+        var materiaEnrollment:MateriaEnrollment = {
+          id:doc.data().id,
+          materia_id:doc.data().materia_id,
+          materia:null,
+          student_uid:doc.data().student_uid,
+          student:null,
+          isActive:doc.data().isActive,
+          certificate_url:doc.data().certificate_url
+        }
+        
 
         const materia_id = doc.data().materia_id
-        json["exams"] = new Array()
-        this.loadExamsForRow(materia_id, json["exams"])
+
 
         return db.collection("materias").doc(materia_id).get().then( doc=>{
-          console.log("materia name:" + doc.data().materia_name)
-          copyObj(json["materia"], doc.data() )          
+          var materia:Materia = {
+            id:doc.data().id,
+            materia_name:doc.data().materia_name,
+            iconCertificate:doc.data().iconCertificate
+          }
+          materiaEnrollment.materia = materia
+          var myEnrollment:MyEnrollment = {
+            enrollment_id:materiaEnrollment.id,
+            materia_name:materiaEnrollment.materia.materia_name,
+            certificate_url:materiaEnrollment.certificate_url,
+            iconCertificate:materia.iconCertificate,
+            exams:[]
+          }
+          
+          this.loadExamsForRow(materia_id, myEnrollment.exams)          
+          this.myEnrollments.push(myEnrollment)      
         })      
       })
       Promise.all(map).then(()=>{
-        this.materiaEnrollments.sort( (a,b) => {
-          if( a["materia"]["materia_name"] > b["materia"]["materia_name"] ){
+        this.myEnrollments.sort( (a,b) => {
+          if( a.materia_name > b.materia_name ){
             return 1
           }
           else return -1
@@ -91,7 +126,7 @@ export class WelcomeComponent implements OnInit {
 
   
 
-  loadExamsForRow(materia_id:string, exams:Array<any>):Promise<void>{
+  loadExamsForRow(materia_id:string, exams:Array<MyExam>):Promise<void>{
 
     var _resolve
     var _reject
@@ -112,8 +147,12 @@ export class WelcomeComponent implements OnInit {
             id:doc.data().id,
             isReleased:false
           }  
-          
-          exams.push(exam)
+          var myExam:MyExam = { 
+            examGrade_id:null,           
+            exam_name:exam.label,
+            isReleased:false
+          }
+          exams.push(myExam)
    
           
           const grades = db.collection("examGrades")
@@ -122,23 +161,20 @@ export class WelcomeComponent implements OnInit {
           .where("exam_id","==",exam.id)
           .where("isDeleted","==",false)
     
-          return grades.get().then( grades => {
+          return grades.get().then( snapshot => {
   
-            for( var j=0; j<grades.docs.length; j++){
-              var eg = copyObj(new ExamGrade(), grades.docs[j].data())
-              exam["examGrade"] = eg              
-            }          
-  
+            snapshot.docs.map( doc =>{
+              var examGrade:ExamGrade = {
+                id:doc.data().id,
+                title:doc.data().title,
+                isReleased:doc.data().isReleased
+              }
+              myExam.examGrade_id = examGrade.id
+              myExam.isReleased = examGrade.isReleased
+            })
           },
           reason =>{
-            exams.sort((a,b) =>{
-              if( a.label > b.label){
-                return 1
-              }
-              else{
-                return -1
-              }
-            })
+            exams.sort((a,b) =>{ return a.exam_name > b.exam_name ? 1:-1 })
             console.error("ERROR reading examGrades:" + reason )
           })
         },
@@ -164,8 +200,10 @@ export class WelcomeComponent implements OnInit {
     .where("isEnrollmentActive", "==", true)
     .get().then( set =>{
       set.docs.map( doc =>{
-        var m = new Materia()
-        copyObj(m, doc.data())
+        var m = {
+          id:doc.data().id,
+          materia_name:doc.data().materia_name
+        }
         this.materias.push( m )
       })
       this.materias.sort( (a,b) => {

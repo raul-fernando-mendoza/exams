@@ -201,8 +201,16 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       .where( "applicationDate", "==", this.applicationDate)
       .get().then( set =>{
         let m = set.docs.map( doc =>{
-          let examGrade = new ExamGrade()
-          copyObj(examGrade,doc.data())
+          let examGrade:ExamGrade = {
+            id:doc.data().id,
+            title:doc.data().title,
+            materia_id:doc.data().materia_id,
+            student_uid:doc.data().student_uid,
+            score:doc.data().score,
+            certificate_url:doc.data().certificate_url,
+            isReleased:doc.data().isReleased,
+            isCompleted:doc.data().isCompleted
+          }
           let node:NodeTableRow = {
             obj:{
               "id":examGrade.id,
@@ -253,8 +261,13 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       db.collection(`examGrades/${examGrade_id}/parameterGrades`)
       .where( "owners","array-contains", this.userLoginService.getUserUid()).get().then( set =>{
         let m = set.docs.map( doc =>{
-          let parameterGrade = new ParameterGrade()
-          copyObj(parameterGrade,doc.data())
+          let parameterGrade = {
+            id:doc.data().id,
+            label:doc.data().label,
+            score:doc.data().score,
+            isCompleted:doc.data().isCompleted,
+            idx:doc.data().idx
+          }
           let node:NodeTableRow = {
             obj:{
               "examGrade_id":examGrade_id,

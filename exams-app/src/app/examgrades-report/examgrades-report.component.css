@@ -5,10 +5,13 @@
 }
 
 .criteria{
-    border:solid;
-    border-width:1px;
+    width:80%;
 }
 .aspect{
     border:solid;
     border-width:1px;
+}
+.aspect_score{
+    padding-left:50px;
+    text-align:right;  
 }

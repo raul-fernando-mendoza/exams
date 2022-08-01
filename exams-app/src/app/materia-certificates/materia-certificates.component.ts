@@ -355,10 +355,11 @@ export class DialogEnrollMateriaDialog implements OnInit{
     var listMaterias = await query.get()
       
     listMaterias.forEach(doc =>{
-      var materia:Materia = new Materia()
-      copyObj(materia, doc.data())
+      var materia:Materia = {
+        id:doc.data().id,
+        materia_name:doc.data().materia_name
+      }
       this.materiasList.push(materia)
-
     })
   }
 

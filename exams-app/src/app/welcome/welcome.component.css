@@ -22,3 +22,11 @@
     width: 80%;
     margin: 10px;
 }
+
+.mat-grid-list *{
+    margin-top: 0px;
+    padding: 0px;
+    border:1px;
+    border-style: solid;
+    border-color:red;
+}

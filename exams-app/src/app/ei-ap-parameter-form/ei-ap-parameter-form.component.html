@@ -35,7 +35,7 @@
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
 
                         <div>
-                            {{ a.controls.score.value }}
+                        
                         <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(examGrade,p,c,a)">
                             <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
                             <mat-icon>not_interested</mat-icon>
