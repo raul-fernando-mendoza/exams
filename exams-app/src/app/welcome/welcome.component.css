@@ -12,6 +12,7 @@
     border: 1px;
     border-style: solid;
     border-color: black;
+    margin:20px;
 }
 
 .chains mat-card {
@@ -29,4 +30,9 @@
     border:1px;
     border-style: solid;
     border-color:red;
+}
+
+.exam-not-required-not-completed{
+    color:lightgray;
+    margin-left:15px;
 }

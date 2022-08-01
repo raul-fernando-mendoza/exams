@@ -1,5 +1,6 @@
+Bienvenido
 <mat-card class="action-card" *ngIf="!isLoggedIn()">
-    <mat-card-title>Bienvenido</mat-card-title>
+    <mat-card-title>Login</mat-card-title>
     <mat-card-content>
       <p>Por favor presione en login o registrese</p>
     </mat-card-content>
@@ -34,7 +35,7 @@
               <mat-card-title>{{ me.materia_name }}</mat-card-title>
               <mat-card-subtitle>
                 <a *ngIf="me.certificate_url" href="{{ me.certificate_url }}">certificado</a> 
-                <div *ngIf="!me.certificate_url">No Completado</div>
+                <div *ngIf="!me.certificate_url">En curso</div>
               </mat-card-subtitle>
               <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me.iconCertificate }}">
                                           
@@ -44,11 +45,11 @@
               <tr *ngFor="let e of me.exams">
                   <td>
                     <button *ngIf='e && e.isReleased' mat-button (click)='onOpenExamGrade(e.examGrade_id)'>{{ e.exam_name }}</button>
-                    <div *ngIf='!(e && e.isReleased)'>{{ e.exam_name }}</div>
+                    <div *ngIf='!(e && e.isReleased)' [class]='me.certificate_url && !e.isRequired ? "exam-not-required-not-completed" : "exam"'>{{ e.exam_name }}</div>
                   </td>
                   <td>
                     <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
-                    <div *ngIf='!(e.isReleased)'><mat-icon>error</mat-icon></div>
+                 
                   </td>
               </tr>
             </table>  

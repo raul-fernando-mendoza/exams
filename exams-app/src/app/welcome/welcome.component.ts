@@ -13,6 +13,7 @@ interface MyExam {
   examGrade_id:string
   exam_name:string
   isReleased:boolean
+  isRequired:boolean
 }
 
 interface MyEnrollment {
@@ -73,28 +74,15 @@ export class WelcomeComponent implements OnInit {
     .where("isActive",'==',true)
     .get().then( set =>{
       console.log("materia start")
-      let map:Array<Promise<void>> = set.docs.map( doc =>{
+      let transaction:Array<Promise<void>> = set.docs.map( doc =>{
         console.log("processing enrollment:" + doc.data())
-        var materiaEnrollment:MateriaEnrollment = {
-          id:doc.data().id,
-          materia_id:doc.data().materia_id,
-          materia:null,
-          student_uid:doc.data().student_uid,
-          student:null,
-          isActive:doc.data().isActive,
-          certificate_url:doc.data().certificate_url
-        }
+        var materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
         
 
         const materia_id = doc.data().materia_id
 
-
         return db.collection("materias").doc(materia_id).get().then( doc=>{
-          var materia:Materia = {
-            id:doc.data().id,
-            materia_name:doc.data().materia_name,
-            iconCertificate:doc.data().iconCertificate
-          }
+          var materia:Materia = doc.data() as Materia
           materiaEnrollment.materia = materia
           var myEnrollment:MyEnrollment = {
             enrollment_id:materiaEnrollment.id,
@@ -106,9 +94,13 @@ export class WelcomeComponent implements OnInit {
           
           this.loadExamsForRow(materia_id, myEnrollment.exams)          
           this.myEnrollments.push(myEnrollment)      
-        })      
+        })
+        
+        
       })
-      Promise.all(map).then(()=>{
+
+      
+      Promise.all(transaction).then(()=>{
         this.myEnrollments.sort( (a,b) => {
           if( a.materia_name > b.materia_name ){
             return 1
@@ -141,20 +133,15 @@ export class WelcomeComponent implements OnInit {
   
         var map = set.docs.map( doc =>{
   
-          var exam = {
-            materia_id:doc.data().materia_id,
-            label:doc.data().label,
-            id:doc.data().id,
-            isReleased:false
-          }  
+          var exam:Exam = doc.data() as Exam
           var myExam:MyExam = { 
             examGrade_id:null,           
             exam_name:exam.label,
-            isReleased:false
+            isReleased:false,
+            isRequired:exam.isRequired
           }
           exams.push(myExam)
-   
-          
+
           const grades = db.collection("examGrades")
           .where("student_uid","==", this.userLoginService.getUserUid())
           .where("materia_id","==", materia_id)
@@ -182,6 +169,7 @@ export class WelcomeComponent implements OnInit {
           console.error("ERROR: ")
         })
         Promise.all(map).then(()=>{ 
+          exams.sort( (a,b)=>{return a.exam_name > b.exam_name ? 1 : -1})
           _resolve()
         })
       })
@@ -200,10 +188,7 @@ export class WelcomeComponent implements OnInit {
     .where("isEnrollmentActive", "==", true)
     .get().then( set =>{
       set.docs.map( doc =>{
-        var m = {
-          id:doc.data().id,
-          materia_name:doc.data().materia_name
-        }
+        var m:Materia = doc.data() as Materia
         this.materias.push( m )
       })
       this.materias.sort( (a,b) => {
