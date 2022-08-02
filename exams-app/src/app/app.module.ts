@@ -59,6 +59,7 @@ import { CareerDialog, CareerListComponent } from './career-list/career-list.com
 import { CareerEditComponent } from './career-edit/career-edit.component';
 import { DialogMateriaDialog } from './materia-edit/materia-edit';
 import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
+import { MateriaListComponent } from './materia-list/materia-list.component';
 
 @NgModule({
   declarations: [
@@ -92,7 +93,8 @@ import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './mater
     DialogGroupDialog,
     DialogNivelDialog,
     MateriaCertificatesComponent,
-    DialogEnrollMateriaDialog
+    DialogEnrollMateriaDialog,
+    MateriaListComponent
   ],
   imports: [
     BrowserModule,

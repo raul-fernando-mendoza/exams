@@ -150,6 +150,10 @@ export class ExamenesImprovisacionService {
     })
     
   }
+  formatTimeStamp(t):string{
+    const date = t.toDate()    
+    return date.toISOString().split('T')[0] 
+  }
 
 
 }

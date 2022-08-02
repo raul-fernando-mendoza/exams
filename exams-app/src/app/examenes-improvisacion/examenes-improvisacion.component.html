@@ -36,7 +36,7 @@
 
       <ng-container matColumnDef="estudiante">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-        <td mat-cell *matCellDef="let row">{{row.student.displayName}}</td>
+        <td mat-cell *matCellDef="let row">{{row.student.claims.displayName ? row.student.claims.displayName : row.student.displayName}}</td>
       </ng-container>
 
       <ng-container matColumnDef="maestro">
@@ -51,7 +51,7 @@
 
       <ng-container matColumnDef="fechaApplicacion">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Applicacion</th>
-        <td mat-cell *matCellDef="let row">{{row.examGrade.applicationDate ? row.examGrade.applicationDate.toISOString().split('T')[0] : null}}</td>
+        <td mat-cell *matCellDef="let row">{{ printApplicationDate(row.examGrade.applicationDate) }}</td>
       </ng-container>
       
       <ng-container matColumnDef="completed">

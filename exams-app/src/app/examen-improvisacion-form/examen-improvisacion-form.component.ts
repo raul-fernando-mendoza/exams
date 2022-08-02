@@ -130,21 +130,16 @@ export class ExamenImprovisacionFormComponent {
 
   loadExams(materia_id){
     this.exams.length = 0
-    db.collection("exams")
+    db.collection("materias/" + materia_id + "/exams")
     .where("owners","array-contains",this.userLoginService.getUserUid())
     .where("materia_id","==",materia_id)
     .get().then( set =>{
       set.docs.map( doc => {
-          const exam_id = doc.data().id
-          const exam_label = doc.data().label
-          this.exams.push({"id":exam_id, "label":exam_label})  
+          const exam:Exam = doc.data() as Exam
+
+          this.exams.push(exam)  
       })    
-      this.exams.sort( (a,b) => {
-        if( a["label"] > b["label"] ){
-          return 1
-        }
-        else return -1
-      })
+      this.exams.sort( (a,b) => {return a.label > b.label ? 1:-1})
     },
     reason =>{
       console.log("ERROR reading exams:" + reason)
@@ -238,41 +233,44 @@ export class ExamenImprovisacionFormComponent {
   examChange(event) {
     var examId = event.value
 
-
+    var materia_id = this.examGrade.controls.materia_id.value
     var parameterGrades:FormArray = this.examGrade.controls.parameterGrades as FormArray
     parameterGrades.clear()      
 
     var req:ExamRequest = {
-      exams:{
-          id:examId,
-          label:null,
-          materia_id:null,
-          parameters:[{
-            id:null,
-            idx:null,
+      materias:{
+        id:materia_id,
+        exams:{
+            id:examId,
             label:null,
-            description:null,
-            scoreType:null,
-            criterias:[{
+            materia_id:null,
+            parameters:[{
               id:null,
+              idx:null,
               label:null,
               description:null,
-              idx:null,
-              initiallySelected:null,              
-              aspects:[{
+              scoreType:null,
+              criterias:[{
                 id:null,
-                idx:null,
                 label:null,
                 description:null,
+                idx:null,
+                initiallySelected:null,              
+                aspects:[{
+                  id:null,
+                  idx:null,
+                  label:null,
+                  description:null,
+                }]
               }]
             }]
-          }]
+        }
       }
     }  
     
     this.userLoginService.getUserIdToken().then( token => {
       this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(data => {
-        let exam:Exam = data["result"];
+        let exam:Exam = data["result"].exams
         this.addExam(parameterGrades, exam)
       },
       error => {

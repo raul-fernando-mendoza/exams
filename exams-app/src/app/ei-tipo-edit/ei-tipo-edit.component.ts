@@ -6,7 +6,7 @@ import { CdkTextareaAutosize} from '@angular/cdk/text-field';
 import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
-import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest} from 'src/app/exams/exams.module'
+import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, MateriaRequest, Materia} from 'src/app/exams/exams.module'
 import { MatSelectChange } from '@angular/material/select';
 
 
@@ -33,7 +33,8 @@ export class EiTipoEditComponent implements OnInit {
     parameters: new FormArray([])
   })
   
-  id
+  materia_id:string
+  exam_id:string
   submitting = false
 
 
@@ -46,7 +47,8 @@ export class EiTipoEditComponent implements OnInit {
     , private formBuilder: FormBuilder
     , private _ngZone: NgZone
     , private userLoginService: UserLoginService) {
-      this.id = this.route.snapshot.paramMap.get('id')
+      this.materia_id = this.route.snapshot.paramMap.get('materia_id')
+      this.exam_id = this.route.snapshot.paramMap.get('exam_id')
   
   }
 
@@ -76,41 +78,44 @@ export class EiTipoEditComponent implements OnInit {
 
   loadExamType(): void {
 
-    this.e.controls.id.setValue( this.id )
+    this.e.controls.id.setValue( this.exam_id )
     this.e.controls.label.setValue(null)
 
     var parameter: FormArray = this.e.controls.parameters as FormArray
     parameter.clear()
 
     
-    if( this.id ){
-      var req:ExamRequest = {
-        exams:{
-          id:this.id,
-          label:null,
-          description:null,
-          isRequired:null,
-          parameters:[{
-            id:null,
-            idx:null,
+    if(this.materia_id && this.exam_id ){
+      var req:MateriaRequest = {
+        materias:{
+          id:this.materia_id,
+          exams:[{
+            id:this.exam_id,
             label:null,
-            scoreType:null,
             description:null,
-            criterias:[{
+            isRequired:null,
+            parameters:[{
               id:null,
               idx:null,
               label:null,
-              initiallySelected:null,
+              scoreType:null,
               description:null,
-              aspects:[{
+              criterias:[{
                 id:null,
                 idx:null,
                 label:null,
-                description:null
+                initiallySelected:null,
+                description:null,
+                aspects:[{
+                  id:null,
+                  idx:null,
+                  label:null,
+                  description:null
+                }]
               }]
-            }]
-          }],
-        }
+            }],
+          }]
+        }  
       }
       this.submitting = true
       this.userLoginService.getUserIdToken().then( token => {
@@ -118,7 +123,8 @@ export class EiTipoEditComponent implements OnInit {
         this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(
           data => { 
             this.submitting = false
-            let t:Exam = data["result"];
+            let m:Materia = data["result"];
+            let t:Exam = m.exams[0]
             this.e.controls.id.setValue(t.id)
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
@@ -206,15 +212,20 @@ export class EiTipoEditComponent implements OnInit {
   newParameter( e:FormGroup ){
     var parameters_array:FormArray = e.controls.parameters as FormArray
     var req:ParameterRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:null,
-          idx:parameters_array.controls.length,
-          scoreType:"starts",
-          label:"Parameter_" + (parameters_array.length + 1)          
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:null,
+            idx:parameters_array.controls.length,
+            scoreType:"starts",
+            label:"Parameter_" + (parameters_array.length + 1)          
+          }
         }
+  
       }
+      
     }
     
     
@@ -242,16 +253,19 @@ export class EiTipoEditComponent implements OnInit {
    
     var criteria_array:FormArray = p.controls.criterias as FormArray
     var req:CriteriaRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{      
-          id: p.controls.id.value, 
-          criterias:{
-            id:null,
-            label:"Criterio_" + (criteria_array.length + 1),
-            initiallySelected:true,
-            idx:criteria_array.controls.length,
-            description:"" 
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{      
+            id: p.controls.id.value, 
+            criterias:{
+              id:null,
+              label:"Criterio_" + (criteria_array.length + 1),
+              initiallySelected:true,
+              idx:criteria_array.controls.length,
+              description:"" 
+            }
           }
         }
       }
@@ -281,17 +295,20 @@ export class EiTipoEditComponent implements OnInit {
     
     var question_array:FormArray = c.controls.aspects as FormArray
     var req:AspectRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{      
-          id: p.controls.id.value, 
-          criterias:{      
-            id:c.controls.id.value,
-            aspects:{
-              id:null,
-              idx:question_array.controls.length,
-              label:"",
-              description:""
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{      
+            id: p.controls.id.value, 
+            criterias:{      
+              id:c.controls.id.value,
+              aspects:{
+                id:null,
+                idx:question_array.controls.length,
+                label:"",
+                description:""
+              }
             }
           }
         }
@@ -321,10 +338,13 @@ export class EiTipoEditComponent implements OnInit {
   dupParameter( e:FormGroup, p:FormGroup){
   
     var req:ParameterRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value
+          }
         }
       }
     }
@@ -357,12 +377,15 @@ export class EiTipoEditComponent implements OnInit {
     this.submitting = true; 
     var criteria_array:FormArray = p.controls.criterias as FormArray
     var req:CriteriaRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value,
-          criterias:{
-            id:c.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value,
+            criterias:{
+              id:c.controls.id.value
+            }
           }
         }
       }
@@ -397,10 +420,13 @@ export class EiTipoEditComponent implements OnInit {
     }
     this.submitting = true; 
     var req:ParameterRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value
+          }
         }
       }
     }
@@ -438,12 +464,15 @@ export class EiTipoEditComponent implements OnInit {
     }    
     this.submitting = true; 
     var req:CriteriaRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value,
-          criterias:{
-            id:c.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value,
+            criterias:{
+              id:c.controls.id.value
+            }
           }
         }
       }
@@ -477,14 +506,17 @@ export class EiTipoEditComponent implements OnInit {
   delAspect(e:FormGroup,p:FormGroup, c:FormGroup, a:FormGroup){
     this.submitting = false; 
     var req:AspectRequest = {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value,
-          criterias:{
-            id:c.controls.id.value,
-            aspects:{
-              id:a.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value,
+            criterias:{
+              id:c.controls.id.value,
+              aspects:{
+                id:a.controls.id.value
+              }
             }
           }
         }
@@ -522,11 +554,14 @@ export class EiTipoEditComponent implements OnInit {
   onChangeExam(e:FormGroup){
     console.log("exam")
     var req:ExamRequest = {
-      exams:{
-        id:e.controls.id.value,
-        label:e.controls.label.value,
-        description:e.controls.description.value,
-        isRequired:e.controls.isRequired.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          label:e.controls.label.value,
+          description:e.controls.description.value,
+          isRequired:e.controls.isRequired.value
+        }
       }
     }
 
@@ -550,11 +585,14 @@ export class EiTipoEditComponent implements OnInit {
     console.log("exam")
     var propertyName = event.source.ngControl.name
     var req:ExamRequest = {
-      exams:{
-        id:exam.controls.id.value
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:exam.controls.id.value
+        }
       }
     }
-    req.exams[propertyName] = event.value
+    req.materias[0].exams[propertyName] = event.value
 
     this.userLoginService.getUserIdToken().then( token => {
       this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(
@@ -575,14 +613,17 @@ export class EiTipoEditComponent implements OnInit {
   onChangeParameter(e:FormGroup, p:FormGroup){
     console.log("parameter")
     var req:ParameterRequest = {
-      exams:{
-        id:e.controls.id.value,      
-        parameters:{
-          id:p.controls.id.value,
-          label:p.controls.label.value,
-          scoreType:p.controls.scoreType.value,
-          description:p.controls.description.value,
-        }      
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,      
+          parameters:{
+            id:p.controls.id.value,
+            label:p.controls.label.value,
+            scoreType:p.controls.scoreType.value,
+            description:p.controls.description.value,
+          }      
+        }
       }
     }
 
@@ -605,15 +646,18 @@ export class EiTipoEditComponent implements OnInit {
   onChangeCriteria(e:FormGroup, p:FormGroup, c:FormGroup){
     console.log("criteria")
     var req:CriteriaRequest= {
-      exams:{
-        id:e.controls.id.value,
-        parameters:{
-          id:p.controls.id.value,
-          criterias:{
-            id:c.controls.id.value,
-            label:c.controls.label.value,
-            description:c.controls.description.value,
-            initiallySelected:c.controls.initiallySelected.value,
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:e.controls.id.value,
+          parameters:{
+            id:p.controls.id.value,
+            criterias:{
+              id:c.controls.id.value,
+              label:c.controls.label.value,
+              description:c.controls.description.value,
+              initiallySelected:c.controls.initiallySelected.value,
+            }
           }
         }
       }
@@ -639,21 +683,23 @@ export class EiTipoEditComponent implements OnInit {
   onChangeAspect(t:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
     console.log("criteria")
     var req:AspectRequest = {
-      exams:{
-        id:t.controls.id.value,
-        parameters:{
-          id:p.controls.id.value,
-          criterias:{
-            id:c.controls.id.value,
-            aspects:{
-              id:a.controls.id.value,
-              label:a.controls.label.value,
-              description:a.controls.description.value
-            }          
+      materias:{
+        id:this.materia_id,
+        exams:{
+          id:t.controls.id.value,
+          parameters:{
+            id:p.controls.id.value,
+            criterias:{
+              id:c.controls.id.value,
+              aspects:{
+                id:a.controls.id.value,
+                label:a.controls.label.value,
+                description:a.controls.description.value
+              }          
+            }
           }
         }
       }
-
     }
 
     this.userLoginService.getUserIdToken().then( token => { 
@@ -688,11 +734,14 @@ export class EiTipoEditComponent implements OnInit {
       if( g.controls.id.value == p.controls.id.value){
         var index = i
         var req:ParameterRequest = {
-          exams:{
-            id:t.controls.id.value,
-            parameters:{
-              id: p.controls.id.value,
-              idx:index-1
+          materias:{
+            id:this.materia_id,
+            exams:{
+              id:t.controls.id.value,
+              parameters:{
+                id: p.controls.id.value,
+                idx:index-1
+              }
             }
           }
         }
@@ -725,11 +774,14 @@ export class EiTipoEditComponent implements OnInit {
       if( g.controls.id.value == p.controls.id.value){
         var index = i
         var req :ParameterRequest= {
-          exams:{
-            id:t.controls.id.value,
-            parameters:{
-              id: p.controls.id.value,
-              idx:index+1
+          materias:{
+            id:this.materia_id,
+            exams:{
+              id:t.controls.id.value,
+              parameters:{
+                id: p.controls.id.value,
+                idx:index+1
+              }
             }
           }
         }
@@ -765,13 +817,16 @@ export class EiTipoEditComponent implements OnInit {
         var index = i
 
         var req:CriteriaRequest = {
-          exams:{
-            id:e.controls.id.value,
-            parameters:{
-              id:p.controls.id.value,
-              criterias:{
-                id: c.controls.id.value,
-                idx:index-1
+          materias:{
+            id:this.materia_id,          
+            exams:{
+              id:e.controls.id.value,
+              parameters:{
+                id:p.controls.id.value,
+                criterias:{
+                  id: c.controls.id.value,
+                  idx:index-1
+                }
               }
             }
           }
@@ -807,13 +862,16 @@ export class EiTipoEditComponent implements OnInit {
         var index = i
 
         var req:CriteriaRequest = {
-          exams:{
-            id:e.controls.id.value,
-            parameters:{
-              id:p.controls.id.value,
-              criterias:{
-                id: c.controls.id.value,
-                idx:index+1
+          materias:{
+            id:this.materia_id,          
+            exams:{
+              id:e.controls.id.value,
+              parameters:{
+                id:p.controls.id.value,
+                criterias:{
+                  id: c.controls.id.value,
+                  idx:index+1
+                }
               }
             }
           }
@@ -850,15 +908,18 @@ export class EiTipoEditComponent implements OnInit {
 
         
         var req:AspectRequest = {
-          exams:{
-            id:t.controls.id.value,
-            parameters:{
-              id:p.controls.id.value,
-              criterias:{
-                id:c.controls.id.value,
-                aspects:{
-                  id: a.controls.id.value,
-                  idx:index-1
+          materias:{
+            id:this.materia_id,          
+            exams:{
+              id:t.controls.id.value,
+              parameters:{
+                id:p.controls.id.value,
+                criterias:{
+                  id:c.controls.id.value,
+                  aspects:{
+                    id: a.controls.id.value,
+                    idx:index-1
+                  }
                 }
               }
             }
@@ -896,15 +957,18 @@ export class EiTipoEditComponent implements OnInit {
 
         
         var req :AspectRequest = {
-          exams:{
-            id:t.controls.id.value,
-            parameters:{
-              id:p.controls.id.value,
-              criterias:{
-                id:c.controls.id.value,
-                aspects:{
-                  id: a.controls.id.value,
-                  idx:index+1
+          materias:{
+            id:this.materia_id,          
+            exams:{
+              id:t.controls.id.value,
+              parameters:{
+                id:p.controls.id.value,
+                criterias:{
+                  id:c.controls.id.value,
+                  aspects:{
+                    id: a.controls.id.value,
+                    idx:index+1
+                  }
                 }
               }
             }

@@ -80,7 +80,7 @@ export interface Criteria{
   aspects?: Aspect[]
 }
 export interface Parameter{
-  id:string
+  id:string 
   idx?:number
   label?:string
   scoreType?:string
@@ -127,8 +127,12 @@ export interface Materia{
   color1?:string 
   color2?:string 
   required_in_carrers_ids?:Array<string>
-}
 
+  exams?:Exam[]
+}
+export interface MateriaRequest{
+  materias:Materia
+}
 export interface Group{
   nivel_id?: string
 
@@ -181,7 +185,10 @@ export interface MateriaEnrollment{
 }
 
 export interface ExamRequest{
-  exams:Exam
+  materias:{
+    id:string
+    exams:Exam
+  }
 }
 
 export interface ExamMultipleRequest{
@@ -194,30 +201,39 @@ export interface ExamMultipleRequest{
   }
 }
 export interface ParameterRequest{
-  exams:{
+  materias:{
     id:string
-    parameters:Parameter
+    exams:{
+      id:string
+      parameters:Parameter
+    }
   }
 }
 
 export interface CriteriaRequest{
-  exams:{
+  materias:{
     id:string,
-    parameters:{
-      id:string
-      criterias:Criteria
+    exams:{
+      id:string,
+      parameters:{
+        id:string
+        criterias:Criteria
+      }
     }
   }
 }
 
 export interface AspectRequest{
-  exams:{
+  materias:{
     id:string,
-    parameters:{      
-      id: string, 
-      criterias:{  
-        id:string
-        aspects:Aspect
+    exams:{
+      id:string,
+      parameters:{      
+        id: string, 
+        criterias:{  
+          id:string
+          aspects:Aspect
+        }
       }
     }
   }

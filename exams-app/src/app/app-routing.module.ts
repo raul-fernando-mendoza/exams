@@ -30,6 +30,7 @@ import { ExamTableComponent } from './exam-table/exam-table.component';
 import { CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
 import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
+import { MateriaListComponent } from './materia-list/materia-list.component';
 
 const routes: Routes = [
   
@@ -52,7 +53,7 @@ const routes: Routes = [
   { path: 'eiReporte', component: EiApReporteComponent },
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
-  { path: 'ei-tipo-list', component: EiTipoListComponent },
+  { path: 'materia-list', component: MateriaListComponent },
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
 

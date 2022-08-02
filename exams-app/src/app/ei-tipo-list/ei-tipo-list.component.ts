@@ -344,9 +344,12 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
       _resolve = resolve
       _reject = reject
       var req:ExamRequest = {
-        exams:{
-          id:exam_id,
-          label:label
+        materias:{
+          id:new_materia_id,
+          exams:{
+            id:exam_id,
+            label:label
+          }
         }
       }
       this.userLoginService.getUserIdToken().then( token => {

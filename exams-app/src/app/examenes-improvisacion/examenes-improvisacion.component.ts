@@ -44,7 +44,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   applicationDate = null
   releasedOnly = null
 
-  datavalues: ExamenesImprovisacionItem[] = [];  
+  examenes: ExamenesImprovisacionItem[] = [];  
 
   constructor( 
       private router: Router
@@ -63,7 +63,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     this.open_transactions.add(id)
   }
   updateTable(){
-      this.dataSource = new ExamenesImprovisacionDataSource(this.datavalues);
+      this.dataSource = new ExamenesImprovisacionDataSource(this.examenes);
       var examenesSort = localStorage.getItem('jsonExamenesSort')
       if( examenesSort ){
         var jsonExamenesSort = JSON.parse(examenesSort)
@@ -146,7 +146,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       showClosed = null
     }
 
-    this.datavalues.length = 0
+    this.examenes.length = 0
     var qry
     if( this.userLoginService.hasRole("admin")){
       qry = db.collectionGroup('parameterGrades')
@@ -166,79 +166,12 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       console.log("set" + set.docs.length)
             
       var map = set.docs.map( doc =>{
-
-        var parameterGrade:ParameterGrade = {
-          id:doc.data().id,
-          label:doc.data().label,
-          evaluator_uid:doc.data().evaluator_uid,
-          isCompleted:doc.data().isCompleted,
-          applicationDate:doc.data().applicationDate,
-          criteriaGrades:[]
-        }
-       
-        
-        
+        const parameterGrade:ParameterGrade = doc.data()
         var examGrade_id = doc.ref.path.split("/")[1]
-      
-  
-
-        var obj:ExamenesImprovisacionItem = {
-          exam:null,
-          examGrade:null,
-          parameterGrade: parameterGrade, 
-          materia: null,
-          student: null,
-          approver:null,
-          isCompleted:parameterGrade.isCompleted
-        }
-
-        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
-          obj.approver = doc
-        })        
-        this.datavalues.push(obj)
-
-        return db.collection("examGrades").doc(examGrade_id).get().then(doc =>{
-          
-          let examGrade:ExamGrade = {
-            id:doc.data().id,
-            title:doc.data().title,
-            exam_id:doc.data().exam_id,
-            materia_id:doc.data().materia_id,
-            student_uid:doc.data().student_uid,
-            applicationDate:doc.data().applicationDate.toDate()
-          }
-          obj.examGrade = examGrade
-
-
-          db.collection("exams").doc(examGrade.exam_id).get().then( doc =>{
-            obj.exam = {
-              id:doc.data().id,
-              label:doc.data().label
-            }
-          })
-    
-          this.getUser(examGrade.student_uid).then(user=>{
-            obj.student = user
-          })
-
-          db.collection("materias").doc(examGrade.materia_id).get().then( doc =>{
-            obj.materia ={
-              id:doc.data().id,
-              materia_name:doc.data().materia_name
-            }
-          },
-          reason =>{
-            console.error("ERROR reading materia:" + reason)
-          })
-        },
-        reason =>{
-          console.error("ERROR: reading examGrade")
-        })
-
-
+        return this.addParameterGrade(examGrade_id, parameterGrade)
       })
       Promise.all(map).then(()=>{
-        this.datavalues.sort( (a,b) =>{
+        this.examenes.sort( (a,b) =>{
           if (a.examGrade.title > b.examGrade.title)
             return 1
           else if (a.examGrade.title < b.examGrade.title)
@@ -251,6 +184,74 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       })
     })
   } 
+  addParameterGrade(examGrade_id:string,parameterGrade:ParameterGrade):Promise<void>{
+    var _resolve
+    var _reject
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+
+      var transaction:Promise<void>[] = []
+
+      var obj:ExamenesImprovisacionItem = {
+        exam:null,
+        examGrade:null,
+        parameterGrade: parameterGrade, 
+        materia: null,
+        student: null,
+        approver:null,
+        isCompleted:parameterGrade.isCompleted
+      }
+  
+      transaction.push(
+        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
+          obj.approver = doc
+        }) 
+      )  
+      transaction.push(
+        this.loadExamGrade(examGrade_id, obj)
+      )
+      Promise.all(transaction).then(()=>{
+        this.examenes.push(obj)
+        resolve()
+      })
+    })
+  }
+
+  loadExamGrade(examGrade_id:string, e:ExamenesImprovisacionItem):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      var transaction:Promise<void>[] = []
+      db.collection("examGrades").doc(examGrade_id).get().then(doc =>{
+        const examGrade= doc.data() as ExamGrade
+        e.examGrade = examGrade
+  
+
+  
+        transaction.push(
+          this.getUser(examGrade.student_uid).then(user=>{
+            e.student = user
+          })
+        )
+        
+        transaction.push(
+          db.collection("materias").doc(examGrade.materia_id).get().then( doc =>{
+            e.materia = doc.data() as Materia
+          })
+        )
+        Promise.all(transaction).then(()=>{
+          db.collection("materias/" + examGrade.materia_id + "/exams").doc(examGrade.exam_id).get().then( doc =>{
+            e.exam = doc.data() as Exam
+            resolve()
+          })          
+        },
+        reason=>{
+          reject()
+        })
+      })
+    }) 
+     
+
+  }
 
   ngAfterViewInit() {
   }
@@ -339,5 +340,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     }
     
     return result
-  }  
+  }
+  
+  printApplicationDate(t){
+    return this.examImprovisacionService.formatTimeStamp(t)
+  }
+  
 }
