@@ -2,7 +2,18 @@
 
 <mat-card *ngFor="let m of materias" class="materia-card">
     <mat-card-title-group>
-        <mat-card-title class="enroll-card">{{ m.materia_name }} {{ m.id }}</mat-card-title>
+        <mat-card-title class="enroll-card">
+          <button mat-button (click)="onEditMateria(m)">{{ m.materia_name }}</button>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" >
+            <button mat-menu-item (click)="onRemoveMateria(m.id, m.materia_name)" [disabled]="submitting">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>            
+          </mat-menu>  
+        </mat-card-title>
         <mat-card-subtitle>
           {{ m.description }}
         </mat-card-subtitle>
@@ -16,23 +27,9 @@
         <source src="{{ m.videoUrl }}" type='video/mp4' />
       </video>  
       
-      <div *ngFor="let e of m.exams">
-        <button mat-button (click)="onEdit(m,e)">{{e.label}}</button>
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu" >
-            <button  mat-menu-item (click)="onDeleteExam(m, e)" [disabled]="submitting">
-              <mat-icon>delete</mat-icon>
-              <span>Borrar</span>
-            </button>      
-            <button  mat-menu-item (click)="onDuplicateExam(m,e)" [disabled]="submitting">
-              <mat-icon>content_copy</mat-icon>
-              <span>Duplicar</span>
-            </button>       
-          </mat-menu>
-      </div>
     </mat-card-content>
     <mat-card-actions>
     </mat-card-actions>
   </mat-card>
+
+  <button mat-button (click)="onCreateMateria()">Nueva Materia</button>

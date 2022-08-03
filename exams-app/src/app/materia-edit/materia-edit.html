@@ -1,0 +1,85 @@
+<h1 mat-dialog-title>Materia</h1>
+<form *ngIf="m" [formGroup]="m" >
+  <div>
+    <mat-form-field>
+      <mat-label>Materia</mat-label>
+      <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)">
+    </mat-form-field>     
+  </div>
+  <div>
+    <mat-form-field appearance="legacy">
+        <mat-label>Certificado Maestro</mat-label>
+        <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onSelectChange($event, m)">
+          <mat-option *ngFor="let tc of typeCertificates" [value]="tc.value">
+            {{tc.label}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field appearance="legacy">
+        <mat-label>Icono de certificado</mat-label>
+        <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onSelectChange($event, m)">
+          <mat-option *ngFor="let ic of iconCertificates" [value]="ic.value">
+            {{ic.label}}
+          </mat-option>
+        </mat-select>
+        
+    </mat-form-field>  
+  </div>
+  <div>
+    <mat-checkbox formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)">
+      Enrolado activo
+    </mat-checkbox>
+  </div>
+  <div>
+    <mat-form-field>
+      <mat-label>video url</mat-label>
+      <input  matInput type="text"  formControlName="videoUrl" (change)="onPropertyChange($event)">
+    </mat-form-field>    
+  </div>
+  <div>
+    <mat-form-field appearance="outline">
+      <mat-label>description</mat-label>
+      <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+    </mat-form-field>  
+  </div>  
+  <div *ngIf="m.controls.id.value">
+    Examenes<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" >
+      <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting">
+        <mat-icon>library_add</mat-icon>
+        <span>Nuevo Examen</span>
+      </button>            
+    </mat-menu>      
+    <div *ngFor="let e of m.controls.exams.controls">
+      <button mat-button (click)="onEditExam(m.controls.id.value,e.controls.id.value)">{{e.controls.label.value}}</button>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" >
+          <button  mat-menu-item (click)="onDeleteExam(m.controls.id.value, e.controls.id.value)" [disabled]="submitting">
+            <mat-icon>delete</mat-icon>
+            <span>Borrar</span>
+          </button>      
+          <button  mat-menu-item (click)="onDuplicateExam(m.controls.id.value, e.controls.id.value, e.controls.label.value)" [disabled]="submitting">
+            <mat-icon>content_copy</mat-icon>
+            <span>Duplicar</span>
+          </button>       
+        </mat-menu>
+    </div>
+  </div> 
+
+  <div class="actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button [disabled]="!m.valid" (click)="onClose()" cdkFocusInitial>Continuar</button>
+  </div>  
+</form>
+
+
+
+
+
+ 

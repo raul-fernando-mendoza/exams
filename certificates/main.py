@@ -40,9 +40,9 @@ def generateCertificate(db, documentId):
     #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
     materia = db.collection("materias").document(materia_id).get().to_dict()
     #find all exams for materia
-    examSet = db.collection("exams") \
+    examSet = db.collection("materias/" + materia_id + "/exams") \
     .where("isDeleted","==",False) \
-    .where("materia_id","==",materia_id) .get()  
+    .get() 
 
     requiredCount = 0
     requiredReleased = 0
@@ -77,6 +77,8 @@ def generateCertificate(db, documentId):
                 optionalReleased +=1
                 break
     #if all has been passed generate the cerfificate
+    log.debug("*** requiredCount:" + str(requiredCount) + " == requiredReleased:" + str(requiredReleased))
+    log.debug("*** optionalCount:" + str(requiredCount) + " > optionalReleased:" + str(requiredReleased))
     if requiredCount == requiredReleased and (
         optionalCount == 0 or optionalReleased > 0):
         
@@ -118,6 +120,7 @@ def generateCertificate(db, documentId):
             materiaEnromentDoc.reference.update({
                 "certificate_url": data["certificate_url"] 
             })
+        log.debug("*** certificate generated :" + data["certificate_url"])
     else:
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
             .where("materia_id","==", materia_id) \
@@ -127,7 +130,9 @@ def generateCertificate(db, documentId):
         for materiaEnromentDoc in materiaEnrollmentsSet:
             materiaEnromentDoc.reference.update({
                 "certificate_url": None 
-            })        
+            })  
+
+        log.debug("*** certificate removido :" )     
 
             
 

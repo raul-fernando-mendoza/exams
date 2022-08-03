@@ -131,8 +131,7 @@ export class ExamenImprovisacionFormComponent {
   loadExams(materia_id){
     this.exams.length = 0
     db.collection("materias/" + materia_id + "/exams")
-    .where("owners","array-contains",this.userLoginService.getUserUid())
-    .where("materia_id","==",materia_id)
+    .where("isDeleted","==",false)
     .get().then( set =>{
       set.docs.map( doc => {
           const exam:Exam = doc.data() as Exam
@@ -152,8 +151,7 @@ export class ExamenImprovisacionFormComponent {
     var req:ExamMultipleRequest = {
       "exams":[{
           "id":null,
-          "label":null,
-          "materia_id":null
+          "label":null
       }],
       "orderBy":{
         "field":"label"
@@ -168,8 +166,7 @@ export class ExamenImprovisacionFormComponent {
       for( let i =0; i<r.length; i++){
         let obj:Exam = {
           "id":r[i].id,
-          "label":r[i].label,
-          "materia_id":r[i].materia_id
+          "label":r[i].label
         }
         this.exams.push(obj)
       }
@@ -243,7 +240,6 @@ export class ExamenImprovisacionFormComponent {
         exams:{
             id:examId,
             label:null,
-            materia_id:null,
             parameters:[{
               id:null,
               idx:null,
@@ -446,27 +442,17 @@ export class ExamenImprovisacionFormComponent {
 
       let examGrade:ExamGrade = {
         id:null, 
-        owners:null,
-      
         exam_id:null,
         exam:null,
-      
         materia_id:null, 
         materia:null,
-      
         isCompleted: null, 
-        applicationDate:null, 
-      
+        applicationDate:null,
         student_uid:null, 
         student:null,
-      
         title:null,
-        expression:null ,
-      
+        expression:null,
         score:null, 
-        certificate_url:null, 
-      
-      
         isDeleted:null, 
         isReleased:null, 
         isApproved:null ,

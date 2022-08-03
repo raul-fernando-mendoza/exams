@@ -8,10 +8,11 @@ import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
 import { UserLoginService } from '../user-login.service';
-import { copyObj, Materia, MateriaEnrollment, User, ExamGrade } from '../exams/exams.module';
+import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam } from '../exams/exams.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
 import * as uuid from 'uuid';
+import { RouterLinkWithHref } from '@angular/router';
 
 @Component({
   selector: 'app-materia-certificates',
@@ -46,63 +47,60 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-
-    this.update()
+    this.loadStudents().then( () =>{
+      this.update()
+    })
   }
-
-  transactionStart(id){
-    this.open_transactions.add(id)
-  }
-  transactionComplete(id){
-    this.open_transactions.delete(id)
-    if(this.open_transactions.size == 0){
-      this.dataSource = new MateriaCertificatesDataSource(this.nodeList)
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.table.dataSource = this.dataSource; 
-    }
-  }  
 
   update(){
-    this.loadStudents()
+    this.dataSource = new MateriaCertificatesDataSource(this.nodeList)
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.table.dataSource = this.dataSource; 
   }
 
-  async loadStudents(){
-    this.nodeList.length = 0
-    var token = await this.userLoginService.getUserIdToken()
-    var userList:NodeTableRow[] = []
-    var request = {
-    }
+  loadStudents():Promise<void>{
 
-    this.transactionStart("users")
-
-    this.examImprovisacionService.authApiInterface("getUserList", token, request).then(
-      data => {
-        var users = data["result"]
-        for( const user of users){
-          var u:User =
-          {
-            uid:user.uid,
-            displayName:user.displayName,
-            email:user.email,
-            claims:user.claims
-
-          }
-          var userNode:NodeTableRow = {
-            obj:u,
-            opened:false,
-            children:null,
-            nodeClass:"User",
-            isLeaf:false
-          }
-          this.nodeList.push(userNode)
-        }
-        this.transactionComplete("users")
-      },
-      error => {
-        alert("error retriving the users:" + error.error)
+    return new Promise<void>((resolve, reject) =>{
+      this.nodeList.length = 0
+      
+      var request = {
       }
-    );
+
+      this.userLoginService.getUserIdToken().then( token =>{
+        this.examImprovisacionService.authApiInterface("getUserList", token, request).then(
+          data => {
+            var users = data["result"]
+            for( const user of users){
+              var u:User =
+              {
+                uid:user.uid,
+                displayName:user.displayName,
+                email:user.email,
+                claims:user.claims
+
+              }
+              var userNode:NodeTableRow = {
+                user:u,
+                opened:false,
+                children:null,
+                nodeClass:"User",
+                isLeaf:false
+              }
+              this.nodeList.push(userNode)
+            }
+            resolve()
+          },
+          error => {
+            alert("error retriving the users:" + error.error)
+            reject()
+          }
+        );
+      },
+      reason =>{
+        console.error("token invalido")
+      })
+    })
     
   }  
 
@@ -116,40 +114,40 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     
     const query = db.collection("materiaEnrollments").
     where("isActive","==",true).
-    where("student_uid","==",row.obj["uid"])
-
-    this.transactionStart(row.obj["uid"])
+    where("student_uid","==",row.user.uid)
 
     query.get().then( recordset =>{
-      const resultMap = recordset.docs.map( (ref) => {
+      var children:NodeTableRow[] = []
+      const resultMap = recordset.docs.map( (doc) => {
 
-        const enrollment = ref.data()
-        console.log(enrollment)
-        var materiaEnrollment = {
-          organization_id:enrollment.organization_id,
-          materia_id:enrollment.materia_id,
-          materia_name:null,
-          student_uid:enrollment.student_uid,
-          id:ref.id,
-          certificate_url:enrollment.certificate_url
-        }
+        const materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
+
         var n:NodeTableRow = {
-          obj:materiaEnrollment,
+          user:row.user,
+          materiaEnrollment:materiaEnrollment,
           opened:false,
           nodeClass:"MateriaEnrollment",
           children:null,
           isLeaf:false
         }
-        return db.collection("materias").doc(enrollment.materia_id).get().then( ref =>{
-          materiaEnrollment.materia_name = ref.data().materia_name
-          row.children.push(n)
-          row.opened = true 
-          this.transactionComplete(row.obj["materia_id"]+row.obj["student_uid"] )        
+        return db.collection("materias").doc(materiaEnrollment.materia_id).get().then( doc =>{
+          var materia:Materia = doc.data() as Materia
+          n.materia = materia
+          children.push(n)
+           
+        },
+        reason =>{
+          console.error("ERROR error reading materias:"+reason)
         }) 
       })
       Promise.all(resultMap).then( result =>{
-        row.children = this.sortingService.sortBySubObject(row.children,"obj",["materia_name"])    
-        this.transactionComplete(row.obj["uid"])
+        children.sort( (a,b) => { return a.materia.materia_name>b.materia.materia_name ? 1:-1})
+        children.map( value => row.children.push(value))
+        row.opened = true
+        this.update()
+      },
+      reason =>{
+        console.error("ERROR reasing materia name:" + reason)
       })  
     },
     reason =>{
@@ -164,7 +162,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     else{
       row.children.length=0
       row.opened=false
-      this.transactionComplete(null)
     }
 
   }  
@@ -177,55 +174,60 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       row.children = []
     }
     
-    const query = db.collection("exams").
-    where("owners","array-contains",this.userLoginService.getUserUid()).
-    where("isDeleted","==",false).
-    where("materia_id","==",row.obj["materia_id"])
-    this.transactionStart( row.obj["materia_id"])
+    const query = db.collection("materias/" + row.materia.id + "/exams").
+    where("isDeleted","==",false)
     query.get().then( set => {
+      var children:NodeTableRow[] = []
+      var transaction = set.docs.map( doc =>{
 
-      var exams = set.docs.map( doc =>{
-
-        var exam = {
-          materia_id:doc.data().materia_id,
-          label:doc.data().label,
-          id:doc.data().id,
-          isReleased:false
-        }     
+        var exam:Exam = doc.data() as Exam
         var n:NodeTableRow = {
-          obj:exam,
+          user:row.user,
+          materiaEnrollment: row.materiaEnrollment,
+          materia:row.materia,
+          exam:exam,
+          examGrade:null,
           opened:false,
           nodeClass:"Exam",
           children:null,
           isLeaf:true
         }
-        row.children.push(n)   
+        children.push(n)   
         
-        const grades = db.collection("examGrades").
-        where("owners","array-contains",this.userLoginService.getUserUid())
-        .where("student_uid","==", row.obj["student_uid"])
-        .where("materia_id","==", row.obj["materia_id"])
+        const grades = db.collection("examGrades")
+        .where("student_uid","==", row.user.uid)
+        .where("materia_id","==", row.materia.id)
         .where("exam_id","==",exam.id)
         .where("isDeleted","==",false)
+        
   
         return grades.get().then( grades => {
 
           for( var j=0; j<grades.docs.length; j++){
-            const g = grades.docs[j].data()
-            if( g.isReleased == true){
-              exam["isReleased"] = true
-              break;
+            const g:ExamGrade = grades.docs[j].data() as ExamGrade
+            if( n.examGrade == null){
+              n.examGrade = g
+            }
+            else if( g.isReleased == true && g.applicationDate > n.examGrade.applicationDate ){
+              n.examGrade = g
             }
           }          
 
+        },
+        reason=>{
+          console.log("ERROR reading examGrades:" + reason)
         })
       })
 
-      Promise.all(exams).then(()=>{
+      Promise.all(transaction).then(()=>{
+        children.sort( (a,b) =>{ return a.exam.label > b.exam.label ? 1:-1})
         row.opened = true 
-        row.children = this.sortingService.sortBySubObject(row.children,"obj",["label"])    
-        this.transactionComplete(row.obj["materia_id"] )
+        children.map( value => row.children.push(value))
+        this.update() 
       })
+    },
+    reason =>{
+      console.log("ERROR:loading exams:" + reason)
     })
   }
 
@@ -259,7 +261,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     else{
       row.children.length=0
       row.opened=false
-      this.transactionComplete(null)
     }
 
   }
@@ -275,7 +276,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     var materiaEnrollment:MateriaEnrollment = {
       organization_id: this.userPreferencesService.getCurrentOrganizationId(),
       id:null,
-      student_uid:row.obj.uid,
+      student_uid:row.user.uid,
       materia_id:null
     }
 
@@ -326,6 +327,55 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   onCopyToClipboard(){
     alert("url ha sido copiada al portapapeles")
   }  
+  onExamWaiver(row){
+    console.log(row)
+    if( row.examGrade != null ){
+      let examGrade:ExamGrade = {
+        isCompleted:true,
+        isReleased:true,
+        isApproved:true,
+        updated_on:new Date()
+      }
+      db.collection("examGrades").doc(row.examGrade.id).update(
+        examGrade
+      ).then( () =>{
+        row.examGrade.isCompleted = true
+        row.examGrade.isReleased = true
+        row.examGrade.isApproved = true
+        this.loadStudents().then(()=>{
+          this.update()
+        })
+      })
+    }
+    else{
+      let id = uuid.v4()
+      db.collection("examGrades").doc(id ).set( {id:id} ).then( ()=>{
+
+        let examGrade = {
+          id:id, 
+          exam_id:row.exam.id,
+          materia_id:row.materia.id, 
+          isCompleted: true,
+          applicationDate:new Date(),
+          student_uid:row.user.uid, 
+          title:"acreditado por:" + this.userLoginService.getDisplayName(),
+          expression:"ninguna",
+          score:10,
+          isDeleted:false, 
+          isReleased:true, 
+          isApproved:true,
+          created_on:new Date(),
+          updated_on:new Date()      
+        }
+        db.collection("examGrades").doc(id ).update( examGrade ).then( ()=>{
+          row.examGrade = examGrade
+          this.loadStudents().then(()=>{
+            this.update()
+          })
+        })
+      })
+    }
+  }
 }
 
 /****** student dlg */
@@ -349,7 +399,6 @@ export class DialogEnrollMateriaDialog implements OnInit{
   async LoadMaterias(){
     this.materiasList = []
     const query = db.collection("materias").
-    where("owners","array-contains",this.userLoginService.getUserUid()).
     where("isDeleted","==",false)
 
     var listMaterias = await query.get()

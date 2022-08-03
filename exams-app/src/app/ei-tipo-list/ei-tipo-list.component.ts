@@ -108,7 +108,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
       materia_name:materia.materia_name,            
       exam_id:exam.id,
       exam_name:exam.label,
-      required_in_carrers_ids:exam.required_in_carrers_ids,
+      required_in_carrers_ids:null,
       nodeClass:"exam",
       children:[]
     }
@@ -117,7 +117,9 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   
 
   loadCareers(){
-    const query = db.collection("careers").where("owners","array-contains",this.userLoginService.getUserUid()).where("isDeleted","==",false).where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
+    const query = db.collection("careers")
+    .where("isDeleted","==",false)
+    .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     
     query.get().then( 
       set =>{
@@ -174,7 +176,6 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   update(){
     this.materiaItemNodes.length = 0
     const query = db.collection("niveles").
-      where("owners","array-contains",this.userLoginService.getUserUid()).
       where("isDeleted","==",false).
       where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     this.transactionStart("niveles")
@@ -206,7 +207,6 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   loadGroups(nivel:MateriaItemNode){
     nivel.children.length = 0
     const query = db.collection("groups"). 
-      where("owners","array-contains",this.userLoginService.getUserUid()). 
       where("isDeleted","==",false).
       where("nivel_id","==",nivel.nivel_id)
     this.transactionStart("groups")
@@ -242,7 +242,6 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   loadMaterias(nivel:MateriaItemNode, group:MateriaItemNode){
     group.children.length = 0
     const query = db.collection("materias").
-    where("owners","array-contains",this.userLoginService.getUserUid()).
     where("isDeleted","==",false).
     where("group_id","==",group.group_id)
     this.transactionStart("materias")
@@ -253,8 +252,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
                  
           var materia:Materia ={
             id:doc.data().id,
-            materia_name:doc.data().materia_name,
-            required_in_carrers_ids:doc.data().required_in_carrers_ids
+            materia_name:doc.data().materia_name
           }
 
 
@@ -280,7 +278,6 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
   LoadExams(nivel:MateriaItemNode, group:MateriaItemNode, materia:MateriaItemNode){
     materia.children.length = 0
     const query = db.collection("exams").
-    where("owners","array-contains",this.userLoginService.getUserUid()).
     where("isDeleted","==",false).
     where("materia_id","==",materia.materia_id)
     this.transactionStart("exams")
@@ -289,14 +286,10 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
         materia.children.length = 0
         var docs = set.forEach(doc =>{
           var exam:Exam = {
-            materia_id:materia.materia_id, 
-
             id:doc.id,
             label:doc.data().label,  
          
-            isDeleted:doc.data().isDeleted,
-            owners:doc.data().owners,
-            required_in_carrers_ids:doc.data().required_in_carrers_ids,
+            isDeleted:doc.data().isDeleted
           }
 
           var examItem:MateriaItemNode = this.ExamBuilder(nivel, group,  materia, exam)
@@ -318,7 +311,7 @@ export class EiTipoListComponent implements AfterViewInit, OnInit, OnDestroy {
     this.router.navigate(['/ei-tipo-edit',{id:row_id}]);
   }
   onDeleteExam(exam_id){
-    db.collection("exams").doc(exam_id).update({"isDeleted":"true"}).then(
+    db.collection("exams").doc(exam_id).update({"isDeleted":true}).then(
       result =>{
         console.log("exam delted:" + result)
       }
@@ -536,7 +529,6 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
   
   createMateria(materia:Materia):Promise<void>{
     materia.id = uuid.v4()
-    materia.owners = [this.userLoginService.getUserUid()]
     materia.isDeleted = false
 
     return  db.collection('materias').doc(materia.id).set(materia)
@@ -589,15 +581,12 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
   
     var id = uuid.v4()
     const exam:Exam = {
-      materia_id:materia_id,
 
       id:id,
       label:exam_name,
      
-      owners:[this.userLoginService.getUserUid()],
       isDeleted:false,
-      isRequired:false,
-      required_in_carrers_ids:[]
+      isRequired:false
     }
     const res = await  db.collection('exams').doc(id).set(exam);
     console.debug( "create exam:" + res )
@@ -624,7 +613,6 @@ createGroup(nivel_id:string, group_name:string, evaluation_type:number){
         db.collection('materias').doc(data["id"]).set(data).then( () =>{
           // no duplicate all exams
           db.collection("exams")
-          .where("owners","array-contains",this.userLoginService.getUserUid())
           .where("materia_id","==",row.materia_id)
           .where("isDeleted","==",false).get().then(set => {
             var map = set.docs.map( doc =>{

@@ -52,7 +52,9 @@ export class CareerListComponent implements OnInit {
 
   }
   loadCareers(){
-    const query = db.collection("careers").where("owners","array-contains",this.userLoginService.getUserUid()).where("isDeleted","==",false).where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
+    const query = db.collection("careers")
+    .where("isDeleted","==",false)
+    .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     
     this.careerListener = query.get().then( 
       set =>{
@@ -82,7 +84,7 @@ export class CareerListComponent implements OnInit {
   }
 
   onDelete(career_id){
-    db.collection("careers").doc(career_id).update({"isDeleted":"true"}).then(
+    db.collection("careers").doc(career_id).update({"isDeleted":true}).then(
       result =>{
         console.log("careers delted:" + result)
       }

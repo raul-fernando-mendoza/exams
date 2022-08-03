@@ -90,28 +90,20 @@ export interface Parameter{
   
 }
 export interface Exam{
-  materia_id?:string 
-
   id:string 
   label?:string 
   description?:string 
   isRequired?:boolean 
-  owners?:Array<string> 
   isDeleted?:boolean 
-  
 
   parameters?: Parameter[] 
-
-  required_in_carrers_ids?:Array<string> 
 }
 
 export interface Materia{
-  group_id?:string 
 
   id:string 
   materia_name?:string 
   isDeleted?:boolean 
-  owners?:Array<string> 
 
   typeCertificate?:string 
   iconCertificate?:string 
@@ -126,7 +118,6 @@ export interface Materia{
   label4?:string 
   color1?:string 
   color2?:string 
-  required_in_carrers_ids?:Array<string>
 
   exams?:Exam[]
 }
@@ -283,8 +274,7 @@ export interface ParameterGrade{
 
 
 export interface ExamGrade{
-  id:string 
-  owners?:Array<string> 
+  id?:string 
 
   exam_id?:string
   exam?:Exam
@@ -302,13 +292,14 @@ export interface ExamGrade{
   expression?:string 
 
   score?:number 
-  certificate_url?:string 
-
 
   isDeleted?:boolean 
   isReleased?:boolean 
   isApproved?:boolean 
   parameterGrades?:ParameterGrade[] 
+
+  created_on?:Date
+  updated_on?:Date
 }
 export interface AspectGradeRequest{
   examGrades:{

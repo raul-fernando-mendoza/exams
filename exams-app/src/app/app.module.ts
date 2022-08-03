@@ -57,7 +57,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { CareerDialog, CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
-import { DialogMateriaDialog } from './materia-edit/materia-edit';
+import { DialogMateriaDialog, DialogMateriaExamDialog } from './materia-edit/materia-edit';
 import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
 
@@ -94,7 +94,8 @@ import { MateriaListComponent } from './materia-list/materia-list.component';
     DialogNivelDialog,
     MateriaCertificatesComponent,
     DialogEnrollMateriaDialog,
-    MateriaListComponent
+    MateriaListComponent,
+    DialogMateriaExamDialog
   ],
   imports: [
     BrowserModule,
@@ -145,7 +146,8 @@ import { MateriaListComponent } from './materia-list/materia-list.component';
     CareerDialog,
     DialogGroupDialog,
     DialogNivelDialog,
-    DialogEnrollMateriaDialog
+    DialogEnrollMateriaDialog,
+    DialogMateriaExamDialog
   ],
   bootstrap: [AppComponent]
 })

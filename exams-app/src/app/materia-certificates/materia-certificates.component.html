@@ -12,16 +12,16 @@ Certificados
           <button  mat-button  (click)="onStudentClick(row)">
             <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
           </button>
-          {{row.obj.claims.displayName || row.obj.displayName || row.obj.email}}
+          {{row.user.claims.displayName || row.user.displayName || row.user.email}}
         </div>
         <div [class]="row.nodeClass" *ngIf="row.nodeClass=='MateriaEnrollment'">
           <button  mat-button  (click)="onMateriaClick(row)">
             <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
           </button>
-          {{row.obj.materia_name }}
+          {{ row.materia.materia_name }}
         </div>    
         <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Exam'">
-          {{row.obj.label }}
+          {{row.exam.label }}
         </div>           
       </td>
     </ng-container>
@@ -29,14 +29,13 @@ Certificados
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Aprovado</th>
       <td mat-cell *matCellDef="let row">
         <div *ngIf="row.nodeClass=='User'">
-          {{row.obj.id}}
+          {{row.user.id}}
         </div>
-        <div *ngIf="row.nodeClass=='MateriaEnrollment'">
-          
-          <button *ngIf="row.obj.certificate_url" [cdkCopyToClipboard]="row.obj.certificate_url" (click)="onCopyToClipboard()">certificado</button>
+        <div *ngIf="row.nodeClass=='MateriaEnrollment'">          
+          <button *ngIf="row.materiaEnrollment.certificate_url" [cdkCopyToClipboard]="row.materiaEnrollment.certificate_url" (click)="onCopyToClipboard()">certificado</button>
         </div>    
         <div *ngIf="row.nodeClass=='Exam'">
-          {{ row.obj.isReleased ? 'completado' : 'faltante' }}
+          {{ row.examGrade && row.examGrade.isReleased ? 'completado' : 'faltante' }}
         </div>           
       </td>
     </ng-container>
@@ -53,6 +52,10 @@ Certificados
             <mat-icon>library_add</mat-icon>
             <span>Enrolar en Materia</span>
           </button> 
+          <button *ngIf="row.nodeClass=='Exam'" mat-menu-item (click)="onExamWaiver(row)" [disabled]="submitting">
+            <mat-icon>check_circle_outline</mat-icon>
+            <span>Acreditar</span>
+          </button>           
         </mat-menu>           
 
       </td>

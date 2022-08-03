@@ -150,7 +150,6 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     var qry
     if( this.userLoginService.hasRole("admin")){
       qry = db.collectionGroup('parameterGrades')
-      .where("owners", "array-contains" ,this.userLoginService.getUserUid())
       .where("applicationDate","==", applicationDate)
       .where("isDeleted", "==", false)
     }

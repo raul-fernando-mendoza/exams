@@ -28,9 +28,6 @@
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/career-list">Carreras</a>
 
-
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/eiReporte">Reportes</a>  
-
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
       <a *ngIf="!isLoggedIn()" mat-list-item  routerLink="/login-selector">Login</a>
 
@@ -51,7 +48,7 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">TOTH ver 3.1.7</a>
+      <a class="main_link" routerLink="/home">TOTH ver 3.1.8</a>
       <!--
       <mat-form-field appearance="fill">
         <mat-label>Organizaciones</mat-label>

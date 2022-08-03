@@ -196,7 +196,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       }      
 
       db.collection("examGrades")
-      .where( "owners","array-contains", this.userLoginService.getUserUid())
       .where( "isDeleted", "==", false)
       .where( "applicationDate", "==", this.applicationDate)
       .get().then( set =>{
@@ -207,7 +206,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
             materia_id:doc.data().materia_id,
             student_uid:doc.data().student_uid,
             score:doc.data().score,
-            certificate_url:doc.data().certificate_url,
             isReleased:doc.data().isReleased,
             isCompleted:doc.data().isCompleted
           }
@@ -220,7 +218,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
               "student_name":null,
               "title":examGrade.title,
               "score":examGrade.score,
-              "certificate_url":examGrade.certificate_url,
               "isReleased":examGrade.isReleased,
               "isCompleted":examGrade.isCompleted
             },
@@ -259,7 +256,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     return new Promise<void>((resolve, reject) =>{  
       _resolve = resolve
       db.collection(`examGrades/${examGrade_id}/parameterGrades`)
-      .where( "owners","array-contains", this.userLoginService.getUserUid()).get().then( set =>{
+      .get().then( set =>{
         let m = set.docs.map( doc =>{
           let parameterGrade = {
             id:doc.data().id,

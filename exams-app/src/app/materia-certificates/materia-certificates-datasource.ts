@@ -3,10 +3,15 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
+import { Exam, ExamGrade, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 
 // TODO: Replace this with your own data model type
-export class NodeTableRow {
-  obj:{}
+export interface NodeTableRow {
+  user:User
+  materiaEnrollment?:MateriaEnrollment
+  materia?:Materia
+  exam?:Exam
+  examGrade?:ExamGrade
   opened:boolean
   children:Array<NodeTableRow>
   nodeClass:string

@@ -42,11 +42,13 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     db.collection("examGrades").doc(this.examGrade_id).get().then( doc =>{
+      const examGrade:ExamGrade = doc.data() as ExamGrade
       this.examGrade = {
-        id:doc.data().id,
-        exam_id:doc.data().exam_id,
-        title:doc.data().title,
-        student_uid:doc.data().student_uid,
+        id:examGrade.id,
+        exam_id:examGrade.exam_id,
+        title:examGrade.title,
+        student_uid:examGrade.student_uid,
+        materia_id:examGrade.materia_id,
         applicationDate:doc.data().applicationDate.toDate(),
         parameterGrades:[]
       }
@@ -56,7 +58,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
       var labels = []
       let scores = []
 
-      db.collection("exams").doc(this.examGrade.exam_id).get().then( doc =>{
+      db.collection("materias/" + examGrade.materia_id + "/exams").doc(this.examGrade.exam_id).get().then( doc =>{
         this.exam_label = doc.data().label
       })
 

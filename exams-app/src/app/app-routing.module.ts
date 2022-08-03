@@ -31,6 +31,7 @@ import { CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
 import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
+import { DialogMateriaDialog } from './materia-edit/materia-edit';
 
 const routes: Routes = [
   
@@ -53,7 +54,8 @@ const routes: Routes = [
   { path: 'eiReporte', component: EiApReporteComponent },
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
-  { path: 'materia-list', component: MateriaListComponent },
+  { path: 'materia-list', component: MateriaListComponent },  
+  { path: 'materia-edit', component: DialogMateriaDialog },  
   { path: 'user-list', component: UsersListComponent },
   { path: 'login-selector', component: LoginSelectorComponent },
 

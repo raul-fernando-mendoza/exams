@@ -126,9 +126,8 @@ export class WelcomeComponent implements OnInit {
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
       _reject = reject
-      const query = db.collection("exams")
+      const query = db.collection("materias/" + materia_id + "/exams")
       .where("isDeleted","==",false)
-      .where("materia_id","==",materia_id)
       query.get().then( set => {
   
         var map = set.docs.map( doc =>{
