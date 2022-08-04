@@ -133,7 +133,6 @@ export class ExamenesImprovisacionService {
             organization_id:organizationId,
             student_uid:studentId,
             materia_id:materiaId,
-            owners:[studentId],
             isActive:true
           }          
           db.collection('materiaEnrollments').doc(id).set(materiaEnrollment).then( () =>{
@@ -144,12 +143,19 @@ export class ExamenesImprovisacionService {
           })
         }
         else{
-          _reject()
+          var doc = set.docs[0]
+          db.collection('materiaEnrollments').doc(doc.id).update({isActive:true}).then( () =>{
+            _resolve()
+          },
+          reason =>{
+            console.log("enrollment update failed")
+            _reject()
+          })       
         }
       })
     })
     
-  }
+  }  
   formatTimeStamp(t):string{
     const date = t.toDate()    
     return date.toISOString().split('T')[0] 

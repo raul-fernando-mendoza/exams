@@ -252,7 +252,19 @@ export class UserLoginService {
     return (this.user)?this.user.email:null
   }
   getDisplayName(){
-    return (this.user)?this.user.displayName:null
+    let displayName = null 
+    if(this.user){
+      if(this.user.claims && this.user.claims[displayName]){
+        displayName = this.user.claims.displayName
+      } 
+      else if( this.user.displayName ){
+        displayName = this.user.displayName
+      }
+      else displayName =  this.user.email
+      
+    }
+    return displayName
+    
   }
   getUserIdToken():Promise<String> {
     if( firebase && firebase.auth() && firebase.auth().currentUser ){

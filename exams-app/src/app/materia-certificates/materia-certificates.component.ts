@@ -265,11 +265,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
   }
 
-  
-
-
-
-
   /**** Student */
 
   onMateriaEnroll(row){
@@ -302,6 +297,17 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
   
   
+  onMateriaUnEnroll(row:NodeTableRow){
+    db.collection("materiaEnrollments").doc(row.materiaEnrollment.id).update({isActive:false}).then( () =>{
+      console.log("removing materiaEnrollment:")
+      this.loadStudents().then( ()=>{
+        this.update()
+      })
+    },
+    reason =>{
+      console.error("ERROR removing materiaEnrollment")
+    })
+  }  
   onEnrollmentEdit(student){
     const dialogRef = this.dialog.open(DialogEnrollMateriaDialog, {
       height: '400px',
@@ -351,7 +357,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       let id = uuid.v4()
       db.collection("examGrades").doc(id ).set( {id:id} ).then( ()=>{
 
-        let examGrade = {
+        let examGrade:ExamGrade = {
           id:id, 
           exam_id:row.exam.id,
           materia_id:row.materia.id, 
@@ -365,7 +371,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           isReleased:true, 
           isApproved:true,
           created_on:new Date(),
-          updated_on:new Date()      
+          updated_on:new Date()   
         }
         db.collection("examGrades").doc(id ).update( examGrade ).then( ()=>{
           row.examGrade = examGrade
@@ -376,6 +382,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       })
     }
   }
+
+
 }
 
 /****** student dlg */
@@ -410,9 +418,7 @@ export class DialogEnrollMateriaDialog implements OnInit{
       }
       this.materiasList.push(materia)
     })
+    this.materiasList.sort((a,b) => {return a.materia_name > b.materia_name ? 1:-1})
   }
-
-
-
 }
 

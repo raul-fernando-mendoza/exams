@@ -171,7 +171,6 @@ export interface MateriaEnrollment{
   student_uid?:string
   student?:User
   isActive?:boolean
-  owners?:Array<string>
   certificate_url?:string
 }
 

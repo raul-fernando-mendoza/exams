@@ -55,7 +55,12 @@ Certificados
           <button *ngIf="row.nodeClass=='Exam'" mat-menu-item (click)="onExamWaiver(row)" [disabled]="submitting">
             <mat-icon>check_circle_outline</mat-icon>
             <span>Acreditar</span>
+          </button>   
+          <button *ngIf="row.nodeClass=='MateriaEnrollment'" mat-menu-item (click)="onMateriaUnEnroll(row)" [disabled]="submitting">
+            <mat-icon>delete</mat-icon>
+            <span>Remover Enrolamiento</span>
           </button>           
+
         </mat-menu>           
 
       </td>
