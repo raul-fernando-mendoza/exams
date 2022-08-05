@@ -49,7 +49,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         title:examGrade.title,
         student_uid:examGrade.student_uid,
         materia_id:examGrade.materia_id,
-        applicationDate:doc.data().applicationDate.toDate(),
+        applicationDate:doc.data().applicationDate,
         parameterGrades:[]
       }
       

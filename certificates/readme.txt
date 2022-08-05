@@ -1,9 +1,11 @@
 #deploy to trigger when exam is completed
-gcloud functions deploy generateMateriaCertificate --region=us-central1 --entry-point generateMateriaCertificate --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.update"  --trigger-resource "projects/thoth-qa/databases/(default)/documents/examGrades/{examGradeId}" 
+gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-central1 --entry-point createCertificateOnExamGradeEvent --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.write"  --trigger-resource "projects/thoth-qa/databases/(default)/documents/examGrades/{examGradeId}" 
+
 
 
 #deploy function to cloud functions
-gcloud functions deploy createCertificate --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
+gcloud functions deploy createCertificateMateriaEnrollmentPost --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
+gcloud functions deploy deleteCertificateMateriaEnrollmentPost --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
 
 ***** cerficate generation process ********
 1.- load the master in certificates-thoth-qa/certificates_master and then run the habilidades_master_test

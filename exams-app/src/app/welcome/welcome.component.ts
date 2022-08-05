@@ -19,7 +19,7 @@ interface MyExam {
 interface MyEnrollment {
   enrollment_id:string
   materia_name:string
-  certificate_url:string
+  certificate_public_url:string
   iconCertificate:string
   exams:MyExam[]
 }
@@ -87,7 +87,7 @@ export class WelcomeComponent implements OnInit {
           var myEnrollment:MyEnrollment = {
             enrollment_id:materiaEnrollment.id,
             materia_name:materiaEnrollment.materia.materia_name,
-            certificate_url:materiaEnrollment.certificate_url,
+            certificate_public_url:materiaEnrollment.certificate_public_url,
             iconCertificate:materia.iconCertificate,
             exams:[]
           }

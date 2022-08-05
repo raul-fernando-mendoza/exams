@@ -170,8 +170,9 @@ export interface MateriaEnrollment{
   materia?:Materia
   student_uid?:string
   student?:User
-  isActive?:boolean
-  certificate_url?:string
+  isDeleted?:boolean
+  certificate_name?:string
+  certificate_public_url?:string
 }
 
 export interface ExamRequest{
@@ -296,6 +297,8 @@ export interface ExamGrade{
   isReleased?:boolean 
   isApproved?:boolean 
   parameterGrades?:ParameterGrade[] 
+
+  isWaiver?:boolean
 
   created_on?:Date
   updated_on?:Date

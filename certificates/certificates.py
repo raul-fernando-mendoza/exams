@@ -202,7 +202,10 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         blob = bucket.blob(file_name + "_certificate" + ".jpeg") 
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
-        return {"certificate_url":blob.public_url}
+        return {
+                "certificate_name":blob.name,
+                "certificate_public_url":blob.public_url
+                }
 
              
         

@@ -33,7 +33,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   released = false
   periodicRefresh = false
   applicationDates = []
-  applicationDate = null
+  applicationDate:Date = null
 
   submmiting = false
   showDeleted = false
@@ -200,15 +200,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       .where( "applicationDate", "==", this.applicationDate)
       .get().then( set =>{
         let m = set.docs.map( doc =>{
-          let examGrade:ExamGrade = {
-            id:doc.data().id,
-            title:doc.data().title,
-            materia_id:doc.data().materia_id,
-            student_uid:doc.data().student_uid,
-            score:doc.data().score,
-            isReleased:doc.data().isReleased,
-            isCompleted:doc.data().isCompleted
-          }
+          let examGrade:ExamGrade = doc.data() as ExamGrade
           let node:NodeTableRow = {
             obj:{
               "id":examGrade.id,

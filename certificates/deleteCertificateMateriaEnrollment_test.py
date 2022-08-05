@@ -2,7 +2,6 @@ import unittest
 import json
 import logging
 
-import firebase_admin
 import main
 
 
@@ -14,8 +13,7 @@ from firebase_admin import firestore
 class TestFireStore(unittest.TestCase):
 
     def test01_addDocument(self):
-        db = firestore.client()
-        main.generateCertificate(db, 'bb7a1515-7a0e-4b38-886d-c94f4012c832')
+        main.deleteCertificateMaterialEnrollment('c00cc988-441c-4ee0-96e0-f87b124aa63b')
 
 
 if __name__ == '__main__':

@@ -13,6 +13,7 @@ export interface NodeTableRow {
   exam?:Exam
   examGrade?:ExamGrade
   opened:boolean
+  parent:NodeTableRow
   children:Array<NodeTableRow>
   nodeClass:string
   isLeaf:boolean

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { db, environment } from 'src/environments/environment';
 import { MateriaEnrollment, Organization, User } from './exams/exams.module';
 import * as uuid from 'uuid';
+import { Timestamp } from 'rxjs/internal/operators/timestamp';
 
 @Injectable({
   providedIn: 'root'
@@ -75,21 +76,14 @@ export class ExamenesImprovisacionService {
     return this.http.post(url, request_data, {headers: myheaders})
   }
   /*
-  var request_data = {
-      "certificateId":"102" ,
-      "studentName":"Claudia Gamboa",
-      "materiaName":"Salsa",
-      "label1":"www.raxacademy.com",
-      "label2":"Experta",
-      "label3":"Abanicos",
-      "label4":"Virginia Gamboa",
-      "color1":"black",
-      "color2":"red"
-    }
+curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost \
+-H "Authorization:bearer $(gcloud auth print-identity-token)" \
+-H "Content-Type:application/json" \
+-d '{}'
   */
-  public certificateInterface(action, token, request_data): Observable<Object> {
+  public certificateDeleteInterface(action, token, request_data): Observable<Object> {
 
-    var url = environment.certificatesURL 
+    var url = environment.certificatesDeleteURL 
 
     console.log( JSON.stringify(request_data, null, 2))
     var myheaders = new HttpHeaders({'Content-Type': 'application/json' });
@@ -114,6 +108,22 @@ export class ExamenesImprovisacionService {
     
     return result
   }  
+/*
+  curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost \
+  -H "Authorization:bearer $(gcloud auth print-identity-token)" \
+  -H "Content-Type:application/json" \
+  -d '{}' 
+  */
+  public certificateCreateInterface(action, token, request_data): Observable<Object> {
+
+    var url = environment.certificatesCreateURL 
+
+    console.log( JSON.stringify(request_data, null, 2))
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json' });
+
+
+    return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
+  }
 
   createMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<void>{
     var id = uuid.v4()
@@ -126,6 +136,7 @@ export class ExamenesImprovisacionService {
       db.collection('materiaEnrollments')
       .where("student_uid", "==", studentId)
       .where("materia_id", "==", materiaId)
+      .where("isDeleted","==",false)
       .get().then( set =>{
         if( set.docs.length == 0){
           const materiaEnrollment:MateriaEnrollment = {
@@ -133,24 +144,17 @@ export class ExamenesImprovisacionService {
             organization_id:organizationId,
             student_uid:studentId,
             materia_id:materiaId,
-            isActive:true
+            isDeleted:false
           }          
           db.collection('materiaEnrollments').doc(id).set(materiaEnrollment).then( () =>{
             _resolve()
           },
           reason =>{
-            _reject()
+            alert("la alumna ya esta enrollada en esta materia.")
           })
         }
         else{
-          var doc = set.docs[0]
-          db.collection('materiaEnrollments').doc(doc.id).update({isActive:true}).then( () =>{
-            _resolve()
-          },
-          reason =>{
-            console.log("enrollment update failed")
-            _reject()
-          })       
+          _reject()
         }
       })
     })
@@ -160,6 +164,13 @@ export class ExamenesImprovisacionService {
     const date = t.toDate()    
     return date.toISOString().split('T')[0] 
   }
-
-
+  printDate(t):string{   
+    if( t.toDate ){
+      const date = t.toDate()    
+      return date.toISOString().split('T')[0] 
+    }
+    else{
+      return t.toISOString().split('T')[0] 
+    }
+  }  
 }
