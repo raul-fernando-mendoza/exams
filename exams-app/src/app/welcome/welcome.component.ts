@@ -71,7 +71,7 @@ export class WelcomeComponent implements OnInit {
 
     db.collection("materiaEnrollments")
     .where("student_uid","==",this.userLoginService.getUserUid())
-    .where("isActive",'==',true)
+    .where("isDeleted",'==',false)
     .get().then( set =>{
       console.log("materia start")
       let transaction:Array<Promise<void>> = set.docs.map( doc =>{
@@ -202,6 +202,7 @@ export class WelcomeComponent implements OnInit {
   onEnrollar(materia_id){
     if( this.isLoggedIn() ){
       this.examenesImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), materia_id,this.userLoginService.getUserUid()).then( () =>{
+        
         alert("Usted ha sido enrollado en esta materia.")
         this.update()
       },

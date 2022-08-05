@@ -150,7 +150,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
             _resolve()
           },
           reason =>{
-            alert("la alumna ya esta enrollada en esta materia.")
+            alert("ERROR al enrollar:" + reason)
           })
         }
         else{

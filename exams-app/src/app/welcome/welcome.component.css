@@ -4,7 +4,7 @@
 }
 
 .enrolled-materia-card{
-    max-width:300px;
+    max-width:80%;
     margin:10px;
 }
 
@@ -12,24 +12,17 @@
     border: 1px;
     border-style: solid;
     border-color: black;
+    border-radius: 50px;
     margin:20px;
 }
 
-.chains mat-card {
-    display: inline-block;
-  }
-
-.materia-card{
-    width: 80%;
-    margin: 10px;
-}
-
 .mat-grid-list *{
-    margin-top: 0px;
+    margin-top: 10px;
     padding: 0px;
-    border:1px;
+    border:0px;
     border-style: solid;
     border-color:red;
+
 }
 
 .exam-not-required-not-completed{
