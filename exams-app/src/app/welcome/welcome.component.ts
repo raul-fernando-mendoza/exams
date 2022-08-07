@@ -6,7 +6,7 @@ import { db } from 'src/environments/environment';
 import { copyObj, Exam, ExamGrade, Materia, MateriaEnrollment } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
-import { RouteConfigLoadEnd, Router } from '@angular/router';
+import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 
 interface MyExam {
@@ -36,11 +36,14 @@ export class WelcomeComponent implements OnInit {
     , private userLoginService:UserLoginService
     , private examenesImprovisacionService:ExamenesImprovisacionService
     , private sortingService:SortingService
-    , private userPreferencesService:UserPreferencesService) { }
+    , private userPreferencesService:UserPreferencesService) { 
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
+    }
 
   
   myEnrollments:MyEnrollment[] = []
   materias:Array<Materia> = []
+  organization_id:string = null
 
   ngOnInit(): void {
     this.update()
@@ -70,6 +73,7 @@ export class WelcomeComponent implements OnInit {
     }
 
     db.collection("materiaEnrollments")
+    .where("organization_id", "==", this.userPreferencesService.getCurrentOrganizationId())
     .where("student_uid","==",this.userLoginService.getUserUid())
     .where("isDeleted",'==',false)
     .get().then( set =>{
@@ -183,6 +187,7 @@ export class WelcomeComponent implements OnInit {
   loadMaterias(){
     this.materias.length = 0
     db.collection("materias")
+    .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
     .where("isDeleted","==", false)
     .where("isEnrollmentActive", "==", true)
     .get().then( set =>{

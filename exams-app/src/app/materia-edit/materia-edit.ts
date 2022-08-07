@@ -5,10 +5,18 @@ import { MatSelectChange } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
 import { Exam, Materia } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
-import { db } from 'src/environments/environment';
+import { db , storage  } from 'src/environments/environment';
+
+
+
 import { ActivatedRoute, Router } from "@angular/router"
 import * as uuid from 'uuid';
 import { NavigationService } from "../navigation.service"
+import { UserPreferencesService } from "../user-preferences.service"
+import { Observable, Observer } from "rxjs"
+
+var storageRef
+var materia_id
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -19,7 +27,7 @@ import { NavigationService } from "../navigation.service"
 
 export class DialogMateriaDialog implements OnInit{ 
    
-   
+    materia_observable: Observable<Materia> 
 
     materia_id = null
     m:FormGroup = null
@@ -27,6 +35,10 @@ export class DialogMateriaDialog implements OnInit{
 
     typeCertificates = []
     iconCertificates = []
+
+    organization_id:string = null
+
+    selectedFiles
   
     constructor(
         private fb: FormBuilder
@@ -34,13 +46,32 @@ export class DialogMateriaDialog implements OnInit{
         ,private router: Router
         ,private examImprovisacionService: ExamenesImprovisacionService
         ,private userLoginService: UserLoginService
+        ,private userPreferencesService: UserPreferencesService
         ,private navigationService: NavigationService
         ,public dialog: MatDialog
         ) {
-          if( this.route.snapshot.paramMap.get('materia_id') != 'null')
-            this.materia_id = this.route.snapshot.paramMap.get('materia_id')
+      if( this.route.snapshot.paramMap.get('materia_id') != 'null'){
+        this.materia_id = this.route.snapshot.paramMap.get('materia_id')
+        materia_id = this.materia_id
 
-        }
+        this.materia_observable = new Observable( (observer) =>{
+
+          var unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
+            next =>{
+              const materia = next.data() as Materia
+              observer.next(materia)
+            },
+            error=>{
+              console.log("ERROR reading materia")
+              observer.error()
+            }
+          )
+          return unsubscribe              
+        })
+      }
+      this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+          
+    }
   
   
     ngOnInit(): void {
@@ -55,6 +86,7 @@ export class DialogMateriaDialog implements OnInit{
             iconCertificate:[materia.iconCertificate, Validators.required],
             description:[materia.description],
             videoUrl:[materia.videoUrl],
+            pictureUrl:[materia.pictureUrl],
             isEnrollmentActive:[materia.isEnrollmentActive],
             label1:[""], 
             label2:[""], 
@@ -63,6 +95,9 @@ export class DialogMateriaDialog implements OnInit{
             color1:[""], 
             color2:[""], 
             exams:new FormArray([])            
+          },
+          reason =>{
+            console.error("ERROR reading materia:" + reason)
           })
           return this.loadExams(this.materia_id, this.m.controls.exams as FormArray)           
         })  
@@ -76,6 +111,7 @@ export class DialogMateriaDialog implements OnInit{
           typeCertificate:[null, Validators.required],
           iconCertificate:[null, Validators.required],
           description:[null],
+          pictureUrl:[""],
           videoUrl:[null],
           isEnrollmentActive:[false],
           label1:[""], 
@@ -104,7 +140,7 @@ export class DialogMateriaDialog implements OnInit{
       this.typeCertificates = []
   
       var req = {
-        "path":"certificates_master"
+        "path":"certificates_master/" + this.userPreferencesService.getCurrentOrganizationId() + "/"
       }
       this.userLoginService.getUserIdToken().then( token => {
         this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
@@ -113,8 +149,8 @@ export class DialogMateriaDialog implements OnInit{
             listIcons.forEach(m => {
               this.typeCertificates.push(
                 {
-                  label:m["name"].split("/")[1],
-                  value:m["name"].split("/")[1]  
+                  label:m["name"].split("/").pop(),
+                  value:m["name"].split("/").pop() 
                 }  
               )          
             });
@@ -136,7 +172,7 @@ export class DialogMateriaDialog implements OnInit{
       this.iconCertificates = []
   
       var req = {
-        "path":"certificates_logos"
+        "path":"certificates_logos/" + this.userPreferencesService.getCurrentOrganizationId() + "/"
       }
   
       this.userLoginService.getUserIdToken().then( token => {
@@ -146,8 +182,8 @@ export class DialogMateriaDialog implements OnInit{
             listIcons.forEach(icon => {
               this.iconCertificates.push(
                 {
-                  label:icon["name"].split("/")[1],
-                  value:icon["name"].split("/")[1]  
+                  label:icon["name"].split("/").pop(),
+                  value:icon["name"].split("/").pop()  
                 }  
               )          
             });
@@ -273,10 +309,12 @@ export class DialogMateriaDialog implements OnInit{
       const id = this.m.controls.id.value
       if( id == null){
         const materia_id = uuid.v4()
+        const organization_id = this.userPreferencesService.getCurrentOrganizationId()
        
         if( this.m.valid ){ 
           const materia:Materia = {
             id:materia_id, 
+            organization_id:organization_id,
             materia_name:this.m.controls.materia_name.value,
             isDeleted:this.m.controls.isDeleted.value, 
           
@@ -415,10 +453,6 @@ export class DialogMateriaDialog implements OnInit{
       db.collection('materias/' + materia_id + '/exams').doc(id).set(exam).then( () =>{
         this.update()
       })
-
-  
-
-    
     }
 
     onCreateExam(){
@@ -440,7 +474,88 @@ export class DialogMateriaDialog implements OnInit{
         }
       });
     }
+
+    
+
+    async selectFile(event) {
+      var selectedFiles = event.target.files;
+      const property = event.srcElement.id
   
+      const bucketName = "certificates_images/" + this.materia_id + "/"
+
+      var file:File = selectedFiles[0]
+
+      storageRef = storage.ref( "organizations/" + this.organization_id + "/materias/" + this.materia_id + "/" + property)
+
+      var uploadTask = storageRef.put(file)
+      
+
+      /*
+      uploadTask.on("state_changed", function progress(snapshot) {
+        console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+      },
+      function progress(error) {
+        console.log(error); // progress of upload
+      },
+      function progress() {
+        console.log("Completed"); // progress of upload
+        storageRef.getDownloadURL().then( url =>{
+          console.log(url)
+          this.setMateriaImage(url)
+        },
+        reason =>{
+          console.log("ERROR on url" + reason)
+        })
+
+
+
+      })
+      */
+     /*
+      uploadTask.on("state_changed", {
+        'next': this.next,
+        'error': this.progress,
+        'complete': this.completeLoadingImage
+        });
+      */
+      var fileLoadObserver = new FileLoadObserver(storageRef, this.materia_id, property)
+      uploadTask.on("state_change", fileLoadObserver)
+
+           
+    } 
+
+    next(snapshot){
+      console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+    }
+    progress(error) {
+      console.log(error); // progress of upload
+    }
+    completeLoadingImage(){
+      console.log("Completed"); // progress of upload
+      storageRef.getDownloadURL().then( url =>{
+        console.log(url)
+        db.collection("materias").doc(materia_id).update({
+          pictureUrl:url
+        }).then( () =>{
+          window.location.reload()
+        })
+      },
+      reason =>{
+        console.log("ERROR on url" + reason)
+      })
+
+    }
+    
+    removePropertyValue(property){
+      const json = {}
+      json[property] = null
+
+      
+      db.collection("materias").doc(this.materia_id).update( json ).then( () =>{
+        console.log("property was removed")
+        this.m.controls[property].setValue(null)
+      })
+    }
   
   }
   
@@ -461,4 +576,35 @@ export class DialogMateriaDialog implements OnInit{
       return JSON.stringify(obj, null, 2)
     }
   
+  }
+
+  class FileLoadObserver implements Observer<any>  {
+    constructor( 
+      private storageRef,
+      private materia_id:string, 
+      private propertyName:string){
+
+    } 
+    next=(snapshot =>{
+      console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+
+    })
+    error=(cause =>{
+      console.log("error:" + cause)
+    })
+    complete=( () =>{
+      console.log("complete" + this.materia_id + " " + this.propertyName)
+      console.log("Completed"); // progress of upload
+      this.storageRef.getDownloadURL().then( url =>{
+        console.log(url)
+        db.collection("materias").doc(this.materia_id).update({
+          pictureUrl:url
+        }).then( () =>{
+          console.log(`update as completed ${this.materia_id} + ${url}`)
+        })
+      },
+      reason =>{
+        console.log("ERROR on url" + reason)
+      })      
+    });
   }

@@ -5,6 +5,9 @@
 import firebase from 'firebase/app';
 import "firebase/auth";
 import 'firebase/firestore';
+import 'firebase/storage';
+
+
 
 export const environment = { 
   production: false,
@@ -17,12 +20,11 @@ export const environment = {
   
     projectId: "thoth-qa",
   
-    storageBucket: "thoth-qa.appspot.com",
-  
+    storageBucket: "thoth-qa.appspot.com",    
+      
     messagingSenderId: "357669808993",
   
-    appId: "1:357669808993:web:87f3ec430f556b05683320"
-  
+    appId: "1:357669808993:web:87f3ec430f556b05683320",
   },
   chenequeURL:"https://us-central1-thoth-qa.cloudfunctions.net/chenequeRequest",
   authURL:"https://us-central1-thoth-qa.cloudfunctions.net/authRequest",
@@ -38,6 +40,7 @@ export const environment = {
 const app = firebase.initializeApp(environment.firebase)
 
 const auth = firebase.auth();
+export const storage = firebase.storage(app)
 
   
 export const db = firebase.firestore(app);

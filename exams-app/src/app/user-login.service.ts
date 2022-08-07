@@ -119,7 +119,7 @@ export class UserLoginService {
         //now get the id token
         firebase.auth().currentUser.getIdToken(true).then(idToken => {
           //id token retrieved
-          console.log("idToken:" + idToken)
+          //console.log("idToken:" + idToken)
           this.user_idtoken = idToken
           localStorage.setItem('user_idtoken',this.user_idtoken)
           //now get the roles

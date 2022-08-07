@@ -1,3 +1,11 @@
 .actions{
     margin:10px
 }
+
+.materia-image{
+    height: 300px;
+}
+
+.remove-property-button{
+    margin-left:50px
+}

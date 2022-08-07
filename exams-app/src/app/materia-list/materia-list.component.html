@@ -17,11 +17,11 @@
         <mat-card-subtitle>
           {{ m.description }}
         </mat-card-subtitle>
-        <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ m.iconCertificate }}">
+        <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ m.iconCertificate }}">
                                     
     </mat-card-title-group>
     <mat-card-content>
-  
+      <img class="materia-image" *ngIf="m.pictureUrl" src="{{ m.pictureUrl }}"> 
       <video *ngIf="m.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
       width="640" height="264" vjs-video vjs-setup="options">
         <source src="{{ m.videoUrl }}" type='video/mp4' />
@@ -32,4 +32,4 @@
     </mat-card-actions>
   </mat-card>
 
-  <button mat-button (click)="onCreateMateria()">Nueva Materia</button>
+  <button mat-button mat-raised-button color="primary" (click)="onCreateMateria()">Nueva Materia</button>

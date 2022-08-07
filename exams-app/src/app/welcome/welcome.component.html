@@ -1,4 +1,4 @@
-Bienvenido
+Bienvenido 
 <mat-card class="action-card" *ngIf="!isLoggedIn()">
     <mat-card-title>Login</mat-card-title>
     <mat-card-content>
@@ -23,21 +23,21 @@ Bienvenido
 
 <div >
   <mat-accordion multi>
-    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" [expanded]="isLoggedIn()">
+    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Mis Materias
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-expansion-panel-content class=".chains">
-        <mat-card *ngFor="let me of myEnrollments" class="enrolled-materia-card">
+        <mat-card class="mat-elevation-z0" *ngFor="let me of myEnrollments" class="enrolled-materia-card">
           <mat-card-title-group>
               <mat-card-title>{{ me.materia_name }}</mat-card-title>
               <mat-card-subtitle>
                 <a *ngIf="me.certificate_public_url" href="{{ me.certificate_public_url }}">certificado</a> 
                 <div *ngIf="!me.certificate_public_url">En curso</div>
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ me.iconCertificate }}">
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ me.iconCertificate }}">
                                           
           </mat-card-title-group>
           <mat-card-content>
@@ -57,10 +57,10 @@ Bienvenido
         </mat-card>
       </mat-expansion-panel-content>  
     </mat-expansion-panel>
-    <mat-expansion-panel [expanded]="!isLoggedIn() ">
+    <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Materias
+          Proximas Materias
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
@@ -70,11 +70,11 @@ Bienvenido
               <mat-card-subtitle>
                 {{ m.description }}
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{ m.iconCertificate }}">
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ m.iconCertificate }}">
                                           
           </mat-card-title-group>
           <mat-card-content>
-        
+            <img class="materia-image" *ngIf="m.pictureUrl" src="{{ m.pictureUrl }}"> 
             <video *ngIf="m.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
             width="640" height="264" vjs-video vjs-setup="options">
               <source src="{{ m.videoUrl }}" type='video/mp4' />

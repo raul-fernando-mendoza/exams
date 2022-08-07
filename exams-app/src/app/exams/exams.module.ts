@@ -102,6 +102,7 @@ export interface Exam{
 export interface Materia{
 
   id:string 
+  organization_id?:string
   materia_name?:string 
   isDeleted?:boolean 
 
@@ -109,6 +110,7 @@ export interface Materia{
   iconCertificate?:string 
 
   description?:string 
+  pictureUrl?:string
   videoUrl?:string 
   isEnrollmentActive?:boolean 
 
@@ -118,6 +120,7 @@ export interface Materia{
   label4?:string 
   color1?:string 
   color2?:string 
+  
 
   exams?:Exam[]
 }

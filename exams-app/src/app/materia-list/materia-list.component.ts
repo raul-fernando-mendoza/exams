@@ -6,6 +6,7 @@ import { UserLoginService } from '../user-login.service';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { UserPreferencesService } from '../user-preferences.service';
 
 @Component({
   selector: 'app-materia-list',
@@ -18,12 +19,15 @@ export class MateriaListComponent implements OnInit {
  
   submitting = false
 
+  organization_id:string
+
   constructor(
-     private examImprovisacionService: ExamenesImprovisacionService
-    , private userLoginService:UserLoginService
-    , private fb: FormBuilder    
-    , private router: Router
-  ) { }
+ 
+      private router: Router
+    , private usetPreferenceService:UserPreferencesService
+  ) { 
+    this.organization_id = this.usetPreferenceService.getCurrentOrganizationId()
+  }
 
   ngOnInit(): void {
 
@@ -38,6 +42,7 @@ export class MateriaListComponent implements OnInit {
     this.materias.length = 0
     return new Promise<void>((resolve, reject) =>{
       db.collection("materias")
+      .where("organization_id","==", this.usetPreferenceService.getCurrentOrganizationId())
       .where("isDeleted","==", false)
       .get().then( snapshot =>{
         snapshot.docs.map( doc =>{
