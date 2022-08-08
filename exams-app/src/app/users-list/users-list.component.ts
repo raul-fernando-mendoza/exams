@@ -3,6 +3,7 @@ import { AbstractControl, EmailValidator, FormArray, FormBuilder, FormGroup } fr
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
+import { UserPreferencesService } from '../user-preferences.service';
 
 @Component({
   selector: 'app-users-list',
@@ -11,15 +12,18 @@ import { UserLoginService } from '../user-login.service';
 })
 export class UsersListComponent implements OnInit {
 
-  roles = ['admin','readonly','evaluador','estudiante'];
+  roles = ['role-admin','role-readonly','role-evaluador','role-estudiante'];
 
   users_formarray = new FormArray([])
+
+  organization_id = null 
 
   constructor(private examImprovisacionService: ExamenesImprovisacionService
     , private userLoginService: UserLoginService
     , private fb: FormBuilder
-    , private router: Router) { 
-
+    , private router: Router
+    , private userPreferencesService:UserPreferencesService) { 
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
   }
 
 
@@ -66,11 +70,13 @@ export class UsersListComponent implements OnInit {
                 user_group.controls.displayName.setValue( claimValue ) 
             }
             else{
-              var role_formgroup = this.fb.group({
-                id:[claim],
-                value:[claimValue]
-              })
-              claims_array.push(role_formgroup)
+              if( claim.split("-")[0] == 'role' && claim.split("-")[2] == this.organization_id){
+                var role_formgroup = this.fb.group({
+                  id:[claim],
+                  value:[claimValue]
+                })
+                claims_array.push(role_formgroup)
+              }
             }
           }
           this.users_formarray.push(user_group)

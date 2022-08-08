@@ -17,7 +17,7 @@
                 <mat-icon>more_vert</mat-icon>
             </button>   
             <mat-menu #usermenu="matMenu" >
-                <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role)" [disabled]="submitting">
+                <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role + '-' +  organization_id)" [disabled]="submitting">
                     <span>{{ role }}</span>
                 </button> 
                 <button (click)="deleteUser( user.controls.email.value )">

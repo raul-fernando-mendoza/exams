@@ -184,7 +184,7 @@ export class ExamenImprovisacionFormComponent {
 
 
     var userReq = {
-        "claims":"estudiante"
+        "claims":"role-estudiante-" + this.organization_id
     }      
 
     this.examImprovisacionService.authApiInterface("getUserListForClaim", token, userReq).then(data => {
@@ -207,7 +207,7 @@ export class ExamenImprovisacionFormComponent {
     
     
     var evaluator_req = {
-      "claims":"evaluador"
+      "claims":"role-evaluador-" + this.organization_id
     }      
 
     this.examImprovisacionService.authApiInterface("getUserListForClaim", token, evaluator_req).then(data => {

@@ -52,7 +52,7 @@
       
       <mat-form-field appearance="fill">
         <mat-label>Organizaciones </mat-label>
-        <mat-select [(value)]="organizationId" (selectionChange)="onOrganizationChange($event)">
+        <mat-select [(value)]="organization_id" (selectionChange)="onOrganizationChange($event)">
           <mat-option *ngFor="let organization of organizations" [value]="organization.id">
             {{organization.organization_name}} 
           </mat-option>

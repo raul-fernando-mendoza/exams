@@ -277,13 +277,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }  
   
   isAdmin(){
-    return this.userLoginService.hasRole("admin")
+    return this.userLoginService.hasRole("role-admin-" + this.organization_id)
   }
   isReadOnly(){
-    return this.userLoginService.hasRole("readonly")
+    return this.userLoginService.hasRole("role-readonly-" + this.organization_id)
   }
   isEvaluador(){
-    return this.userLoginService.hasRole("evaluador")
+    return this.userLoginService.hasRole("role-evaluador-"  + this.organization_id)
   }
 
   timerId = null

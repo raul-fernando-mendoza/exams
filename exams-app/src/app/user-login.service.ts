@@ -266,6 +266,13 @@ export class UserLoginService {
     return displayName
     
   }
+  getClaims():string[]{
+    var claims:string[] = [] 
+    for (const property in this.user_claims) {
+      claims.push(property)
+    }
+    return claims
+  }
   getUserIdToken():Promise<String> {
     if( firebase && firebase.auth() && firebase.auth().currentUser ){
       return new Promise<String>((resolve, reject) => {

@@ -209,7 +209,12 @@ export class DialogMateriaDialog implements OnInit{
       if( id ){   
         var values = {}
         values[propertyName]=value                       
-        db.collection('materias').doc(id).update(values)
+        db.collection('materias').doc(id).update(values).then( () =>{
+          console.log("property has been update:" + propertyName + " " + value)
+        },
+        reason =>{
+          alert("ERROR: writing property:" + reason)
+        })
       }      
     }
 
@@ -222,7 +227,12 @@ export class DialogMateriaDialog implements OnInit{
       if( id ){   
         var values = {}
         values[propertyName]=value                       
-        db.collection('materias').doc(id).update(values)
+        db.collection('materias').doc(id).update(values).then( () =>{
+          console.log("property has been update:" + propertyName + " " + value)
+        },
+        reason =>{
+          alert("ERROR: writing property:" + reason)
+        })
       }      
     }
 
@@ -285,14 +295,24 @@ export class DialogMateriaDialog implements OnInit{
             color1:this.m.controls.color1.value,
             color2:this.m.controls.color2.value
           }
-          db.collection('materias').doc(id).update(values)
+          db.collection('materias').doc(id).update(values).then( () =>{
+            console.log("property has been update:" + propertyName + " " + value)
+          },
+          reason =>{
+            alert("ERROR: writing property:" + reason)
+          })
         }
       }
       else{
         if( id ){ 
           var values = {}
           values[propertyName]=value                                  
-          db.collection('materias').doc(id).update(values)   
+          db.collection('materias').doc(id).update(values).then( () =>{
+            console.log("property has been update:" + propertyName + " " + value)
+          },
+          reason =>{
+            alert("ERROR: writing property:" + reason)
+          })   
         }
       }
     }   
@@ -339,6 +359,9 @@ export class DialogMateriaDialog implements OnInit{
           ).then( () =>{
             this.m.controls.id.setValue(materia_id)
             this.navigationService.back()
+          },
+          reason =>{
+            alert("ERROR: creating materia:" + reason)
           })
           
         }

@@ -213,7 +213,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   }
   isAdmin(){
-    return this.userLoginService.hasRole("admin")
+    return this.userLoginService.hasRole("role-admin-" + this.organization_id)
   }
 
   applicationFilterChange(e){
