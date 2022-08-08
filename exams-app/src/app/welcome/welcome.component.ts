@@ -146,6 +146,7 @@ export class WelcomeComponent implements OnInit {
           exams.push(myExam)
 
           const grades = db.collection("examGrades")
+          .where( "organization_id", "==", this.organization_id )
           .where("student_uid","==", this.userLoginService.getUserUid())
           .where("materia_id","==", materia_id)
           .where("exam_id","==",exam.id)

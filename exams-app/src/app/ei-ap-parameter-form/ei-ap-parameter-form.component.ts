@@ -9,6 +9,7 @@ import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaG
 
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
+import { UserPreferencesService } from '../user-preferences.service';
 
 export interface DialogData {
   calificacion: number,
@@ -37,10 +38,11 @@ export class EiApParameterFormComponent implements OnInit {
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
-    , private navigation: NavigationService ) { 
+    , private navigation: NavigationService
+    , private userPreferencesService:UserPreferencesService ) { 
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
-      
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
     }
   
   examGrade_id = null
@@ -51,6 +53,7 @@ export class EiApParameterFormComponent implements OnInit {
   submitting = false
 
   isDisabled = false
+  organization_id = null
   
  
   nvl(val1, val2){
@@ -79,6 +82,7 @@ export class EiApParameterFormComponent implements OnInit {
       let e = doc.data()
       this.examGrade =  this.fb.group({
         id: [e.id],
+        organization_id: [this.organization_id],
         exam_id:[e.exam_id], 
         exam_label:[e.exam_label],
     
@@ -125,6 +129,7 @@ export class EiApParameterFormComponent implements OnInit {
         let p = doc.data()
         var g = this.fb.group({
           id:[p.id],
+          organization_id:[this.organization_id],
           idx:[p.idx],
           label:[p.label],
           description:[p.description],

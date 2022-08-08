@@ -36,14 +36,19 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   nodeList = Array<NodeTableRow>()
   open_transactions:Set<string> = new Set()
 
+  organization_id = null
+
   constructor(
       private userPreferencesService:UserPreferencesService
     , private sortingService:SortingService
     , private userLoginService:UserLoginService
     , public dialog: MatDialog
     , private examImprovisacionService: ExamenesImprovisacionService
+    , private userPreferencesServide: UserPreferencesService
     , private router: Router
-  ){}
+  ){
+    this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+  }
   ngOnInit() {
   
   }
@@ -118,6 +123,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       }
       
       const query = db.collection("materiaEnrollments").
+      where("organization_id","==", this.organization_id).
       where("isDeleted","==",false).
       where("student_uid","==",row.user.uid)
 
@@ -209,6 +215,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           children.push(n)   
           
           const grades = db.collection("examGrades")
+          .where("organization_id","==", this.organization_id)
           .where("student_uid","==", row.user.uid)
           .where("materia_id","==", row.materia.id)
           .where("exam_id","==",exam.id)
@@ -252,6 +259,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     return new Promise<void>((resolve, reject) =>{
       aspect_resolve = resolve 
       db.collection("examGrades")
+      .where("organization_id", "==", this.organization_id)
       .where("materia_id","==",materia_id)
       .where("exam_id","==",exam_id)
       .where("student_uid","==", student_uid)
@@ -391,6 +399,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       let today =  new Date( d )
       let examGrade:ExamGrade = {
         id:id, 
+        organization_id:this.organization_id,
         exam_id:row.exam.id,
         materia_id:row.materia.id, 
         isCompleted: true,
@@ -542,6 +551,7 @@ export class DialogEnrollMateriaDialog implements OnInit{
   async LoadMaterias(){
     this.materiasList = []
     const query = db.collection("materias").
+    where("organization_id","==", this.data.organization_id ).
     where("isDeleted","==",false)
 
     var listMaterias = await query.get()
@@ -549,6 +559,7 @@ export class DialogEnrollMateriaDialog implements OnInit{
     listMaterias.forEach(doc =>{
       var materia:Materia = {
         id:doc.data().id,
+        organization_id:this.data.organization_id,
         materia_name:doc.data().materia_name
       }
       this.materiasList.push(materia)

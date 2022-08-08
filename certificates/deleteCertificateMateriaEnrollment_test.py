@@ -13,7 +13,7 @@ from firebase_admin import firestore
 class TestFireStore(unittest.TestCase):
 
     def test01_addDocument(self):
-        main.deleteCertificateMaterialEnrollment('c00cc988-441c-4ee0-96e0-f87b124aa63b')
+        main.deleteCertificateMaterialEnrollment('2678376f-61f6-4f95-93af-d18eaeaec47f')
 
 
 if __name__ == '__main__':

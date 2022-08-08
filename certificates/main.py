@@ -69,7 +69,7 @@ def createCertificateExamGrade(db, examGrade_id):
             .where("isApproved","==",True) \
             .get()
         for examGradeDoc in examGradeSet:
-            examGrade = examGradeDoc.to_dict()
+            #if found then count it
             if "isRequired" in exam and exam["isRequired"]:  
                 requiredReleased +=1 
                 break
@@ -98,9 +98,9 @@ def createCertificateExamGrade(db, examGrade_id):
 
 
         data = certificates.createStorageCertificate( storage_client, 
-        "certificates_master/" + masterName,
-        "certificates_logos/" + logoName,
-        "certificates/" + certificateId ,
+        "certificates_master/" + examGrade["organization_id"] + "/" + masterName,
+        "certificates_logos/" + examGrade["organization_id"] + "/" + logoName,
+        "certificates/" + examGrade["organization_id"] + "/" + certificateId ,
          studentName,
         materiaName,
         label1,
@@ -219,9 +219,9 @@ def createCertificateMateriaEnrollment(materiaEnrollment_id):
 
 
         data = certificates.createStorageCertificate( storage_client, 
-        "certificates_master/" + masterName,
-        "certificates_logos/" + logoName,
-        "certificates/" + certificateId ,
+        "certificates_master/" + materia["organization_id"] + "/" + masterName,
+        "certificates_logos/" + materia["organization_id"] + "/"+ logoName,
+        "certificates/" + materia["organization_id"] + "/" + certificateId ,
         studentName,
         materiaName,
         label1,

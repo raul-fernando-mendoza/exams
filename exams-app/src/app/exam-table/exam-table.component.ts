@@ -12,6 +12,7 @@ import { UserLoginService } from '../user-login.service';
 import * as uuid from 'uuid';
 import { db } from 'src/environments/environment';
 import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datasource';
+import { UserPreferencesService } from '../user-preferences.service';
 
 @Component({
   selector: 'app-exam-table',
@@ -38,13 +39,16 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
   submmiting = false
   showDeleted = false
 
+  organization_id = null
+
   
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
+    , private userPreferencesService:UserPreferencesService
   ) {
-    
+    this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
   }
 
@@ -82,6 +86,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
       }      
 
       db.collection("examGrades")
+      .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
       .where( "applicationDate", "==", this.applicationDate)
       .get().then( set =>{

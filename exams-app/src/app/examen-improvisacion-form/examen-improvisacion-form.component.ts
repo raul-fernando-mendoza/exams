@@ -9,6 +9,7 @@ import { db } from 'src/environments/environment';
 import * as uuid from 'uuid';
 import { PromiseType } from 'protractor/built/plugins';
 import { ReplaySubject } from 'rxjs';
+import { UserPreferencesService } from '../user-preferences.service';
 
 
 @Component({
@@ -34,10 +35,13 @@ export class ExamenImprovisacionFormComponent {
   materias:Array<Materia> = []
   exams:Array<Exam> = []
 
+  organization_id = null
+
   
   
   examGrade = this.fb.group({
     id: [uuid.v4()],
+    organization_id: [this.organization_id],
     isDeleted: [false],
     isCompleted:[false, Validators.required],
     applicationDate: [null, Validators.required],
@@ -63,9 +67,11 @@ export class ExamenImprovisacionFormComponent {
     , private examImprovisacionService: ExamenesImprovisacionService
     , private formBuilder: FormBuilder
     , private userLoginService:UserLoginService
-    , private examFormService:ExamFormService) {
+    , private examFormService:ExamFormService
+    , private userPreferencesService:UserPreferencesService) {
       this.examGrade.controls.owners.setValue([userLoginService.getUserUid()])
-
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
+      this.examGrade.controls.organization_id.setValue(this.organization_id)
   }
 
   
@@ -96,6 +102,7 @@ export class ExamenImprovisacionFormComponent {
     this.materias.length = 0
 
     db.collection("materiaEnrollments")
+    .where("organization_id","==", this.organization_id)
     .where("student_uid","==",user_uid)
     .get().then( set =>{
       console.log("materia start")
@@ -294,6 +301,7 @@ export class ExamenImprovisacionFormComponent {
 
     var g=this.fb.group({
       id: [p.id],
+      organization_id: [this.organization_id],
       idx: [p.idx],
       label: [p.label],
       description: [p.description],
@@ -442,6 +450,7 @@ export class ExamenImprovisacionFormComponent {
 
       let examGrade:ExamGrade = {
         id:null, 
+        organization_id:null,
         exam_id:null,
         exam:null,
         materia_id:null, 
@@ -505,7 +514,7 @@ export class ExamenImprovisacionFormComponent {
   addParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
     let parameterGrade:ParameterGrade = {
       id:null, 
-  
+      organization_id:null,  
       owners:null,
       idx: null, 
       label: null,

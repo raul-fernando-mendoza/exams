@@ -258,6 +258,7 @@ export type ScoreType =  "starts" | "status"
 
 export interface ParameterGrade{
   id:string 
+  organization_id?:string
   
   owners?:Array<string> 
   idx?: number 
@@ -278,6 +279,7 @@ export interface ParameterGrade{
 
 export interface ExamGrade{
   id?:string 
+  organization_id?:string
 
   exam_id?:string
   exam?:Exam

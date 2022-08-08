@@ -211,7 +211,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   }
 
   formatDate(d){
-    return this.examFormService.formatDate(d)
+    return this.examenesImprovisacionService.printDate(d)
   }
 
 }

@@ -10,6 +10,7 @@
 .aspect{
     border:solid;
     border-width:1px;
+    max-width:80%
 }
 .aspect_score{
     padding-left:50px;

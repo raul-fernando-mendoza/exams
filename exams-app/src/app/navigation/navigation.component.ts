@@ -139,6 +139,24 @@ export class NavigationComponent {
                 organizations.map( o => { this.organizations.push(o)})
                 resolve()
               }
+              else{
+                db.collection("organizations")
+                .where("organization_name","==", window.location.hostname == "localhost" ? "raxacademy.com": window.location.hostname)
+                .where("isDeleted","==",false)
+                .limit(1)
+                .get()
+                .then( set => {
+                  set.docs.map( doc => {
+                    const organization:Organization = doc.data() as Organization
+                    this.organizations.push(organization)
+                    resolve()
+                  })
+                },
+                reason =>{
+                  console.error("ERROR: reading organizations:" + reason)
+                  reject()
+                })                
+              }
             })
           }
           ,reason =>{

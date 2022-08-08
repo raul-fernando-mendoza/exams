@@ -15,6 +15,7 @@ import { db } from 'src/environments/environment';
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import * as firebase from 'firebase';
 import { assertNotNull } from '@angular/compiler/src/output/output_ast';
+import { UserPreferencesService } from '../user-preferences.service';
 
 
 
@@ -46,13 +47,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
   examenes: ExamenesImprovisacionItem[] = [];  
 
+  organization_id = null
+
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
+    , private userPreferencesService: UserPreferencesService
     ) {
       
-
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
   }
 
   submitting = false
@@ -150,11 +154,13 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     var qry
     if( this.userLoginService.hasRole("admin")){
       qry = db.collectionGroup('parameterGrades')
+      .where("organization_id", "==", this.organization_id)
       .where("applicationDate","==", applicationDate)
       .where("isDeleted", "==", false)
     }
     else{
       qry = db.collectionGroup('parameterGrades')
+      .where("organization_id", "==", this.organization_id)
       .where("evaluator_uid", "==", this.userLoginService.getUserUid())
       .where("applicationDate","==", applicationDate)
       .where("isDeleted", "==", false)   
