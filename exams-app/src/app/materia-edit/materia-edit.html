@@ -3,7 +3,7 @@
 
 
 <form *ngIf="m" [formGroup]="m" >
-  <div *ngIf="materia_observable | async as materia">
+
     <div>
       <mat-form-field>
         <mat-label>Materia</mat-label>
@@ -41,8 +41,7 @@
       </mat-checkbox>
     </div>
 
-
-    <img class="materia-image" src="{{ materia.pictureUrl }}"> 
+    <img class="materia-image" src="{{m.controls.pictureUrl.value}}"> 
 
     <div>
       <mat-form-field class="columns">
@@ -108,7 +107,6 @@
       <button mat-button (click)="onCancel()">Cancel</button>
       <button mat-button [disabled]="!m.valid" (click)="onClose()" cdkFocusInitial>Continuar</button>
     </div>
-  </div>  
 </form>
 
 

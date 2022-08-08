@@ -111,7 +111,7 @@ export class DialogMateriaDialog implements OnInit{
           typeCertificate:[null, Validators.required],
           iconCertificate:[null, Validators.required],
           description:[null],
-          pictureUrl:[""],
+          pictureUrl:[null],
           videoUrl:[null],
           isEnrollmentActive:[false],
           label1:[""], 
@@ -321,7 +321,8 @@ export class DialogMateriaDialog implements OnInit{
             typeCertificate:this.m.controls.typeCertificate.value, 
             iconCertificate:this.m.controls.iconCertificate.value, 
           
-            description:this.m.controls.description.value, 
+            description:this.m.controls.description.value,
+            pictureUrl:this.m.controls.pictureUrl.value, 
             videoUrl:this.m.controls.videoUrl.value, 
             isEnrollmentActive:this.m.controls.isEnrollmentActive.value, 
           
@@ -518,7 +519,7 @@ export class DialogMateriaDialog implements OnInit{
         'complete': this.completeLoadingImage
         });
       */
-      var fileLoadObserver = new FileLoadObserver(storageRef, this.materia_id, property)
+      var fileLoadObserver = new FileLoadObserver(this.m.controls.pictureUrl as FormControl, storageRef, this.materia_id, property)
       uploadTask.on("state_change", fileLoadObserver)
 
            
@@ -580,6 +581,7 @@ export class DialogMateriaDialog implements OnInit{
 
   class FileLoadObserver implements Observer<any>  {
     constructor( 
+      private fc:FormControl,
       private storageRef,
       private materia_id:string, 
       private propertyName:string){
@@ -596,12 +598,20 @@ export class DialogMateriaDialog implements OnInit{
       console.log("complete" + this.materia_id + " " + this.propertyName)
       console.log("Completed"); // progress of upload
       this.storageRef.getDownloadURL().then( url =>{
-        console.log(url)
-        db.collection("materias").doc(this.materia_id).update({
-          pictureUrl:url
-        }).then( () =>{
-          console.log(`update as completed ${this.materia_id} + ${url}`)
-        })
+        console.log(url)        
+        
+        if( this.materia_id ){
+          db.collection("materias").doc(this.materia_id).update({
+            pictureUrl:url
+          }).then( () =>{
+            console.log(`update as completed ${this.materia_id} + ${url}`)
+            this.fc.setValue(url)
+          })
+        }
+        else{
+          this.fc.setValue(url)
+        }
+        
       },
       reason =>{
         console.log("ERROR on url" + reason)
