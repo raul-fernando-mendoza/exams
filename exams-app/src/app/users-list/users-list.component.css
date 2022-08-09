@@ -6,3 +6,12 @@
 
 .mat-toolbar div{ width:100%; }
 
+.mat-grid-tile .user-name {
+  justify-content: flex-start !important ;
+  align-items: flex-start !important;
+  width:100%;
+}
+
+.role{
+  margin-left:50px;
+}

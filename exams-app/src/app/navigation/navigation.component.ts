@@ -154,7 +154,7 @@ export class NavigationComponent {
           }
           else{
             db.collection("organizations")
-            .where("organization_name","==", window.location.hostname == "localhost" ? "raxacademy.com": window.location.hostname)
+            .where("organization_name","==", window.location.hostname == "localhost" ||  window.location.hostname == "thoth-qa.web.app" ? "raxacademy.com": window.location.hostname)
             .where("isDeleted","==",false)
             .limit(1)
             .get()

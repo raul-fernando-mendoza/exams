@@ -5,6 +5,7 @@
 import firebase from 'firebase/app';
 import "firebase/auth";
 import 'firebase/firestore';
+import 'firebase/storage';
 
 export const environment = { 
   production: false,
@@ -38,6 +39,7 @@ export const environment = {
 const app = firebase.initializeApp(environment.firebase)
 
 const auth = firebase.auth();
+export const storage = firebase.storage(app)
 
   
 export const db = firebase.firestore(app);

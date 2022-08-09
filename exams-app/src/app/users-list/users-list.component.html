@@ -3,10 +3,10 @@
 
 <div *ngFor="let user of users_formarray.controls; let i=index" [formGroup]="user">
     <mat-grid-list cols="9">
-        <mat-grid-tile colspan="4">
-            {{ user.controls.email.value }}
+        <mat-grid-tile  colspan="4">
+           <span class="user-name">{{ user.controls.email.value }}</span>
         </mat-grid-tile>
-        <mat-grid-tile colspan=4>
+        <mat-grid-tile  colspan=4>
             <mat-form-field>
                 <mat-label>nombre</mat-label>
                 <input  matInput placeholder="change it" [value]="displayName" formControlName="displayName" (change)="onChangeUsenDisplayName(user)">
@@ -18,7 +18,7 @@
             </button>   
             <mat-menu #usermenu="matMenu" >
                 <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role + '-' +  organization_id)" [disabled]="submitting">
-                    <span>{{ role }}</span>
+                    <span>{{ role.split("-")[1] }}</span>
                 </button> 
                 <button (click)="deleteUser( user.controls.email.value )">
                     <mat-icon>delete</mat-icon>
@@ -26,9 +26,9 @@
             </mat-menu>                   
         </mat-grid-tile>  
     </mat-grid-list> 
-            <div *ngFor="let claim of user.controls.claims.controls; let j=index" [formGroup]="claim">
+            <div class="role" *ngFor="let claim of user.controls.claims.controls; let j=index" [formGroup]="claim">
                 
-                    {{ claim.controls.id.value }} 
+                    {{ claim.controls.id.value.split("-")[1] }} 
                     <button mat-icon-button [matMenuTriggerFor]="claimMenu" >
                         <mat-icon>more_vert</mat-icon>
                     </button>                                    
