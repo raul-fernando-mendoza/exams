@@ -100,13 +100,14 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'materia': return compare(a.materia.materia_name, b.materia.materia_name, isAsc);
+        case 'title': return compare(a.examGrade.title, b.examGrade.title, isAsc);
+        case 'fechaApplicacion': return compareDate(a,b, isAsc);
         /*
         case 'title': return compare(a.materia.title, b.title, isAsc);
         case 'estudiante': return compare(a.student_name, b.student_name, isAsc);
         case 'maestro': return compare(a.maestro, b.maestro, isAsc);
         case 'parametro': return compare(a.parametro, b.parametro, isAsc);
-        case 'fechaApplicacion': return compare(Date.parse(a.fechaApplicacion), Date.parse(b.fechaApplicacion), isAsc);
+        
         case 'completed': return compare((new Boolean(a.completed)).toString(), (new Boolean(b.completed)).toString(), isAsc);        
         */
         default: return 0;
@@ -118,4 +119,28 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
 /** Simple sort comparator for example ID/Name columns (for client-side sorting). */
 function compare(a: string | number, b: string | number, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+function compareDate(a, b, isAsc: boolean) {
+  if (isAsc ){
+    if( a.examGrade.applicationDate>b.examGrade.applicationDate ) {
+      return 1
+    }
+    else if( a.examGrade.applicationDate<b.examGrade.applicationDate ){
+      return -1
+    }
+    else{
+      return a.examGrade.title > b.examGrade.title ? 1:-1
+    } 
+  }
+  else{
+    if( a.examGrade.applicationDate<b.examGrade.applicationDate ) {
+      return 1
+    }
+    else if( a.examGrade.applicationDate>b.examGrade.applicationDate ){
+      return -1
+    }
+    else{
+      return a.examGrade.title > b.examGrade.title ? 1:-1
+    } 
+  }
 }

@@ -152,19 +152,23 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     this.examenes.length = 0
     var qry
-    if( this.userLoginService.hasRole("admin")){
+    if( this.isAdmin() ){
       qry = db.collectionGroup('parameterGrades')
       .where("organization_id", "==", this.organization_id)
-      .where("applicationDate","==", applicationDate)
       .where("isDeleted", "==", false)
+      if( applicationDate ){
+        qry = qry.where("applicationDate","==", applicationDate)      
+      }
     }
     else{
       qry = db.collectionGroup('parameterGrades')
       .where("organization_id", "==", this.organization_id)
       .where("evaluator_uid", "==", this.userLoginService.getUserUid())
-      .where("applicationDate","==", applicationDate)
       .where("isDeleted", "==", false)   
       .where("isCompleted", '==', false)   
+      if( applicationDate ){
+        qry = qry.where("applicationDate","==", applicationDate)      
+      }      
     }
     
     qry.get().then( set => {
@@ -187,6 +191,9 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         })
         this.updateTable()
       })
+    },
+    reason =>{
+      alert("ERROR reading examGrades:" + reason)
     })
   } 
   addParameterGrade(examGrade_id:string,parameterGrade:ParameterGrade):Promise<void>{
