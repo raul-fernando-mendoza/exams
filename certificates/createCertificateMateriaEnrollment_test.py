@@ -12,7 +12,8 @@ from firebase_admin import firestore
 class TestFireStore(unittest.TestCase):
 
     def test01_addDocument(self):
-        main.createCertificateMateriaEnrollment('a3878dd8-2e01-4f6c-af67-5734e32e72e0')
+        data = main.createCertificateMateriaEnrollment('11435bb4-514f-4e7b-907c-bdfc712f4739')
+        print(json.dumps(data))
 
 
 if __name__ == '__main__':

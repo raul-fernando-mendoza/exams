@@ -95,7 +95,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
                 isLeaf:false,
                 parent:null
               }
-              this.nodeList.push(userNode)
+
+              if( "role-estudiante-" + this.organization_id in u.claims ){
+                this.nodeList.push(userNode)
+              }
             }
             resolve()
           },
@@ -515,11 +518,11 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
         } 
         else{
-          alert("Error:" + data["error"])
+          alert("Error creando certificado:" + data["error"])
         }       
       },
       error => {
-        alert("Error creando certificado"  + error.statusText)
+        alert("Error creando certificado devolvio error"  + error.statusText)
         console.log( "error:" + error.statusText )
       }) 
     },

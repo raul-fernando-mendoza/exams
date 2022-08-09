@@ -202,7 +202,11 @@ def createCertificateMateriaEnrollment(materiaEnrollment_id):
     
 
         student = auth.get_user(student_uid)
-        displayName = student.custom_claims["displayName"] if ("displayName" in student.custom_claims ) else student.display_name 
+        if "displayName" in student.custom_claims:
+            displayName = student.custom_claims["displayName"]
+        elif student.display_name:
+            displayName = student.display_name
+        else: displayName = student.email
 
 
         certificateId =  student.uid + "_" + materia["id"] 

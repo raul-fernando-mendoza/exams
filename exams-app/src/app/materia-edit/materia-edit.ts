@@ -476,6 +476,9 @@ export class DialogMateriaDialog implements OnInit{
       }
       db.collection('materias/' + materia_id + '/exams').doc(id).set(exam).then( () =>{
         this.update()
+      },
+      reason =>{
+        alert("ERROR creating exam:" + reason)
       })
     }
 
