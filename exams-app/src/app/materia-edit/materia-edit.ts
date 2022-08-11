@@ -82,8 +82,8 @@ export class DialogMateriaDialog implements OnInit{
             id: [materia.id],
             isDeleted:[materia.isDeleted],
             materia_name:[materia.materia_name, Validators.required],
-            typeCertificate:[materia.typeCertificate, Validators.required],
-            iconCertificate:[materia.iconCertificate, Validators.required],
+            typeCertificate:[materia.typeCertificate],
+            iconCertificate:[materia.iconCertificate],
             description:[materia.description],
             videoUrl:[materia.videoUrl],
             pictureUrl:[materia.pictureUrl],
@@ -108,8 +108,8 @@ export class DialogMateriaDialog implements OnInit{
           id: [null],
           isDeleted:[false],
           materia_name:[null, Validators.required],
-          typeCertificate:[null, Validators.required],
-          iconCertificate:[null, Validators.required],
+          typeCertificate:[null],
+          iconCertificate:[null],
           description:[null],
           pictureUrl:[null],
           videoUrl:[null],
@@ -145,15 +145,20 @@ export class DialogMateriaDialog implements OnInit{
       this.userLoginService.getUserIdToken().then( token => {
         this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
           data => { 
-            var listIcons = data["result"];
-            listIcons.forEach(m => {
-              this.typeCertificates.push(
-                {
-                  label:m["name"].split("/").pop(),
-                  value:m["name"].split("/").pop() 
-                }  
-              )          
-            });
+            if(data["result"]){
+              var listIcons = data["result"];
+              listIcons.forEach(m => {
+                this.typeCertificates.push(
+                  {
+                    label:m["name"].split("/").pop(),
+                    value:m["name"].split("/").pop() 
+                  }  
+                )          
+              });
+            }
+            else{
+              console.log("ERROR: reading certificate masters")
+            }
           },     
           error => {
             alert("error loading impro type")
@@ -178,15 +183,20 @@ export class DialogMateriaDialog implements OnInit{
       this.userLoginService.getUserIdToken().then( token => {
         this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
           data => { 
-            var listIcons = data["result"];
-            listIcons.forEach(icon => {
-              this.iconCertificates.push(
-                {
-                  label:icon["name"].split("/").pop(),
-                  value:icon["name"].split("/").pop()  
-                }  
-              )          
-            });
+            if( data["result"]){
+              var listIcons = data["result"];
+              listIcons.forEach(icon => {
+                this.iconCertificates.push(
+                  {
+                    label:icon["name"].split("/").pop(),
+                    value:icon["name"].split("/").pop()  
+                  }  
+                )          
+              });
+            }
+            else{
+              console.log("error reading certificates logos:" + data["error"])
+            }
           },     
           error => {
             alert("error loading impro type")

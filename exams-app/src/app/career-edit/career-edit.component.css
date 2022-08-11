@@ -1,0 +1,17 @@
+div{
+    margin-left:50px;
+}
+
+mat-card .group{
+    margin:5px;
+    border-color:green;
+    border-style: solid;
+    border-width:1px;
+}
+
+mat-card .materia{
+    margin:5px;
+    border-color:pink;
+    border-style: solid;
+    border-width:1px;    
+}

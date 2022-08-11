@@ -38,62 +38,64 @@ export class CareerListComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.loadCareers()
+    this.update()
   }
 
   update(){
-    this.careerList = this.sortingService.sortBy(this.careerList,["career_name"])
+    this.loadCareers().then( () =>{
+      this.careerList.sort( (a,b)=>{ return a.career_name > b.career_name ? 1:-1} )
 
-    //this.materiaItems = this.sortingService.sortBy(this.materiaItems,["nivel","materia_name"])
-    this.dataSource = new CareerTableDataSource(this.careerList)
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.table.dataSource = this.dataSource; 
-
+      //this.materiaItems = this.sortingService.sortBy(this.materiaItems,["nivel","materia_name"])
+      this.dataSource = new CareerTableDataSource(this.careerList)
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+      this.table.dataSource = this.dataSource; 
+    })  
   }
-  loadCareers(){
-    const query = db.collection("careers")
-    .where("isDeleted","==",false)
-    .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
-    
-    this.careerListener = query.get().then( 
-      set =>{
-        this.careerList.length = 0
-        var docs = set.forEach(doc =>{
-          var career:Career = {
-            id:doc.id,
-            career_name:doc.data().career_name,           
-          }
+  loadCareers():Promise<void>{
+    this.careerList.length = 0
+    return new Promise<void>((resolve, reject) =>{
+      const query = db.collection("careers")
+      .where("isDeleted","==",false)
+      .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
+      
+      this.careerListener = query.get().then( 
+        set =>{
+          this.careerList.length = 0
+          var docs = set.forEach(doc =>{
+            var career:Career = {
+              id:doc.id,
+              career_name:doc.data().career_name,           
+            }
 
-          this.careerList.push(
-            career
-          )
-     
-        })
-        this.update()
-        console.log( "***DONE careers***" )
-      },
-      reason => {
-        console.error("ERROR: " + reason)
-      }
-    )  
-
+            this.careerList.push(
+              career
+            )
+      
+          })
+          console.log( "***DONE careers***" )
+          resolve()
+        },
+        reason => {
+          console.error("ERROR: " + reason)
+          reject()
+        }
+      )  
+    })
   }
   onEdit(career_id){
     this.router.navigate(['/career-edit',{id:career_id}]);
   }
 
   onDelete(career_id){
-    db.collection("careers").doc(career_id).update({"isDeleted":true}).then(
-      result =>{
-        console.log("careers delted:" + result)
+    db.collection("careers").doc(career_id).update({"isDeleted":true}).then(()=>{
+        console.log("careers deleted")
+        this.update()
       }
     )    
   }
 
   onCreateCareer(){
- 
- 
     const dialogRef = this.dialog.open(CareerDialog, {
       height: '400px',
       width: '250px',
@@ -104,7 +106,9 @@ export class CareerListComponent implements OnInit {
       console.log('The dialog was closed');
       if( result != undefined ){
         console.debug( result )
-        this.createMateria(result.career_name)
+        this.createMateria(result.career_name).then( ()=>{
+          this.update()
+        })
       }
       else{
         console.debug("none")
@@ -112,21 +116,26 @@ export class CareerListComponent implements OnInit {
     });
   }
   
-  async createMateria(career_name:string){
-    var id = uuid.v4()
+  createMateria(career_name:string):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      var id = uuid.v4()
 
-    const career:Career = {
-      id:id,
-      career_name:career_name,
-      isDeleted:false,
-      owners:[this.userLoginService.getUserUid()],
-      organization_id:this.userPreferencesService.getCurrentOrganizationId()
-    }
-    const res = await  db.collection('careers').doc(id).set(career);
-    this.update()
+      const career:Career = {
+        id:id,
+        career_name:career_name,
+        isDeleted:false,
+        organization_id:this.userPreferencesService.getCurrentOrganizationId()
+      }
+      db.collection('careers').doc(id).set(career).then( ()=>{
+          resolve()
+        },
+        reason => {
+          alert("ERROR updating carrers:" + reason)
+          reject()
+        }
+      )      
+    })
   }
-
- 
 }
 
 export interface CareerData {

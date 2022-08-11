@@ -9,48 +9,50 @@ import 'firebase/storage';
 
 
 
-export const environment = { 
+export var environment = { 
   production: false,
   firebase:{
-    apiKey: "AIzaSyDB_dPrLkmeIm3-n_4TNxpt94BrUqn0_Rk",
+    apiKey: "AIzaSyDn5IjaxzfaDy0Ji2ckRYLURfM9xym97a0",
 
-    authDomain: "thoth-qa.firebaseapp.com",
+    authDomain: "thoth-dev-346022.firebaseapp.com",
   
-    databaseURL: "https://thoth-qa-default-rtdb.firebaseio.com",
+    projectId: "thoth-dev-346022",
   
-    projectId: "thoth-qa",
+    storageBucket: "thoth-dev-346022.appspot.com",
   
-    storageBucket: "thoth-qa.appspot.com",    
-      
-    messagingSenderId: "357669808993",
+    messagingSenderId: "301917458282",
   
-    appId: "1:357669808993:web:87f3ec430f556b05683320",
+    appId: "1:301917458282:web:1ac1b8cf650e222cf95f13"
+  
   },
-  chenequeURL:"https://us-central1-thoth-qa.cloudfunctions.net/chenequeRequest",
-  authURL:"https://us-central1-thoth-qa.cloudfunctions.net/authRequest",
+  chenequeURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/chenequeRequest",
+  authURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/authRequest",
   certificatesDeleteURL:"https://us-central1-thoth-qa.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
   certificatesCreateURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost",
-  gsApiUrl: "https://us-central1-thoth-qa.cloudfunctions.net/gsRequest" ,
+  gsApiUrl: "https://us-central1-thoth-dev-346022.cloudfunctions.net/gsRequest" ,
   certificatesBucket:"certificates-thoth-qa"
 
  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 };
 
+if (location.hostname === "localhost") {
+  environment.firebase["databaseURL"] = "http://localhost:8080/?ns=sample-project"
+}
+
 const app = firebase.initializeApp(environment.firebase)
 
 const auth = firebase.auth();
-export const storage = firebase.storage(app)
-
-  
-export const db = firebase.firestore(app);
-
+export const storage = firebase.storage()
+export const db = firebase.firestore();
+/*
 if (location.hostname === "localhost") {
   console.log("localhost detected!");
-  //auth.useEmulator("http://localhost:9099");
-  //db.useEmulator("localhost", 8080);
-
+  auth.useEmulator("http://localhost:9099");
+  db.useEmulator("localhost",8080);
+  storage.useEmulator("localhost",9199);
 }
+*/
 
 /*
  * For easier debugging in development mode, you can import the following file

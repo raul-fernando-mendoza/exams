@@ -72,52 +72,54 @@ export class WelcomeComponent implements OnInit {
       return
     }
 
-    db.collection("materiaEnrollments")
-    .where("organization_id", "==", this.userPreferencesService.getCurrentOrganizationId())
-    .where("student_uid","==",this.userLoginService.getUserUid())
-    .where("isDeleted",'==',false)
-    .get().then( set =>{
-      console.log("materia start")
-      let transaction:Array<Promise<void>> = set.docs.map( doc =>{
-        console.log("processing enrollment:" + doc.data())
-        var materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
-        
-
-        const materia_id = doc.data().materia_id
-
-        return db.collection("materias").doc(materia_id).get().then( doc=>{
-          var materia:Materia = doc.data() as Materia
-          materiaEnrollment.materia = materia
-          var myEnrollment:MyEnrollment = {
-            enrollment_id:materiaEnrollment.id,
-            materia_name:materiaEnrollment.materia.materia_name,
-            certificate_public_url:materiaEnrollment.certificate_public_url,
-            iconCertificate:materia.iconCertificate,
-            exams:[]
-          }
+    if( this.userLoginService.getUserUid() ){
+      db.collection("materiaEnrollments")
+      .where("organization_id", "==", this.organization_id)
+      .where("student_uid","==",this.userLoginService.getUserUid())
+      .where("isDeleted",'==',false)
+      .get().then( set =>{
+        console.log("materia start")
+        let transaction:Array<Promise<void>> = set.docs.map( doc =>{
+          console.log("processing enrollment:" + doc.data())
+          var materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
           
-          this.loadExamsForRow(materia_id, myEnrollment.exams)          
-          this.myEnrollments.push(myEnrollment)      
-        })
-        
-        
-      })
 
-      
-      Promise.all(transaction).then(()=>{
-        this.myEnrollments.sort( (a,b) => {
-          if( a.materia_name > b.materia_name ){
-            return 1
-          }
-          else return -1
-        } )      
-        console.log("end")
-      })    
-      console.log("materia end")      
-    },
-    reason =>{
-      console.error("ERROR: materiaEnrollment failed:"+ reason)
-    })
+          const materia_id = doc.data().materia_id
+
+          return db.collection("materias").doc(materia_id).get().then( doc=>{
+            var materia:Materia = doc.data() as Materia
+            materiaEnrollment.materia = materia
+            var myEnrollment:MyEnrollment = {
+              enrollment_id:materiaEnrollment.id,
+              materia_name:materiaEnrollment.materia.materia_name,
+              certificate_public_url:materiaEnrollment.certificate_public_url,
+              iconCertificate:materia.iconCertificate,
+              exams:[]
+            }
+            
+            this.loadExamsForRow(materia_id, myEnrollment.exams)          
+            this.myEnrollments.push(myEnrollment)      
+          })
+          
+          
+        })
+
+        
+        Promise.all(transaction).then(()=>{
+          this.myEnrollments.sort( (a,b) => {
+            if( a.materia_name > b.materia_name ){
+              return 1
+            }
+            else return -1
+          } )      
+          console.log("end")
+        })    
+        console.log("materia end")      
+      },
+      reason =>{
+        console.error("ERROR: materiaEnrollment failed:"+ reason)
+      })
+    }
   }
 
   

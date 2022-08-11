@@ -39,7 +39,6 @@ import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDia
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { MatTabsModule} from '@angular/material/tabs';
-import { DialogExamDialog, DialogGroupDialog, DialogNivelDialog, EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { StarSliderComponent } from './star-slider/star-slider.component';
@@ -60,6 +59,8 @@ import { CareerEditComponent } from './career-edit/career-edit.component';
 import { DialogMateriaDialog, DialogMateriaExamDialog } from './materia-edit/materia-edit';
 import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
+import { DialogNameDialog } from './name-dialog/name-dlg';
+import { DialogListSelectDialog } from './list-select/list-select-dialog';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,6 @@ import { MateriaListComponent } from './materia-list/materia-list.component';
     DescriptionDialog,
     EiApReporteComponent,
     EiTabHolderComponent,
-    EiTipoListComponent,
     EiTipoEditComponent,
     StarSliderComponent,
     UsersListComponent,
@@ -86,16 +86,15 @@ import { MateriaListComponent } from './materia-list/materia-list.component';
     ExamgradesReportComponent,
     ExamTableComponent,
     DialogMateriaDialog,
-    DialogExamDialog,
     CareerListComponent,
     CareerEditComponent,
     CareerDialog,
-    DialogGroupDialog,
-    DialogNivelDialog,
     MateriaCertificatesComponent,
     DialogEnrollMateriaDialog,
     MateriaListComponent,
-    DialogMateriaExamDialog
+    DialogMateriaExamDialog,
+    DialogNameDialog,
+    DialogListSelectDialog
   ],
   imports: [
     BrowserModule,
@@ -142,12 +141,11 @@ import { MateriaListComponent } from './materia-list/materia-list.component';
     DialogOverviewExampleDialog,
     DescriptionDialog,
     DialogMateriaDialog,
-    DialogExamDialog,
     CareerDialog,
-    DialogGroupDialog,
-    DialogNivelDialog,
     DialogEnrollMateriaDialog,
-    DialogMateriaExamDialog
+    DialogMateriaExamDialog,
+    DialogNameDialog,
+    DialogListSelectDialog
   ],
   bootstrap: [AppComponent]
 })

@@ -123,6 +123,7 @@ export class NavigationComponent {
 
   updateOrganizations():Promise<void>{
     this.organizations.length = 0
+    const defaultOrg = window.location.hostname == "localhost" ||  window.location.hostname == "thoth-qa.web.app" ? "raxacademy": window.location.hostname
     return new Promise<void>((resolve, reject)=>{
       if (this.userLoginService.getUserUid()!=null) {
         var claims = this.userLoginService.getClaims()
@@ -153,8 +154,9 @@ export class NavigationComponent {
             resolve()
           }
           else{
+            
             db.collection("organizations")
-            .where("organization_name","==", window.location.hostname == "localhost" ||  window.location.hostname == "thoth-qa.web.app" ? "raxacademy.com": window.location.hostname)
+            .where("organization_name","==", defaultOrg)
             .where("isDeleted","==",false)
             .limit(1)
             .get()
@@ -173,17 +175,10 @@ export class NavigationComponent {
         })
       }
       else{
-        db.collection("organizations")
-        .where("organization_name","==", window.location.hostname == "localhost" ? "raxacademy.com": window.location.hostname)
-        .where("isDeleted","==",false)
-        .limit(1)
-        .get()
-        .then( set => {
-          set.docs.map( doc => {
+        db.collection("organizations").doc(defaultOrg).get().then( doc => {
             const organization:Organization = doc.data() as Organization
             this.organizations.push(organization)
             resolve()
-          })
         },
         reason =>{
           console.error("ERROR: reading organizations:" + reason)

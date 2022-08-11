@@ -1,7 +1,4 @@
 {
-  "database": {
-    "rules": "database.rules.json"
-  },
   "hosting": {
     "public": "dist\\exams-app",
     "ignore": [
@@ -23,5 +20,12 @@
     "ui": {
       "enabled": true
     }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

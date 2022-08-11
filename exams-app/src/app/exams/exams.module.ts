@@ -128,22 +128,16 @@ export interface MateriaRequest{
   materias:Materia
 }
 export interface Group{
-  nivel_id?: string
-
   id:string
   group_name?:string
-  owners?:Array<string>
   isDeleted?:false
 
   evaluation_type?:number
 }
 
-export interface Nivel{
-  organization_id?:string
-
+export interface Level{
   id:string
-  nivel_name?:string
-  owners?:Array<string>
+  level_name?:string
   isDeleted?:boolean
 }
 
@@ -153,18 +147,7 @@ export interface Career{
   id:string
   career_name?:string
   isDeleted?:boolean
-  owners?:Array<string>
 }
-/*
-export class Student{
-  organization_id?:string
-  id:string
-  student_name?:string
-  email?:string
-  isActive?:boolean
-  owners?:Array<string>
-}
-*/
 
 export interface MateriaEnrollment{
   organization_id?:string
@@ -258,9 +241,7 @@ export type ScoreType =  "starts" | "status"
 
 export interface ParameterGrade{
   id:string 
-  organization_id?:string
-  
-  owners?:Array<string> 
+  organization_id?:string  
   idx?: number 
   label?: string 
   description?:string 

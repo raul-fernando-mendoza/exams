@@ -1,7 +1,65 @@
-Editar Career 
+Editar Carrera 
 <form [formGroup]="c" >
-    <mat-form-field appearance="legacy">
-        <mat-label>Nombre de la carrera</mat-label>
-        <input matInput formControlName="career_name" width="80%" (change)="onChange(c)">
-    </mat-form-field>
+    <mat-form-field class="example-full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput placeholder="" formControlName="career_name" (change)="formService.onPropertyChange('careers', c.controls.id.value, $event)">
+    </mat-form-field>             
+    <h1>Ciclos <button (click)="onCreateLevel(c.controls.id.value)"><mat-icon>add</mat-icon></button> </h1>
+    <mat-accordion class="example-headers-align" multi>
+        <mat-expansion-panel [formGroup]="l" *ngFor='let l of getFormArrayControls(c,"levels"); let k=index'>
+            <mat-expansion-panel-header>
+                {{ l.controls.level_name.value }}
+            </mat-expansion-panel-header> 
+            <mat-expansion-panel-content>
+                <mat-card>
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Nivel</mat-label>
+                        <input matInput placeholder="nombre del nivel" formControlName="level_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels', l.controls.id.value, $event)">
+                    </mat-form-field> 
+                    <button mat-icon-button [matMenuTriggerFor]="menuLevel" >
+                        <mat-icon>more_vert</mat-icon>
+                    </button>                                    
+                    <mat-menu #menuLevel="matMenu" >
+                        <button mat-menu-item color="primary" (click)="onRemoveLevel(c.controls.id.value, l.controls.id.value)" [disabled]="submitting">
+                            <mat-icon>remove</mat-icon>
+                            <span>Borrar</span>
+                        </button> 
+                    </mat-menu>                         
+                        
+
+                    <h2>Groups <button (click)="onCreateGroup(c.controls.id.value, l.controls.id.value)"><mat-icon>add</mat-icon></button></h2>
+                    <mat-card  class="group" [formGroup]="g" *ngFor="let g of getFormArrayControls(l,'groups')">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Grupo</mat-label>
+                            <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
+                        </mat-form-field>             
+                
+                        <button mat-icon-button [matMenuTriggerFor]="menuGroup" >
+                            <mat-icon>more_vert</mat-icon>
+                        </button>                                    
+                        <mat-menu #menuGroup="matMenu" >
+                            <button mat-menu-item color="primary" (click)="onRemoveGroup(c.controls.id.value, l.controls.id.value, g.controls.id.value)" [disabled]="submitting">
+                                <mat-icon>remove</mat-icon>
+                                <span>Borrar</span>
+                            </button> 
+                        </mat-menu>             
+                        <h3>Materias <button (click)="onAddMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value)"><mat-icon>add</mat-icon></button></h3>
+                        <mat-card class="materia" *ngFor="let m of getFormArrayControls(g,'materias')">
+                            {{m.controls.materia_name.value }}
+                            <button mat-icon-button [matMenuTriggerFor]="menu" >
+                                <mat-icon>more_vert</mat-icon>
+                            </button>                                    
+                            <mat-menu #menu="matMenu" >
+                                <button mat-menu-item color="primary" (click)="onRemoveMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value, m.controls.id.value)" [disabled]="submitting">
+                                    <mat-icon>remove</mat-icon>
+                                    <span>Borrar</span>
+                                </button> 
+                            </mat-menu>         
+                    
+                        </mat-card>                        
+                    </mat-card>
+                </mat-card>
+            </mat-expansion-panel-content>
+        </mat-expansion-panel>
+    </mat-accordion>    
 </form>

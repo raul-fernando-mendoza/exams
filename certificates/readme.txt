@@ -1,5 +1,5 @@
 #deploy to trigger when exam is completed
-gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-central1 --entry-point createCertificateOnExamGradeEvent --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.write"  --trigger-resource "projects/thoth-qa/databases/(default)/documents/examGrades/{examGradeId}" 
+gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-central1 --entry-point createCertificateOnExamGradeEvent --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.write"  --trigger-resource "projects/thoth-dev-346022/databases/(default)/documents/examGrades/{examGradeId}" 
 
 
 

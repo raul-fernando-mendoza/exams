@@ -18,12 +18,10 @@ import { ExamenesImprovisacionComponent } from "./examenes-improvisacion/examene
 import { ExamenImprovisacionFormComponent } from "./examen-improvisacion-form/examen-improvisacion-form.component"
 import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-parameter-form.component"
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
-import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { EiTipoListComponent } from './ei-tipo-list/ei-tipo-list.component';
 import { VideosListComponent } from './videos-list/videos-list.component';
 import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component';
 import { ExamTableComponent } from './exam-table/exam-table.component';

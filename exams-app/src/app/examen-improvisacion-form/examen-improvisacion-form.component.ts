@@ -56,8 +56,7 @@ export class ExamenImprovisacionFormComponent {
     expression:[null], 
     parameterGrades: new FormArray([]),
     createdon:[this.today],
-    updateon:[this.today],
-    owners:[null]
+    updateon:[this.today]
 
   });
 
@@ -69,7 +68,6 @@ export class ExamenImprovisacionFormComponent {
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
     , private userPreferencesService:UserPreferencesService) {
-      this.examGrade.controls.owners.setValue([userLoginService.getUserUid()])
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
       this.examGrade.controls.organization_id.setValue(this.organization_id)
   }
@@ -315,7 +313,6 @@ export class ExamenImprovisacionFormComponent {
       student_uid:[null],
       isCompleted: [false],
       isSelected:[true],
-      owners:[[this.userLoginService.getUserUid()]],
       criteriaGrades: new FormArray([])         
     })
 
@@ -515,7 +512,6 @@ export class ExamenImprovisacionFormComponent {
     let parameterGrade:ParameterGrade = {
       id:null, 
       organization_id:null,  
-      owners:null,
       idx: null, 
       label: null,
       description:null, 

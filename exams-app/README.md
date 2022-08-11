@@ -14,9 +14,13 @@ firebase init
 ng build --prod 
 firebase deploy
 
-#use to run the emulator activate the emulator mode in environment.ts
-firebase emulators:start
 
+
+#use to run the emulator activate the emulator mode in environment.ts
+firebase init
+firebase emulators:start
+firebase use <project_id>
+also check the default project in .firebaserc
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 
