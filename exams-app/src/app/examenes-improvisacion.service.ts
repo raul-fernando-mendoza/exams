@@ -135,6 +135,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       _reject = reject
 
       db.collection('materiaEnrollments')
+      .where("organization_id","==", organizationId)
       .where("student_uid", "==", studentId)
       .where("materia_id", "==", materiaId)
       .where("isDeleted","==",false)
@@ -157,6 +158,9 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         else{
           _reject()
         }
+      },
+      reason =>{
+        alert("ERROR: reading enrollment table:" + reason)
       })
     })
     

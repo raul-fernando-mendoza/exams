@@ -27,10 +27,10 @@ export var environment = {
   },
   chenequeURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/chenequeRequest",
   authURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/authRequest",
-  certificatesDeleteURL:"https://us-central1-thoth-qa.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
-  certificatesCreateURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost",
+  certificatesDeleteURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
+  certificatesCreateURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/createCertificateMateriaEnrollmentPost",
   gsApiUrl: "https://us-central1-thoth-dev-346022.cloudfunctions.net/gsRequest" ,
-  certificatesBucket:"certificates-thoth-qa"
+  certificatesBucket:"certificates-thoth-dev-346022"
 
  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"

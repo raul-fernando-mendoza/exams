@@ -30,6 +30,7 @@ import { CareerEditComponent } from './career-edit/career-edit.component';
 import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
 import { DialogMateriaDialog } from './materia-edit/materia-edit';
+import { CareerUserComponent } from './career-user/career-user.component';
 
 const routes: Routes = [
   
@@ -65,6 +66,7 @@ const routes: Routes = [
   { path: 'materiaCertificaciones', component: MateriaCertificatesComponent },  
   { path: 'home', component: WelcomeComponent },
   { path: 'report', component: ExamgradesReportComponent},
+  { path: 'career-user', component: CareerUserComponent},
   { path: '**', component: WelcomeComponent },  
 
 ];

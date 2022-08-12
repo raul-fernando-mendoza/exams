@@ -193,6 +193,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       })
     },
     reason =>{
+      console.error("Error: reading exam list" + reason)
       alert("ERROR reading examGrades:" + reason)
     })
   } 

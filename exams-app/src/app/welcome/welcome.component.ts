@@ -3,11 +3,12 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
-import { copyObj, Exam, ExamGrade, Materia, MateriaEnrollment } from '../exams/exams.module';
+import { Career, copyObj, Exam, ExamGrade, Materia, MateriaEnrollment } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
 import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
+import { map } from 'rxjs/operators';
 
 interface MyExam {
   examGrade_id:string
@@ -44,8 +45,10 @@ export class WelcomeComponent implements OnInit {
   myEnrollments:MyEnrollment[] = []
   materias:Array<Materia> = []
   organization_id:string = null
+  careers:Career[] = []
 
   ngOnInit(): void {
+    this.loadCareers()
     this.update()
   }
 
@@ -148,7 +151,7 @@ export class WelcomeComponent implements OnInit {
           exams.push(myExam)
 
           const grades = db.collection("examGrades")
-          .where( "organization_id", "==", this.organization_id )
+          .where("organization_id", "==", this.organization_id )
           .where("student_uid","==", this.userLoginService.getUserUid())
           .where("materia_id","==", materia_id)
           .where("exam_id","==",exam.id)
@@ -221,5 +224,23 @@ export class WelcomeComponent implements OnInit {
     else{
       this.router.navigate(['/loginForm'])
     }
+  }
+
+  loadCareers(){
+    this.careers.length = 0
+    db.collection("careers")
+    .where( "organization_id" , "==", this.organization_id)
+    .get().then( set =>{
+      set.docs.map( doc =>{
+        const career:Career = doc.data() as Career
+        this.careers.push( career)
+      })
+      this.careers.sort( (a,b) =>{ return a.career_name > b.career_name?1:-1 })
+      
+    })
+  }
+
+  onCareerDetails(career_id:string){
+    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid, career_id:career_id }])
   }
 }

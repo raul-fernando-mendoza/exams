@@ -1,13 +1,20 @@
 .full-width-table {
   width: 100%;
 }
-
-.MateriaEnrollment{
+.Careers{
   margin-left: 30px;
 }
-
-.Exam{
+.Materias{
+  margin-left: 30px;
+}
+.Career{
   margin-left: 120px;
+}
+.MateriaEnrollment{
+  margin-left: 60px;
+}
+.Exam{
+  margin-left: 150px;
 }
 
 .waiver-text{

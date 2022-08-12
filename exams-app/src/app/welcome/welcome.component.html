@@ -87,5 +87,35 @@ Bienvenido
         </mat-card>
       </mat-card-content>  
     </mat-expansion-panel>    
+
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Mis Carreras
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-card-content>
+        <mat-card *ngFor="let c of careers" class="career-card">
+          <mat-card-title-group>
+              <mat-card-title class="enroll-card">{{ c.career_name }}</mat-card-title>
+              <mat-card-subtitle>
+                {{ c.description }}
+              </mat-card-subtitle>
+              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconCertificate }}">
+                                          
+          </mat-card-title-group>
+          <mat-card-content>
+            <img class="materia-image" *ngIf="c.pictureUrl" src="{{ c.pictureUrl }}"> 
+            <video *ngIf="c.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+            width="640" height="264" vjs-video vjs-setup="options">
+              <source src="{{ c.videoUrl }}" type='video/mp4' />
+            </video>            
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary" (click)="onCareerDetails(c.id)">Details</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-card-content>  
+    </mat-expansion-panel>        
   </mat-accordion>
 </div>

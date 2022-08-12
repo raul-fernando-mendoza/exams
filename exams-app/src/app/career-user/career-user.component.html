@@ -1,0 +1,14 @@
+<p>Avance de carrera</p>
+<div *ngIf="careerUser != null">
+    <h1>{{ careerUser.career.career_name }}</h1>
+    <h1>{{ careerUser.userDisplayName }}</h1>
+    <div *ngFor="let l of careerUser.levels">
+        <h2>{{ l.level.level_name }}</h2>
+        <div *ngFor="let g of l.groups">
+           <h2>{{ g.group.group_name }}</h2>
+           <div *ngFor="let m of g.materias">
+            <h3> {{ m.materia.materia_name }} <span *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url"><mat-icon>check</mat-icon></span></h3>
+           </div>
+        </div>
+    </div>
+</div>

@@ -61,6 +61,7 @@ import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './mater
 import { MateriaListComponent } from './materia-list/materia-list.component';
 import { DialogNameDialog } from './name-dialog/name-dlg';
 import { DialogListSelectDialog } from './list-select/list-select-dialog';
+import { CareerUserComponent } from './career-user/career-user.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { DialogListSelectDialog } from './list-select/list-select-dialog';
     MateriaListComponent,
     DialogMateriaExamDialog,
     DialogNameDialog,
-    DialogListSelectDialog
+    DialogListSelectDialog,
+    CareerUserComponent
   ],
   imports: [
     BrowserModule,

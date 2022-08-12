@@ -254,8 +254,8 @@ export class UserLoginService {
   getDisplayName(){
     let displayName = null 
     if(this.user){
-      if(this.user.claims && this.user.claims[displayName]){
-        displayName = this.user.claims.displayName
+      if(this.user_claims && this.user_claims["displayName"]){
+        displayName = this.user_claims.displayName
       } 
       else if( this.user.displayName ){
         displayName = this.user.displayName

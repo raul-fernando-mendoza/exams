@@ -3,7 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
-import { Exam, ExamGrade, Materia, MateriaEnrollment, User } from '../exams/exams.module';
+import { Career, Exam, ExamGrade, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 
 // TODO: Replace this with your own data model type
 export interface NodeTableRow {
@@ -12,6 +12,7 @@ export interface NodeTableRow {
   materia?:Materia
   exam?:Exam
   examGrade?:ExamGrade
+  career?:Career
   opened:boolean
   parent:NodeTableRow
   children:Array<NodeTableRow>

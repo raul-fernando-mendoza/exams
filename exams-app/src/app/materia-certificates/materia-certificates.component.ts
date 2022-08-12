@@ -8,7 +8,7 @@ import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
 import { UserLoginService } from '../user-login.service';
-import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam } from '../exams/exams.module';
+import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam, Career } from '../exams/exams.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
 import * as uuid from 'uuid';
@@ -82,7 +82,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
               var u:User =
               {
                 uid:user.uid,
-                displayName:user.displayName,
+                displayName:user.claims["displayName"] || user.displayName || user.email,
                 email:user.email,
                 claims:user.claims
 
@@ -90,7 +90,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
               var userNode:NodeTableRow = {
                 user:u,
                 opened:false,
-                children:null,
+                children:[],
                 nodeClass:"User",
                 isLeaf:false,
                 parent:null
@@ -100,6 +100,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
                 this.nodeList.push(userNode)
               }
             }
+            this.nodeList.sort( (a,b) =>{ return a.user.displayName>b.user.displayName?1:-1})
             resolve()
           },
           error => {
@@ -183,6 +184,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     else{
       row.children.length=0
       row.opened=false
+      this.update()
     }
 
   }  
@@ -282,6 +284,55 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }   
 
   onStudentClick(row:NodeTableRow){
+    var careersNode:NodeTableRow = {
+      user:row.user,
+      opened:false,
+      children:[],
+      nodeClass:"Careers",
+      isLeaf:false,
+      parent:row
+    }   
+    row.children.push( careersNode )
+
+    var skillsNode:NodeTableRow = {
+      user:row.user,
+      opened:false,
+      children:[],
+      nodeClass:"Materias",
+      isLeaf:false,
+      parent:row
+    } 
+    row.children.push( skillsNode)  
+    
+    this.update()
+  }
+
+  onCareersClick(row:NodeTableRow){
+    row.children.length = 0
+    db.collection("careers")
+    .where("organization_id", "==", this.organization_id)
+    .where("isDeleted","==",false)
+    .get().then(set => {
+      set.docs.map( doc  =>{
+        const career = doc.data() as Career
+        var carrerNode:NodeTableRow = {
+          user:row.user,
+          career:career,
+          opened:false,
+          children:[],
+          nodeClass:"Career",
+          isLeaf:true,
+          parent:row
+        }                 
+        row.children.push( carrerNode )                
+      })
+      row.children.sort((a,b)=>{ return a.career.career_name>b.career.career_name?1:-1})
+      this.update()
+    })
+
+  }
+
+  onMateriasClick(row:NodeTableRow){
     if(row.opened == false){
       this.loadEnrollmentForRow(row).then( () =>{
         this.update()
@@ -292,7 +343,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       row.opened=false
       this.update()
     }
-
   }
 
   /**** Student */
@@ -318,7 +368,13 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         this.examImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), result.materia_id, result.student_uid).then( ()=>{
           this.loadEnrollmentForRow(row).then(()=>{
             this.update()
+          },
+          reason=>{
+            alert("Error loading enrollment:" + reason)
           })
+        },
+        reason =>{
+          alert("ERROR enroll en materia faile:" + reason)
         })
              
       }
@@ -340,30 +396,6 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       console.error("ERROR removing materiaEnrollment")
     })
   }  
-  /*
-  onEnrollmentEdit(student){
-    const dialogRef = this.dialog.open(DialogEnrollMateriaDialog, {
-      height: '400px',
-      width: '250px',
-      data: {id:student.id, student_name:student.nivel_name }
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if( result != undefined ){
-        console.debug( result )
-        db.collection('students').doc(result.id).update(
-          {
-            student_name:result.student_name,
-            email:result.email
-          });
-      }
-      else{
-        console.debug("none")
-      }
-    });
-  }
-  */
   onCopyToClipboard(){
     alert("url ha sido copiada al portapapeles")
   }  
@@ -530,6 +562,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     
     })      
+  }
+  onCareerClick(row:NodeTableRow){
+    
+    this.router.navigate(["career-user",{ career_id:row.career.id , user_uid:row.user.uid}])
   }
 }
 
