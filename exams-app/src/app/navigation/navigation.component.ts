@@ -50,7 +50,7 @@ export class NavigationComponent {
                   let organization_exist = false
                   for( let i=0; i<this.organizations.length; i++){
                     if( this.organizations[i].id == current_organization_id){
-                      this.organization_id = this.organizations[0].id
+                      this.organization_id = this.organizations[i].id
                       organization_exist = true
                       break;
                     }
@@ -82,6 +82,9 @@ export class NavigationComponent {
         if( this.userPreferencesService.getCurrentOrganizationId() == null){
           this.organization_id = this.organizations[0].id
           this.userPreferencesService.setCurrentOrganizationId(this.organization_id)
+        }
+        else{
+          this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
         }
       })
          
@@ -123,20 +126,20 @@ export class NavigationComponent {
 
   updateOrganizations():Promise<void>{
     this.organizations.length = 0
-    const defaultOrg = window.location.hostname == "localhost" ||  window.location.hostname == "thoth-qa.web.app" ? "raxacademy": window.location.hostname
+    //const defaultOrg = window.location.hostname == "localhost" ||  window.location.hostname == "thoth-qa.web.app" ? "raxacademy": window.location.hostname
     return new Promise<void>((resolve, reject)=>{
       if (this.userLoginService.getUserUid()!=null) {
         var claims = this.userLoginService.getClaims()
-        var orgs = []
+        var orgs:Set<string> = new Set<string>()
         claims.map( c =>{
           const role = c.split("-")
           if( role.length == 3 && role[0] == "role" ){
-            orgs.push(role[2])
+            orgs.add(role[2])
           }
         })
 
         var organizations:Organization[] = []
-        var map = orgs.map(organization_id =>{
+        var map = Array.from(orgs).map(organization_id =>{
           return db.collection("organizations").doc(organization_id).get().then( doc =>{
             var organization:Organization = doc.data() as Organization
             organizations.push(
@@ -153,39 +156,31 @@ export class NavigationComponent {
             organizations.map( o => { this.organizations.push(o)})
             resolve()
           }
-          else{
-            
-            db.collection("organizations")
-            .where("organization_name","==", defaultOrg)
-            .where("isDeleted","==",false)
-            .limit(1)
-            .get()
-            .then( set => {
-              set.docs.map( doc => {
-                const organization:Organization = doc.data() as Organization
-                this.organizations.push(organization)
-                resolve()
-              })
-            },
-            reason =>{
-              console.error("ERROR: reading organizations:" + reason)
-              reject()
-            })                
+          else{ 
+            this.loadDefaultOrganization()           
           }
         })
       }
       else{
-        db.collection("organizations").doc(defaultOrg).get().then( doc => {
-            const organization:Organization = doc.data() as Organization
-            this.organizations.push(organization)
-            resolve()
-        },
-        reason =>{
-          console.error("ERROR: reading organizations:" + reason)
-          reject()
-        })
+        this.loadDefaultOrganization()
       } 
     })
+  }
+
+  loadDefaultOrganization(){
+    this.organizations.length = 0
+    db.collection("organizations")
+    .where("isDefaultOrganization","==",true)
+    .where("isDeleted","==", false).get().then( set =>{
+      set.docs.map( doc =>{
+        const organization:Organization = doc.data() as Organization
+        this.organizations.push(organization)
+      })
+    },
+    reason =>{
+      console.error("ERROR: reading defuult organizations:" + reason)
+    })
+
   }
 
   onOrganizationChange($event){

@@ -101,7 +101,7 @@ Bienvenido
               <mat-card-subtitle>
                 {{ c.description }}
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconCertificate }}">
+              <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">
                                           
           </mat-card-title-group>
           <mat-card-content>

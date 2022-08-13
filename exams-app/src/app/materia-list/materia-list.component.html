@@ -12,7 +12,11 @@
               <mat-icon>delete</mat-icon>
               <span>Delete</span>
             </button>            
-          </mat-menu>  
+            <button mat-menu-item (click)="onDuplicateMateria(m.id, m.materia_name)" [disabled]="submitting">
+              <mat-icon>library_add</mat-icon>
+              <span>Duplicate</span>
+            </button>            
+          </mat-menu>            
         </mat-card-title>
         <mat-card-subtitle>
           {{ m.description }}

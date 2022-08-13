@@ -146,6 +146,9 @@ export interface Career{
 
   id:string
   career_name?:string
+  iconUrl?:string
+  pictureUrl?:string
+  videoUrl?:string
   isDeleted?:boolean
 }
 
@@ -340,6 +343,7 @@ export interface Organization{
   id:string
   organization_name?:string
   isDeleted?:boolean
+  isDefaultOrganization?:string
 }
 
 export interface OrganizationRequest{

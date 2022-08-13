@@ -25,6 +25,9 @@ export class MateriaListComponent implements OnInit {
  
       private router: Router
     , private usetPreferenceService:UserPreferencesService
+    , private userLoginService:UserLoginService
+    , private userPreferenceService:UserPreferencesService
+    , private examImprovisationService:ExamenesImprovisacionService
   ) { 
     this.organization_id = this.usetPreferenceService.getCurrentOrganizationId()
   }
@@ -81,5 +84,52 @@ export class MateriaListComponent implements OnInit {
     }
     
   }  
+  onDuplicateMateria(materia_id:string, materia_label:string){
+    this.submitting = true
+    
+    this.duplicateMateria(materia_id, materia_label).then( () =>{
+      this.submitting = false
+      this.update()
+    },
+    reason=>{
+      alert("duplicate failed" + reason)
+      this.submitting = false
+    })
+  }
+
+  duplicateMateria(materia_id, materia_name:string):Promise<void>{
+    
+    var _resolve
+    var _reject
+    return new Promise<null>((resolve, reject)=>{
+      _resolve = resolve
+      _reject = reject
+      var req = {
+        materias:{
+          id:materia_id,
+
+          materia_name:materia_name + "_copy"
+        }
+      }
+      this.userLoginService.getUserIdToken().then( token => {
+        this.examImprovisationService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+          data => { 
+            var exam:Exam = data["result"]
+            _resolve()
+          },   
+          error => {  
+            console.error( "ERROR: duplicando examen:" + JSON.stringify(req))
+            _reject()
+          }
+        )
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+        this.submitting = false
+      }) 
+    }) 
+       
+  }
+
 
 }

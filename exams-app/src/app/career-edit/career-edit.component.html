@@ -3,7 +3,48 @@ Editar Carrera
     <mat-form-field class="example-full-width">
         <mat-label>Nombre</mat-label>
         <input matInput placeholder="" formControlName="career_name" (change)="formService.onPropertyChange('careers', c.controls.id.value, $event)">
-    </mat-form-field>             
+    </mat-form-field>      
+    
+    <div>
+        <h3>Imagen</h3>
+        <img *ngIf="c.controls.pictureUrl.value" class="career-image" src="{{c.controls.pictureUrl.value}}"> 
+        <div id="pictureUrlStatus"></div>
+
+        <mat-form-field>
+            <input matInput disabled> 
+            <button mat-icon-button matSuffix (click)="pictureUrl.click()">
+                <mat-icon>attach_file</mat-icon> 
+            </button>
+            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('pictureUrl')">
+            <mat-icon>delete</mat-icon>
+            </button>      
+            <input hidden (change)="selectFile($event)" name="pictureUrl" #pictureUrl type="file" >
+        </mat-form-field>
+    </div>
+
+    <div >
+        <h3>Video</h3>
+        <div *ngIf="c.controls.videoUrl.value">
+            <video  id="videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+            width="640" height="264" vjs-video vjs-setup="options" >
+            <source src="{{c.controls.videoUrl.value}}" type='video/mp4' />
+            </video> 
+        </div> 
+        <div id="videoUrlStatus"></div>
+
+        <mat-form-field>
+            <input matInput disabled> 
+            <button mat-icon-button matSuffix (click)="videoUrlControl.click()">
+                <mat-icon>attach_file</mat-icon> 
+            </button>
+            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('videoUrl')">
+            <mat-icon>delete</mat-icon>
+            </button>      
+            <input hidden (change)="selectVideo($event)" name="videoUrl" #videoUrlControl type="file" >
+        </mat-form-field>
+    </div>
+
+
     <h1>Ciclos <button (click)="onCreateLevel(c.controls.id.value)"><mat-icon>add</mat-icon></button> </h1>
     <mat-accordion class="example-headers-align" multi>
         <mat-expansion-panel [formGroup]="l" *ngFor='let l of getFormArrayControls(c,"levels"); let k=index'>

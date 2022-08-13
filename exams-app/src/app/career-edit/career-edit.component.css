@@ -15,3 +15,18 @@ mat-card .materia{
     border-style: solid;
     border-width:1px;    
 }
+
+.career-image{
+    height: 300px ;
+    display:block;
+}
+
+.career-video{
+    width:300px ;
+    height: 300px ;
+    display:block;
+}
+
+.remove-property-button{
+    margin-left:50px
+}

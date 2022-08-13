@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { db } from 'src/environments/environment';
+import { db, storage } from 'src/environments/environment';
 import { Career, Group, Level, Materia } from '../exams/exams.module';
 import { ExamFormService } from '../exam-form.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -10,6 +10,8 @@ import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogListSelectDialog } from '../list-select/list-select-dialog';
+import { Observer } from 'rxjs';
+import videojs from 'video.js'
 
 
 @Component({
@@ -25,12 +27,24 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   snapshots:Array<any> = []
 
+
+
   c = this.fb.group({
     id: [null, Validators.required],
-    career_name:[null, Validators.required],   
+    career_name:[null, Validators.required], 
+    pictureUrl:[null],
+    iconUrl:[],
+    videoUrl:[],  
     description:[null],
     levels:new FormArray([])
   })
+
+  pictureUrlStatus = {
+    status:""
+  }
+  videoUrlStatus = {
+    status:""
+  }  
 
   constructor(
       private fb: FormBuilder
@@ -39,6 +53,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     , public formService:ExamFormService
     , public userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
+    , public router:Router
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
       this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
@@ -68,6 +83,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         const career:Career = doc.data() as Career
         this.c.controls.id.setValue(career.id)  
         this.c.controls.career_name.setValue(career.career_name)
+        this.c.controls.pictureUrl.setValue(career.pictureUrl)
+        this.c.controls.videoUrl.setValue(career.videoUrl)
         this.loadLevels(career.id, this.c.controls.levels as FormArray).then( () =>{
           resolve()
         })
@@ -327,5 +344,135 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       alert("ERROR: remove group")
     })
   }
+ 
+  async selectFile(event) {
+
+
+    var selectedFiles = event.target.files;
+    const property = event.srcElement.name
+
+    const bucketName = "organizations/" + this.organization_id + "/careers/" + this.id + "/" + property + ".jpg"
+
+    var file:File = selectedFiles[0]
+    var storageRef = storage.ref( bucketName )
+
+    var uploadTask = storageRef.put(file)
+    var element = document.getElementById(property + "Status")
+    var fileLoadObserver = new FileLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element );
+    uploadTask.on("state_change", fileLoadObserver)
+  } 
+  removePropertyValue(property){
+    const json = {}
+    json[property] = null
+
     
+    db.collection("careers").doc(this.id).update( json ).then( () =>{
+      console.log("property was removed")
+      this.c.controls[property].setValue(null)
+    })
+  }
+
+  async selectVideo(event) {
+    var selectedFiles = event.target.files;
+    const property = event.srcElement.name
+    
+    /*
+    var myPlayer = videojs.getPlayers() ;
+    myPlayer.src("https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fcareers%2F38252a95-c669-4fbe-9e03-bc17019c4461%2FvideoUrl.jpg?alt=media&token=865123d4-ee5c-40de-b6cd-c5ed83bd8107");
+    myPlayer.load()    
+    */
+
+    const bucketName = "organizations/" + this.organization_id + "/careers/" + this.id + "/" + property + ".mp4"
+
+    var file:File = selectedFiles[0]
+    var storageRef = storage.ref( bucketName )
+
+    var uploadTask = storageRef.put(file)
+    var element = document.getElementById(property + "Status")
+    var fileLoadObserver = new VideoLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
+    uploadTask.on("state_change", fileLoadObserver)
+  } 
+
+
+}
+
+class FileLoadObserver implements Observer<any>  {
+  constructor( 
+    private fc:FormControl,
+    private storageRef,
+    private career_id:string, 
+    private propertyName:string,
+    private element:HTMLElement){
+
+  } 
+  next=(snapshot =>{
+    console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
+  })
+  error=(cause =>{
+    console.log("error:" + cause)
+  })
+  complete=( () =>{
+    this.element.innerText = ""
+    console.log("complete" + this.career_id + " " + this.propertyName)
+    console.log("Completed"); // progress of upload
+    this.storageRef.getDownloadURL().then( url =>{
+      console.log(url)        
+      if( this.career_id ){
+        var obj = {}
+        obj[this.propertyName]=url
+        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
+          console.log(`update as completed ${this.career_id} / ${url}`)
+        })
+      }
+      else{
+        this.fc.setValue(url)
+      }
+    },
+    reason =>{
+      console.log("ERROR on url" + reason)
+    })      
+  });
+}
+
+class VideoLoadObserver implements Observer<any>  {
+  constructor( 
+    private fc:FormControl,
+    private storageRef,
+    private career_id:string, 
+    private propertyName:string,
+    private element:HTMLElement,
+    private router){
+
+  } 
+  next=(snapshot =>{
+    console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
+  })
+  error=(cause =>{
+    console.log("error:" + cause)
+  })
+  complete=( () =>{
+    this.element.innerText = ""
+    console.log("complete" + this.career_id + " " + this.propertyName)
+    console.log("Completed"); // progress of upload
+    this.storageRef.getDownloadURL().then( url =>{
+      console.log(url)        
+      if( this.career_id ){
+        var obj = {}
+        obj[this.propertyName]=url
+        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
+          console.log(`update as completed ${this.career_id} / ${url}`)
+          let currentUrl = this.router.url;
+          window.location.reload()
+        })
+      }
+      else{
+        this.fc.setValue(url)
+      }
+    },
+    reason =>{
+      console.log("ERROR on url" + reason)
+    })      
+  });
 }
