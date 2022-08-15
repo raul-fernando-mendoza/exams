@@ -127,12 +127,20 @@ export interface Materia{
 export interface MateriaRequest{
   materias:Materia
 }
+
+export const GROUP_GRADES_TYPES = [
+  { id:0, description:"Todas Requeridas"},
+  { id:1, description:"1 de ellas requeridas"},
+  { id:1, description:"2 de ellas requeridas"},
+  { id:1, description:"3 de ellas requeridas"},
+  { id:1, description:"4 de ellas requeridas"},
+]
+
 export interface Group{
   id:string
   group_name?:string
   isDeleted?:false
-
-  evaluation_type?:number
+  group_grade_type_id?:number
 }
 
 export interface Level{

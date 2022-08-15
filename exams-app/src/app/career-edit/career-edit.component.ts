@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, FormCon
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db, storage } from 'src/environments/environment';
-import { Career, Group, Level, Materia } from '../exams/exams.module';
+import { Career, Group, GROUP_GRADES_TYPES, Level, Materia } from '../exams/exams.module';
 import { ExamFormService } from '../exam-form.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import * as uuid from 'uuid';
@@ -11,8 +11,8 @@ import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogListSelectDialog } from '../list-select/list-select-dialog';
 import { Observer } from 'rxjs';
-import videojs from 'video.js'
-
+import videojs from 'video.js';
+import { FileLoadObserver } from '../load-observers/load-observers.module';
 
 @Component({
   selector: 'app-career-edit',
@@ -27,14 +27,14 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   snapshots:Array<any> = []
 
-
+  player: videojs.Player;
 
   c = this.fb.group({
     id: [null, Validators.required],
     career_name:[null, Validators.required], 
     pictureUrl:[null],
-    iconUrl:[],
-    videoUrl:[],  
+    iconUrl:[null],
+    videoUrl:[null],  
     description:[null],
     levels:new FormArray([])
   })
@@ -205,6 +205,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           var fg = this.fb.group({
             id:[group.id],
             group_name: [ group.group_name ],
+            group_grade_type_id: [ group.group_grade_type_id ],
             materias: new FormArray([])
           })
           groups.controls.push( fg )
@@ -389,90 +390,16 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
     var uploadTask = storageRef.put(file)
     var element = document.getElementById(property + "Status")
-    var fileLoadObserver = new VideoLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
+    var fileLoadObserver = new fileLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
+    this.c.controls[property].setValue(null)
     uploadTask.on("state_change", fileLoadObserver)
   } 
+  getGroupGradeTypes(){
+    return GROUP_GRADES_TYPES
+  }
 
-
+  onGroupGradeTypeChange($event){
+    
+  }
 }
 
-class FileLoadObserver implements Observer<any>  {
-  constructor( 
-    private fc:FormControl,
-    private storageRef,
-    private career_id:string, 
-    private propertyName:string,
-    private element:HTMLElement){
-
-  } 
-  next=(snapshot =>{
-    console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
-    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
-  })
-  error=(cause =>{
-    console.log("error:" + cause)
-  })
-  complete=( () =>{
-    this.element.innerText = ""
-    console.log("complete" + this.career_id + " " + this.propertyName)
-    console.log("Completed"); // progress of upload
-    this.storageRef.getDownloadURL().then( url =>{
-      console.log(url)        
-      if( this.career_id ){
-        var obj = {}
-        obj[this.propertyName]=url
-        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
-          console.log(`update as completed ${this.career_id} / ${url}`)
-        })
-      }
-      else{
-        this.fc.setValue(url)
-      }
-    },
-    reason =>{
-      console.log("ERROR on url" + reason)
-    })      
-  });
-}
-
-class VideoLoadObserver implements Observer<any>  {
-  constructor( 
-    private fc:FormControl,
-    private storageRef,
-    private career_id:string, 
-    private propertyName:string,
-    private element:HTMLElement,
-    private router){
-
-  } 
-  next=(snapshot =>{
-    console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
-    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
-  })
-  error=(cause =>{
-    console.log("error:" + cause)
-  })
-  complete=( () =>{
-    this.element.innerText = ""
-    console.log("complete" + this.career_id + " " + this.propertyName)
-    console.log("Completed"); // progress of upload
-    this.storageRef.getDownloadURL().then( url =>{
-      console.log(url)        
-      if( this.career_id ){
-        var obj = {}
-        obj[this.propertyName]=url
-        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
-          console.log(`update as completed ${this.career_id} / ${url}`)
-          let currentUrl = this.router.url;
-          window.location.reload()
-        })
-      }
-      else{
-        this.fc.setValue(url)
-      }
-    },
-    reason =>{
-      console.log("ERROR on url" + reason)
-    })      
-  });
-}

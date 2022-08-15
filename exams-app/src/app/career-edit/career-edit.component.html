@@ -24,12 +24,10 @@ Editar Carrera
 
     <div >
         <h3>Video</h3>
-        <div *ngIf="c.controls.videoUrl.value">
-            <video  id="videoUrl" class="video-js vjs-default-skin" controls preload="auto"
-            width="640" height="264" vjs-video vjs-setup="options" >
-            <source src="{{c.controls.videoUrl.value}}" type='video/mp4' />
-            </video> 
+        <div *ngIf="c.controls.videoUrl.value!=null">
+            <app-vjs-player source="{{c.controls.videoUrl.value}}"></app-vjs-player>  
         </div> 
+        
         <div id="videoUrlStatus"></div>
 
         <mat-form-field>
@@ -74,6 +72,14 @@ Editar Carrera
                             <mat-label>Grupo</mat-label>
                             <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
                         </mat-form-field>             
+                        <mat-form-field appearance="fill" >
+                            <mat-label>selecciona estudiante</mat-label>
+                            <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value,$event)">
+                              <mat-option *ngFor="let ggt of getGroupGradeTypes()" [value]="ggt.id">
+                                {{ ggt.description }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>            
                 
                         <button mat-icon-button [matMenuTriggerFor]="menuGroup" >
                             <mat-icon>more_vert</mat-icon>
