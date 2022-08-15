@@ -1,14 +1,27 @@
 <p>Avance de carrera</p>
 <div *ngIf="careerUser != null">
-    <h1>{{ careerUser.career.career_name }}</h1>
-    <h1>{{ careerUser.userDisplayName }}</h1>
-    <div *ngFor="let l of careerUser.levels">
+    <mat-toolbar>
+        <mat-toolbar-row>    
+            <span>{{ careerUser.career.career_name }}</span>
+            <span class="example-spacer"></span>
+            <span>{{ careerUser.userDisplayName }}</span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <mat-card *ngFor="let l of careerUser.levels">
         <h2>{{ l.level.level_name }}</h2>
         <div *ngFor="let g of l.groups">
-           <h2>{{ g.group.group_name }}</h2>
-           <div *ngFor="let m of g.materias">
-            <h3> {{ m.materia.materia_name }} <span *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url"><mat-icon>check</mat-icon></span></h3>
-           </div>
+            <mat-toolbar>
+            <mat-toolbar-row>
+                <span>{{ g.group.group_name }}</span>
+                <span class="example-spacer"></span>
+                <span>{{ getGroupGradeDescription(g.group.group_grade_type_id) }}</span>
+            </mat-toolbar-row> 
+            </mat-toolbar>                       
+           <mat-card *ngFor="let m of g.materias">
+            <h3> {{ m.materia.materia_name }} <mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url != null">check</mat-icon><mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url == null">push_pin</mat-icon></h3>
+           </mat-card>
         </div>
-    </div>
+    </mat-card>
+
 </div>

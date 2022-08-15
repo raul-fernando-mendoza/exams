@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
-import { Career, Group, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
+import { Career, Group, GROUP_GRADES_TYPES, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { ExamenImprovisacionFormComponent } from '../examen-improvisacion-form/examen-improvisacion-form.component';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
@@ -122,5 +122,15 @@ export class CareerUserComponent implements OnInit {
         materias.sort( (a,b) => { return a.materia.materia_name > b.materia.materia_name ? 1:-1})
       })
     })   
+  }
+
+  getGroupGradeDescription(group_grade_type_id:number){
+    var desc = "Not found"
+    GROUP_GRADES_TYPES.map( ggt =>{
+      if( ggt.id == group_grade_type_id){
+        desc = ggt.description
+      }
+    })
+    return desc
   }
 }

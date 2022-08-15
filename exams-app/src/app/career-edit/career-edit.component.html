@@ -73,7 +73,7 @@ Editar Carrera
                             <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
                         </mat-form-field>             
                         <mat-form-field appearance="fill" >
-                            <mat-label>selecciona estudiante</mat-label>
+                            <mat-label>selecciona tipo de evaluacion</mat-label>
                             <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value,$event)">
                               <mat-option *ngFor="let ggt of getGroupGradeTypes()" [value]="ggt.id">
                                 {{ ggt.description }}
