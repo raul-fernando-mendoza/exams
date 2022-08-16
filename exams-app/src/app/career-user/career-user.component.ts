@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
-import { Career, Group, GROUP_GRADES_TYPES, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
+import { Career, CareerAdvance, Group, GroupGrade, GROUP_GRADES_TYPES, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { ExamenImprovisacionFormComponent } from '../examen-improvisacion-form/examen-improvisacion-form.component';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
@@ -45,15 +45,10 @@ export class CareerUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if( this.user_uid != this.userLogin.getUserUid() ){
-      this.examImprovisationService.getUser(this.user_uid).then( user =>{
-        this.user_displayName = user.displayName
-        this.loadCareers()
-      })    
-    }
-    else{
+    this.examImprovisationService.getUser(this.user_uid).then( user =>{
+      this.user_displayName = user.displayName
       this.loadCareers()
-    }
+    })    
     
   }
 
@@ -61,15 +56,21 @@ export class CareerUserComponent implements OnInit {
     db.collection("careers").doc( this.career_id ).get().then( doc =>{
        
       const career = doc.data() as Career
-      const userDisplayName = this.user_displayName
       const levels = []
+      
 
       this.careerUser = {
         career:career,
-        userDisplayName:userDisplayName,
-        levels:levels
+        careerAdvance:null,
+        levels:levels       
       }
-      this.loadLevels( this.career_id, this.careerUser.levels)
+      this.getCarrerAdvance(this.organization_id, this.career_id, this.user_uid).then( careerAdvance =>{
+        this.careerUser.careerAdvance = careerAdvance
+        this.loadLevels( this.career_id, this.careerUser.levels)
+      })
+
+
+      
     })
   }
   loadLevels( career_id, levels){
@@ -87,8 +88,16 @@ export class CareerUserComponent implements OnInit {
     db.collection("careers/" + career_id + "/levels/" + level_id + "/groups").get().then( set =>{
       set.docs.map( doc =>{
         const group:Group = doc.data() as Group
-        var e = { group:group, materias:[] } 
+        var e = { 
+          group:group, 
+          groupGrade:null,
+          materias:[] } 
         groups.push( e )
+        if( this.careerUser.careerAdvance){
+          this.loadGroupGrade( this.organization_id, career_id, this.user_uid, level_id, group.id).then( groupGrade =>{
+            e.groupGrade = groupGrade
+          })
+        }
         this.loadMaterias( career_id, level_id, group.id , e.materias)
       })
       groups.sort( (a,b) => { return a.group.group_name > b.group.group_name ? 1:-1})
@@ -132,5 +141,39 @@ export class CareerUserComponent implements OnInit {
       }
     })
     return desc
+  }
+
+  getCarrerAdvance( organization_id, career_id, user_uid):Promise<CareerAdvance>{
+    return new Promise<CareerAdvance>(( resolve, reject)=>{
+      db.collection("careerAdvance") 
+      .where( "organization_id" , "==", organization_id) 
+      .where( "career_id","==", career_id)
+      .where( "student_uid", "==", user_uid)
+      .get().then( set =>{
+        var careerAdvance:CareerAdvance = null
+        set.docs.map( doc =>{
+          careerAdvance = doc.data() as CareerAdvance        
+        })
+        resolve(careerAdvance)
+      },
+      reason =>{
+        alert("ERROR: error reading advance:" + reason)
+        reject(null)
+      })
+      
+    })
+    
+  }
+  loadGroupGrade( organization_id, career_id, user_uid, level_id, group_id):Promise<GroupGrade>{
+    return new Promise<GroupGrade>(( resolve, reject) =>{
+      db.collection( "careerAdvance/" + organization_id + "-" + career_id + "-" + user_uid + "/levels/" + level_id + "/groups").doc(group_id).get().then( doc =>{
+        var groupGrade:GroupGrade = doc.data() as GroupGrade
+        resolve( groupGrade )
+      },
+      reason =>{
+        alert("ERROR: reading groupGrade:" + reason)
+        reject( null )
+      })
+    })
   }
 }

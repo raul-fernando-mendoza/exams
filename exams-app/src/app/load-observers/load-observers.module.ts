@@ -40,6 +40,7 @@ export class FileLoadObserver implements Observer<any>  {
         obj[this.propertyName]=url
         db.collection("careers").doc(this.career_id).update(obj).then( () =>{
           console.log(`update as completed ${this.career_id} / ${url}`)
+          this.fc.setValue(url)
         })
       }
       else{
@@ -52,7 +53,7 @@ export class FileLoadObserver implements Observer<any>  {
   });
 }
 
-class VideoLoadObserver implements Observer<any>  {
+export class VideoLoadObserver implements Observer<any>  {
   constructor( 
     private fc:FormControl,
     private storageRef,

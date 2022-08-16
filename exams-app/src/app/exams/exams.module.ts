@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormGroup } from '@angular/forms';
 
 import * as uuid from 'uuid';
+import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 
 @NgModule({
   declarations: [],
@@ -365,4 +366,22 @@ export interface OrganizationMultipleRequest{
     startAfterId?:string
     pageSize?:string
   }
+}
+
+export interface CareerAdvance{
+  id:string
+  organization_id:string
+  career_id:string
+  student_uid:string
+  materias_count:string
+  materias_enrolled:string
+  materias_passed:string
+}
+
+export interface GroupGrade{
+  id:string
+  group_materias_count:number
+  group_materias_enrolled:number
+  group_materias_passed:number
+  group_passed:boolean
 }

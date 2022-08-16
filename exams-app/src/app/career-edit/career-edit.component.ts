@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogListSelectDialog } from '../list-select/list-select-dialog';
 import { Observer } from 'rxjs';
 import videojs from 'video.js';
-import { FileLoadObserver } from '../load-observers/load-observers.module';
+import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-observers.module';
 
 @Component({
   selector: 'app-career-edit',
@@ -390,7 +390,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
     var uploadTask = storageRef.put(file)
     var element = document.getElementById(property + "Status")
-    var fileLoadObserver = new fileLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
+    var fileLoadObserver = new VideoLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
     this.c.controls[property].setValue(null)
     uploadTask.on("state_change", fileLoadObserver)
   } 
