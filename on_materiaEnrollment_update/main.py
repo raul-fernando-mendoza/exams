@@ -95,7 +95,7 @@ def materiaEnrollmentUpdate(db, documentId):
                 if group_grade_type_id == 0:
                     if group_materias_count == group_materias_passed:
                         group_passed = True
-                elif group_materias_passed == group_grade_type_id:
+                elif group_materias_passed >= group_grade_type_id:
                     group_passed = True
                 groupUpdate = {
                     "group_grade_type_id":group_grade_type_id,
