@@ -63,6 +63,9 @@ import { DialogNameDialog } from './name-dialog/name-dlg';
 import { DialogListSelectDialog } from './list-select/list-select-dialog';
 import { CareerUserComponent } from './career-user/career-user.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { CertificateTypeListComponent } from './certificate-type-list/certificate-type-list.component';
+import { CertificateTypeEditComponent } from './certificate-type-edit/certificate-type-edit.component';
+
 
 @NgModule({
   declarations: [
@@ -97,7 +100,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     DialogMateriaExamDialog,
     DialogNameDialog,
     DialogListSelectDialog,
-    CareerUserComponent
+    CareerUserComponent,
+    CertificateTypeListComponent,
+    CertificateTypeEditComponent
   ],
   imports: [
     BrowserModule,

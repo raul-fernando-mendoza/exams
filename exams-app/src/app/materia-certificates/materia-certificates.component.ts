@@ -27,7 +27,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   dataSource: MateriaCertificatesDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['student_name', 'approved', 'certificate_public_url'];
+  displayedColumns = ['student_name', 'approved', 'actions'];
 
   studentsListener = null
   materiaListener = null
@@ -136,7 +136,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         const resultMap = recordset.docs.map( (doc) => {
 
           const materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
-          console.log("public_url:" + materiaEnrollment.certificate_public_url)
+          console.log("public_url:" + materiaEnrollment.certificateUrl)
 
           var n:NodeTableRow = {
             user:row.user,
@@ -407,7 +407,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         console.log("changes are pending:" + doc.metadata.hasPendingWrites)
         var materiaEnrollmentRow = row.parent
         db.collection("materiaEnrollments").doc( row.parent.materiaEnrollment.id ).get().then(doc =>{
-          row.parent.materiaEnrollment.certificate_public_url = doc.data().certificate_public_url 
+          row.parent.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
         })
         
       })
@@ -468,7 +468,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         var userRow = row.parent.parent
         var materiaEnrollmentRow = row.parent
         db.collection("materiaEnrollments").doc( row.parent.materiaEnrollment.id ).get().then(doc =>{
-          row.parent.materiaEnrollment.certificate_public_url = doc.data().certificate_public_url 
+          row.parent.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
         })
       })
     setTimeout(observer, 10000);
@@ -497,7 +497,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       doc =>{
         console.log("changes are pending:" + doc.metadata.hasPendingWrites)
         db.collection("materiaEnrollments").doc( row.materiaEnrollment.id ).get().then(doc =>{
-          row.materiaEnrollment.certificate_public_url = doc.data().certificate_public_url 
+          row.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
         })
       })
     setTimeout(observer, 10000);
@@ -534,7 +534,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       doc =>{
         console.log("changes are pending:" + doc.metadata.hasPendingWrites)
         db.collection("materiaEnrollments").doc( row.materiaEnrollment.id ).get().then(doc =>{
-          row.materiaEnrollment.certificate_public_url = doc.data().certificate_public_url 
+          row.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
         })
       })
     setTimeout(observer, 10000);

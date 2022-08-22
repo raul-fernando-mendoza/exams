@@ -34,10 +34,10 @@ Bienvenido
           <mat-card-title-group>
               <mat-card-title>{{ me.materia_name }}</mat-card-title>
               <mat-card-subtitle>
-                <a *ngIf="me.certificate_public_url" href="{{ me.certificate_public_url }}">certificado</a> 
-                <div *ngIf="!me.certificate_public_url">En curso</div>
+                <a *ngIf="me.certificateUrl" href="{{me.certificateUrl}}">certificado</a> 
+                <div *ngIf="!me.certificateUrl">En curso</div>
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ me.iconCertificate }}">
+              <img mat-card-sm-image src="{{me.iconCertificateUrl}}">
                                           
           </mat-card-title-group>
           <mat-card-content>
@@ -45,7 +45,7 @@ Bienvenido
               <tr *ngFor="let e of me.exams">
                   <td>
                     <button *ngIf='e && e.isReleased' mat-button (click)='onOpenExamGrade(e.examGrade_id)'>{{ e.exam_name }}</button>
-                    <div *ngIf='!(e && e.isReleased)' [class]='me.certificate_public_url && !e.isRequired ? "exam-not-required-not-completed" : "exam"'>{{ e.exam_name }}</div>
+                    <div *ngIf='!(e && e.isReleased)' [class]='me.certificateUrl && !e.isRequired ? "exam-not-required-not-completed" : "exam"'>{{ e.exam_name }}</div>
                   </td>
                   <td>
                     <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
@@ -60,7 +60,7 @@ Bienvenido
     <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Proximas Materias
+          Proximas Habilidades
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-card-content>
@@ -70,19 +70,11 @@ Bienvenido
               <mat-card-subtitle>
                 {{ m.description }}
               </mat-card-subtitle>
-              <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ m.iconCertificate }}">
+              <img mat-card-sm-image src="{{ m.materiaIconUrl }}">
                                           
           </mat-card-title-group>
-          <mat-card-content>
-            <img class="materia-image" *ngIf="m.pictureUrl" src="{{ m.pictureUrl }}"> 
-            <video *ngIf="m.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
-            width="640" height="264" vjs-video vjs-setup="options">
-              <source src="{{ m.videoUrl }}" type='video/mp4' />
-            </video>            
-          </mat-card-content>
           <mat-card-actions>
-            <button mat-button *ngIf="isLoggedIn()" color="primary" (click)="onEnrollar(m.id)">Enrollar</button>
-            <button mat-button *ngIf="!isLoggedIn()" color="primary" (click)="onEnrollar(null)">Login o registrese para Enrollarte</button>
+            <button mat-raised-button color="primary" (click)="onMateriaDetalles(m.id)">Detalles</button>
           </mat-card-actions>
         </mat-card>
       </mat-card-content>  
@@ -112,7 +104,7 @@ Bienvenido
             </video>            
           </mat-card-content>
           <mat-card-actions>
-            <button mat-button color="primary" (click)="onCareerDetails(c.id)">Details</button>
+            <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerDetails(c.id)">Details</button>
           </mat-card-actions>
         </mat-card>
       </mat-card-content>  

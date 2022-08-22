@@ -14,7 +14,7 @@ Editar Examen
       </mat-form-field>
 
       <mat-form-field appearance="fill" > 
-        <mat-label>Materia</mat-label>
+        <mat-label>Habilidad</mat-label>
         <mat-select formControlName="materia_id" (selectionChange)="materiaChange($event)">
           <mat-option *ngFor="let m of materias" [value]="m.id" >
             {{m.materia_name}} 

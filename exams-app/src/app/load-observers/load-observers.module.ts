@@ -15,37 +15,36 @@ export class LoadObserversModule { }
 
 export class FileLoadObserver implements Observer<any>  {
   constructor( 
-    private fc:FormControl,
     private storageRef,
-    private career_id:string, 
+    private collection_name,
+    private id:string, 
     private propertyName:string,
-    private element:HTMLElement){
+    private statusElement:HTMLElement){
 
   } 
   next=(snapshot =>{
     console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
-    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
+    this.statusElement.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
   })
   error=(cause =>{
     console.log("error:" + cause)
   })
   complete=( () =>{
-    this.element.innerText = ""
-    console.log("complete" + this.career_id + " " + this.propertyName)
+    this.statusElement.innerText = ""
+    console.log("complete" + this.id + " " + this.propertyName)
     console.log("Completed"); // progress of upload
     this.storageRef.getDownloadURL().then( url =>{
       console.log(url)        
-      if( this.career_id ){
-        var obj = {}
-        obj[this.propertyName]=url
-        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
-          console.log(`update as completed ${this.career_id} / ${url}`)
-          this.fc.setValue(url)
-        })
-      }
-      else{
-        this.fc.setValue(url)
-      }
+      var obj = {}
+      obj[this.propertyName + "Url"]=url
+      obj[this.propertyName + "Path"]=this.storageRef.fullPath
+      db.collection(this.collection_name).doc(this.id).update(obj).then( () =>{
+        console.log(`update as completed ${this.id} / ${url}`)
+        //this.fc.setValue(url)
+      },
+      reason=>{
+        alert("ERROR update to collection:" + reason)
+      })
     },
     reason =>{
       console.log("ERROR on url" + reason)
@@ -55,40 +54,33 @@ export class FileLoadObserver implements Observer<any>  {
 
 export class VideoLoadObserver implements Observer<any>  {
   constructor( 
-    private fc:FormControl,
     private storageRef,
-    private career_id:string, 
+    private collectionPath,
+    private id:string, 
     private propertyName:string,
-    private element:HTMLElement,
-    private router){
+    private statusElement:HTMLElement){
 
   } 
   next=(snapshot =>{
     console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
-    this.element.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
+    this.statusElement.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
   })
   error=(cause =>{
     console.log("error:" + cause)
   })
   complete=( () =>{
-    this.element.innerText = ""
-    console.log("complete" + this.career_id + " " + this.propertyName)
+    this.statusElement.innerText = ""
+    console.log("complete" + this.id + " " + this.propertyName)
     console.log("Completed"); // progress of upload
     this.storageRef.getDownloadURL().then( url =>{
       console.log(url)        
-      if( this.career_id ){
-        var obj = {}
-        obj[this.propertyName]=url
-        db.collection("careers").doc(this.career_id).update(obj).then( () =>{
-          console.log(`update as completed ${this.career_id} / ${url}`)
-          //let currentUrl = this.router.url;
-          //window.location.reload()
-          this.fc.setValue(url)
-        })
-      }
-      else{
-        this.fc.setValue(url)
-      }
+      var obj = {}
+      obj[this.propertyName + "Url"]=url
+      obj[this.propertyName + "Path"]=this.storageRef.fullPath      
+      db.collection(this.collectionPath).doc(this.id).update(obj).then( () =>{
+        console.log(`update as completed ${this.id} / ${url}`)
+      })
+
     },
     reason =>{
       console.log("ERROR on url" + reason)

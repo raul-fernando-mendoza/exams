@@ -1,0 +1,48 @@
+<h1>Tipo Certificado</h1>
+<form *ngIf="ct_FG" [formGroup]="ct_FG" >
+    <mat-form-field>
+        <mat-label>Nombre</mat-label>
+        <input matInput placeholder="" formControlName="certificateTypeName" (change)="onPropertyChange($event)">
+    </mat-form-field>   
+    <mat-form-field>
+        <mat-label>Titulo1</mat-label>
+        <input matInput placeholder="" formControlName="label1" (change)="onPropertyChange($event)">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Titulo2</mat-label>
+        <input matInput placeholder="" formControlName="label2" (change)="onPropertyChange($event)">
+    </mat-form-field>    
+    <mat-form-field>
+        <mat-label>Titulo3</mat-label>
+        <input matInput placeholder="" formControlName="label3" (change)="onPropertyChange($event)">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Titulo4</mat-label>
+        <input matInput placeholder="" formControlName="label4" (change)="onPropertyChange($event)">
+    </mat-form-field> 
+    <mat-form-field>
+        <mat-label>Color1</mat-label>
+        <input matInput placeholder="" formControlName="color1" (change)="onPropertyChange($event)">
+    </mat-form-field>      
+    <mat-form-field>
+        <mat-label>Color2</mat-label>
+        <input matInput placeholder="" formControlName="color2" (change)="onPropertyChange($event)">
+    </mat-form-field>      
+
+    <h3>Certificado Maestro</h3>
+    <img *ngIf="ct.certificateTypeUrl" class="image" src="{{ct.certificateTypeUrl}}"> 
+    <div id="certificateTypeStatus"></div>
+
+    <mat-form-field>
+        <input matInput disabled> 
+        <button mat-icon-button matSuffix (click)="certificateType.click()">
+            <mat-icon>attach_file</mat-icon> 
+        </button>
+        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('certificateType')">
+        <mat-icon>delete</mat-icon>
+        </button>      
+        <input hidden (change)="selectCertificateTypeFile($event)" name="certificateType" #certificateType type="file" >
+    </mat-form-field>
+    
+  
+</form>

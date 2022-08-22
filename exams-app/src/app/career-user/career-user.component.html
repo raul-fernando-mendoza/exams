@@ -11,7 +11,7 @@
                 </span>
                 
                 <span *ngIf="careerUser.careerAdvance.materias_count != careerUser.careerAdvance.materias_passed">
-                    avance: {{ careerUser.careerAdvance.materias_passed }} of {{ careerUser.careerAdvance.materias_count }}
+                    avance: {{ careerUser.careerAdvance.materias_passed }} of {{ careerUser.careerAdvance.materias_count }} 
                     <mat-progress-bar  mode="determinate" [value]="(careerUser.careerAdvance.materias_passed / careerUser.careerAdvance.materias_count) * 100">
                     </mat-progress-bar>  
                 </span>           
@@ -29,14 +29,22 @@
             <mat-toolbar-row>
                 <span>{{ g.group.group_name }}</span>
                 <span class="example-spacer"></span>
-                <span *ngIf="careerUser.careerAdvance && g.groupGrade && g.groupGrade.group_passed==false">Completadas: {{g.groupGrade.group_materias_passed}} de {{g.groupGrade.group_materias_count}}</span>
+                <!--<span *ngIf="careerUser.careerAdvance && g.groupGrade && g.groupGrade.group_passed==false">Completadas: {{g.groupGrade.group_materias_passed}} de {{g.groupGrade.group_materias_count}}</span>-->
                 <span *ngIf="careerUser.careerAdvance && g.groupGrade && g.groupGrade.group_passed==true">Completado</span>
                 <span class="example-spacer"></span>
                 <span>{{ getGroupGradeDescription(g.group.group_grade_type_id) }}</span>
             </mat-toolbar-row> 
             </mat-toolbar>                       
            <mat-card *ngFor="let m of g.materias">
-            <h3> {{ m.materia.materia_name }} <mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url != null">check</mat-icon><mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificate_public_url == null">push_pin</mat-icon></h3>
+            <mat-toolbar-row>
+                <span>
+                    <h3> {{ m.materia.materia_name }} <mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificateUrl != null">check</mat-icon><mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificateUrl == null">push_pin</mat-icon></h3>
+                </span>
+                <span class="example-spacer"></span>
+                <span>
+                <button mat-raised-button *ngIf="m.materia.isEnrollmentActive" mat-button color="primary" (click)="onMateriaDetalles(m.materia.id)">Enrolar</button>
+                </span>
+            </mat-toolbar-row>           
            </mat-card>
         </div>
     </mat-card>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Exam, ExamRequest, Materia, MateriaRequest } from '../exams/exams.module';
+import { CertificateIcon, Exam, ExamRequest, Materia, MateriaRequest } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
@@ -15,7 +15,7 @@ import { UserPreferencesService } from '../user-preferences.service';
 })
 export class MateriaListComponent implements OnInit {
 
-  materias:Materia[] = []
+  materias:Array<Materia> = []
  
   submitting = false
 
@@ -50,9 +50,8 @@ export class MateriaListComponent implements OnInit {
       .get().then( snapshot =>{
         snapshot.docs.map( doc =>{
           const materia = doc.data() as Materia
-          this.materias.push(materia)
+          this.materias.push(materia)          
         })
-
         this.materias.sort( (a,b) => {return a.materia_name > b.materia_name? 1:-1})
         resolve()
       },

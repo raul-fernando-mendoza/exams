@@ -20,8 +20,8 @@ interface MyExam {
 interface MyEnrollment {
   enrollment_id:string
   materia_name:string
-  certificate_public_url:string
-  iconCertificate:string
+  certificateUrl:string
+  iconCertificateUrl:string
   exams:MyExam[]
 }
 
@@ -31,6 +31,8 @@ interface MyEnrollment {
   styleUrls: ['./welcome.component.css']
 })
 export class WelcomeComponent implements OnInit {
+
+  
 
   constructor(
       private router: Router
@@ -46,6 +48,7 @@ export class WelcomeComponent implements OnInit {
   materias:Array<Materia> = []
   organization_id:string = null
   careers:Career[] = []
+  
 
   ngOnInit(): void {
     this.loadCareers()
@@ -95,8 +98,8 @@ export class WelcomeComponent implements OnInit {
             var myEnrollment:MyEnrollment = {
               enrollment_id:materiaEnrollment.id,
               materia_name:materiaEnrollment.materia.materia_name,
-              certificate_public_url:materiaEnrollment.certificate_public_url,
-              iconCertificate:materia.iconCertificate,
+              certificateUrl:materiaEnrollment.certificateUrl,
+              iconCertificateUrl:null,
               exams:[]
             }
             
@@ -210,20 +213,8 @@ export class WelcomeComponent implements OnInit {
     })
   }
 
-  onEnrollar(materia_id){
-    if( this.isLoggedIn() ){
-      this.examenesImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), materia_id,this.userLoginService.getUserUid()).then( () =>{
-        
-        alert("Usted ha sido enrollado en esta materia.")
-        this.update()
-      },
-      reason => {
-        alert("usted ya esta enrollado en esta materia")
-      })
-    }
-    else{
-      this.router.navigate(['/loginForm'])
-    }
+  onMateriaDetalles(materia_id){
+      this.router.navigate(['/materia-edit',{materia_id:materia_id}])
   }
 
   loadCareers(){
@@ -241,6 +232,6 @@ export class WelcomeComponent implements OnInit {
   }
 
   onCareerDetails(career_id:string){
-    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid, career_id:career_id }])
+    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
   }
 }

@@ -30,9 +30,9 @@ class TestFireStore(unittest.TestCase):
             
         #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
         data = certificates_master_generation.createStorageCertificate( storage_client, 
-        "certificates_support/certificate_master_habilidades_tematicas.jpg",
-        "certificates_logos/empty_icon.jpg",
-        "certificates_master/habilidades_tematicas" , 
+        "organizations/raxacademy/certificates-masters/certificado_habilidades.jpg",
+        "organizations/raxacademy/certificates-masters/empty_icon.jpg",
+        "organizations/raxacademy/certificates-masters/certificado_habilidades_master" , 
         '',
         "",
         "Habilidad",

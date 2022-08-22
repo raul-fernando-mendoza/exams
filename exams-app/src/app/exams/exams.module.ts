@@ -107,12 +107,18 @@ export interface Materia{
   materia_name?:string 
   isDeleted?:boolean 
 
-  typeCertificate?:string 
-  iconCertificate?:string 
+  certificateTypeId?:string
+  materiaIconPath?:string
+  materiaIconUrl?:string
+    
 
   description?:string 
   pictureUrl?:string
+  picturePath?:string
+  pictureDescription?:string
   videoUrl?:string 
+  videoPath?:string
+  videoDescription?:string
   isEnrollmentActive?:boolean 
 
   label1?:string 
@@ -169,8 +175,8 @@ export interface MateriaEnrollment{
   student_uid?:string
   student?:User
   isDeleted?:boolean
-  certificate_name?:string
-  certificate_public_url?:string
+  certificateUrl?:string
+  certificatePath?:string
 }
 
 export interface ExamRequest{
@@ -343,10 +349,7 @@ export interface ExamGradeMultipleRequest{
   }
 }
 
-export interface TypeCertificate{
-  value: string
-  label: string
-}
+
 
 export interface Organization{
   id:string
@@ -384,4 +387,24 @@ export interface GroupGrade{
   group_materias_enrolled:number
   group_materias_passed:number
   group_passed:boolean
+}
+
+export interface CertificateType{
+  id:string
+  certificateTypeName?:string
+  certificateTypeUrl?:string
+  certificateTypePath?:string
+  label1?:string
+  label2?:string
+  label3?:string
+  label4?:string
+  color1?:string
+  color2?:string
+}
+
+export interface CertificateIcon{
+  id:string
+  certificateIconName?:string
+  certificateIconUrl?:string
+  certificateIconPath?:string
 }

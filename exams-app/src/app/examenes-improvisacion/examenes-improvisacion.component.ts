@@ -172,7 +172,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     }
     
     qry.get().then( set => {
-      console.log("set" + set.docs.length)
+      console.log("exams found:" + set.docs.length)
             
       var map = set.docs.map( doc =>{
         const parameterGrade:ParameterGrade = doc.data()
@@ -338,21 +338,21 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }
     )    
   }
-  async getUser(uid){
-    var userReq = {
-      "uid":uid
-    }      
-
-    const response = await this.examImprovisacionService.authApiInterface("getUser", null, userReq)
-    const user = response["result"]
-    var result:User = {
-      "uid" : user["uid"],
-      "email" : user["email"],
-      "displayName" : (user["displayName"] != null && user["displayName"] != '')? user["displayName"] : user["email"],
-      "claims" : user["claims"]
-    }
+  getUser(uid):Promise<User>{
+    return new Promise<User>( (resolve, reject) =>{
+      var userReq = {
+        "uid":uid
+      }      
+      this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
+        const user = response["result"]
+        resolve( user )
+      },
+      reason =>{
+        console.log("Error retriving user:" + reason)
+      })
     
-    return result
+    })
+
   }
   
   printApplicationDate(t){

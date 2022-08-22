@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
 import { Career, CareerAdvance, Group, GroupGrade, GROUP_GRADES_TYPES, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
@@ -27,7 +27,8 @@ export class CareerUserComponent implements OnInit {
     private route:ActivatedRoute,
     private userPreferences:UserPreferencesService,
     private userLogin:UserLoginService,
-    private examImprovisationService:ExamenesImprovisacionService
+    private examImprovisationService:ExamenesImprovisacionService,
+    private router:Router
   ) { 
 
     this.organization_id = this.userPreferences.getCurrentOrganizationId()
@@ -176,4 +177,8 @@ export class CareerUserComponent implements OnInit {
       })
     })
   }
+
+  onMateriaDetalles(materia_id){
+    this.router.navigate(['/materia-edit',{materia_id:materia_id}])
+  }  
 }

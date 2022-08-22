@@ -82,15 +82,16 @@ def draw_text_angle (str:string, into:Image, at:int, down:bool):
 
 def createStorageCertificate( storage_client, master_name:string, logo_name:string, file_name:string, student:string, title:string, t1:string, t2:string, t3:string, t4:string,color1:string, color2:string):
 
+        student_top = 35/100
+        title_top = 45/100
 
-
-        bucket_name = "certificates-" + storage_client.project
+        bucket_name = storage_client.project + ".appspot.com"
         
         bucket = storage_client.get_bucket(bucket_name)
 
 
 
-        # creating a image object 
+        # creating a image object for the master
         blob = bucket.blob(master_name)
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
@@ -111,7 +112,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         
 
         left = ( w/2 ) - calculateWidthString(student,  font) / 2
-        top = (h * (9/20)) - f 
+        top = (h * (student_top)) - f 
         
         draw.text((left, top), student, fill ="black", font = font, align ="center") 
 
@@ -120,7 +121,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         f = 130
         font = ImageFont.truetype('SecularOne-Regular.ttf', f) 
         left_t = ( w/2 ) - (calculateWidthString(title, font)/2)
-        top_t = (h * (24/40))
+        top_t = (h * (title_top))
         
         draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 
 
@@ -135,62 +136,84 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         draw.text((left_i, top_i), issue, fill ="black", font = font_i, align ="left") 
         
 
+
+
         #add the logo
         blob = bucket.blob(logo_name)
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
-        img_logo = Image.open(b)        
+        img_logo = Image.open(b) 
+        logoDraw = ImageDraw.Draw(img_logo) 
 
         #img_logo = Image.open('rax_logo_no_text_500.jpg', 'r')
         logo_w, logo_h = img_logo.size
 
         line_size = 40
 
-        shape = [(0, 0), (logo_w, logo_h)]
+        #draw the circles
+        if color1 != None and color1 != "":
+                shape = [(0,0), ( logo_w,  logo_h)]
+                logoDraw.arc(shape, start = 0, end = 360, fill = color1, width = line_size+2) 
+
+        if color2 != None and color2 != "":
+                shape2 = [(line_size,  line_size), ( logo_w - line_size,  logo_h - line_size)]
+                logoDraw.arc(shape2, start = 0, end = 360, fill = color2, width = line_size) 
+
+
         
+        offset = (int((w - img_logo.size[0] - 100)), int((h - img_logo.size[1]) - 100))
+
+        shape = [(0, 0), (logo_w, logo_h)]
+    
         #create mask for logo
         
         #mask_im = Image.new('RGBA', img_logo.size, (255, 255, 255, 0))
         mask_im =Image.new("L", img_logo.size, 0)
 
-        mask = ImageDraw.Draw(mask_im)
+        maskDraw = ImageDraw.Draw(mask_im)
 
-        mask.ellipse((100, 100, 400, 400), fill=255)
+        maskDraw.ellipse((100, 100, 400, 400), fill=255)
+        maskDraw.ellipse((line_size * 2,  line_size * 2,logo_w - line_size * 2,  logo_h - line_size * 2), fill=0)
 
-        #mask.arc(shape, start = 0, end = 360, fill = 0, width = line_size+2) 
 
-        shape2 = [(line_size, line_size), (logo_w - line_size, logo_h - line_size)]
-        #mask.arc(shape2, start = 0, end = 360, fill = 0, width = line_size) 
 
-        mask_im = draw_text_angle(t1,mask_im,1,down=False)
-        mask_im = draw_text_angle(t2,mask_im,2,down=False)
-        mask_im = draw_text_angle(t3,mask_im,2,down=True)
-        mask_im = draw_text_angle(t4,mask_im,1,down=True)
+        #now continue with the text
+        if t1 != "":
+                mask_im = draw_text_angle(t1,mask_im,1,down=False)
+        if t2 != "":        
+                mask_im = draw_text_angle(t2,mask_im,2,down=False)
+        if t3 != "":        
+                mask_im = draw_text_angle(t3,mask_im,2,down=True)
+        if t4 != "":        
+                mask_im = draw_text_angle(t4,mask_im,1,down=True)
         
         #setup in final size and position
         final_size = img_logo.size
         #img_logo = img_logo.resize( final_size )
         #mask_final = mask_im.resize( final_size )
 
+        if color1 != "" or color2 != "":
+                white_im =Image.new("RGB", size=img_logo.size, color="white")
+                img_logo.paste(white_im, (0,0), mask_im)
+
+        image.paste(img_logo, offset)
+        #image.save('certificate.png') 
+
+        badge_b = io.BytesIO()
+        mask_im.save(badge_b,'jpeg')
+        #mask_im.save('mask.png')
+        mask_im.close()
         
-
-        offset = (int((w - img_logo.size[0] - 100)), int((h - img_logo.size[1]) - 100))
-
-        
-
-        image.paste(img_logo, offset, mask_im)
-        #image.save('result.png') 
-
-
         #save the badge to cloud storage
-         
-        b = io.BytesIO()
-        img_logo.save(b,'jpeg')
-        #img_logo.close()
+        badge_b = io.BytesIO()
+        img_logo.save(badge_b,'jpeg')
+        #img_logo.save('logo.png')
+        img_logo.close()     
 
-        #blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 
-        #blob_logo.upload_from_string(b.getvalue(), content_type="image/jpeg")
-        #blob_logo.make_public() 
+
+        blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 
+        blob_logo.upload_from_string(badge_b.getvalue(), content_type="image/jpeg")
+        blob_logo.make_public() 
          
 
         #save to the diploma cloud storage     
@@ -199,14 +222,17 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         image.save(b,'jpeg')
         image.close()
 
+        
         blob = bucket.blob(file_name + "_certificate" + ".jpeg") 
         blob.upload_from_string(b.getvalue(), content_type="image/jpeg")
         blob.make_public() 
         return {
-                "certificate_name":blob.name,
-                "certificate_public_url":blob.public_url
+                "certificatePath":blob.name,
+                "certificateUrl":blob.public_url,
+                "certificateBadgePath":blob_logo.name,
+                "certificateBadgeUrl":blob_logo.public_url
                 }
-
+        
              
         
         

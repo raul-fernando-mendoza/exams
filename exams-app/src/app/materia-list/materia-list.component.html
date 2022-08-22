@@ -1,4 +1,4 @@
-<h1>Materias</h1>
+<h1>Habilidades <button mat-button mat-raised-button (click)="onCreateMateria()"><mat-icon>add</mat-icon></button></h1>
 
 <mat-card *ngFor="let m of materias" class="materia-card">
     <mat-card-title-group>
@@ -21,19 +21,14 @@
         <mat-card-subtitle>
           {{ m.description }}
         </mat-card-subtitle>
-        <img mat-card-sm-image src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ m.iconCertificate }}">
+        <img mat-card-sm-image src="{{ m.materiaIconUrl }}">
                                     
     </mat-card-title-group>
     <mat-card-content>
       <img class="materia-image" *ngIf="m.pictureUrl" src="{{ m.pictureUrl }}"> 
-      <video *ngIf="m.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
-      width="640" height="264" vjs-video vjs-setup="options">
-        <source src="{{ m.videoUrl }}" type='video/mp4' />
-      </video>  
-      
     </mat-card-content>
     <mat-card-actions>
     </mat-card-actions>
   </mat-card>
 
-  <button mat-button mat-raised-button color="primary" (click)="onCreateMateria()">Nueva Materia</button>
+  

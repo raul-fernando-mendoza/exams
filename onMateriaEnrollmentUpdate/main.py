@@ -87,7 +87,7 @@ def materiaEnrollmentUpdate(db, documentId):
                         level_materias_enrolled += 1
                         group_materias_enrolled += 1
                         materiaEnrollment = materiaEnrollmentDoc.to_dict()
-                        if materiaEnrollment["certificate_public_url"] != None:
+                        if materiaEnrollment["certificateUrl"] != None:
                             materias_passed += 1
                             level_materias_passed += 1
                             group_materias_passed += 1

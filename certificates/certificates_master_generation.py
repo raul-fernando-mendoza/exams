@@ -84,7 +84,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
 
 
 
-        bucket_name = "certificates-" + storage_client.project
+        bucket_name = storage_client.project + ".appspot.com"
         
         bucket = storage_client.get_bucket(bucket_name)
 

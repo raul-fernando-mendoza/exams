@@ -1,112 +1,157 @@
-<h1 mat-dialog-title>Materia</h1>
-
-
-
+Habilidad
 <form *ngIf="m" [formGroup]="m" >
+  <mat-card >
+    <mat-card-title-group>
+      <mat-card-title *ngIf="!isAdmin">{{ m.controls.materia_name.value }}</mat-card-title>
+      <mat-card-title *ngIf="isAdmin">
+        <mat-form-field >
+          <mat-label>Nombre</mat-label>
+          <input  matInput  class="field-name" type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" >
+        </mat-form-field>  
+      </mat-card-title>
 
-    <div>
-      <mat-form-field>
-        <mat-label>Materia</mat-label>
-        <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)">
-      </mat-form-field>     
-    </div>
-
-
-
-
-    <div>
-      <mat-form-field appearance="legacy">
-          <mat-label>Certificado Maestro</mat-label>
-          <mat-select formControlName="typeCertificate"  name="typeCertificate" (selectionChange)="onSelectChange($event, m)">
-            <mat-option *ngFor="let tc of typeCertificates" [value]="tc.value">
-              {{tc.label}}
-            </mat-option>
-          </mat-select>
-      </mat-form-field>
-    </div>
-    <div>
-      <mat-form-field appearance="legacy">
-          <mat-label>Icono de certificado</mat-label>
-          <mat-select formControlName="iconCertificate"  name="iconCertificate" (selectionChange)="onSelectChange($event, m)">
-            <mat-option *ngFor="let ic of iconCertificates" [value]="ic.value">
-              {{ic.label}}
-            </mat-option>
-          </mat-select>
-          
-      </mat-form-field>  
-    </div>
-    <div>
-      <mat-checkbox formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)">
-        Enrolado activo
-      </mat-checkbox>
-    </div>
-
-    <img class="materia-image" src="{{m.controls.pictureUrl.value}}"> 
-
-    <div>
-      <mat-form-field class="columns">
-        <mat-label *ngIf="selectedFiles; else newFile">{{selectedFiles.item(0).name}}</mat-label>
-        <ng-template #newFile>
-            <mat-label>Imagen de la materia</mat-label>
-        </ng-template>
-        <input matInput disabled>
-        <button mat-icon-button matSuffix (click)="pictureUrl.click()">
-            <mat-icon>attach_file</mat-icon>
-        </button>
-        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('pictureUrl')">
-          <mat-icon>delete</mat-icon>
-        </button>      
-        <input hidden (change)="selectFile($event)" #pictureUrl type="file" >
-      </mat-form-field>
-    </div>
-
-    <div>
-      <mat-form-field>
-        <mat-label>video url</mat-label>
-        <input  matInput type="text"  formControlName="videoUrl" (change)="onPropertyChange($event)">
-      </mat-form-field> 
-      <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('videoUrl')">
-        <mat-icon>delete</mat-icon>
-      </button>         
-    </div>
-    <div>
-      <mat-form-field appearance="outline">
+      <img mat-card-sm-image *ngIf="materia && materia.materiaIconUrl"  src="{{materia.materiaIconUrl}}">
+    </mat-card-title-group>
+    <mat-card-content>
+      <div class="description" *ngIf="!isAdmin">{{m.controls.description.value}}</div> 
+      <mat-form-field *ngIf="isAdmin" appearance="outline">
         <mat-label>description</mat-label>
         <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
-      </mat-form-field>  
-    </div>  
-    <div *ngIf="m.controls.id.value">
-      Examenes<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" >
-        <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting">
-          <mat-icon>library_add</mat-icon>
-          <span>Nuevo Examen</span>
-        </button>            
-      </mat-menu>      
-      <div *ngFor="let e of m.controls.exams.controls">
-        <button mat-button (click)="onEditExam(m.controls.id.value,e.controls.id.value)">{{e.controls.label.value}}</button>
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu" >
-            <button  mat-menu-item (click)="onDeleteExam(m.controls.id.value, e.controls.id.value)" [disabled]="submitting">
-              <mat-icon>delete</mat-icon>
-              <span>Borrar</span>
-            </button>      
-            <button  mat-menu-item (click)="onDuplicateExam(m.controls.id.value, e.controls.id.value, e.controls.label.value)" [disabled]="submitting">
-              <mat-icon>content_copy</mat-icon>
-              <span>Duplicar</span>
-            </button>       
-          </mat-menu>
-      </div>
-    </div> 
+      </mat-form-field> 
+    </mat-card-content>
+    <mat-card-actions *ngIf="isAdmin && materia_id">
+      <mat-checkbox *ngIf="isAdmin" formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)" >
+        Enrolado activo
+      </mat-checkbox>
+      <div id="materiaIconStatus"></div>
 
+      <mat-form-field class="attach-file">  
+          <mat-label>change icon</mat-label>        
+          <button mat-icon-button matSuffix (click)="materiaIcon.click()">
+              <mat-icon>attach_file</mat-icon> 
+          </button>
+          <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('materiaIcon')">
+          <mat-icon>delete</mat-icon>
+          </button>      
+          <input hidden (change)="selectFile($event)" name="materiaIcon" #materiaIcon type="file" >
+          <input class="nothing" matInput disabled> 
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isAdmin" appearance="legacy">
+          <mat-label>Certificado Maestro</mat-label>
+          <mat-select formControlName="certificateTypeId"  name="certificateTypeId" (selectionChange)="onSelectChange($event, m)">
+            <mat-option *ngFor="let tc of certificateTypes" [value]="tc.id">
+              {{tc.certificateTypeName}}
+            </mat-option>
+          </mat-select>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" *ngIf="isAdmin" (click)="onCertificateTypes()">Certificados Maestros</button>
+    </mat-card-actions>
+  </mat-card>          
+  <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Objetivos</mat-card-title>
+      <img mat-card-xl-image *ngIf="materia && materia.pictureUrl" src="{{materia.pictureUrl}}">
+    </mat-card-title-group>
+    <mat-card-content>
+  
+      <div *ngIf="isAdmin && materia_id">
+       
+        <div id="pictureStatus"></div>
+
+        <mat-form-field class="attach-file">    
+            <mat-label>Cambiar Imagen</mat-label>      
+            <button mat-icon-button matSuffix (click)="picture.click()">
+                <mat-icon>attach_file</mat-icon> 
+            </button>
+            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
+            <mat-icon>delete</mat-icon>
+            </button>      
+            <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
+            <input class="nothing" matInput disabled> 
+        </mat-form-field>
+      </div>
+      <span *ngIf="!isAdmin">{{ m.controls.pictureDescription.value }}</span>
+      <mat-form-field *ngIf="isAdmin" appearance="outline">
+        <mat-label>description de la imagen</mat-label>
+        <textarea  matInput maxlength="2000" rows="3" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
+      </mat-form-field>       
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
+    <mat-card-title-group>
+      <mat-card-title>Experiencias</mat-card-title>
+
+    </mat-card-title-group>
+    <mat-card-content>
+      <span *ngIf="!isAdmin">{{ m.controls.videoDescription.value }}</span>
+
+      <div class="video-container">
+        <app-vjs-player *ngIf="isAdmin && materia && materia.videoUrl" source="{{materia.videoUrl}}"></app-vjs-player>  
+        <video *ngIf="!isAdmin && materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+        vjs-video vjs-setup="options">
+          <source src="{{ materia.videoUrl }}" type='video/mp4' />
+        </video> 
+      </div>    
+
+      <div *ngIf="isAdmin && materia">
+        <div id="videoStatus"></div>
+
+        <mat-form-field>
+            <mat-label>Change video</mat-label>
+            <input matInput disabled> 
+            <button mat-icon-button matSuffix (click)="video.click()">
+                <mat-icon>attach_file</mat-icon> 
+            </button>
+            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
+            <mat-icon>delete</mat-icon>
+            </button>      
+            <input hidden (change)="selectFile($event)" name="video" #video type="file" >
+        </mat-form-field>
+        <mat-form-field *ngIf="isAdmin" appearance="outline">
+          <mat-label>description del video</mat-label>
+          <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
+        </mat-form-field>          
+      </div>
+
+      <div class="examen-container">
+        <h3>Examenes<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button></h3>
+        <mat-menu #menu="matMenu" >
+          <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Nuevo Examen</span>
+          </button>            
+        </mat-menu>      
+        <div *ngFor="let e of m.controls.exams.controls">
+          <span *ngIf="!isAdmin"><li>{{e.controls.label.value}}</li></span>
+          <button *ngIf="isAdmin && m.controls.id.value" mat-button (click)="onEditExam(m.controls.id.value,e.controls.id.value)">{{e.controls.label.value}}</button>
+          <button *ngIf="isAdmin && m.controls.id.value" mat-icon-button [matMenuTriggerFor]="menu" >
+              <mat-icon>more_vert</mat-icon>
+          </button>
+            <mat-menu #menu="matMenu" >
+              <button  mat-menu-item (click)="onDeleteExam(m.controls.id.value, e.controls.id.value)" [disabled]="submitting">
+                <mat-icon>delete</mat-icon>
+                <span>Borrar</span>
+              </button>      
+              <button  mat-menu-item (click)="onDuplicateExam(m.controls.id.value, e.controls.id.value, e.controls.label.value)" [disabled]="submitting">
+                <mat-icon>content_copy</mat-icon>
+                <span>Duplicar</span>
+              </button>       
+            </mat-menu>
+        </div>
+      </div> 
+    </mat-card-content>
+    <mat-card-actions>
     <div class="actions">
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button [disabled]="!m.valid" (click)="onClose()" cdkFocusInitial>Continuar</button>
+      <button *ngIf="isAdmin && materia==null" mat-button [disabled]="!m.valid" (click)="onClose()" cdkFocusInitial>Continuar</button>
     </div>
+
+    <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive">Enrolar</button>
+    </mat-card-actions> 
+  </mat-card>     
 </form>
 
 

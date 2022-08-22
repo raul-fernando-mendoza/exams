@@ -25,9 +25,15 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   organization_id = null
 
+  career:Career = null
+
   snapshots:Array<any> = []
 
   player: videojs.Player;
+
+  isAdmin:boolean = false
+
+
 
   c = this.fb.group({
     id: [null, Validators.required],
@@ -49,7 +55,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   constructor(
       private fb: FormBuilder
     , private route: ActivatedRoute
-    , private userLoginService:UserLoginService
+    , private userLogin:UserLoginService
     , public formService:ExamFormService
     , public userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
@@ -57,6 +63,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
       this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
+      this.isAdmin = userLogin.hasRole( "role-admin-" + this.organization_id)
     }
   ngOnDestroy(): void {
     this.snapshots.map( func =>{
@@ -79,27 +86,28 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   loadCareer():Promise<void>{
     return new Promise<void>( (resolve, reject) =>{
-      db.collection('careers').doc(this.id).get().then( doc =>{
-        const career:Career = doc.data() as Career
-        this.c.controls.id.setValue(career.id)  
-        this.c.controls.career_name.setValue(career.career_name)
-        this.c.controls.pictureUrl.setValue(career.pictureUrl)
-        this.c.controls.videoUrl.setValue(career.videoUrl)
-        this.loadLevels(career.id, this.c.controls.levels as FormArray).then( () =>{
+      const unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
+        this.career = doc.data() as Career
+        this.c.controls.id.setValue(this.career.id)  
+        this.c.controls.career_name.setValue(this.career.career_name)
+        this.c.controls.pictureUrl.setValue(this.career.pictureUrl)
+        this.c.controls.videoUrl.setValue(this.career.videoUrl)
+        this.loadLevels(this.career.id, this.c.controls.levels as FormArray).then( () =>{
           resolve()
         })
       },
       reason =>{
         alert("ERROR: reading career" + reason)
         reject()
-      })  
+      })
+      this.snapshots.push(unsubscribe)  
     })  
   }
   onCreateLevel(career_id){
     const dialogRef = this.dialog.open(DialogNameDialog, {
       height: '400px',
       width: '250px',
-      data: { carrer_id:career_id, label:"Ciclo", name:""}
+      data: { career_id:career_id, label:"Ciclo", name:""}
     });
   
     dialogRef.afterClosed().subscribe(data => {
@@ -127,12 +135,13 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       level_name:level_name,
       isDeleted:false
     }
-    return db.collection('careers/' + career_id + "/levels").doc(id).set(nivel)
+    return db.collection('careers/' + career_id + "/levels").doc(id).set(nivel).then( ()=>{
+    })
   }
+
   loadLevels( career_id:string, levels:FormArray):Promise<void>{
-    
     return new Promise<void>((resolve, reject)=>{
-      var unsubscribe = db.collection("careers/" + career_id + "/levels")
+      const unsubscribe = db.collection("careers/" + career_id + "/levels")
       .where("isDeleted","==",false)
       .onSnapshot( set =>{
         levels.controls.length = 0
@@ -191,12 +200,17 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       group_name:group_name,
       isDeleted:false
     }
-    return db.collection('careers/' + career_id + "/levels/" + level_id + "/groups").doc(id).set(nivel)
+    return db.collection('careers/' + career_id + "/levels/" + level_id + "/groups").doc(id).set(nivel).then( ()=>{
+      console.log("group added")
+    },
+    reason=>{
+      alert("ERROR adding group:" + reason)
+    })
   }
   loadGroups( career_id:string, level_id, groups:FormArray):Promise<void>{
     
     return new Promise<void>((resolve, reject)=>{
-      var unsubscribe = db.collection("careers/" + career_id + "/levels/" + level_id + "/groups")
+      const unsubscribe = db.collection("careers/" + career_id + "/levels/" + level_id + "/groups")
       .where("isDeleted", "==", false)
       .onSnapshot( set =>{
         groups.controls.length = 0
@@ -285,7 +299,12 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         id:id,
         materia_id:materia_id
       }
-    )
+    ).then( ()=>{
+      console.log("materias added")
+    },
+    reason =>{
+      alert("ERROR: adding materia" + reason)
+    })
   }
 
   loadMaterias( career_id:string, level_id:string, group_id:string, materias:FormArray):Promise<void>{
@@ -309,7 +328,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           materias.controls.sort( (a,b) =>{
             var a_FG = a as FormGroup
             var b_FG = b as FormGroup
-            return a_FG.controls.materia_name.value > b_FG.controls.materia_name? 1:-1
+            return a_FG.controls.materia_name.value > b_FG.controls.materia_name.value ? 1:-1
           })
           resolve()
         })
@@ -323,7 +342,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   onRemoveMateria(career_id, level_id, group_id, materia_id){
     db.collection("careers/" + career_id + "/levels/" + level_id + "/groups/" + group_id + "/materias").doc(materia_id).delete().then( () =>{
-      
+      console.log("materia has been deleted")
     },
     reason=>{
       alert("ERROR: removing materia")
@@ -331,7 +350,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
   onRemoveGroup(career_id, level_id, group_id){
     db.collection("careers/" + career_id + "/levels/" + level_id + "/groups/" ).doc(group_id).delete().then( () =>{
-      
+      console.log("remove group completed")
     },
     reason =>{
       alert("ERROR: remove group")
@@ -339,14 +358,14 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
   onRemoveLevel(career_id, level_id){
     db.collection("careers/" + career_id + "/levels"  ).doc(level_id).delete().then( () =>{
-      
+      console.log("remove level has completed")
     },
     reason =>{
       alert("ERROR: remove group")
     })
   }
  
-  async selectFile(event) {
+  selectFile(event) {
 
 
     var selectedFiles = event.target.files;
@@ -358,8 +377,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     var storageRef = storage.ref( bucketName )
 
     var uploadTask = storageRef.put(file)
-    var element = document.getElementById(property + "Status")
-    var fileLoadObserver = new FileLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element );
+    var statusElement = document.getElementById(property + "Status")
+    var fileLoadObserver = new FileLoadObserver(storageRef, "careers", this.id, property, statusElement );
     uploadTask.on("state_change", fileLoadObserver)
   } 
   removePropertyValue(property){
@@ -373,15 +392,9 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     })
   }
 
-  async selectVideo(event) {
+  selectVideo(event) {
     var selectedFiles = event.target.files;
     const property = event.srcElement.name
-    
-    /*
-    var myPlayer = videojs.getPlayers() ;
-    myPlayer.src("https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fcareers%2F38252a95-c669-4fbe-9e03-bc17019c4461%2FvideoUrl.jpg?alt=media&token=865123d4-ee5c-40de-b6cd-c5ed83bd8107");
-    myPlayer.load()    
-    */
 
     const bucketName = "organizations/" + this.organization_id + "/careers/" + this.id + "/" + property + ".mp4"
 
@@ -389,17 +402,12 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     var storageRef = storage.ref( bucketName )
 
     var uploadTask = storageRef.put(file)
-    var element = document.getElementById(property + "Status")
-    var fileLoadObserver = new VideoLoadObserver(this.c.controls[property] as FormControl, storageRef, this.id, property, element , this.router);
-    this.c.controls[property].setValue(null)
+    var statusElement = document.getElementById(property + "Status")
+    var fileLoadObserver = new VideoLoadObserver(storageRef, "careers", this.id, property, statusElement );
     uploadTask.on("state_change", fileLoadObserver)
   } 
   getGroupGradeTypes(){
     return GROUP_GRADES_TYPES
-  }
-
-  onGroupGradeTypeChange($event){
-    
   }
 }
 

@@ -36,6 +36,7 @@ def createCertificateExamGrade(db, examGrade_id):
     examGrade = db.collection(u'examGrades').document(examGrade_id).get().to_dict()
 
     materia_id = examGrade["materia_id"]
+    organization_id = examGrade["organization_id"]
  
     #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
     materia = db.collection("materias").document(materia_id).get().to_dict()
@@ -78,30 +79,49 @@ def createCertificateExamGrade(db, examGrade_id):
                 break
     #if all has been passed generate the cerfificate
     log.debug("*** requiredCount:" + str(requiredCount) + " == requiredReleased:" + str(requiredReleased))
-    log.debug("*** optionalCount:" + str(requiredCount) + " > optionalReleased:" + str(requiredReleased))
+    log.debug("*** optionalCount:" + str(optionalCount) + " > optionalReleased:" + str(optionalReleased))
     if requiredCount == requiredReleased and (
         optionalCount == 0 or optionalReleased > 0):
         
         storage_client = storage.Client()
 
+        materiaEnrollmentSet = db.collection("materiaEnrollments") \
+            .where( "materia_id" , "==", materia_id) \
+            .where( "student_uid", "==", student.uid) \
+            .where( "isDeleted", "==", False) \
+            .where( "organization_id", "==", organization_id).get()
+            
+        materiaEnrollmentRef = None
+        for materiaEnrollmentDoc in materiaEnrollmentSet:
+            materiaEnrollmentRef = materiaEnrollmentDoc
+
+        materiaEnrollment = materiaEnrollmentRef.to_dict()
+
         certificateId =  student.uid + "_" + materia["id"] 
-        masterName = materia["typeCertificate"]
-        logoName =  materia["iconCertificate"]
+
+        certificateTypeRef = db.collection("organizations/" + organization_id + "/certificateTypes").document(materia["certificateTypeId"]).get()
+        certificateType = certificateTypeRef.to_dict()
+
+        masterName = certificateType["certificateTypePath"]
+        logoName =  materia["materiaIconPath"]
         studentName = displayName
         materiaName = materia["materia_name"]
-        label1 = materia["label1"]
-        label2 = materia["label2"]
-        label3 = materia["label3"]
-        label4 = materia["label4"]
-        color1 =  materia["color1"] 
-        color2 =  materia["color2"]
+        label1 = certificateType["label1"]
+        if certificateType["label2"] == "{materia_name}": 
+            label2 = materia["materia_name"]
+        else:
+            label2 = certificateType["label2"] 
+        label3 = certificateType["label3"]
+        label4 = certificateType["label4"]
+        color1 =  certificateType["color1"] 
+        color2 =  certificateType["color2"]
 
 
         data = certificates.createStorageCertificate( storage_client, 
-        "certificates_master/" + examGrade["organization_id"] + "/" + masterName,
-        "certificates_logos/" + examGrade["organization_id"] + "/" + logoName,
-        "certificates/" + examGrade["organization_id"] + "/" + certificateId ,
-         studentName,
+         masterName,
+         logoName,
+        "organizations/" + materia["organization_id"] + "/materiaEnrollments/" + materiaEnrollment["id"] +  "/" + certificateId + "_" + str( uuid.uuid4() ),
+        studentName,
         materiaName,
         label1,
         label2,
@@ -110,30 +130,27 @@ def createCertificateExamGrade(db, examGrade_id):
         color1,
         color2
         )  
+        
+        json = {
+            "certificatePath":data["certificatePath"],
+            "certificateUrl": data["certificateUrl"],
+            "certificateBadgePath":data["certificateBadgePath"],
+            "certificateBadgeUrl": data["certificateBadgeUrl"] 
 
-        materiaEnrollmentsSet = db.collection("materiaEnrollments") \
-            .where("materia_id","==", materia_id) \
-            .where("student_uid","==", student.uid) \
-            .where("isDeleted","==",False) \
-            .get()
+        }
 
-        for materiaEnromentDoc in materiaEnrollmentsSet:
-            materiaEnromentDoc.reference.update({
-                "certificate_name":data["certificate_name"],
-                "certificate_public_url":data["certificate_public_url"] 
-            })
-        log.debug("*** certificate generated :" + data["certificate_public_url"])
+        materiaEnrollmentRef.reference.update(json)
+        log.debug("*** certificate generated :" + data["certificateUrl"])
     else:
         materiaEnrollmentsSet = db.collection("materiaEnrollments") \
             .where("materia_id","==", materia_id) \
             .where("student_uid","==", student.uid) \
             .get()
+           
 
         for materiaEnromentDoc in materiaEnrollmentsSet:
-            materiaEnromentDoc.reference.update({
-                "certificate_name":None,
-                "certificate_public_url": None 
-            })  
+            materiaEnrollment = materiaEnromentDoc.to_dict()            
+            deleteCertificateMaterialEnrollment(materiaEnrollment["id"])  
 
         log.debug("*** certificate removido :" )     
 
@@ -195,6 +212,7 @@ def createCertificateMateriaEnrollment(materiaEnrollment_id):
         materiaEnrollmentRef = db.collection("materiaEnrollments").document(materiaEnrollment_id).get()      
 
         materiaEnrollment = materiaEnrollmentRef.to_dict()
+        organization_id = materiaEnrollment["organization_id"]
         student_uid = materiaEnrollment["student_uid"]
         materia_id = materiaEnrollment["materia_id"]
         materiaRef = db.collection("materias").document(materia_id).get()
@@ -210,22 +228,29 @@ def createCertificateMateriaEnrollment(materiaEnrollment_id):
 
 
         certificateId =  student.uid + "_" + materia["id"] 
-        masterName = materia["typeCertificate"]
-        logoName =  materia["iconCertificate"]
+
+        certificateTypeRef = db.collection("organizations/" + organization_id + "/certificateTypes").document(materia["certificateTypeId"]).get()
+        certificateType = certificateTypeRef.to_dict()
+
+        masterName = certificateType["certificateTypePath"]
+        logoName =  materia["materiaIconPath"]
         studentName = displayName
         materiaName = materia["materia_name"]
-        label1 = materia["label1"]
-        label2 = materia["label2"]
-        label3 = materia["label3"]
-        label4 = materia["label4"]
-        color1 =  materia["color1"] 
-        color2 =  materia["color2"]
+        label1 = certificateType["label1"]
+        if certificateType["label2"] == "{materia_name}": 
+            label2 = materia["materia_name"]
+        else:
+            label2 = certificateType["label2"]    
+        label3 = certificateType["label3"]
+        label4 = certificateType["label4"]
+        color1 =  certificateType["color1"] 
+        color2 =  certificateType["color2"]
 
 
         data = certificates.createStorageCertificate( storage_client, 
-        "certificates_master/" + materia["organization_id"] + "/" + masterName,
-        "certificates_logos/" + materia["organization_id"] + "/"+ logoName,
-        "certificates/" + materia["organization_id"] + "/" + certificateId ,
+         masterName,
+         logoName,
+        "organizations/" + materia["organization_id"] + "/materiaEnrollments/" + materiaEnrollment_id +  "/" + certificateId + "_" + str( uuid.uuid4() ),
         studentName,
         materiaName,
         label1,
@@ -235,16 +260,17 @@ def createCertificateMateriaEnrollment(materiaEnrollment_id):
         color1,
         color2
         )  
+        
+        json = {
+            "certificatePath":data["certificatePath"],
+            "certificateUrl": data["certificateUrl"],
+            "certificateBadgePath":data["certificateBadgePath"],
+            "certificateBadgeUrl": data["certificateBadgeUrl"] 
 
+        }
 
-        materiaEnrollmentRef.reference.update({
-            "certificate_name":data["certificate_name"],
-            "certificate_public_url": data["certificate_public_url"] 
-        })
-        return { 
-            "certificate_name":data["certificate_name"],
-            "certificate_public_url": data["certificate_public_url"] 
-        }        
+        materiaEnrollmentRef.reference.update(json)
+        return json       
             
 #*************************** delete certificate
 
@@ -306,26 +332,32 @@ def deleteCertificateMaterialEnrollment(materiaEnrollment_id):
         materiaEnrollment = materiaEnrollmentDoc.to_dict()
 
 
-        certificate_name = materiaEnrollment["certificate_name"]
+        certificatePath = materiaEnrollment["certificatePath"]
+        certificateBadgePath = materiaEnrollment["certificateBadgePath"]
 
 
-        bucket_name = "certificates-" + storage_client.project 
+        bucket_name = storage_client.project + ".appspot.com"
     
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(certificate_name)
-        blob.delete()
+        
 
-        materiaEnrollmentDoc.reference.update(
-            {
-                "certificate_name":None,
-                "certificate_public_url":None
+        json ={
+                "certificatePath":None,
+                "certificateUrl":None,
+                "certificateBadgePath":None,
+                "certificateBadgeUrl":None
             }
-        )
+        materiaEnrollmentDoc.reference.update(json)
+        try:
+            blob = bucket.blob(certificatePath)
+            blob.delete()
+            blobBadge = bucket.blob(certificateBadgePath)
+            blobBadge.delete()
+        except:
+            log.warn("files not found")    
 
         log.debug("*** certificate removido" ) 
-        return { 
-            "certificate_name": certificate_name
-        }
+        return json
 
 
     

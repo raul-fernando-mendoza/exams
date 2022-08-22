@@ -19,7 +19,7 @@
     </mat-toolbar>
     <mat-nav-list>
       <a mat-list-item routerLink="/home">home</a>
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/materia-list">Materias</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/materia-list">Habilidades</a>
       <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() || isStudent()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
        
       <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar</a>  
