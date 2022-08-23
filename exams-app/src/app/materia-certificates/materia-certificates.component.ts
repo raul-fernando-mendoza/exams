@@ -82,7 +82,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
               var u:User =
               {
                 uid:user.uid,
-                displayName:user.claims["displayName"] || user.displayName || user.email,
+                displayName:user.claims ? user.claims["displayName"] || user.displayName || user.email : "not found",
                 email:user.email,
                 claims:user.claims
 
