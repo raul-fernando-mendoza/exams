@@ -46,33 +46,33 @@ export class UserLoginService {
     localStorage.setItem('user_idtoken',null)
   }
 
-  register(email,password) {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then((userCredential:firebase.auth.UserCredential) => {
-      // Signed in 
-      var user:firebase.User = userCredential.user;
-      console.log(user.uid)
-      
-      userCredential.user.sendEmailVerification()
-      .then(() => {
-        alert("Un email de verificacion ha sido enviado a su email:" + user.email)
-        // ...
+  register(email,password):Promise<firebase.User> {
+    return new Promise( (resolve, reject) =>{
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential:firebase.auth.UserCredential) => {
+        // Signed in 
+        var user:firebase.User = userCredential.user;
+        console.log(user.uid)
+        
+        userCredential.user.sendEmailVerification()
+        .then(() => {
+          alert("Un email de verificacion ha sido enviado a su email:" + user.email)
+          resolve( user )
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          alert("error sending the confirmation email:" + errorCode + " " + errorMessage)
+          reject(error)
+        });      
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        alert("error sending the confirmation email:" + errorCode + " " + errorMessage)
+        alert("ERROR registering user:" + error)
+        reject(error)
       });
-
-      this.LoginEvent(null)
-      
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      alert("ERROR registering user:" + error)
-      // ..
-    });
+    })  
   }  
 
   loginAnonymously(){
@@ -264,8 +264,22 @@ export class UserLoginService {
       
     }
     return displayName
-    
   }
+  getDisplayNameForUser(user){
+    let displayName = "" 
+    if(user){
+      if(user.claims && user.claims["displayName"]){
+        displayName = user.claims.displayName
+      } 
+      else if( user.displayName ){
+        displayName = user.displayName
+      }
+      else displayName =  user.email
+      
+    }
+    return displayName
+  }
+
   getClaims():string[]{
     var claims:string[] = [] 
     for (const property in this.user_claims) {

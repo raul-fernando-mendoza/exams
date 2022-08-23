@@ -7,6 +7,9 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { UserPreferencesService } from '../user-preferences.service';
+import { DialogNameDialog } from '../name-dialog/name-dlg';
+import * as uuid from 'uuid';
+import { Alert } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-materia-list',
@@ -28,6 +31,7 @@ export class MateriaListComponent implements OnInit {
     , private userLoginService:UserLoginService
     , private userPreferenceService:UserPreferencesService
     , private examImprovisationService:ExamenesImprovisacionService
+    , private dialog: MatDialog,
   ) { 
     this.organization_id = this.usetPreferenceService.getCurrentOrganizationId()
   }
@@ -66,7 +70,53 @@ export class MateriaListComponent implements OnInit {
     this.router.navigate(['/materia-edit',{materia_id:materia.id}]);
   }
   onCreateMateria(){
-    this.router.navigate(['/materia-edit',{materia_id:null}]);
+    const dialogRef = this.dialog.open(DialogNameDialog, {
+      height: '400px',
+      width: '250px',
+      data: { label:"Materia", name:""}
+    });
+  
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('The dialog was closed');
+      if( data != undefined ){
+        console.debug( data )
+        this.createMateria(data.name).then( (id)=>{
+          this.router.navigate(['/materia-edit',{materia_id:id}]);
+        },
+        reason =>{
+          alert("ERROR: removing level")
+        })
+      }
+      else{
+        console.debug("none")
+      }
+    });
+  }
+  
+ 
+  
+
+  createMateria( materia_name ):Promise<string>{
+    return new Promise<string>( (resolve, reject) =>{
+      const id =uuid.v4()
+      this.submitting = true
+      db.collection("materias").doc(id).set({
+        id:id,
+        materia_name:materia_name,
+        isDeleted:false,
+        organization_id:this.organization_id
+      }).then( () =>{
+        this.submitting = false
+        console.log("materia created")
+        resolve( id )
+      },
+      reason =>{
+        this.submitting = false
+        alert("ERROR: Can not create materia:" + reason)
+        reject( reason )
+      })
+    })
+
   }
 
   onRemoveMateria(materia_id, materia_name){

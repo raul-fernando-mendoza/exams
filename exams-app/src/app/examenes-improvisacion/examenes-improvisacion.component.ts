@@ -358,5 +358,8 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   printApplicationDate(t){
     return this.examImprovisacionService.formatTimeStamp(t)
   }
+  getDisplayNameForUser(user){
+    this.userLoginService.getDisplayNameForUser(user)
+  }
   
 }

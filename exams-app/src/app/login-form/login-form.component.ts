@@ -40,7 +40,9 @@ export class LoginFormComponent {
   register(){
     var user = this.loginForm.controls.username.value
     var password = this.loginForm.controls.password.value
-    this.userLoginService.register(user, password)    
+    this.userLoginService.register(user, password).then( user =>{
+      this.router.navigate(['/loginForm',{}])
+    })    
   }
   onLogout(){
     //alert("going to call login with Logout")

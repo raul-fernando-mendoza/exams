@@ -60,7 +60,7 @@ export class CertificateTypeListComponent implements OnInit, OnDestroy {
           
         },
         reason =>{
-          alert("ERROR: removing level")
+          alert("ERROR: creando certificado")
         })
       }
       else{

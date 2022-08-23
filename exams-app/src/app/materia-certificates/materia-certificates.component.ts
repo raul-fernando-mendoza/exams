@@ -84,7 +84,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
                 uid:user.uid,
                 displayName:user.claims ? user.claims["displayName"] || user.displayName || user.email : "not found",
                 email:user.email,
-                claims:user.claims
+                claims:user.claims ? user.claims : {}
 
               }
               var userNode:NodeTableRow = {

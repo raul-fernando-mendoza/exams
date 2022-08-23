@@ -16,18 +16,22 @@ mat-card .materia{
     border-width:1px;    
 }
 
-.career-image{
-    height: 300px ;
-    display:block;
-}
-
-.career-video{
-    width:300px ;
-    height: 300px ;
-    display:block;
-}
-
 .remove-property-button{
     margin-left:50px
 }
+.video-container{
+    width:100%;
+    margin:20px;
+    display: flex;
+    justify-content: center;     
+}
+.attach-file{
+    display:block;
+}
+mat-form-field {
+    width:80%;
+}
 
+.name {
+    min-width:20em;
+}

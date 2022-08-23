@@ -1,5 +1,12 @@
+gcloud projects list
+gcloud config set project thoth-qa
+
 #deploy to trigger when exam is completed
 gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-central1 --entry-point createCertificateOnExamGradeEvent --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.write"  --trigger-resource "projects/thoth-dev-346022/databases/(default)/documents/examGrades/{examGradeId}" 
+
+gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-central1 --entry-point createCertificateOnExamGradeEvent --runtime python39 --source . --trigger-event "providers/cloud.firestore/eventTypes/document.write"  --trigger-resource "projects/thoth-qa/databases/(default)/documents/examGrades/{examGradeId}" 
+
+
 
 
 
@@ -29,7 +36,7 @@ curl -m 70 -X POST -H "Content-Type:application/json" -d "{\"certificateId\":\"r
 }
 
 #to list the projects
-gcloud project list
+gcloud projects list
 
 #to list the credentials
 gcloud auth list

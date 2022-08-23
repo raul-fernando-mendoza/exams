@@ -1,24 +1,8 @@
-Bienvenido 
-<mat-card class="action-card" *ngIf="!isLoggedIn()">
-    <mat-card-title>Login</mat-card-title>
-    <mat-card-content>
-      <p>Por favor presione en login o registrese</p>
-    </mat-card-content>
-</mat-card>
-
-
+<h1>Bienvenido</h1>
 <mat-card class="action-card" *ngIf="isLoggedIn() && !isEmailVerified()" >
-    <mat-card-title>Email no ha sido verificado</mat-card-title>
     <mat-card-content>
-      <p>Su email no ha sido verificado. si desea enviar un nuevo link presione el boton</p>
+      <span class="action-item">Su email no ha sido verificado. si desea enviar un nuevo link presione el boton</span> <button mat-raised-button (click)="emailVerify()" >Enviar email</button>
     </mat-card-content>
-    <mat-divider inset></mat-divider>
-    <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="emailVerify()" >Enviar email</button>
-    </mat-card-actions>
-    <mat-card-footer>
-
-    </mat-card-footer>
 </mat-card>
 
 <div >
@@ -96,15 +80,19 @@ Bienvenido
               <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">
                                           
           </mat-card-title-group>
+          
           <mat-card-content>
             <img class="materia-image" *ngIf="c.pictureUrl" src="{{ c.pictureUrl }}"> 
+          <!--
             <video *ngIf="c.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
             width="640" height="264" vjs-video vjs-setup="options">
               <source src="{{ c.videoUrl }}" type='video/mp4' />
             </video>            
+          -->  
           </mat-card-content>
           <mat-card-actions>
-            <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerDetails(c.id)">Details</button>
+            <button  mat-button color="primary" (click)="onCareerDetails(c.id)">Detalles</button>            
+            <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerMyProgress(c.id)">My avance</button>
           </mat-card-actions>
         </mat-card>
       </mat-card-content>  

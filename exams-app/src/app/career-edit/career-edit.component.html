@@ -1,50 +1,98 @@
-Editar Carrera 
+Carrera 
 <div *ngIf="career!=null">
     <form  [formGroup]="c" >
-        <mat-form-field class="example-full-width">
-            <mat-label>Nombre</mat-label>
-            <input matInput placeholder="" formControlName="career_name" (change)="formService.onPropertyChange('careers', c.controls.id.value, $event)">
-        </mat-form-field>      
+        <mat-card >
+            <mat-card-title-group>
+                <mat-card-title *ngIf="!isAdmin">{{ career.career_name }}</mat-card-title>
+                <mat-card-title *ngIf="isAdmin">
+                <mat-form-field class="name">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput placeholder="" formControlName="career_name" (change)="formService.onPropertyChange('career_name', c.controls.id.value, $event)">
+                </mat-form-field>      
+                </mat-card-title>
+                <img mat-card-sm-image src="{{career.iconUrl}}">
+            </mat-card-title-group>
+            <mat-card-content>
+                <mat-form-field *ngIf="isAdmin" class="attach-file">  
+                    <div id="iconStatus"></div>
+                    <mat-label>change icon</mat-label>        
+                    <button mat-icon-button matSuffix (click)="icon.click()">
+                        <mat-icon>attach_file</mat-icon> 
+                    </button>
+                    <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('icon')">
+                    <mat-icon>delete</mat-icon>
+                    </button>      
+                    <input hidden (change)="selectFile($event)" name="icon" #icon type="file" >
+                    <input class="nothing" matInput disabled> 
+                </mat-form-field>
         
-        <div>
-            <h3>Imagen</h3>
-            <img *ngIf="career.pictureUrl" class="career-image" src="{{career.pictureUrl}}"> 
-            <div id="pictureStatus"></div>
-
-            <mat-form-field>
-                <input matInput disabled> 
-                <button mat-icon-button matSuffix (click)="picture.click()">
-                    <mat-icon>attach_file</mat-icon> 
-                </button>
-                <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
-                <mat-icon>delete</mat-icon>
-                </button>      
-                <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
-            </mat-form-field>
-        </div>
-
-        <div >
-            <h3>Video</h3>
-            <div *ngIf="career.videoUrl">
-                <app-vjs-player source="{{career.videoUrl}}"></app-vjs-player>  
-            </div> 
+                <div *ngIf="!isAdmin">{{career.description}}</div> 
+                <mat-form-field *ngIf="isAdmin" appearance="outline">
+                    <mat-label>description</mat-label>
+                    <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field> 
+            </mat-card-content>
+        </mat-card>  
+        <mat-card>
+            <mat-card-title-group>
+                <img mat-card-image src="{{career.pictureUrl}}">
+            </mat-card-title-group>
+            <mat-card-content>
+                <mat-form-field *ngIf="isAdmin">
+                    <div id="pictureStatus"></div>
+                    <input matInput disabled> 
+                    <button mat-icon-button matSuffix (click)="picture.click()">
+                        <mat-icon>attach_file</mat-icon> 
+                    </button>
+                    <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
+                    <mat-icon>delete</mat-icon>
+                    </button>      
+                    <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
+                </mat-form-field>
+                <span *ngIf="!isAdmin">{{ career.pictureDescription}}</span>
+                <mat-form-field *ngIf="isAdmin" appearance="outline">
+                <mat-label>description de la imagen</mat-label>
+                <textarea  matInput maxlength="2000" rows="3" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field>              
+            </mat-card-content>
+        </mat-card>  
+        <mat-card *ngIf="isAdmin || (career.videoDescription || career['videoUrl'])">
+            <mat-card-title-group>
+            <mat-card-title>Experiencias</mat-card-title>      
+            </mat-card-title-group>
+            <mat-card-content >
+                <div class="video-container">
+                    <app-vjs-player *ngIf="isAdmin && career && career.videoUrl" [source]="career.videoUrl"></app-vjs-player>  
+                    <video *ngIf="!isAdmin && career && career.videoUrl" class="video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
+                      <source src="{{ career.videoUrl }}" type='video/mp4' />
+                    </video> 
+                </div>  
+                <div *ngIf="isAdmin && career">
+                    <div id="videoStatus"></div>
             
-            <div id="videoStatus"></div>
+                    <mat-form-field>
+                        <mat-label>Change video</mat-label>
+                        <input matInput disabled> 
+                        <button mat-icon-button matSuffix (click)="video.click()">
+                            <mat-icon>attach_file</mat-icon> 
+                        </button>
+                        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
+                        <mat-icon>delete</mat-icon>
+                        </button>      
+                        <input hidden (change)="selectFile($event)" name="video" #video type="file" >
+                    </mat-form-field>
+                </div>
+                <span *ngIf="!isAdmin">{{career.videoDescription}}</span>
+                <mat-form-field *ngIf="isAdmin" appearance="outline">
+                    <mat-label>description del video</mat-label>
+                    <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field>          
 
-            <mat-form-field>
-                <input matInput disabled> 
-                <button mat-icon-button matSuffix (click)="video.click()">
-                    <mat-icon>attach_file</mat-icon> 
-                </button>
-                <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
-                <mat-icon>delete</mat-icon>
-                </button>      
-                <input hidden (change)="selectVideo($event)" name="video" #video type="file" >
-            </mat-form-field>
-        </div>
+            </mat-card-content> 
+        </mat-card>
 
-
-        <h1>Ciclos <button (click)="onCreateLevel(c.controls.id.value )"><mat-icon>add</mat-icon></button> </h1>
+        <h1 *ngIf="!isAdmin">Programa</h1>
+        <h1 *ngIf="isAdmin">Ciclos <button  (click)="onCreateLevel(c.controls.id.value )"><mat-icon>add</mat-icon></button> </h1>
         <mat-accordion class="example-headers-align" multi>
             <mat-expansion-panel [formGroup]="l" *ngFor='let l of getFormArrayControls(c,"levels"); let k=index'>
                 <mat-expansion-panel-header>
@@ -52,11 +100,11 @@ Editar Carrera
                 </mat-expansion-panel-header> 
                 <mat-expansion-panel-content>
                     <mat-card>
-                        <mat-form-field class="example-full-width">
+                        <mat-form-field *ngIf="isAdmin" class="example-full-width">
                             <mat-label>Nivel</mat-label>
                             <input matInput placeholder="nombre del nivel" formControlName="level_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels', l.controls.id.value, $event)">
                         </mat-form-field> 
-                        <button mat-icon-button [matMenuTriggerFor]="menuLevel" >
+                        <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menuLevel" >
                             <mat-icon>more_vert</mat-icon>
                         </button>                                    
                         <mat-menu #menuLevel="matMenu" >
@@ -67,13 +115,14 @@ Editar Carrera
                         </mat-menu>                         
                             
 
-                        <h2>Groups <button (click)="onCreateGroup(c.controls.id.value, l.controls.id.value)"><mat-icon>add</mat-icon></button></h2>
+                        <h2 *ngIf="isAdmin" >Groups <button  (click)="onCreateGroup(c.controls.id.value, l.controls.id.value)"><mat-icon>add</mat-icon></button></h2>
                         <mat-card  class="group" [formGroup]="g" *ngFor="let g of getFormArrayControls(l,'groups')">
-                            <mat-form-field class="example-full-width">
+                            <mat-form-field *ngIf="isAdmin" class="example-full-width">
                                 <mat-label>Grupo</mat-label>
                                 <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
-                            </mat-form-field>             
-                            <mat-form-field appearance="fill" >
+                            </mat-form-field>  
+                            <span *ngIf="!isAdmin" >{{ getGroupGradeDescrption( g.controls.group_grade_type_id.value ) }} </span>           
+                            <mat-form-field *ngIf="isAdmin" appearance="fill" >
                                 <mat-label>selecciona tipo de evaluacion</mat-label>
                                 <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value,$event)">
                                 <mat-option *ngFor="let ggt of getGroupGradeTypes()" [value]="ggt.id">
@@ -82,7 +131,7 @@ Editar Carrera
                                 </mat-select>
                             </mat-form-field>            
                     
-                            <button mat-icon-button [matMenuTriggerFor]="menuGroup" >
+                            <button *ngIf="isAdmin"  mat-icon-button [matMenuTriggerFor]="menuGroup" >
                                 <mat-icon>more_vert</mat-icon>
                             </button>                                    
                             <mat-menu #menuGroup="matMenu" >
@@ -91,10 +140,10 @@ Editar Carrera
                                     <span>Borrar</span>
                                 </button> 
                             </mat-menu>             
-                            <h3>Habilidades <button (click)="onAddMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value)"><mat-icon>add</mat-icon></button></h3>
+                            <h3 *ngIf="isAdmin">Habilidades <button  (click)="onAddMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value)"><mat-icon>add</mat-icon></button></h3>
                             <mat-card class="materia" *ngFor="let m of getFormArrayControls(g,'materias')">
                                 {{m.controls.materia_name.value }}
-                                <button mat-icon-button [matMenuTriggerFor]="menu" >
+                                <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
                                     <mat-icon>more_vert</mat-icon>
                                 </button>                                    
                                 <mat-menu #menu="matMenu" >

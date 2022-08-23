@@ -124,7 +124,17 @@ export class CareerListComponent implements OnInit {
         id:id,
         career_name:career_name,
         isDeleted:false,
-        organization_id:this.userPreferencesService.getCurrentOrganizationId()
+        organization_id:this.userPreferencesService.getCurrentOrganizationId(),
+        iconUrl:null,
+        iconPath:null,
+        description:null,
+        pictureUrl:null,
+        picturePath:null,
+        pictureDescription:null,
+        videoUrl:null,
+        videoPath:null,
+        videoDescription:null,
+        
       }
       db.collection('careers').doc(id).set(career).then( ()=>{
           resolve()

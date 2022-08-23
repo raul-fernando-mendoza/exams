@@ -82,9 +82,11 @@ export class NavigationComponent {
         if( this.userPreferencesService.getCurrentOrganizationId() == null){
           this.organization_id = this.organizations[0].id
           this.userPreferencesService.setCurrentOrganizationId(this.organization_id)
+          this.router.navigate(['/home']);
         }
         else{
           this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+          this.router.navigate(['/home']);
         }
       })
          
@@ -157,28 +159,36 @@ export class NavigationComponent {
             resolve()
           }
           else{ 
-            this.loadDefaultOrganization()           
+            this.loadDefaultOrganization().then( ()=>{
+              resolve()
+            })           
           }
         })
       }
       else{
-        this.loadDefaultOrganization()
+        this.loadDefaultOrganization().then( () =>{
+          resolve()
+        })
       } 
     })
   }
 
-  loadDefaultOrganization(){
-    this.organizations.length = 0
-    db.collection("organizations")
-    .where("isDefaultOrganization","==",true)
-    .where("isDeleted","==", false).get().then( set =>{
-      set.docs.map( doc =>{
-        const organization:Organization = doc.data() as Organization
-        this.organizations.push(organization)
+  loadDefaultOrganization():Promise<void>{
+    return new Promise<void>((resolve, reject) =>{
+      this.organizations.length = 0
+      db.collection("organizations")
+      .where("isDefaultOrganization","==",true)
+      .where("isDeleted","==", false).get().then( set =>{
+        set.docs.map( doc =>{
+          const organization:Organization = doc.data() as Organization
+          this.organizations.push(organization)
+        })
+        resolve()
+      },
+      reason =>{
+        console.error("ERROR: reading defuult organizations:" + reason)
+        reject()
       })
-    },
-    reason =>{
-      console.error("ERROR: reading defuult organizations:" + reason)
     })
 
   }

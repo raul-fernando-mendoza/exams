@@ -32,16 +32,18 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   player: videojs.Player;
 
   isAdmin:boolean = false
-
+  isLoggedIn =false
 
 
   c = this.fb.group({
     id: [null, Validators.required],
     career_name:[null, Validators.required], 
+    description:[null],
     pictureUrl:[null],
+    pictureDescription:[null],
     iconUrl:[null],
     videoUrl:[null],  
-    description:[null],
+    videoDescription:[null],
     levels:new FormArray([])
   })
 
@@ -55,7 +57,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   constructor(
       private fb: FormBuilder
     , private route: ActivatedRoute
-    , private userLogin:UserLoginService
+    , private userLoginService:UserLoginService
     , public formService:ExamFormService
     , public userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
@@ -63,8 +65,14 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
       this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
-      this.isAdmin = userLogin.hasRole( "role-admin-" + this.organization_id)
-    }
+      this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+      if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
+        this.isAdmin = true
+      }   
+      if( this.userLoginService.getUserUid() ){
+        this.isLoggedIn = true
+      }
+  }
   ngOnDestroy(): void {
     this.snapshots.map( func =>{
       func()
@@ -77,32 +85,25 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     return fa.controls
   }  
   ngOnInit(): void {
-    this.update()
-  }
-  
-  update(){
-    this.loadCareer()
+    const unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
+      this.career = doc.data() as Career
+      this.c.controls.id.setValue(this.career.id)  
+      this.c.controls.career_name.setValue(this.career.career_name)
+      this.c.controls.description.setValue(this.career.description)
+      this.c.controls.pictureUrl.setValue(this.career.pictureUrl)
+      this.c.controls.pictureDescription.setValue(this.career.pictureDescription)
+      this.c.controls.videoUrl.setValue(this.career.videoUrl)
+      this.c.controls.videoDescription.setValue(this.career.videoDescription)
+      this.loadLevels(this.career.id, this.c.controls.levels as FormArray).then( () =>{
+      })
+    },
+    reason =>{
+      alert("ERROR: reading career" + reason)
+    })
+    this.snapshots.push(unsubscribe)  
+
   }
 
-  loadCareer():Promise<void>{
-    return new Promise<void>( (resolve, reject) =>{
-      const unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
-        this.career = doc.data() as Career
-        this.c.controls.id.setValue(this.career.id)  
-        this.c.controls.career_name.setValue(this.career.career_name)
-        this.c.controls.pictureUrl.setValue(this.career.pictureUrl)
-        this.c.controls.videoUrl.setValue(this.career.videoUrl)
-        this.loadLevels(this.career.id, this.c.controls.levels as FormArray).then( () =>{
-          resolve()
-        })
-      },
-      reason =>{
-        alert("ERROR: reading career" + reason)
-        reject()
-      })
-      this.snapshots.push(unsubscribe)  
-    })  
-  }
   onCreateLevel(career_id){
     const dialogRef = this.dialog.open(DialogNameDialog, {
       height: '400px',
@@ -366,29 +367,33 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
  
   selectFile(event) {
-
-
     var selectedFiles = event.target.files;
     const property = event.srcElement.name
 
-    const bucketName = "organizations/" + this.organization_id + "/careers/" + this.id + "/" + property + ".jpg"
+    this.removePropertyValue(property).then( ()=>{
+      const bucketName = "organizations/" + this.organization_id + "/careers/" + this.id + "/" + property + ".jpg"
 
-    var file:File = selectedFiles[0]
-    var storageRef = storage.ref( bucketName )
+      var file:File = selectedFiles[0]
+      var storageRef = storage.ref( bucketName )
 
-    var uploadTask = storageRef.put(file)
-    var statusElement = document.getElementById(property + "Status")
-    var fileLoadObserver = new FileLoadObserver(storageRef, "careers", this.id, property, statusElement );
-    uploadTask.on("state_change", fileLoadObserver)
+      var uploadTask = storageRef.put(file)
+      var statusElement = document.getElementById(property + "Status")
+      var fileLoadObserver = new FileLoadObserver(storageRef, "careers", this.id, property, statusElement );
+      uploadTask.on("state_change", fileLoadObserver)
+    })
+
   } 
-  removePropertyValue(property){
+
+
+  removePropertyValue(property):Promise<void>{
     const json = {}
-    json[property] = null
+    json[property + "Url"] = null
+    json[property + "Path"] = null
 
     
-    db.collection("careers").doc(this.id).update( json ).then( () =>{
+    return db.collection("careers").doc(this.id).update( json ).then( () =>{
       console.log("property was removed")
-      this.c.controls[property].setValue(null)
+      //this.c.controls[property].setValue(null)
     })
   }
 
@@ -409,5 +414,31 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   getGroupGradeTypes(){
     return GROUP_GRADES_TYPES
   }
+  getGroupGradeDescrption( id ){
+    for( let i = 0; i<GROUP_GRADES_TYPES.length; i++){
+      if( GROUP_GRADES_TYPES[i].id = id){
+        return GROUP_GRADES_TYPES[i].description
+      }
+    }
+  }
+  onPropertyChange(event){
+    var id =this.c.controls.id.value
+
+    var propertyName = event.srcElement.attributes.formControlname.value
+    var value = event.target.value      
+    this.c.controls[propertyName].setValue( value )
+    if( id ){   
+      var values = {}
+      values[propertyName]=value                       
+      db.collection('careers').doc(id).update(values).then( () =>{
+        console.log("property has been update:" + propertyName + " " + value)
+      },
+      reason =>{
+        alert("ERROR: writing property:" + reason)
+      })
+    }      
+  }
+
+
 }
 

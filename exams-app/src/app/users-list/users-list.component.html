@@ -28,7 +28,7 @@
     </mat-grid-list> 
             <div class="role" *ngFor="let claim of user.controls.claims.controls; let j=index" [formGroup]="claim">
                 
-                    {{claim.controls.id.value}} {{ claim.controls.id.value.split("-")[1] }} 
+                    {{ claim.controls.id.value.split("-")[1] }} 
                     <button mat-icon-button [matMenuTriggerFor]="claimMenu" >
                         <mat-icon>more_vert</mat-icon>
                     </button>                                    

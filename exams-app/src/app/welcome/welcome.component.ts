@@ -99,7 +99,7 @@ export class WelcomeComponent implements OnInit {
               enrollment_id:materiaEnrollment.id,
               materia_name:materiaEnrollment.materia.materia_name,
               certificateUrl:materiaEnrollment.certificateUrl,
-              iconCertificateUrl:null,
+              iconCertificateUrl:materia.materiaIconUrl,
               exams:[]
             }
             
@@ -232,6 +232,10 @@ export class WelcomeComponent implements OnInit {
   }
 
   onCareerDetails(career_id:string){
-    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
+    this.router.navigate(['career-edit',{ id:career_id }])
   }
+
+  onCareerMyProgress(career_id:string){
+    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
+  }  
 }

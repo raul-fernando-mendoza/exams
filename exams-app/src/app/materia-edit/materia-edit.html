@@ -4,15 +4,26 @@ Habilidad
     <mat-card-title-group>
       <mat-card-title *ngIf="!isAdmin">{{ m.controls.materia_name.value }}</mat-card-title>
       <mat-card-title *ngIf="isAdmin">
-        <mat-form-field >
+        <mat-form-field class="field-name">
           <mat-label>Nombre</mat-label>
-          <input  matInput  class="field-name" type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" >
+          <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" >
         </mat-form-field>  
       </mat-card-title>
-
-      <img mat-card-sm-image *ngIf="materia && materia.materiaIconUrl"  src="{{materia.materiaIconUrl}}">
+      <img mat-card-sm-image src="{{materia.materiaIconUrl}}">
     </mat-card-title-group>
     <mat-card-content>
+      <mat-form-field *ngIf="isAdmin" class="attach-file"> 
+        <div id="materiaIconStatus"></div> 
+        <mat-label>change icon</mat-label>        
+        <button mat-icon-button matSuffix (click)="materiaIcon.click()">
+            <mat-icon>attach_file</mat-icon> 
+        </button>
+        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('materiaIcon')">
+        <mat-icon>delete</mat-icon>
+        </button>      
+        <input hidden (change)="selectFile($event)" name="materiaIcon" #materiaIcon type="file" >
+        <input class="nothing" matInput disabled> 
+      </mat-form-field>
       <div class="description" *ngIf="!isAdmin">{{m.controls.description.value}}</div> 
       <mat-form-field *ngIf="isAdmin" appearance="outline">
         <mat-label>description</mat-label>
@@ -23,19 +34,6 @@ Habilidad
       <mat-checkbox *ngIf="isAdmin" formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)" >
         Enrolado activo
       </mat-checkbox>
-      <div id="materiaIconStatus"></div>
-
-      <mat-form-field class="attach-file">  
-          <mat-label>change icon</mat-label>        
-          <button mat-icon-button matSuffix (click)="materiaIcon.click()">
-              <mat-icon>attach_file</mat-icon> 
-          </button>
-          <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('materiaIcon')">
-          <mat-icon>delete</mat-icon>
-          </button>      
-          <input hidden (change)="selectFile($event)" name="materiaIcon" #materiaIcon type="file" >
-          <input class="nothing" matInput disabled> 
-      </mat-form-field>
 
       <mat-form-field *ngIf="isAdmin" appearance="legacy">
           <mat-label>Certificado Maestro</mat-label>
@@ -52,26 +50,25 @@ Habilidad
   <mat-card>
     <mat-card-title-group>
       <mat-card-title>Objetivos</mat-card-title>
-      <img mat-card-xl-image *ngIf="materia && materia.pictureUrl" src="{{materia.pictureUrl}}">
+
+
+      <img mat-card-xl-image src="{{materia.pictureUrl}}">
     </mat-card-title-group>
     <mat-card-content>
-  
-      <div *ngIf="isAdmin && materia_id">
-       
-        <div id="pictureStatus"></div>
+      
+      <div id="pictureStatus"></div>
+      <mat-form-field *ngIf="isAdmin && materia_id">    
+          <mat-label>Cambiar Imagen</mat-label>      
+          <button mat-icon-button matSuffix (click)="picture.click()">
+              <mat-icon>attach_file</mat-icon> 
+          </button>
+          <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
+          <mat-icon>delete</mat-icon>
+          </button>      
+          <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
+          <input class="nothing" matInput disabled> 
+      </mat-form-field>
 
-        <mat-form-field class="attach-file">    
-            <mat-label>Cambiar Imagen</mat-label>      
-            <button mat-icon-button matSuffix (click)="picture.click()">
-                <mat-icon>attach_file</mat-icon> 
-            </button>
-            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
-            <mat-icon>delete</mat-icon>
-            </button>      
-            <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
-            <input class="nothing" matInput disabled> 
-        </mat-form-field>
-      </div>
       <span *ngIf="!isAdmin">{{ m.controls.pictureDescription.value }}</span>
       <mat-form-field *ngIf="isAdmin" appearance="outline">
         <mat-label>description de la imagen</mat-label>
@@ -145,10 +142,6 @@ Habilidad
       </div> 
     </mat-card-content>
     <mat-card-actions>
-    <div class="actions">
-      <button *ngIf="isAdmin && materia==null" mat-button [disabled]="!m.valid" (click)="onClose()" cdkFocusInitial>Continuar</button>
-    </div>
-
     <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive">Enrolar</button>
     </mat-card-actions> 
   </mat-card>     
