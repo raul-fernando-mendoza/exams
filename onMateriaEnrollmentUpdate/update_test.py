@@ -14,6 +14,7 @@ log = logging.getLogger("cheneque")
 class TestExamenObservations(unittest.TestCase):
 
     def testDeleteObject(self):
+
         db = firestore.client()
         materiaEnrollmentUpdate( db, '2bf3a406-b649-4eac-9ecb-4621f67ef51a')
 

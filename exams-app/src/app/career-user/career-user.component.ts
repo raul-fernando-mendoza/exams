@@ -181,4 +181,8 @@ export class CareerUserComponent implements OnInit {
   onMateriaDetalles(materia_id){
     this.router.navigate(['/materia-edit',{materia_id:materia_id}])
   }  
+
+  to_json( o ){
+    return JSON.stringify( o )
+  }
 }

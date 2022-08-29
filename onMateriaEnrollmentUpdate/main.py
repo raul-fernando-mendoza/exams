@@ -36,9 +36,9 @@ def materiaEnrollmentUpdate(db, documentId):
         .where("isDeleted","==", False) \
         .where("organization_id", "==", organization_id ).get()
     for careerDoc in careers:
-        materias_count = 0
-        materias_passed = 0
-        materias_enrolled = 0        
+        career_materias_required = 0
+        career_materias_approved = 0
+        career_completed = False     
         career = careerDoc.to_dict()
 
         id = organization_id + "-" + career["id"] + "-" + student_uid
@@ -46,16 +46,16 @@ def materiaEnrollmentUpdate(db, documentId):
             "id":id,
             "organization_id":organization_id,
             "career_id":career["id"],
-            "student_uid":student_uid,
+            "student_uid":student_uid
         }
         db.collection("careerAdvance").document(id).set(careerAdvance)
         levels = careerDoc.reference.collection("levels")\
                 .where("isDeleted", "==", False) \
                 .get()        
         for levelDoc in levels:
-            level_materias_count = 0
-            level_materias_passed = 0
-            level_materias_enrolled = 0
+            level_materias_approved = 0
+            level_materias_required = 0
+            level_completed = False
             level = levelDoc.to_dict()
             db.collection("careerAdvance/" + id + "/levels" ).document(level["id"]).set({ "id":level["id"]})
             groups = levelDoc.reference.collection("groups")\
@@ -63,19 +63,28 @@ def materiaEnrollmentUpdate(db, documentId):
                 .get()
             for groupDoc in groups:
                 group = groupDoc.to_dict()
-                group_materias_count = 0
-                group_materias_passed = 0 
-                group_materias_enrolled = 0
-                group_passed = False
+                group_grade_type_id = group["group_grade_type_id"] if "group_grade_type_id" in group else 0
+
+                group_materias_required = 0
+                group_materias_approved = 0 
+
+                if group_grade_type_id > 0 :
+                    career_materias_required += group_grade_type_id
+                    group_materias_required = group_grade_type_id
+
+                group_completed = False
                 db.collection("careerAdvance/" + id + "/levels/" + level["id"] + "/groups" ).document(group["id"]).set({ "id":group["id"]})
 
                 materias = groupDoc.reference.collection("materias") \
                 .get()
                 for materiaDoc in materias:
                     materia = materiaDoc.to_dict()
-                    materias_count += 1
-                    level_materias_count += 1
-                    group_materias_count +=1
+
+                    if group_grade_type_id == 0:
+                        career_materias_required += 1
+                        level_materias_required += 1
+                        group_materias_required +=1                        
+
                     enrollments = db.collection("materiaEnrollments") \
                         .where("materia_id", "==", materia["id"]) \
                         .where("student_uid", "==", student_uid) \
@@ -83,42 +92,44 @@ def materiaEnrollmentUpdate(db, documentId):
                         .where("isDeleted","==", False) \
                         .get()
                     for materiaEnrollmentDoc in enrollments:
-                        materias_enrolled += 1
-                        level_materias_enrolled += 1
-                        group_materias_enrolled += 1
                         materiaEnrollment = materiaEnrollmentDoc.to_dict()
                         if materiaEnrollment["certificateUrl"] != None:
-                            materias_passed += 1
-                            level_materias_passed += 1
-                            group_materias_passed += 1
-                group_grade_type_id = group["group_grade_type_id"] if "group_grade_type_id" in group else 0
+                            if group_grade_type_id == 0 or group_materias_approved < group_grade_type_id:
+                                career_materias_approved += 1
+                                level_materias_approved += 1
+                                group_materias_approved += 1                                
+                
                 if group_grade_type_id == 0:
-                    if group_materias_count == group_materias_passed:
-                        group_passed = True
-                elif group_materias_passed >= group_grade_type_id:
-                    group_passed = True
+                    if group_materias_required == group_materias_approved:
+                        group_completed = True
+                elif group_materias_approved >= group_grade_type_id:
+                    group_completed = True
                 groupUpdate = {
                     "group_grade_type_id":group_grade_type_id,
-                    "group_materias_count":group_materias_count,
-                    "group_materias_passed":group_materias_passed,
-                    "group_materias_enrolled":group_materias_enrolled,
-                    "group_passed":group_passed                  
+                    "group_materias_required":group_materias_required,
+                    "group_materias_approved":group_materias_approved,
+                    "group_completed":group_completed                  
                 }
+                log.debug("group:" + group["group_name"] + " group_materias_required:" + str(group_materias_required) + " group_materias_approved:" + str(group_materias_approved) + " group_completed:" + str(group_completed))
                 db.collection("careerAdvance/" + id + "/levels/" + level["id"] + "/groups" ).document(group["id"]).update(groupUpdate)
-            log.debug("level:" + level["level_name"] + " level_materia_count:" + str(level_materias_count) + " level_materias_enrolled:" + str(level_materias_enrolled) + " level_materias_passed:" + str(level_materias_passed))
+            if level_materias_required == level_materias_approved:
+                level_completed = True
             levelGrade ={
-                "level_materias_count":level_materias_count,
-                "level_materias_passed":level_materias_passed,
-                "level_materias_enrolled":level_materias_enrolled               
+                "level_materias_required":level_materias_required,
+                "level_materias_approved":level_materias_approved,
+                "level_completed":level_completed               
             }
+            log.debug("level:" + level["level_name"] + " level_materias_required:" + str(level_materias_required) + " level_materias_approved:" + str(level_materias_approved) + " level_completed:" + str(level_completed))
             db.collection("careerAdvance/" + id + "/levels" ).document(level["id"]).update(levelGrade)
 
-        log.debug("carrer:" + career["career_name"] + " materias_count:" + str(materias_count) + " materias_passed:" + str(materias_passed) + " materias_enrolled:" + str(materias_enrolled) )
+        if career_materias_approved == career_materias_required:
+            career_completed = True
         advance = {
-            "materias_count":materias_count,
-            "materias_passed":materias_passed,
-            "materias_enrolled":materias_enrolled
+            "career_materias_approved":career_materias_approved,
+            "career_materias_required":career_materias_required,
+            "career_completed":career_completed
         }
+        log.debug("carrer:" + career["career_name"] + " career_materias_approved:" + str(career_materias_approved) + " career_materias_required:" + str(career_materias_required) + " career_completed:" + str(career_completed) )
         db.collection("careerAdvance").document(id).update(advance)
                             
 

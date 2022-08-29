@@ -221,6 +221,7 @@ export class WelcomeComponent implements OnInit {
     this.careers.length = 0
     db.collection("careers")
     .where( "organization_id" , "==", this.organization_id)
+    .where( "isDeleted", "==", false)
     .get().then( set =>{
       set.docs.map( doc =>{
         const career:Career = doc.data() as Career

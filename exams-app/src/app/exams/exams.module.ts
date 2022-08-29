@@ -382,9 +382,12 @@ export interface CareerAdvance{
   organization_id:string
   career_id:string
   student_uid:string
-  materias_count:string
-  materias_enrolled:string
-  materias_passed:string
+  materias_count:number
+  materias_enrolled:number
+  materias_passed:number
+  total_materias_approved:number
+  total_materias_required:number
+
 }
 
 export interface GroupGrade{
