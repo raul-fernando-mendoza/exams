@@ -4,7 +4,7 @@
 <div *ngFor="let user of users_formarray.controls; let i=index" [formGroup]="user">
     <mat-grid-list cols="9">
         <mat-grid-tile  colspan="4">
-           <span class="user-name">{{ user.controls.uid.value }} {{ user.controls.email.value }}</span>
+           <span class="user-name">{{ user.controls.email.value }}</span>
         </mat-grid-tile>
         <mat-grid-tile  colspan=4>
             <mat-form-field>

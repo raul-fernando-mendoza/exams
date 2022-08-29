@@ -135,6 +135,8 @@ export interface MateriaRequest{
   materias:Materia
 }
 
+
+
 export const GROUP_GRADES_TYPES = [
   { id:0, description:"Todas Requeridas"},
   { id:1, description:"1 requerida"},
@@ -382,20 +384,17 @@ export interface CareerAdvance{
   organization_id:string
   career_id:string
   student_uid:string
-  materias_count:number
-  materias_enrolled:number
-  materias_passed:number
-  total_materias_approved:number
-  total_materias_required:number
+  career_materias_required:number
+  career_materias_approved:number
+  career_completed:boolean
 
 }
 
 export interface GroupGrade{
   id:string
-  group_materias_count:number
-  group_materias_enrolled:number
-  group_materias_passed:number
-  group_passed:boolean
+  group_materias_required:number
+  group_materias_approved:number
+  group_completed:boolean
 }
 
 export interface CertificateType{

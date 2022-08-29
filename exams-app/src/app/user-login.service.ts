@@ -287,6 +287,10 @@ export class UserLoginService {
     }
     return claims
   }
+  setLocalClaim(property, value){
+     this.user_claims[property] = value
+     localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
+  }  
   getUserIdToken():Promise<String> {
     if( firebase && firebase.auth() && firebase.auth().currentUser ){
       return new Promise<String>((resolve, reject) => {

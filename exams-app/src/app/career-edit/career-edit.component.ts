@@ -414,13 +414,16 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   getGroupGradeTypes(){
     return GROUP_GRADES_TYPES
   }
-  getGroupGradeDescrption( id ){
-    for( let i = 0; i<GROUP_GRADES_TYPES.length; i++){
-      if( GROUP_GRADES_TYPES[i].id = id){
-        return GROUP_GRADES_TYPES[i].description
+
+  getGroupGradeDescription(group_grade_type_id:number){
+    var desc = "Not found"
+    GROUP_GRADES_TYPES.map( ggt =>{
+      if( ggt.id == group_grade_type_id){
+        desc = ggt.description
       }
-    }
-  }
+    })
+    return desc
+  }  
   onPropertyChange(event){
     var id =this.c.controls.id.value
 

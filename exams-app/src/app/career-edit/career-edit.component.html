@@ -121,7 +121,11 @@ Carrera
                                 <mat-label>Grupo</mat-label>
                                 <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
                             </mat-form-field>  
-                            <span *ngIf="!isAdmin" >{{ getGroupGradeDescrption( g.controls.group_grade_type_id.value ) }} </span>           
+                            <mat-toolbar-row *ngIf="!isAdmin" >
+                                <span>{{ g.controls.group_name.value }}</span>
+                                <span class="example-spacer"></span>
+                                <span>{{ getGroupGradeDescription( g.controls.group_grade_type_id.value ) }} </span>
+                            </mat-toolbar-row> 
                             <mat-form-field *ngIf="isAdmin" appearance="fill" >
                                 <mat-label>selecciona tipo de evaluacion</mat-label>
                                 <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value,$event)">

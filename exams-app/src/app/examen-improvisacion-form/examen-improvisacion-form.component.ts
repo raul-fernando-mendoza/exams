@@ -216,7 +216,7 @@ export class ExamenImprovisacionFormComponent {
         let obj:User = {
           "uid":user.uid,
           "email":user.email,
-          "displayName":(user.displayName != null)? user.displayName : user.email,
+          "displayName":(user.displayName != null && user.displayName.trim() != "")? user.displayName : user.email,
           "claims":user.claims
         }
         console.log("user:" + obj.uid + " " + obj.displayName)

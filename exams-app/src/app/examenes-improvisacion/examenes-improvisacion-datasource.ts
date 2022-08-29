@@ -101,15 +101,14 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
         case 'title': return compare(a.examGrade.title, b.examGrade.title, isAsc);
+        case 'materia': return compare(a.exam.label, b.exam.label, isAsc);
         case 'fechaApplicacion': return compareDate(a,b, isAsc);
-        /*
-        case 'title': return compare(a.materia.title, b.title, isAsc);
-        case 'estudiante': return compare(a.student_name, b.student_name, isAsc);
-        case 'maestro': return compare(a.maestro, b.maestro, isAsc);
-        case 'parametro': return compare(a.parametro, b.parametro, isAsc);
+        case 'estudiante': return compare(a.student.displayName, b.student.displayName, isAsc);
+        case 'maestro': return compare(a.approver.displayName, b.approver.displayName, isAsc);
+        case 'parametro': return compare(a.parameterGrade.label, b.parameterGrade.label, isAsc);
         
-        case 'completed': return compare((new Boolean(a.completed)).toString(), (new Boolean(b.completed)).toString(), isAsc);        
-        */
+        case 'completed': return compareCompleted(a.examGrade, b.examGrade, isAsc);        
+        
         default: return 0;
       }
     });
@@ -120,6 +119,14 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
 function compare(a: string | number, b: string | number, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
+
+function compareCompleted(a:ExamGrade, b:ExamGrade, isAsc: boolean) {
+  if( a.isCompleted && b.isCompleted)
+    return (a.score < b.score ? -1 : 1) * (isAsc ? 1 : -1);
+  else
+    return (a.isCompleted < b.isCompleted ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
 function compareDate(a, b, isAsc: boolean) {
   if (isAsc ){
     if( a.examGrade.applicationDate>b.examGrade.applicationDate ) {

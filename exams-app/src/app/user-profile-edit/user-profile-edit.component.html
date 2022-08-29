@@ -1,0 +1,7 @@
+<p>Preferencias de usuario</p>
+<form  [formGroup]="userFG" >
+    <mat-form-field class="displayName">
+        <mat-label>Nombre de Usuario</mat-label>
+        <input matInput placeholder="Cambie su nombre" formControlName="displayName" (change)="onDisplayNameChange($event)">
+    </mat-form-field>   
+</form>

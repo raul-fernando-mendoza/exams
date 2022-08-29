@@ -359,7 +359,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     return this.examImprovisacionService.formatTimeStamp(t)
   }
   getDisplayNameForUser(user){
-    this.userLoginService.getDisplayNameForUser(user)
+    return this.userLoginService.getDisplayNameForUser(user)
   }
   
 }

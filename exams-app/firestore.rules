@@ -5,10 +5,18 @@ service cloud.firestore {
       allow read, write: if false;
     } 
     match /organizations/{organizationID} {
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/organizations/$(organizationID)).data.id) in request.auth.token
+      } 
+      
       allow read: if true   
       allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, write:  if ( ('role-admin-' + request. resource.data.organization_id) in request.auth.token  )
-
+			
+      match /{document=**} {    
+        allow read, write: if isAdmin(request) 
+        allow read: if true
+      }   
     }
     match /materias/{materiaId} {
       function isAdmin(request) {
@@ -20,7 +28,7 @@ service cloud.firestore {
       
 			match /{document=**} {    
         allow read, write: if isAdmin(request) 
-        allow read: if request.auth != null
+        allow read: if true
       }       
     } 
     match /exams/{examId} {
@@ -33,16 +41,16 @@ service cloud.firestore {
       }    
       allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
-			allow read: if ( request.auth != null  ) 
+			allow read: if true
 			match /{document=**} {    
         allow read, write: if isAdmin(request)
-        allow read: if request.auth != null
+        allow read: if true
       }       
 		}
     match /materiaEnrollments/{materiaEnrollmentId} {  
       allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
-      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+
 
 			allow write: if ( request.auth.uid == request.resource.data.student_uid   ) 
       allow read,write: if ( request.auth.uid == resource.data.student_uid  ) 
@@ -69,12 +77,27 @@ service cloud.firestore {
       }      
     } 
     
+    match /careerAdvance/{careerAdvanceId} {
+
+      function isStudent() {
+        return request.auth.uid == get(/databases/$(database)/documents/careerAdvance/$(careerAdvanceId)).data.student_uid
+      }
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/careerAdvance/$(careerAdvanceId)).data.organization_id) in request.auth.token
+      }
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )      
+      allow read: if request.auth.uid == resource.data.student_uid 
+
+			match /{document=**} {    
+        allow read, write: if isAdmin(request)   
+        allow read: if isStudent()
+      }      
+    }     
+    
     match /{path=**}/parameterGrades/{parameterGradesId} {    
-      allow read, write, create: if ( request.auth.token.admin == true ) 
+      allow read, write, create: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, update: if ( request.auth.uid == resource.data.evaluator_uid   )   
-    }
-		match /{path=**}/organization_members/{organizationMemberId} {    
-      allow read: if request.auth.uid == resource.data.uid  
-    }         
+    }       
   }
 }

@@ -84,10 +84,6 @@ export class NavigationComponent {
           this.userPreferencesService.setCurrentOrganizationId(this.organization_id)
           this.router.navigate(['/home']);
         }
-        else{
-          this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
-          this.router.navigate(['/home']);
-        }
       })
          
   }
@@ -123,7 +119,7 @@ export class NavigationComponent {
     return this.userLoginService.hasRole('role-estudiante-' + this.organization_id)
   }    
   getUserName(){
-    return (this.userLoginService.getDisplayName())?this.userLoginService.getDisplayName():this.userLoginService.getUserEmail()
+    return this.userLoginService.getDisplayName()
   }
 
   updateOrganizations():Promise<void>{

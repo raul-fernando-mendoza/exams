@@ -13,6 +13,7 @@ import * as uuid from 'uuid';
 import { db } from 'src/environments/environment';
 import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datasource';
 import { UserPreferencesService } from '../user-preferences.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-exam-table',
@@ -188,7 +189,19 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         isDeleted:true
       }).then(()=>{
         console.log("examGrade has been deleted")
-        this.update()
+        db.collection("examGrades/" + examGrade_id + "/parameterGrades").get().then(
+          set =>{
+            var all_promises = set.docs.map( doc =>{
+              return doc.ref.update({"isDeleted":true})
+            })
+            Promise.all( all_promises ).then(
+              () => {
+                this.update()
+              }
+            )
+            
+          }
+        )        
       },
       reason=>{
         console.log("ERROR removing examGrade:" + reason)

@@ -65,6 +65,7 @@ import { CareerUserComponent } from './career-user/career-user.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { CertificateTypeListComponent } from './certificate-type-list/certificate-type-list.component';
 import { CertificateTypeEditComponent } from './certificate-type-edit/certificate-type-edit.component';
+import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
 
 
 @NgModule({
@@ -102,7 +103,8 @@ import { CertificateTypeEditComponent } from './certificate-type-edit/certificat
     DialogListSelectDialog,
     CareerUserComponent,
     CertificateTypeListComponent,
-    CertificateTypeEditComponent
+    CertificateTypeEditComponent,
+    UserProfileEditComponent
   ],
   imports: [
     BrowserModule,
