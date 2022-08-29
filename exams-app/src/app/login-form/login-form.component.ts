@@ -16,10 +16,13 @@ export class LoginFormComponent {
   });
   isRegister = false
 
+  token: string|undefined;
+
   constructor(private fb: FormBuilder, private route: ActivatedRoute, 
     private router: Router, 
     private userLoginService:UserLoginService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
+      this.token = undefined;
   }
 
   ngOnInit() {

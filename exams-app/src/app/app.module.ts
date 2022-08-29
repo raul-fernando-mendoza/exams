@@ -66,7 +66,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { CertificateTypeListComponent } from './certificate-type-list/certificate-type-list.component';
 import { CertificateTypeEditComponent } from './certificate-type-edit/certificate-type-edit.component';
 import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
-
+import { RECAPTCHA_SETTINGS, RecaptchaFormsModule, RecaptchaModule, RecaptchaSettings } from 'ng-recaptcha';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -142,11 +143,19 @@ import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.
     MatSlideToggleModule,
     MatProgressSpinnerModule,
     ClipboardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    RecaptchaModule,
+    RecaptchaFormsModule,    
   ],
   providers: [
     UserLoginService
     ,{ provide: MAT_DATE_LOCALE, useValue: 'en-US' }
+    ,{
+      provide: RECAPTCHA_SETTINGS,
+      useValue: {
+        siteKey: environment.recaptcha.siteKey,
+      } as RecaptchaSettings,
+    },
   ],
   entryComponents: [
     DialogOverviewExampleDialog,
