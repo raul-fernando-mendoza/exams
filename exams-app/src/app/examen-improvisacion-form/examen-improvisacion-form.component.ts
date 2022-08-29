@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
@@ -54,17 +54,17 @@ export class ExamenImprovisacionFormComponent {
 
     title:[null, Validators.required], 
     expression:[null], 
-    parameterGrades: new FormArray([]),
+    parameterGrades: new UntypedFormArray([]),
     createdon:[this.today],
     updateon:[this.today]
 
   });
 
 
-  constructor(private fb: FormBuilder,private route: ActivatedRoute
+  constructor(private fb: UntypedFormBuilder,private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: FormBuilder
+    , private formBuilder: UntypedFormBuilder
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
     , private userPreferencesService:UserPreferencesService) {
@@ -74,15 +74,15 @@ export class ExamenImprovisacionFormComponent {
 
   
 
-  getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+  getFormGroupArray (fg:UntypedFormGroup, controlname:string): UntypedFormGroup[] {
     if( fg == null){
       console.error("fg is null for:" + controlname)
     }
-    var fa:FormArray =  fg.controls[controlname] as FormArray
+    var fa:UntypedFormArray =  fg.controls[controlname] as UntypedFormArray
     if( fa == null){
       console.error("fa is null for::" + controlname)
     }
-    return fa.controls as FormGroup[]
+    return fa.controls as UntypedFormGroup[]
   }
   
 
@@ -236,7 +236,7 @@ export class ExamenImprovisacionFormComponent {
     var examId = event.value
 
     var materia_id = this.examGrade.controls.materia_id.value
-    var parameterGrades:FormArray = this.examGrade.controls.parameterGrades as FormArray
+    var parameterGrades:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
     parameterGrades.clear()      
 
     var req:ExamRequest = {
@@ -282,7 +282,7 @@ export class ExamenImprovisacionFormComponent {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     })       
   }
-  addExam(parameterGrades:FormArray, exam:Exam){
+  addExam(parameterGrades:UntypedFormArray, exam:Exam){
 
     for( let i=0; i<exam.parameters.length; i++){
       let parameter = exam.parameters[i]
@@ -290,12 +290,12 @@ export class ExamenImprovisacionFormComponent {
     }
 
     parameterGrades.controls.sort( (a, b) => {
-      var afg:FormGroup = a as FormGroup 
-      var bfg:FormGroup = b as FormGroup
+      var afg:UntypedFormGroup = a as UntypedFormGroup 
+      var bfg:UntypedFormGroup = b as UntypedFormGroup
       return  afg.controls.idx.value - bfg.controls.idx.value 
     })       
   }
-  addParameter(parameterGrade_array:FormArray, p:Parameter){
+  addParameter(parameterGrade_array:UntypedFormArray, p:Parameter){
 
     var g=this.fb.group({
       id: [p.id],
@@ -313,7 +313,7 @@ export class ExamenImprovisacionFormComponent {
       student_uid:[null],
       isCompleted: [false],
       isSelected:[true],
-      criteriaGrades: new FormArray([])         
+      criteriaGrades: new UntypedFormArray([])         
     })
 
     g.valueChanges.subscribe(parameter => {
@@ -331,19 +331,19 @@ export class ExamenImprovisacionFormComponent {
 
     parameterGrade_array.push(g) 
 
-    var criteriaGrades_Array = g.controls.criteriaGrades as FormArray
+    var criteriaGrades_Array = g.controls.criteriaGrades as UntypedFormArray
     for( let i=0; i<p.criterias.length; i++){
       let criteria:Criteria = p.criterias[i]
       this.addCriteria(criteriaGrades_Array, criteria)
     }
     criteriaGrades_Array.controls.sort( (a, b) => {
-      var afg:FormGroup = a as FormGroup 
-      var bfg:FormGroup = b as FormGroup
+      var afg:UntypedFormGroup = a as UntypedFormGroup 
+      var bfg:UntypedFormGroup = b as UntypedFormGroup
       return  afg.controls.idx.value - bfg.controls.idx.value 
     })    
   }
 
-  addCriteria(criteriaGrade_array:FormArray, c:Criteria){
+  addCriteria(criteriaGrade_array:UntypedFormArray, c:Criteria){
     var g = this.fb.group({
       id:[uuid.v4()],
       idx:[c.idx],
@@ -351,23 +351,23 @@ export class ExamenImprovisacionFormComponent {
       description:[c.description],
       score:[null],
       isSelected:[ c.initiallySelected ],
-      aspectGrades: new FormArray([])
+      aspectGrades: new UntypedFormArray([])
     })
     criteriaGrade_array.push(g)
 
-    var aspectGrades_arr = g.controls.aspectGrades as FormArray
+    var aspectGrades_arr = g.controls.aspectGrades as UntypedFormArray
     for(let i=0; i<c.aspects.length; i++){
       let aspect:Aspect = c.aspects[i]
-      this.addAspect(aspectGrades_arr as FormArray, aspect)
+      this.addAspect(aspectGrades_arr as UntypedFormArray, aspect)
     }
     aspectGrades_arr.controls.sort( (a, b) => {
-      var afg:FormGroup = a as FormGroup 
-      var bfg:FormGroup = b as FormGroup
+      var afg:UntypedFormGroup = a as UntypedFormGroup 
+      var bfg:UntypedFormGroup = b as UntypedFormGroup
       return  afg.controls.idx.value - bfg.controls.idx.value 
     }) 
   }
 
-  addAspect(question_array:FormArray, a: Aspect ){
+  addAspect(question_array:UntypedFormArray, a: Aspect ){
     var g = this.fb.group({
       id:[uuid.v4()],
       idx:[a.idx],
@@ -467,10 +467,10 @@ export class ExamenImprovisacionFormComponent {
       let json = copyFromForm(examGrade, this.examGrade)
 
       //adding all the evaluators
-      const parametersFA = this.examGrade.controls.parameterGrades as FormArray
+      const parametersFA = this.examGrade.controls.parameterGrades as UntypedFormArray
       const evaluators:Array<string> = []
       for( let i=0; i<parametersFA.controls.length; i++){
-        const parameterFG = parametersFA.controls[i] as FormGroup
+        const parameterFG = parametersFA.controls[i] as UntypedFormGroup
         const evaluator_uid = parameterFG.controls["evaluator_uid"].value
         evaluators.push( evaluator_uid )
       }
@@ -480,13 +480,13 @@ export class ExamenImprovisacionFormComponent {
       db.collection("examGrades").doc(examGrade["id"]).set(json).then(()=>{
         console.log("adding examGrade")
         
-        let parameterGrades = this.examGrade.controls.parameterGrades as FormArray
+        let parameterGrades = this.examGrade.controls.parameterGrades as UntypedFormArray
         let pa = parameterGrades.controls.filter(p =>{
-          let pFG = p as FormGroup
+          let pFG = p as UntypedFormGroup
           return (pFG.controls["isSelected"].value == true)
         }).map(e =>{
          
-          let p = e as FormGroup
+          let p = e as UntypedFormGroup
           return this.addParameterGrade(examGrade, p)
         })
         Promise.all(pa).then( () =>{
@@ -508,7 +508,7 @@ export class ExamenImprovisacionFormComponent {
   } 
 
   
-  addParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
+  addParameterGrade(examGrade:ExamGrade, pFG:UntypedFormGroup):Promise<void>{
     let parameterGrade:ParameterGrade = {
       id:null, 
       organization_id:null,  
@@ -536,10 +536,10 @@ export class ExamenImprovisacionFormComponent {
       db.collection(`examGrades/${examGrade.id}/parameterGrades`).doc(parameterGrade["id"]).set(json).then(()=>{
     
         console.log("adding parameterGrade" + parameterGrade.label)
-        let criteriaGradesFA = pFG.controls.criteriaGrades as FormArray
+        let criteriaGradesFA = pFG.controls.criteriaGrades as UntypedFormArray
         
         let cm = criteriaGradesFA.controls.map( c => {
-            return this.addCriteriaGrades(examGrade, parameterGrade, c as FormGroup)             
+            return this.addCriteriaGrades(examGrade, parameterGrade, c as UntypedFormGroup)             
         })
         Promise.all(cm).then( () =>{
           parameter_resolve()
@@ -555,7 +555,7 @@ export class ExamenImprovisacionFormComponent {
     })
   }
 
-  addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:FormGroup):Promise<void>{
+  addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:UntypedFormGroup):Promise<void>{
     let cg:CriteriaGrade = {
       id:null,
       idx:null,
@@ -571,9 +571,9 @@ export class ExamenImprovisacionFormComponent {
       criteria_resolve = resolve    
       db.collection(`examGrades/${examGrade.id}/parameterGrades/${parameterGrade.id}/criteriaGrades`).doc(criteriaGrade["id"]).set(criteriaGrade).then(()=>{
         console.log("adding CriteriaGrade" + cg.label)
-        let aspectGradesFA = criteriaGradeFG.controls.aspectGrades as FormArray
+        let aspectGradesFA = criteriaGradeFG.controls.aspectGrades as UntypedFormArray
         let am = aspectGradesFA.controls.map( a =>{
-          return this.addAspectGrades(examGrade, parameterGrade, cg, a as FormGroup)        
+          return this.addAspectGrades(examGrade, parameterGrade, cg, a as UntypedFormGroup)        
         })
         Promise.all(am).then( () =>{
           //console.log(value)
@@ -590,7 +590,7 @@ export class ExamenImprovisacionFormComponent {
     })         
   }
 
-  addAspectGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGrade:CriteriaGrade, aspectGradeFG:FormGroup):Promise<void>{
+  addAspectGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGrade:CriteriaGrade, aspectGradeFG:UntypedFormGroup):Promise<void>{
     let aspectoGrade:AspectGrade = {
       id:null,
       idx:null,

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 
@@ -18,7 +18,7 @@ export class LoginFormComponent {
 
   token: string|undefined;
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute, 
+  constructor(private fb: UntypedFormBuilder, private route: ActivatedRoute, 
     private router: Router, 
     private userLoginService:UserLoginService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )

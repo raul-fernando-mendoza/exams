@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { UntypedFormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Aspect, AspectGrade, Criteria, CriteriaGrade, Exam, ExamGrade, Parameter, ParameterGrade } from './exams/exams.module';
 import { db, environment } from 'src/environments/environment';
 import { MatSelectChange } from '@angular/material/select';
@@ -9,7 +9,7 @@ import { MatSelectChange } from '@angular/material/select';
 })
 export class ExamFormService {
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: UntypedFormBuilder) { }
 
   
   formatDate(d:Date) {

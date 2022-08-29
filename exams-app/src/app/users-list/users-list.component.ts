@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, EmailValidator, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { AbstractControl, EmailValidator, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
@@ -14,13 +14,13 @@ export class UsersListComponent implements OnInit {
 
   roles = ['role-admin','role-readonly','role-evaluador','role-estudiante'];
 
-  users_formarray = new FormArray([])
+  users_formarray = new UntypedFormArray([])
 
   organization_id = null 
 
   constructor(private examImprovisacionService: ExamenesImprovisacionService
     , private userLoginService: UserLoginService
-    , private fb: FormBuilder
+    , private fb: UntypedFormBuilder
     , private router: Router
     , private userPreferencesService:UserPreferencesService) { 
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -59,10 +59,10 @@ export class UsersListComponent implements OnInit {
             uid:[user.uid],
             email:[user.email],
             displayName:[user.displayName],
-            claims: new FormArray([])
+            claims: new UntypedFormArray([])
           })
 
-          var claims_array = user_group.controls.claims as FormArray
+          var claims_array = user_group.controls.claims as UntypedFormArray
           for( const claim in user.claims){
             var claimValue = user.claims[claim]
             if( claim == "displayName"){
@@ -82,8 +82,8 @@ export class UsersListComponent implements OnInit {
           this.users_formarray.push(user_group)
         }
         this.users_formarray.controls.sort( (a, b) => {
-          var ag:FormGroup = a as FormGroup
-          var bg:FormGroup = b as FormGroup
+          var ag:UntypedFormGroup = a as UntypedFormGroup
+          var bg:UntypedFormGroup = b as UntypedFormGroup
           if( ag.controls.email.value >= bg.controls.email.value )
             return 1
           else
@@ -98,12 +98,12 @@ export class UsersListComponent implements OnInit {
 
   
 
-  addRole(user:FormGroup, role_id:string){
+  addRole(user:UntypedFormGroup, role_id:string){
 
-    var roles_fa = user.controls.claims as FormArray
+    var roles_fa = user.controls.claims as UntypedFormArray
 
     for(let i=0; i<roles_fa.controls.length; i++){
-      let role_fg:FormGroup = roles_fa.controls[i] as FormGroup
+      let role_fg:UntypedFormGroup = roles_fa.controls[i] as UntypedFormGroup
       if( role_fg.controls.id.value == role_id){
         alert("El role el usuario ya tiene el rol:" +  role_id)
         return 0
@@ -117,7 +117,7 @@ export class UsersListComponent implements OnInit {
     this.userLoginService.getUserIdToken().then( token => { 
       this.examImprovisacionService.authApiInterface("addClaim", token, reques_addroles).then(
         data => {
-          var role_fg:FormGroup = this.fb.group({
+          var role_fg:UntypedFormGroup = this.fb.group({
             id:[role_id]
           }) 
           roles_fa.push(role_fg)
@@ -132,7 +132,7 @@ export class UsersListComponent implements OnInit {
     })
   }
   
-  delRole(user:FormGroup, role:string){
+  delRole(user:UntypedFormGroup, role:string){
     var request = {
         email:user.controls.email.value,
         claim:role
@@ -140,9 +140,9 @@ export class UsersListComponent implements OnInit {
     this.userLoginService.getUserIdToken().then( token => {
       this.examImprovisacionService.authApiInterface("removeClaim", token, request).then(
         data => {
-        var roles_fa: FormArray = user.controls.claims as FormArray
+        var roles_fa: UntypedFormArray = user.controls.claims as UntypedFormArray
         for( let i =0 ; i< roles_fa.controls.length; i++){
-          var role_fg:FormGroup = roles_fa.controls[i] as FormGroup
+          var role_fg:UntypedFormGroup = roles_fa.controls[i] as UntypedFormGroup
 
           if(  role_fg.controls.id.value == role){
             roles_fa.removeAt(i)

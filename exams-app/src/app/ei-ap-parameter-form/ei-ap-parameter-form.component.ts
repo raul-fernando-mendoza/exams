@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormControl } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
@@ -30,11 +30,11 @@ export interface DescriptionDlgData {
 
 export class EiApParameterFormComponent implements OnInit {
 
-  constructor(private fb: FormBuilder
+  constructor(private fb: UntypedFormBuilder
     , private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: FormBuilder
+    , private formBuilder: UntypedFormBuilder
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
@@ -65,15 +65,15 @@ export class EiApParameterFormComponent implements OnInit {
     }
   }
 
-  getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+  getFormGroupArray (fg:UntypedFormGroup, controlname:string): UntypedFormGroup[] {
     if( fg == null){
       console.error("ERROR controls for " + controlname + " in " + fg)
     }
-    var fa:FormArray =  fg.controls[controlname] as FormArray
+    var fa:UntypedFormArray =  fg.controls[controlname] as UntypedFormArray
     if( fa == null){
       console.error("I can not find controls for:" + controlname)
     }
-    return fa.controls as FormGroup[]
+    return fa.controls as UntypedFormGroup[]
   }
 
   ngOnInit(): void {
@@ -101,7 +101,7 @@ export class EiApParameterFormComponent implements OnInit {
         score:[e.score],
         isApproved:[e.isApproved],
         
-        parameterGrades: new FormArray([])        
+        parameterGrades: new UntypedFormArray([])        
       })
 
       var userReq = {
@@ -121,7 +121,7 @@ export class EiApParameterFormComponent implements OnInit {
     })
   }  
 
-  addParameterGrades( examGrade_id:string, parameterGrades:FormArray):Promise<void>{
+  addParameterGrades( examGrade_id:string, parameterGrades:UntypedFormArray):Promise<void>{
     var _resolve
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
@@ -139,7 +139,7 @@ export class EiApParameterFormComponent implements OnInit {
           evaluator_name:[null],
           evaluator_comment:[p.evaluator_comment],
           completed:[p.completed],
-          criteriaGrades: new FormArray([])
+          criteriaGrades: new UntypedFormArray([])
         })
 
         var userReq = {
@@ -153,7 +153,7 @@ export class EiApParameterFormComponent implements OnInit {
         })
 
         parameterGrades.push(g)
-        this.addCriteriaGrades(examGrade_id, p.id, g.controls.criteriaGrades as FormArray).then( () =>{
+        this.addCriteriaGrades(examGrade_id, p.id, g.controls.criteriaGrades as UntypedFormArray).then( () =>{
           parameterGrades.controls.sort( (a, b)=>{
             if( a.get("idx").value > b.get("idx").value )
               return 1
@@ -166,7 +166,7 @@ export class EiApParameterFormComponent implements OnInit {
 
   } 
 
-  addCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades:FormArray):Promise<void>{
+  addCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades:UntypedFormArray):Promise<void>{
     var _resolve 
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
@@ -181,11 +181,11 @@ export class EiApParameterFormComponent implements OnInit {
             score:[c.score],
             isSelected:[ c.isSelected ],
   
-            aspectGrades: new FormArray([])
+            aspectGrades: new UntypedFormArray([])
           })
   
           criteriaGrades.push(g)
-          return this.addAspectGrades(examGrade_id, parameterGrade_id, doc.data().id, g.controls.aspectGrades as FormArray)
+          return this.addAspectGrades(examGrade_id, parameterGrade_id, doc.data().id, g.controls.aspectGrades as UntypedFormArray)
         })
         Promise.all(map).then( () => {
           criteriaGrades.controls.sort( (a, b)=>{
@@ -203,7 +203,7 @@ export class EiApParameterFormComponent implements OnInit {
     
   } 
 
-  addAspectGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades_id:string, aspectGrades:FormArray):Promise<void>{
+  addAspectGrades(examGrade_id:string, parameterGrade_id:string, criteriaGrades_id:string, aspectGrades:UntypedFormArray):Promise<void>{
     return new Promise((resolve, reject)=>{
       db.collection(`examGrades/${examGrade_id}/parameterGrades/${parameterGrade_id}/criteriaGrades/${criteriaGrades_id}/aspectGrades`).get().then( set =>{
         var map = set.docs.map( doc =>{
@@ -231,7 +231,7 @@ export class EiApParameterFormComponent implements OnInit {
 
     
     
-  onChangeAspect(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+  onChangeAspect(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
 
     let examGrade_id = e.controls.id.value
     let parameterGrade_id = p.controls.id.value
@@ -254,7 +254,7 @@ export class EiApParameterFormComponent implements OnInit {
       })
   }
 
-  onChangeStarts(e:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+  onChangeStarts(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
 
     let examGrade_id = e.controls.id.value
     let parameterGrade_id = p.controls.id.value
@@ -289,16 +289,16 @@ export class EiApParameterFormComponent implements OnInit {
     var totalPoints:number= 0;
     var earnedPoints:number = 0;
     var finalScore:number = 0;
-    let parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
-    let parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
-    let criteriaGrades_array = parameterGrade.controls.criteriaGrades as FormArray
+    let parameterGrades_array:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
+    let parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
+    let criteriaGrades_array = parameterGrade.controls.criteriaGrades as UntypedFormArray
     for( var i =0; i<criteriaGrades_array.controls.length; i++){
-      let criteriaGrade:FormGroup = criteriaGrades_array.controls[i] as FormGroup
+      let criteriaGrade:UntypedFormGroup = criteriaGrades_array.controls[i] as UntypedFormGroup
       if( criteriaGrade.controls.isSelected.value == true ){
-        let aspectGrade_array:FormArray = criteriaGrade.controls.aspectGrades as FormArray
+        let aspectGrade_array:UntypedFormArray = criteriaGrade.controls.aspectGrades as UntypedFormArray
         for( var j=0; j<aspectGrade_array.controls.length; j++){
           totalPoints = totalPoints + 1
-          let aspectGrade:FormGroup = aspectGrade_array.controls[j] as FormGroup
+          let aspectGrade:UntypedFormGroup = aspectGrade_array.controls[j] as UntypedFormGroup
           earnedPoints = earnedPoints + Number(aspectGrade.controls.score.value)
         }
       }
@@ -313,8 +313,8 @@ export class EiApParameterFormComponent implements OnInit {
 
   openCommentDialog(){
     console.log("openCommentDialog")
-    var parameterGrades_array:FormArray = this.examGrade.controls.parameterGrades as FormArray
-    var parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
+    var parameterGrades_array:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
 
     var calificacion = parameterGrade.controls.score.value
 
@@ -328,8 +328,8 @@ export class EiApParameterFormComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       if( result != undefined ){
-        var parameterGrades_array = this.examGrade.controls.parameterGrades as FormArray
-        var parameterGrade:FormGroup = parameterGrades_array.controls[0] as FormGroup
+        var parameterGrades_array = this.examGrade.controls.parameterGrades as UntypedFormArray
+        var parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
         parameterGrade.controls.evaluator_comment.setValue(result) 
         this.updateComment( this.examGrade, parameterGrade) 
       }
@@ -340,7 +340,7 @@ export class EiApParameterFormComponent implements OnInit {
     });
   }
 
-  updateComment(e:FormGroup, p:FormGroup): void{
+  updateComment(e:UntypedFormGroup, p:UntypedFormGroup): void{
 
     let examGrade_id = e.controls.id.value
     let parameterGrade_id = p.controls.id.value
@@ -438,8 +438,8 @@ export class EiApParameterFormComponent implements OnInit {
 
   close(): void{
     console.log("close")
-    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
-    var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
+    var parameterGrade_arr = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrade = parameterGrade_arr.controls[0] as UntypedFormGroup
     let values = {
           score: parameterGrade.controls.score.value,
           isCompleted:true
@@ -484,8 +484,8 @@ export class EiApParameterFormComponent implements OnInit {
   updateHeader(){
     
     console.log("close")
-    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
-    var parameterGrade = parameterGrade_arr.controls[0] as FormGroup
+    var parameterGrade_arr = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrade = parameterGrade_arr.controls[0] as UntypedFormGroup
     let values = {
         title: this.examGrade.controls.title.value
     }
@@ -508,9 +508,9 @@ updateExamGrade():Promise<void>{
   var parameter_resolve = null
   return new Promise<void>((resolve, reject) =>{  
     parameter_resolve = resolve
-    let parameterGrades = this.examGrade.controls.parameterGrades as FormArray
+    let parameterGrades = this.examGrade.controls.parameterGrades as UntypedFormArray
     let pa = parameterGrades.controls.map(e =>{       
-      let p = e as FormGroup
+      let p = e as UntypedFormGroup
       return this.updateParameterGrade(examGrade_id, p)
     })
     Promise.all(pa).then( () =>{
@@ -525,7 +525,7 @@ updateExamGrade():Promise<void>{
  
 
 
-  updateParameterGrade(examGrade_id:string, pFG:FormGroup):Promise<void>{
+  updateParameterGrade(examGrade_id:string, pFG:UntypedFormGroup):Promise<void>{
     let parameterGrade_id = pFG.controls.id.value
     let json = {
       score:pFG.controls.score.value,
@@ -538,10 +538,10 @@ updateExamGrade():Promise<void>{
       db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(parameterGrade_id).update(json).then(()=>{
     
         console.log("adding parameterGrade" + pFG.controls.id.value)
-        let criteriaGradesFA = pFG.controls.criteriaGrades as FormArray
+        let criteriaGradesFA = pFG.controls.criteriaGrades as UntypedFormArray
         
         let cm = criteriaGradesFA.controls.map( c => {
-            return this.updateCriteriaGrades(examGrade_id, parameterGrade_id, c as FormGroup)             
+            return this.updateCriteriaGrades(examGrade_id, parameterGrade_id, c as UntypedFormGroup)             
         })
         Promise.all(cm).then( () =>{
           parameter_resolve()
@@ -557,7 +557,7 @@ updateExamGrade():Promise<void>{
     })
   }
 
-  updateCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGradeFG:FormGroup):Promise<void>{
+  updateCriteriaGrades(examGrade_id:string, parameterGrade_id:string, criteriaGradeFG:UntypedFormGroup):Promise<void>{
     let criteriaGrade_id = criteriaGradeFG.controls.id.value
     let json = {
       score:criteriaGradeFG.controls.score.value

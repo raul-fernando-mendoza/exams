@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
 
@@ -17,7 +17,7 @@ export class UserProfileEditComponent implements OnInit {
   })
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private userLogin: UserLoginService,
     private examImprovisation: ExamenesImprovisacionService
   ) { }

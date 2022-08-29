@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import * as uuid from 'uuid';
 import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
@@ -38,7 +38,7 @@ export function copyObj( to:{}, from:{} ) {
   return result
 }
 
-export function copyFromForm(to:{}, from:FormGroup) {
+export function copyFromForm(to:{}, from:UntypedFormGroup) {
   var result = {}
   for(const i in Object.keys(to)){
     const key = Object.keys(to)[i]

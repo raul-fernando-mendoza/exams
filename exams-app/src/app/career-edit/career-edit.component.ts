@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db, storage } from 'src/environments/environment';
@@ -44,7 +44,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     iconUrl:[null],
     videoUrl:[null],  
     videoDescription:[null],
-    levels:new FormArray([])
+    levels:new UntypedFormArray([])
   })
 
   pictureUrlStatus = {
@@ -55,7 +55,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }  
 
   constructor(
-      private fb: FormBuilder
+      private fb: UntypedFormBuilder
     , private route: ActivatedRoute
     , private userLoginService:UserLoginService
     , public formService:ExamFormService
@@ -80,8 +80,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
 
 
-  getFormArrayControls( fg:FormGroup , property):AbstractControl[]{
-    var fa:FormArray = fg.controls[property] as FormArray
+  getFormArrayControls( fg:UntypedFormGroup , property):AbstractControl[]{
+    var fa:UntypedFormArray = fg.controls[property] as UntypedFormArray
     return fa.controls
   }  
   ngOnInit(): void {
@@ -94,7 +94,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       this.c.controls.pictureDescription.setValue(this.career.pictureDescription)
       this.c.controls.videoUrl.setValue(this.career.videoUrl)
       this.c.controls.videoDescription.setValue(this.career.videoDescription)
-      this.loadLevels(this.career.id, this.c.controls.levels as FormArray).then( () =>{
+      this.loadLevels(this.career.id, this.c.controls.levels as UntypedFormArray).then( () =>{
       })
     },
     reason =>{
@@ -140,7 +140,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     })
   }
 
-  loadLevels( career_id:string, levels:FormArray):Promise<void>{
+  loadLevels( career_id:string, levels:UntypedFormArray):Promise<void>{
     return new Promise<void>((resolve, reject)=>{
       const unsubscribe = db.collection("careers/" + career_id + "/levels")
       .where("isDeleted","==",false)
@@ -151,15 +151,15 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           var level_FG = this.fb.group({
             id:[level.id],
             level_name: [ level.level_name ],
-            groups: new FormArray([])
+            groups: new UntypedFormArray([])
           })
           levels.controls.push( level_FG )
-          return this.loadGroups( career_id, level.id, level_FG.controls.groups as FormArray)
+          return this.loadGroups( career_id, level.id, level_FG.controls.groups as UntypedFormArray)
         })
         Promise.all( map ).then( ()=>{
           levels.controls.sort( (a,b) =>{
-            var a_FG = a as FormGroup
-            var b_FG = b as FormGroup
+            var a_FG = a as UntypedFormGroup
+            var b_FG = b as UntypedFormGroup
             return a_FG.controls.level_name.value > b_FG.controls.level_name.value? 1:-1
           })
           resolve()
@@ -208,7 +208,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       alert("ERROR adding group:" + reason)
     })
   }
-  loadGroups( career_id:string, level_id, groups:FormArray):Promise<void>{
+  loadGroups( career_id:string, level_id, groups:UntypedFormArray):Promise<void>{
     
     return new Promise<void>((resolve, reject)=>{
       const unsubscribe = db.collection("careers/" + career_id + "/levels/" + level_id + "/groups")
@@ -221,15 +221,15 @@ export class CareerEditComponent implements OnInit, OnDestroy {
             id:[group.id],
             group_name: [ group.group_name ],
             group_grade_type_id: [ group.group_grade_type_id ],
-            materias: new FormArray([])
+            materias: new UntypedFormArray([])
           })
           groups.controls.push( fg )
-          return this.loadMaterias(career_id, level_id, group.id, fg.controls.materias as FormArray)
+          return this.loadMaterias(career_id, level_id, group.id, fg.controls.materias as UntypedFormArray)
         })
         Promise.all( map ).then( ()=>{
           groups.controls.sort( (a,b) =>{
-            var a_FG = a as FormGroup
-            var b_FG = b as FormGroup
+            var a_FG = a as UntypedFormGroup
+            var b_FG = b as UntypedFormGroup
             return a_FG.controls.group_name.value > b_FG.controls.group_name.value ? 1:-1
           })
           resolve()
@@ -308,7 +308,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     })
   }
 
-  loadMaterias( career_id:string, level_id:string, group_id:string, materias:FormArray):Promise<void>{
+  loadMaterias( career_id:string, level_id:string, group_id:string, materias:UntypedFormArray):Promise<void>{
     return new Promise<void>((resolve, reject)=>{
       
       var unsubscribe = db.collection("careers/" + career_id + "/levels/" + level_id + "/groups/" + group_id + "/materias").onSnapshot( set =>{
@@ -327,8 +327,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         })
         Promise.all( map ).then( ()=>{
           materias.controls.sort( (a,b) =>{
-            var a_FG = a as FormGroup
-            var b_FG = b as FormGroup
+            var a_FG = a as UntypedFormGroup
+            var b_FG = b as UntypedFormGroup
             return a_FG.controls.materia_name.value > b_FG.controls.materia_name.value ? 1:-1
           })
           resolve()

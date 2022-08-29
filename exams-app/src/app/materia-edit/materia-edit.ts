@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from "@angular/core"
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms"
+import { UntypedFormArray, UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from "@angular/forms"
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
@@ -36,7 +36,7 @@ export class DialogMateriaDialog implements OnInit{
   examenes:Array<Exam>=[]
 
   materia_id = null
-  m:FormGroup = null
+  m:UntypedFormGroup = null
   submitting:boolean = false
 
   certificateTypes:Array<CertificateType> = []
@@ -53,7 +53,7 @@ export class DialogMateriaDialog implements OnInit{
   snapshots=Array<any>()
 
   constructor(
-      private fb: FormBuilder
+      private fb: UntypedFormBuilder
       ,private route: ActivatedRoute
       ,private router: Router
       ,private examImprovisacionService: ExamenesImprovisacionService
@@ -119,9 +119,9 @@ export class DialogMateriaDialog implements OnInit{
           label4:[""], 
           color1:[""], 
           color2:[""], 
-          exams:new FormArray([])            
+          exams:new UntypedFormArray([])            
         })
-        this.loadExams(this.materia_id, this.m.controls.exams as FormArray)  
+        this.loadExams(this.materia_id, this.m.controls.exams as UntypedFormArray)  
     }
     else{
       this.m = this.fb.group({
@@ -230,7 +230,7 @@ export class DialogMateriaDialog implements OnInit{
   }
 
 
-  onSelectChange(event:MatSelectChange, fg:FormGroup){
+  onSelectChange(event:MatSelectChange, fg:UntypedFormGroup){
     console.log("onSelectChange")
 
     var id =fg.controls.id.value
@@ -360,7 +360,7 @@ export class DialogMateriaDialog implements OnInit{
       this.navigationService.back()
     }
   }
-  loadExams(materia_id:string, exams:FormArray):Promise<void>{
+  loadExams(materia_id:string, exams:UntypedFormArray):Promise<void>{
     return new Promise<void>((resolve, reject) =>{
       exams.controls.length = 0
       db.collection("materias/" + materia_id + "/exams")
@@ -368,7 +368,7 @@ export class DialogMateriaDialog implements OnInit{
       .get().then( snapshot =>{
         snapshot.docs.map( doc =>{
           const exam = doc.data() as Exam
-          var fc:FormGroup = this.fb.group({
+          var fc:UntypedFormGroup = this.fb.group({
             id:[exam.id],
             label:[exam.label]
           })
@@ -376,8 +376,8 @@ export class DialogMateriaDialog implements OnInit{
         })
         
         exams.controls.sort( (a,b) => {
-          const af = a as FormGroup
-          const bf = b as FormGroup
+          const af = a as UntypedFormGroup
+          const bf = b as UntypedFormGroup
           return af.controls.label.value > bf.controls.label.value ? 1:-1})
         resolve()
         

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { db, storage } from 'src/environments/environment';
 import { ExamFormService } from '../exam-form.service';
@@ -22,7 +22,7 @@ export class CertificateTypeEditComponent implements OnInit, OnDestroy {
   unsubscribe = null
 
   constructor( 
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private preferences:UserPreferencesService,
     private formService:ExamFormService,
     private route: ActivatedRoute

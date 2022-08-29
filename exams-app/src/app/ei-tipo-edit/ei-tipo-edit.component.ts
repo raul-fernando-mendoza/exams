@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
 import { CdkTextareaAutosize} from '@angular/cdk/text-field';
@@ -30,7 +30,7 @@ export class EiTipoEditComponent implements OnInit {
     label:["Nombre de la materia", Validators.required],   
     description:[""],
     isRequired:[false],
-    parameters: new FormArray([])
+    parameters: new UntypedFormArray([])
   })
   
   materia_id:string
@@ -40,11 +40,11 @@ export class EiTipoEditComponent implements OnInit {
 
 
 
-  constructor(private fb: FormBuilder
+  constructor(private fb: UntypedFormBuilder
     , private route: ActivatedRoute
     , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: FormBuilder
+    , private formBuilder: UntypedFormBuilder
     , private _ngZone: NgZone
     , private userLoginService: UserLoginService) {
       this.materia_id = this.route.snapshot.paramMap.get('materia_id')
@@ -60,15 +60,15 @@ export class EiTipoEditComponent implements OnInit {
         .subscribe(() => this.autosize.resizeToFitContent(true));
   }  
   
-  getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
+  getFormGroupArray (fg:UntypedFormGroup, controlname:string): UntypedFormGroup[] {
     if( fg == null){
       console.error("ERRO controls for " + controlname + " in " + fg)
     }
-    var fa:FormArray =  fg.controls[controlname] as FormArray
+    var fa:UntypedFormArray =  fg.controls[controlname] as UntypedFormArray
     if( fa == null){
       console.error("I can not find controls for:" + controlname)
     }
-    return fa.controls as FormGroup[]
+    return fa.controls as UntypedFormGroup[]
   }
 
   ngOnInit(): void {
@@ -81,7 +81,7 @@ export class EiTipoEditComponent implements OnInit {
     this.e.controls.id.setValue( this.exam_id )
     this.e.controls.label.setValue(null)
 
-    var parameter: FormArray = this.e.controls.parameters as FormArray
+    var parameter: UntypedFormArray = this.e.controls.parameters as UntypedFormArray
     parameter.clear()
 
     
@@ -129,7 +129,7 @@ export class EiTipoEditComponent implements OnInit {
             this.e.controls.label.setValue(t.label)
             this.e.controls.description.setValue( t.description ? t.description : "" )
             this.e.controls.isRequired.setValue(t.isRequired ? t.isRequired : false)
-            var parameter_arr:FormArray = this.e.controls.parameters as FormArray
+            var parameter_arr:UntypedFormArray = this.e.controls.parameters as UntypedFormArray
 
             for( let i =0;t.parameters && i<t.parameters.length; i++){
               var p = t.parameters[i]
@@ -137,8 +137,8 @@ export class EiTipoEditComponent implements OnInit {
             }
 
             parameter_arr.controls.sort( (a, b) => {
-              var afg:FormGroup = a as FormGroup 
-              var bfg:FormGroup = b as FormGroup
+              var afg:UntypedFormGroup = a as UntypedFormGroup 
+              var bfg:UntypedFormGroup = b as UntypedFormGroup
               return  afg.controls.idx.value - bfg.controls.idx.value 
             })
           },     
@@ -155,51 +155,51 @@ export class EiTipoEditComponent implements OnInit {
     }
   }
 
-  addParameter( p, parameters: FormArray){
+  addParameter( p, parameters: UntypedFormArray){
     var g = this.fb.group({
       id:[p["id"]],
       label:[p["label"]],
       scoreType:[p["scoreType"]],
       idx:[p["idx"]],
       description:[p["description"]],
-      criterias:new FormArray([])
+      criterias:new UntypedFormArray([])
     })
     parameters.push(g) 
 
-    var criterias_arr = g.controls.criterias as FormArray
+    var criterias_arr = g.controls.criterias as UntypedFormArray
     for( let i =0; p["criterias"] && i<p["criterias"].length; i++){
       this.addCriteria( p["criterias"][i], criterias_arr)
     } 
     criterias_arr.controls.sort( (a, b) => {
-      var afg:FormGroup = a as FormGroup 
-      var bfg:FormGroup = b as FormGroup
+      var afg:UntypedFormGroup = a as UntypedFormGroup 
+      var bfg:UntypedFormGroup = b as UntypedFormGroup
       return  afg.controls.idx.value - bfg.controls.idx.value 
     })    
   }
 
-  addCriteria( c, criteria_array:FormArray  ){
+  addCriteria( c, criteria_array:UntypedFormArray  ){
       var g = this.fb.group({
         id:[c["id"]],
         label:[c["label"]],
         initiallySelected:[c["initiallySelected"]],
         idx:[c["idx"]],
         description:[c["description"]],
-        aspects:new FormArray([])
+        aspects:new UntypedFormArray([])
       })
       criteria_array.push(g)
 
-      var aspects_arr = g.controls.aspects as FormArray
+      var aspects_arr = g.controls.aspects as UntypedFormArray
       for( let i =0; c["aspects"] && i<c["aspects"].length; i++){
         this.addAspect( c["aspects"][i],  aspects_arr)
       }
       aspects_arr.controls.sort( (a, b) => {
-        var afg:FormGroup = a as FormGroup 
-        var bfg:FormGroup = b as FormGroup
+        var afg:UntypedFormGroup = a as UntypedFormGroup 
+        var bfg:UntypedFormGroup = b as UntypedFormGroup
         return  afg.controls.idx.value - bfg.controls.idx.value 
       })      
   }
 
-  addAspect( a, aspects_array:FormArray  ){
+  addAspect( a, aspects_array:UntypedFormArray  ){
     var g = this.fb.group({
       id:[a["id"]],
       idx:[a["idx"]],      
@@ -209,8 +209,8 @@ export class EiTipoEditComponent implements OnInit {
     aspects_array.push(g)
   }  
 
-  newParameter( e:FormGroup ){
-    var parameters_array:FormArray = e.controls.parameters as FormArray
+  newParameter( e:UntypedFormGroup ){
+    var parameters_array:UntypedFormArray = e.controls.parameters as UntypedFormArray
     var req:ParameterRequest = {
       materias:{
         id:this.materia_id,
@@ -249,9 +249,9 @@ export class EiTipoEditComponent implements OnInit {
     })
   }
 
-  newCriteria( e:FormGroup, p:FormGroup  ){
+  newCriteria( e:UntypedFormGroup, p:UntypedFormGroup  ){
    
-    var criteria_array:FormArray = p.controls.criterias as FormArray
+    var criteria_array:UntypedFormArray = p.controls.criterias as UntypedFormArray
     var req:CriteriaRequest = {
       materias:{
         id:this.materia_id,
@@ -291,9 +291,9 @@ export class EiTipoEditComponent implements OnInit {
     })
   }
 
-  newAspect( e:FormGroup, p:FormGroup, c:FormGroup  ){
+  newAspect( e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup  ){
     
-    var question_array:FormArray = c.controls.aspects as FormArray
+    var question_array:UntypedFormArray = c.controls.aspects as UntypedFormArray
     var req:AspectRequest = {
       materias:{
         id:this.materia_id,
@@ -335,7 +335,7 @@ export class EiTipoEditComponent implements OnInit {
   }
 
 
-  dupParameter( e:FormGroup, p:FormGroup){
+  dupParameter( e:UntypedFormGroup, p:UntypedFormGroup){
   
     var req:ParameterRequest = {
       materias:{
@@ -357,7 +357,7 @@ export class EiTipoEditComponent implements OnInit {
         data => {
           console.log(" parameter add has completed")
           var newParameter = data["result"]
-          var parameters_array = e.controls.parameters as FormArray
+          var parameters_array = e.controls.parameters as UntypedFormArray
           this.addParameter( newParameter , parameters_array)  
           this.submitting = false;      
         },
@@ -373,9 +373,9 @@ export class EiTipoEditComponent implements OnInit {
   }
 
 
-  dupCriteria( e:FormGroup, p:FormGroup, c:FormGroup  ){
+  dupCriteria( e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup  ){
     this.submitting = true; 
-    var criteria_array:FormArray = p.controls.criterias as FormArray
+    var criteria_array:UntypedFormArray = p.controls.criterias as UntypedFormArray
     var req:CriteriaRequest = {
       materias:{
         id:this.materia_id,
@@ -396,7 +396,7 @@ export class EiTipoEditComponent implements OnInit {
         data => {
           console.log(" criteria add has completed")
           var newCriteria = data["result"]
-          criteria_array = p.controls.criterias as FormArray
+          criteria_array = p.controls.criterias as UntypedFormArray
           this.addCriteria(newCriteria, criteria_array)
           this.submitting = false;         
         },
@@ -413,7 +413,7 @@ export class EiTipoEditComponent implements OnInit {
 
 
 
-  delParameter(e:FormGroup, p:FormGroup){
+  delParameter(e:UntypedFormGroup, p:UntypedFormGroup){
 
     if( !confirm("Esta seguro de querer borrar el parametro") ){
       return
@@ -435,9 +435,9 @@ export class EiTipoEditComponent implements OnInit {
       this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("parameter has been erased")
-          var parameters_array:FormArray = e.controls.parameters as FormArray
+          var parameters_array:UntypedFormArray = e.controls.parameters as UntypedFormArray
           for(var i=0; i<parameters_array.length; i++){
-            var pg:FormGroup = parameters_array.controls[i] as FormGroup
+            var pg:UntypedFormGroup = parameters_array.controls[i] as UntypedFormGroup
             if( pg.controls.id.value == p.controls.id.value){
               parameters_array.removeAt(i)
               //this.updateTableIdx("criteria", criteria_array.controls as FormGroup[],i)
@@ -458,7 +458,7 @@ export class EiTipoEditComponent implements OnInit {
   }
 
 
-  delCriteria(e:FormGroup, p:FormGroup, c:FormGroup){
+  delCriteria(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup){
     if( !confirm("Esta seguro de querer borrar el criterio") ){
       return
     }    
@@ -481,9 +481,9 @@ export class EiTipoEditComponent implements OnInit {
       this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("question has been erased")
-          var criteria_array:FormArray = p.controls.criterias as FormArray
+          var criteria_array:UntypedFormArray = p.controls.criterias as UntypedFormArray
           for(var i=0; i<criteria_array.length; i++){
-            var tc:FormGroup = criteria_array.controls[i] as FormGroup
+            var tc:UntypedFormGroup = criteria_array.controls[i] as UntypedFormGroup
             if( tc.controls.id.value == c.controls.id.value){
               criteria_array.removeAt(i)
               //this.updateTableIdx("criteria", criteria_array.controls as FormGroup[],i)
@@ -503,7 +503,7 @@ export class EiTipoEditComponent implements OnInit {
     })
   }
 
-  delAspect(e:FormGroup,p:FormGroup, c:FormGroup, a:FormGroup){
+  delAspect(e:UntypedFormGroup,p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
     this.submitting = false; 
     var req:AspectRequest = {
       materias:{
@@ -528,10 +528,10 @@ export class EiTipoEditComponent implements OnInit {
           console.log("aspect has been erased")
           
           
-          var aspects_array:FormArray = c.controls.aspects as FormArray
+          var aspects_array:UntypedFormArray = c.controls.aspects as UntypedFormArray
           
           for(var i=0; i<aspects_array.length; i++){
-            var tq:FormGroup = aspects_array.controls[i] as FormGroup
+            var tq:UntypedFormGroup = aspects_array.controls[i] as UntypedFormGroup
             if( tq.controls.id.value == a.controls.id.value){
               aspects_array.removeAt(i)
               //this.updateTableIdx("criteria", aspects_array.controls as FormGroup[], i)
@@ -551,7 +551,7 @@ export class EiTipoEditComponent implements OnInit {
     })
   }
 
-  onChangeExam(e:FormGroup){
+  onChangeExam(e:UntypedFormGroup){
     console.log("exam")
     var req:ExamRequest = {
       materias:{
@@ -581,7 +581,7 @@ export class EiTipoEditComponent implements OnInit {
 
   }
 
-  onChangeExamProperty(event:MatSelectChange, exam:FormGroup){
+  onChangeExamProperty(event:MatSelectChange, exam:UntypedFormGroup){
     console.log("exam")
     var propertyName = event.source.ngControl.name
     var req:ExamRequest = {
@@ -610,7 +610,7 @@ export class EiTipoEditComponent implements OnInit {
 
   }  
 
-  onChangeParameter(e:FormGroup, p:FormGroup){
+  onChangeParameter(e:UntypedFormGroup, p:UntypedFormGroup){
     console.log("parameter")
     var req:ParameterRequest = {
       materias:{
@@ -643,7 +643,7 @@ export class EiTipoEditComponent implements OnInit {
     })
   }
 
-  onChangeCriteria(e:FormGroup, p:FormGroup, c:FormGroup){
+  onChangeCriteria(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup){
     console.log("criteria")
     var req:CriteriaRequest= {
       materias:{
@@ -680,7 +680,7 @@ export class EiTipoEditComponent implements OnInit {
   }
 
   
-  onChangeAspect(t:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+  onChangeAspect(t:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
     console.log("criteria")
     var req:AspectRequest = {
       materias:{
@@ -726,11 +726,11 @@ export class EiTipoEditComponent implements OnInit {
   getformValue(){
     return JSON.stringify(this.e.value)
   } 
-  upParameter(t:FormGroup, p:FormGroup){
+  upParameter(t:UntypedFormGroup, p:UntypedFormGroup){
     console.log("upParameter")
-    var parameter_array:FormArray = t.controls.parameters as FormArray
+    var parameter_array:UntypedFormArray = t.controls.parameters as UntypedFormArray
     for(var i=1; i<parameter_array.length; i++){
-      var g:FormGroup = parameter_array.controls[i] as FormGroup
+      var g:UntypedFormGroup = parameter_array.controls[i] as UntypedFormGroup
       if( g.controls.id.value == p.controls.id.value){
         var index = i
         var req:ParameterRequest = {
@@ -766,11 +766,11 @@ export class EiTipoEditComponent implements OnInit {
     }
   }
 
-  downParameter(t:FormGroup, p:FormGroup){
+  downParameter(t:UntypedFormGroup, p:UntypedFormGroup){
     console.log("downParameter")
-    var parameter_array:FormArray = t.controls.parameters as FormArray
+    var parameter_array:UntypedFormArray = t.controls.parameters as UntypedFormArray
     for(var i=0; i<parameter_array.length-1; i++){
-      var g:FormGroup = parameter_array.controls[i] as FormGroup
+      var g:UntypedFormGroup = parameter_array.controls[i] as UntypedFormGroup
       if( g.controls.id.value == p.controls.id.value){
         var index = i
         var req :ParameterRequest= {
@@ -807,12 +807,12 @@ export class EiTipoEditComponent implements OnInit {
     }
   }
 
-  upCriteria(e:FormGroup, p:FormGroup, c:FormGroup) {
+  upCriteria(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup) {
 
     console.log("upCriteria")
-    var criteria_array:FormArray = p.controls.criterias as FormArray
+    var criteria_array:UntypedFormArray = p.controls.criterias as UntypedFormArray
     for(var i=1; i<criteria_array.length; i++){
-      var g:FormGroup = criteria_array.controls[i] as FormGroup
+      var g:UntypedFormGroup = criteria_array.controls[i] as UntypedFormGroup
       if( g.controls.id.value == c.controls.id.value){
         var index = i
 
@@ -852,12 +852,12 @@ export class EiTipoEditComponent implements OnInit {
   
   } 
 
-  downCriteria(e:FormGroup, p:FormGroup, c:FormGroup) {
+  downCriteria(e:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup) {
 
     console.log("downCriteria")
-    var criteria_array:FormArray = p.controls.criterias as FormArray
+    var criteria_array:UntypedFormArray = p.controls.criterias as UntypedFormArray
     for(var i=0; i<criteria_array.length-1; i++){
-      var g:FormGroup = criteria_array.controls[i] as FormGroup
+      var g:UntypedFormGroup = criteria_array.controls[i] as UntypedFormGroup
       if( g.controls.id.value == c.controls.id.value){
         var index = i
 
@@ -898,11 +898,11 @@ export class EiTipoEditComponent implements OnInit {
   } 
  
 
-  upAspect(t:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+  upAspect(t:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
     console.log("upAspect")
-    var aspects_array:FormArray = c.controls.aspects as FormArray
+    var aspects_array:UntypedFormArray = c.controls.aspects as UntypedFormArray
     for(var i=1; i<aspects_array.length; i++){
-      var qg:FormGroup = aspects_array.controls[i] as FormGroup
+      var qg:UntypedFormGroup = aspects_array.controls[i] as UntypedFormGroup
       if( qg.controls.id.value == a.controls.id.value){
         var index = i
 
@@ -947,11 +947,11 @@ export class EiTipoEditComponent implements OnInit {
     }
   }
 
-  downAspect(t:FormGroup, p:FormGroup, c:FormGroup, a:FormGroup){
+  downAspect(t:UntypedFormGroup, p:UntypedFormGroup, c:UntypedFormGroup, a:UntypedFormGroup){
     console.log("downParameter")
-    var aspects_array:FormArray = c.controls.aspects as FormArray
+    var aspects_array:UntypedFormArray = c.controls.aspects as UntypedFormArray
     for(var i=0; i<aspects_array.length-1; i++){
-      var qg:FormGroup = aspects_array.controls[i] as FormGroup
+      var qg:UntypedFormGroup = aspects_array.controls[i] as UntypedFormGroup
       if( qg.controls.id.value == a.controls.id.value){
         var index = i
 
