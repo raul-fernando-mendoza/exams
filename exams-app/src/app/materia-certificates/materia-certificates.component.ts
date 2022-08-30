@@ -38,6 +38,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
   organization_id = null
 
+  submitting = false
+
   constructor(
       private userPreferencesService:UserPreferencesService
     , private sortingService:SortingService
@@ -136,7 +138,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         const resultMap = recordset.docs.map( (doc) => {
 
           const materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
-          console.log("public_url:" + materiaEnrollment.certificateUrl)
+          
 
           var n:NodeTableRow = {
             user:row.user,
@@ -176,14 +178,17 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
 
   onMateriaClick(row:NodeTableRow){
-    if(row.opened == false){
+    if(this.submitting == false && row.opened == false){
+      this.submitting = true
+      row.opened = true
       this.loadExamsForRow(row).then(()=>{
+        this.submitting = false
         this.update()
       })
     }
-    else{
-      row.children.length=0
+    else if ( this.submitting == false && row.opened == true) {
       row.opened=false
+      row.children.length=0
       this.update()
     }
 
@@ -284,6 +289,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }   
 
   onStudentClick(row:NodeTableRow){
+    row.children.length = 0
+    
     var careersNode:NodeTableRow = {
       user:row.user,
       opened:false,
@@ -333,12 +340,17 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
 
   onMateriasClick(row:NodeTableRow){
-    if(row.opened == false){
+    console.log("opening materias:" + "submmiting:" + this.submitting + "row oppened:" + row.opened)
+    if(this.submitting == false && row.opened == false){
+      this.submitting = true
       this.loadEnrollmentForRow(row).then( () =>{
+        this.submitting = false
         this.update()
+
+
       })
     }
-    else{
+    else if( this.submitting == false && row.opened == true ){
       row.children.length=0
       row.opened=false
       this.update()

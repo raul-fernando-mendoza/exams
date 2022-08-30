@@ -9,12 +9,10 @@ import { UserLoginService } from '../user-login.service';
 import { copyObj, ExamGrade, ExamGradeMultipleRequest, Exam, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { stringify } from '@angular/compiler/src/util';
 
 import { db } from 'src/environments/environment';
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import * as firebase from 'firebase';
-import { assertNotNull } from '@angular/compiler/src/output/output_ast';
 import { UserPreferencesService } from '../user-preferences.service';
 
 

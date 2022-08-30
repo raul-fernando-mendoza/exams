@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { UntypedFormGroup } from '@angular/forms';
 
 import * as uuid from 'uuid';
-import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 
 @NgModule({
   declarations: [],

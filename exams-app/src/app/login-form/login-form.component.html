@@ -28,19 +28,12 @@
         </div>
       </div>
 
-      <div class="row mt-3">
-        <div class="col-sm-12 mb-2">
-          <re-captcha id="recaptcha" name="recaptcha" #recaptcha="ngModel" [(ngModel)]="token" required [class.is-invalid]="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)"></re-captcha>
-          <div *ngIf="recaptcha.invalid && (recaptcha.dirty || recaptcha.touched)" class="invalid-feedback">
-            <div *ngIf="recaptcha.errors?.['required']">This field is required.</div>
-          </div>
-        </div>
-      </div>      
+      <re-captcha formControlName="recaptchaReactive"></re-captcha>
     </mat-card-content>
     
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister">Login</button>
-      <button mat-raised-button color="warn" (click)="register()" *ngIf="isRegister">Registar</button>
+      <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister" [disabled]="loginForm.invalid">Login</button>
+      <button mat-raised-button color="warn" (click)="register()" *ngIf="isRegister" [disabled]="loginForm.invalid">Registar</button>
     </mat-card-actions>
 
   </mat-card>
