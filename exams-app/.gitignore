@@ -53,3 +53,4 @@ certificates/.vscode/
 certificates/__pycache__/
 .firebaserc
 .vscode
+.angular
