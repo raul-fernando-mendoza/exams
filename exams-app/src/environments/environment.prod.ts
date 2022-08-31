@@ -30,10 +30,14 @@ export const environment = {
   certificatesDeleteURL:"https://us-central1-thoth-qa.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
   certificatesCreateURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost",
   gsApiUrl: "https://us-central1-thoth-qa.cloudfunctions.net/gsRequest" ,
-  certificatesBucket:"certificates-thoth-qa"
+  certificatesBucket:"certificates-thoth-qa",
 
  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
+
+  recaptcha: {
+    siteKey: '6LcFB7ohAAAAAMBJx7mf6-49OMW2JYbLuVgLl3d2',
+  },  
 };
 
 const app = firebase.initializeApp(environment.firebase)

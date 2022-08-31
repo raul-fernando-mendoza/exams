@@ -30,10 +30,15 @@ export var environment = {
   certificatesDeleteURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
   certificatesCreateURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/createCertificateMateriaEnrollmentPost",
   gsApiUrl: "https://us-central1-thoth-dev-346022.cloudfunctions.net/gsRequest" ,
-  certificatesBucket:"certificates-thoth-dev-346022"
+  certificatesBucket:"certificates-thoth-dev-346022",
 
  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
+
+  recaptcha: {
+    siteKey: '6LcFB7ohAAAAAMBJx7mf6-49OMW2JYbLuVgLl3d2',
+  },
+  
 };
 
 if (location.hostname === "localhost") {

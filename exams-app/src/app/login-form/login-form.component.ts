@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 
@@ -12,14 +12,18 @@ import { UserLoginService } from '../user-login.service';
 export class LoginFormComponent {
   loginForm = this.fb.group({
     username: [null, Validators.required],
-    password: [null, Validators.required]
+    password: [null, Validators.required],
+    recaptchaReactive:[null, Validators.required],
   });
   isRegister = false
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute, 
+  token: string|undefined;
+
+  constructor(private fb: UntypedFormBuilder, private route: ActivatedRoute, 
     private router: Router, 
     private userLoginService:UserLoginService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
+      this.token = undefined;
   }
 
   ngOnInit() {
@@ -48,4 +52,5 @@ export class LoginFormComponent {
     //alert("going to call login with Logout")
     this.userLoginService.logout()
   }
+
 }

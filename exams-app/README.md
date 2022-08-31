@@ -7,6 +7,8 @@ firebase login
 firebase projects:list  
 
 # use the followng to select the hosting option.
+firebase projects:list
+firebase use <project_id>
 firebase init
 
 
