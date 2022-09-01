@@ -56,7 +56,7 @@ export class MateriaCertificatesDataSource extends DataSource<NodeTableRow> {
       this.sort.sortChange
     ];
 
-    return merge(...dataMutations).pipe(map(() => {
+    return merge(dataMutations).pipe(map(() => {
       return this.getPagedData(this.getSortedData([...this.data]));
     }));
   }

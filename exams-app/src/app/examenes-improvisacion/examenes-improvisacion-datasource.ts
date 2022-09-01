@@ -62,7 +62,7 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
       this.sort.sortChange
     ];
 
-    return merge(...dataMutations).pipe(map(() => {
+    return merge(dataMutations).pipe(map(() => {
       console.log("sort:" + this.sort.active + " " + this.sort.direction)
       var jsonExamenesSort = { 
         "active":this.sort.active,

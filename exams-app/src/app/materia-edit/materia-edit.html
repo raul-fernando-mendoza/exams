@@ -69,11 +69,9 @@ Habilidad
           <input class="nothing" matInput disabled> 
       </mat-form-field>
 
-      <span *ngIf="!isAdmin">{{ m.controls.pictureDescription.value }}</span>
-      <mat-form-field *ngIf="isAdmin" appearance="outline">
-        <mat-label>description de la imagen</mat-label>
-        <textarea  matInput maxlength="2000" rows="3" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
-      </mat-form-field>       
+      <quill-view-html *ngIf="!isAdmin" [content]="m.controls.pictureDescription.value"></quill-view-html>
+      <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="pictureDescription" (onBlur)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></quill-editor>
+
     </mat-card-content>
   </mat-card>
   <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
@@ -82,8 +80,6 @@ Habilidad
 
     </mat-card-title-group>
     <mat-card-content>
-      <span *ngIf="!isAdmin">{{ m.controls.videoDescription.value }}</span>
-
       <div class="video-container">
         <app-vjs-player *ngIf="isAdmin && materia && materia.videoUrl" source="{{materia.videoUrl}}"></app-vjs-player>  
         <video *ngIf="!isAdmin && materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
@@ -106,11 +102,10 @@ Habilidad
             </button>      
             <input hidden (change)="selectFile($event)" name="video" #video type="file" >
         </mat-form-field>
-        <mat-form-field *ngIf="isAdmin" appearance="outline">
-          <mat-label>description del video</mat-label>
-          <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
-        </mat-form-field>          
       </div>
+      <quill-view-html *ngIf="!isAdmin" [content]="m.controls.videoDescription.value"></quill-view-html>
+      <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="videoDescription" (onBlur)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></quill-editor>
+
 
       <div class="examen-container">
         <h3>Examenes<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
@@ -144,7 +139,15 @@ Habilidad
     <mat-card-actions>
     <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive">Enrolar</button>
     </mat-card-actions> 
-  </mat-card>     
+  </mat-card> 
+  
+  <div>
+   
+
+
+    
+    
+  </div>
 </form>
 
 

@@ -1,9 +1,9 @@
-import { Component, Inject, OnInit } from "@angular/core"
-import { UntypedFormArray, UntypedFormBuilder, FormControl, UntypedFormGroup, Validators } from "@angular/forms"
+import { Component, Inject, OnInit, ViewChild } from "@angular/core"
+import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@angular/forms"
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
-import { CertificateIcon, CertificateType, Exam, Materia } from "../exams/exams.module"
+import { CertificateType, Exam, Materia } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage  } from 'src/environments/environment';
 
@@ -15,6 +15,7 @@ import { NavigationService } from "../navigation.service"
 import { UserPreferencesService } from "../user-preferences.service"
 import { Observable, Observer } from "rxjs"
 import { FileLoadObserver } from "../load-observers/load-observers.module"
+
 
 var storageRef
 var materia_id
@@ -30,13 +31,31 @@ export class DialogMateriaDialog implements OnInit{
    
   materia_observable: Observable<Materia> 
 
+   
 
   materia:Materia=null
+
+  modules = {
+    toolbar: [
+    ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+    [{ 'header': 1 }, { 'header': 2 }], // custom button values
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }], // superscript/subscript
+    [{ 'indent': '-1' }, { 'indent': '+1' }], // outdent/indent
+    [{ 'direction': 'rtl' }], // text direction
+    [{ 'size': ['small', false, 'large', 'huge'] }], // custom dropdown
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'color': [] }, { 'background': [] }], // dropdown with defaults from theme
+    [{ 'font': [] }],
+    [{ 'align': [] }],
+    ['clean'] // remove formatting button
+    ]
+    };  
 
   examenes:Array<Exam>=[]
 
   materia_id = null
-  m:UntypedFormGroup = null
+  m:FormGroup = null
   submitting:boolean = false
 
   certificateTypes:Array<CertificateType> = []
@@ -53,7 +72,7 @@ export class DialogMateriaDialog implements OnInit{
   snapshots=Array<any>()
 
   constructor(
-      private fb: UntypedFormBuilder
+      private fb: FormBuilder
       ,private route: ActivatedRoute
       ,private router: Router
       ,private examImprovisacionService: ExamenesImprovisacionService
@@ -119,9 +138,9 @@ export class DialogMateriaDialog implements OnInit{
           label4:[""], 
           color1:[""], 
           color2:[""], 
-          exams:new UntypedFormArray([])            
+          exams:new FormArray([])            
         })
-        this.loadExams(this.materia_id, this.m.controls.exams as UntypedFormArray)  
+        this.loadExams(this.materia_id, this.m.controls.exams as FormArray)  
     }
     else{
       this.m = this.fb.group({
@@ -230,73 +249,14 @@ export class DialogMateriaDialog implements OnInit{
   }
 
 
-  onSelectChange(event:MatSelectChange, fg:UntypedFormGroup){
+  onSelectChange(event:MatSelectChange, fg:FormGroup){
     console.log("onSelectChange")
 
     var id =fg.controls.id.value
 
     var propertyName = event.source.ngControl.name
     var value = event.source.ngControl.value      
-/*
-    
-    var values = {}
-
-    if( propertyName == "typeCertificate"){
-      switch(value){
-        case "Experta.jpeg": 
-          this.m.controls.label1.setValue("RAKS SHARKI")
-          this.m.controls.label2.setValue("")
-          this.m.controls.label3.setValue("")
-          this.m.controls.label4.setValue("Danza Oriental y Fusiones")
-          this.m.controls.color1.setValue("#d9ad43")
-          this.m.controls.color2.setValue("black")
-          break
-        case "Especialista.jpeg": 
-          this.m.controls.label1.setValue("RAKS SHARKI")
-          this.m.controls.label2.setValue("")
-          this.m.controls.label3.setValue("")
-          this.m.controls.label4.setValue("Danza Oriental y Fusiones")
-          this.m.controls.color1.setValue("#5b2383")
-          this.m.controls.color2.setValue("black")
-          break            
-
-        case "habilidades_tecnicas.jpeg": 
-          this.m.controls.label1.setValue("")
-          this.m.controls.label2.setValue(this.m.controls.materia_name.value)
-          this.m.controls.label3.setValue("")
-          this.m.controls.label4.setValue("WWW.RAXACADEMY.COM")
-          this.m.controls.color1.setValue("#5b2383")
-          this.m.controls.color2.setValue("black")     
-          break;    
-        case "habilidades_tematicas.jpeg": 
-          this.m.controls.label1.setValue("")
-          this.m.controls.label2.setValue(this.m.controls.materia_name.value)
-          this.m.controls.label3.setValue("")
-          this.m.controls.label4.setValue("WWW.RAXACADEMY.COM")
-          this.m.controls.color1.setValue("#5b2383")
-          this.m.controls.color2.setValue( "red")
-          break;                      
-      }
-      if( id ){
-        values = {
-          typeCertificate:this.m.controls.typeCertificate.value,
-          label1:this.m.controls.label1.value,
-          label2:this.m.controls.label2.value,
-          label3:this.m.controls.label3.value,
-          label4:this.m.controls.label4.value,
-          color1:this.m.controls.color1.value,
-          color2:this.m.controls.color2.value
-        }
-        db.collection('materias').doc(id).update(values).then( () =>{
-          console.log("property has been update:" + propertyName + " " + value)
-        },
-        reason =>{
-          alert("ERROR: writing property:" + reason)
-        })
-      }
-    }
-    else{
-*/      
+ 
     if( id ){ 
       var values = {}
       values[propertyName]=value                                  
@@ -360,7 +320,7 @@ export class DialogMateriaDialog implements OnInit{
       this.navigationService.back()
     }
   }
-  loadExams(materia_id:string, exams:UntypedFormArray):Promise<void>{
+  loadExams(materia_id:string, exams:FormArray):Promise<void>{
     return new Promise<void>((resolve, reject) =>{
       exams.controls.length = 0
       db.collection("materias/" + materia_id + "/exams")
@@ -368,7 +328,7 @@ export class DialogMateriaDialog implements OnInit{
       .get().then( snapshot =>{
         snapshot.docs.map( doc =>{
           const exam = doc.data() as Exam
-          var fc:UntypedFormGroup = this.fb.group({
+          var fc:FormGroup = this.fb.group({
             id:[exam.id],
             label:[exam.label]
           })
@@ -376,8 +336,8 @@ export class DialogMateriaDialog implements OnInit{
         })
         
         exams.controls.sort( (a,b) => {
-          const af = a as UntypedFormGroup
-          const bf = b as UntypedFormGroup
+          const af = a as FormGroup
+          const bf = b as FormGroup
           return af.controls.label.value > bf.controls.label.value ? 1:-1})
         resolve()
         
@@ -553,7 +513,31 @@ export class DialogMateriaDialog implements OnInit{
   onCertificateTypes( ){
     this.router.navigate(['certificate-type-list',{}])
   }
+  
 
+  onSelectionChanged = (event) => {
+    console.log("selection has change")
+  }
+  onEditorContentChanged = (propertyName, event) => {
+    
+    console.log( "onEditorContentChanged" + this.materia_id)
+    /*
+ 
+    */
+  }
+  editorCreated(quill: any) {
+    console.log("editor created")
+  }
+  public onBlur(propertyName, event:any): void {
+    var values = {}
+    values[propertyName]=this.m.controls[propertyName].value                                
+    db.collection('materias').doc(this.materia_id).update(values).then( () =>{
+      console.log("property has been update:" + propertyName + " " + values)
+    },
+    reason =>{
+      alert("ERROR: writing property:" + reason)
+    })        
+  }  
   
 }
   

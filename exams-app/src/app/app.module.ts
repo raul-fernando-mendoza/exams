@@ -68,6 +68,7 @@ import { CertificateTypeEditComponent } from './certificate-type-edit/certificat
 import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
 import { RECAPTCHA_SETTINGS, RecaptchaFormsModule, RecaptchaModule, RecaptchaSettings } from 'ng-recaptcha';
 import { environment } from '../environments/environment';
+import { QuillModule } from 'ngx-quill'
 
 @NgModule({
     declarations: [
@@ -146,6 +147,7 @@ import { environment } from '../environments/environment';
         MatProgressBarModule,
         RecaptchaModule,
         RecaptchaFormsModule,
+        QuillModule
     ],
     providers: [
         UserLoginService,

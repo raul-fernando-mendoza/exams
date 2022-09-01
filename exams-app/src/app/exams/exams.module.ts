@@ -409,9 +409,3 @@ export interface CertificateType{
   color2?:string
 }
 
-export interface CertificateIcon{
-  id:string
-  certificateIconName?:string
-  certificateIconUrl?:string
-  certificateIconPath?:string
-}

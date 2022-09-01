@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CertificateIcon, Exam, ExamRequest, Materia, MateriaRequest } from '../exams/exams.module';
+import { Exam, ExamRequest, Materia, MateriaRequest } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';

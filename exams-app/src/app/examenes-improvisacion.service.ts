@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { db, environment } from 'src/environments/environment';
 import { MateriaEnrollment, Organization, User } from './exams/exams.module';
 import * as uuid from 'uuid';
-import { Timestamp } from 'rxjs/internal/operators/timestamp';
-import { MatSelectChange } from '@angular/material/select';
 
 @Injectable({
   providedIn: 'root'
