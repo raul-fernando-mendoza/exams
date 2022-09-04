@@ -7,7 +7,7 @@ Carrera
                 <mat-card-title *ngIf="isAdmin">
                 <mat-form-field class="name">
                     <mat-label>Nombre</mat-label>
-                    <input matInput placeholder="" formControlName="career_name" (change)="formService.onPropertyChange('career_name', c.controls.id.value, $event)">
+                    <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
                 </mat-form-field>      
                 </mat-card-title>
                 <img mat-card-sm-image src="{{career.iconUrl}}">
