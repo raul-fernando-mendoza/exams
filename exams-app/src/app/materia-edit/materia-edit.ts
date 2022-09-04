@@ -112,7 +112,7 @@ export class DialogMateriaDialog implements OnInit{
       this.update()
     }
     this.loadMastersList()
-    this.loadIconList()      
+     
   }
 
   
@@ -174,42 +174,6 @@ export class DialogMateriaDialog implements OnInit{
   }
 
 
-
-  loadIconList(){
-    this.certificateIcons = []
-
-    var req = {
-      "path":"certificates_logos/" + this.userPreferencesService.getCurrentOrganizationId() + "/"
-    }
-
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
-        data => { 
-          if( data["result"]){
-            var listIcons = data["result"];
-            listIcons.forEach(icon => {
-              this.certificateIcons.push(
-                {
-                  id:icon["name"].split("/").pop(),
-                  label:icon["name"].split("/").pop()  
-                }  
-              )          
-            });
-          }
-          else{
-            console.log("error reading certificates logos:" + data["error"])
-          }
-        },     
-        error => {
-          alert("error loading impro type")
-          console.log("Error loading ExamType:" + error.error)
-        }
-      )
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    }) 
-  }
 
         
   onPropertyChange(event){
