@@ -35,6 +35,8 @@ export class DialogMateriaDialog implements OnInit{
 
   materia:Materia=null
 
+  hasEnrollment:boolean
+
   modules = {
     toolbar: [
     ['bold', 'italic', 'underline', 'strike'], // toggled buttons
@@ -140,7 +142,8 @@ export class DialogMateriaDialog implements OnInit{
           color2:[""], 
           exams:new FormArray([])            
         })
-        this.loadExams(this.materia_id, this.m.controls.exams as FormArray)  
+        this.loadExams(this.materia_id, this.m.controls.exams as FormArray)
+        this.hasMateriaEnrollment()  
     }
     else{
       this.m = this.fb.group({
@@ -425,16 +428,11 @@ export class DialogMateriaDialog implements OnInit{
       this.m.controls[property].setValue(null)
     })
   }
-  onEnroll(materiaId){
+  onEnroll(){
     if( this.userLoginService.getUserUid() ){
-      this.examImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), materia_id,this.userLoginService.getUserUid()).then( () =>{
-        
-        alert("Usted ha sido enrollado en esta materia.")
-        this.update()
-      },
-      reason => {
-        alert("usted ya esta enrollado en esta materia")
-      })
+
+      this.router.navigate(['/payment',{"productId":"prod_MNGiZUsnJ1PA2t", "materiaId":this.materia_id}]);
+
     }      
   }
 
@@ -502,6 +500,17 @@ export class DialogMateriaDialog implements OnInit{
       alert("ERROR: writing property:" + reason)
     })        
   }  
+
+  hasMateriaEnrollment(){
+    this.examImprovisacionService.hasMateriaEnrollment(
+      this.userPreferencesService.getCurrentOrganizationId(),
+      this.materia_id,
+      this.userLoginService.getUserUid()
+    ).then( hasEnrollment =>{
+      this.hasEnrollment = hasEnrollment
+      console.log("hasEnrollment:" + hasEnrollment)
+    })
+  }
   
 }
   
