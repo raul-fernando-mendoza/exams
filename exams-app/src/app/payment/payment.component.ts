@@ -56,6 +56,7 @@ elements;
 
 
   ngAfterViewInit(): void {
+    this.setLoading(true);
     loadStripe('pk_test_51KsBwvFedVXPScZdpx3he4qqmwvUNAPVvtEFavxuamN08DIU2CJ5anXjRth86pLx3SNu6Q5C03FOLFgkjfYB60my00NBo8ad9u').then(
       stripe =>{
         this.stripe = stripe
@@ -84,7 +85,10 @@ elements;
       this.elements = this.stripe.elements({ appearance, clientSecret });
   
       const paymentElement = this.elements.create("payment");
-      paymentElement.mount("#payment-element");      
+      paymentElement.mount("#payment-element");   
+      paymentElement.on("ready", () => {
+        this.setLoading(false);   
+      })
     },
     reason =>{
       alert("ERROR: reading string:" + reason)
@@ -102,7 +106,8 @@ elements;
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:4200/checkout",
+
+        return_url: window.origin + "/checkout",
       },
     });
 
@@ -166,11 +171,11 @@ elements;
   setLoading(isLoading) {
     if (isLoading) {
       // Disable the button and show a spinner
-      //document.querySelector("#submit").setDdisabled = true;
+      document.querySelector("#submit").setAttribute("enabled", "false") ;
       document.querySelector("#spinner").classList.remove("hidden");
       document.querySelector("#button-text").classList.add("hidden");
     } else {
-      //document.querySelector("#submit").disabled = false;
+      document.querySelector("#submit").setAttribute("enabled", "True");
       document.querySelector("#spinner").classList.add("hidden");
       document.querySelector("#button-text").classList.remove("hidden");
     }
