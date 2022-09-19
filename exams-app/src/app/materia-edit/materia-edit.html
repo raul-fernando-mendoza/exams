@@ -135,18 +135,16 @@ Habilidad
             </mat-menu>
         </div>
       </div> 
+    
     </mat-card-content>
     <mat-card-actions>
-    <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive">Enrolar</button>
+
     </mat-card-actions> 
   </mat-card> 
   
   <div>
-   
-
-
-    
-    
+    <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive && (hasEnrollment==false)" (click)="onEnroll()">Enrolar</button>
+    <span *ngIf="hasEnrollment">Usted ya esta enrolado en esta habilidad</span>  
   </div>
 </form>
 

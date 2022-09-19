@@ -124,6 +124,31 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
   }
 
+  hasMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<boolean>{
+    var result = false
+    var id = uuid.v4()
+    var _resolve
+    var _reject
+    return new Promise<boolean>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+
+      db.collection('materiaEnrollments')
+      .where("organization_id","==", organizationId)
+      .where("student_uid", "==", studentId)
+      .where("materia_id", "==", materiaId)
+      .where("isDeleted","==",false)
+      .get().then( set =>{
+        if( set.docs.length == 0){
+          resolve(false)
+        }
+        else{
+          resolve(true)
+        }
+      })
+    })
+  }
+
   createMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<void>{
     var id = uuid.v4()
     var _resolve
@@ -176,4 +201,48 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       return t.toISOString().split('T')[0] 
     }
   }  
+
+  public stripeCreatePaymentIntent(product_id, metadata): Observable<Object> {
+
+    var url = environment.stripeCreatePaymentIntentURL
+
+    var request_data = {
+      "product_id":product_id,
+      "metadata":metadata
+    }
+
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+    return this.http.post(url, request_data, {headers: myheaders})
+  }
+
+
+  public stripeGetProduct(product_id): Observable<Object> {
+
+    var url = environment.stripeGetProductDefaultPriceURL
+
+    var request_data = {
+      "product_id":product_id
+    }
+
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+    return this.http.post(url, request_data, {headers: myheaders})
+  }
+  public stripeGetPaymentIntent(paymentIntent_id): Observable<Object> {
+
+    var url = environment.stripeGetPaymentIntent
+
+    var request_data = {
+      "paymentIntentId":paymentIntent_id
+    }
+
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+    return this.http.post(url, request_data, {headers: myheaders})
+  }  
+
 }
