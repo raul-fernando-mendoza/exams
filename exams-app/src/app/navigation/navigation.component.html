@@ -64,9 +64,6 @@
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Login
       </button>
-      <button mat-stroked-button  aria-label="Registrate" (click)="Register()" *ngIf="!isLoggedIn()">
-        Registrate
-      </button>
   
       <span *ngIf="isLoggedIn()">{{ getUserName() }}</span>
       

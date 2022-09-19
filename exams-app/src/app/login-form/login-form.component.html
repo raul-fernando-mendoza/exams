@@ -1,7 +1,7 @@
 <form [formGroup]="loginForm">
   <mat-card>
     <mat-card-header>
-      <mat-card-title *ngIf="!isRegister">Login</mat-card-title>
+      <mat-card-title *ngIf="!isRegister">Login usando email</mat-card-title>
       <mat-card-title *ngIf="isRegister">Registrar usuario nuevo</mat-card-title>
      
     </mat-card-header>
@@ -30,9 +30,9 @@
 
       <re-captcha formControlName="recaptchaReactive"></re-captcha>
     </mat-card-content>
-    
+ 
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister" [disabled]="loginForm.invalid">Login</button>
+      <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister">Login</button>
       <button mat-raised-button color="warn" (click)="register()" *ngIf="isRegister" [disabled]="loginForm.invalid">Registar</button>
     </mat-card-actions>
 

@@ -116,7 +116,7 @@ export class NavigationComponent {
     return this.userLoginService.hasRole('role-evaluador-' + this.organization_id)
   }  
   isStudent(){
-    return this.userLoginService.hasRole('role-estudiante-' + this.organization_id)
+    return true
   }    
   getUserName(){
     return this.userLoginService.getDisplayName()

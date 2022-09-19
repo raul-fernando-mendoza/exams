@@ -22,5 +22,7 @@ export class LoginSelectorComponent implements OnInit {
     //alert("going to call login with Login popup")
     this.userLoginService.signInWithPopup()
   }  
-
+  register(){
+    this.router.navigate(['/loginForm',{"isRegister":true}])
+  }
 }

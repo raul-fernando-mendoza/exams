@@ -31,22 +31,49 @@ export class LoginFormComponent {
   }
   
   onLoginWithEmail(){
-    var user = this.loginForm.controls.username.value
-    var password = this.loginForm.controls.password.value
-    this.userLoginService.loginWithEmail(user, password).then( () =>{
-      this.router.navigate(['/']);
-    },
-    reason => {
-      console.error("ERROR: " + reason)
-    })
+
+    if( this.loginForm.valid ){
+
+        var user = this.loginForm.controls.username.value
+        var password = this.loginForm.controls.password.value
+
+        this.userLoginService.loginWithEmail(user, password).then( () =>{
+          this.router.navigate(['/']);
+        },
+        reason => {
+          console.error("ERROR: " + reason)
+        })
+    }
+    else{
+      let msg =  "ERROR: usuario o password son incorrectos"
+      if( this.loginForm.controls["recaptchaReactive"].valid == false){
+        msg = "ERROR: por favor complete el captcha"
+      }
+      alert( msg )
+    }
   }
 
   register(){
-    var user = this.loginForm.controls.username.value
-    var password = this.loginForm.controls.password.value
-    this.userLoginService.register(user, password).then( user =>{
-      this.router.navigate(['/loginForm',{}])
-    })    
+    if( this.loginForm.valid ){
+
+      var userName = this.loginForm.controls.username.value
+      var password = this.loginForm.controls.password.value
+      this.userLoginService.register(userName, password).then( user =>{
+        this.userLoginService.loginWithEmail(userName, password).then( () =>{
+          this.router.navigate(['/']);
+        },
+        reason => {
+          console.error("ERROR: " + reason)
+        })
+      })  
+    }
+    else{
+      let msg =  "ERROR: usuario o password son incorrectos"
+      if( this.loginForm.controls["recaptchaReactive"].valid == false){
+        msg = "ERROR: por favor complete el captcha"
+      }
+      alert( msg )
+    }        
   }
   onLogout(){
     //alert("going to call login with Logout")
