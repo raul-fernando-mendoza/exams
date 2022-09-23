@@ -185,7 +185,7 @@ export class ExamenImprovisacionFormComponent {
         "claims":"role-estudiante-" + this.organization_id
     }      
 
-    this.examImprovisacionService.authApiInterface("getUserListForClaim", token, userReq).then(data => {
+    this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
       let students = data["result"] as Array<any>;
       this.students = []
       for( let i =0; i<students.length; i++){
