@@ -41,9 +41,11 @@
                     <h3> {{ m.materia.materia_name }} <mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificateUrl != null">check</mat-icon><mat-icon *ngIf="m.materiaEnrollment && m.materiaEnrollment.certificateUrl == null">push_pin</mat-icon></h3>
                 </span>
                 <span class="example-spacer"></span>
+                <!--
                 <span>
                 <button mat-raised-button *ngIf=" !isAdmin && m.materia.isEnrollmentActive" mat-button color="primary" (click)="onMateriaDetalles(m.materia.id)">Enrolar</button>
                 </span>
+                -->
             </mat-toolbar-row>           
            </mat-card>
         </div>
