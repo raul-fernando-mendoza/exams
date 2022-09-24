@@ -1,4 +1,6 @@
-import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import { validateHorizontalPosition } from '@angular/cdk/overlay';
+import { outputAst } from '@angular/compiler';
+import {Component, ElementRef, Input, OnDestroy, OnInit, Output, EventEmitter , ViewChild, ViewEncapsulation} from '@angular/core';
 import videojs from 'video.js';
 
 @Component({
@@ -25,6 +27,7 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
   };
 
   @Input() source:string
+  @Output() currentTime = new EventEmitter<string>();
 
   player: videojs.Player;
 
@@ -49,8 +52,14 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
       }],
     };
 
+    var thiz = this
+
     this.player = videojs(this.target.nativeElement, options, function onPlayerReady() {
       console.log('onPlayerReady', this);
+      this.on("timeupdate",function onTimeUpdate() {
+        //console.log("time has changed" + thiz)
+        thiz.showCurrentTime()
+      } )
     });
 
  
@@ -61,5 +70,11 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
     if (this.player) {
       this.player.dispose();
     }
+  }
+
+  showCurrentTime(){
+    let currentTime = this.player.currentTime();
+    this.currentTime.emit(currentTime)
+   
   }
 }

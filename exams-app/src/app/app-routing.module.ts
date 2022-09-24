@@ -36,6 +36,7 @@ import { CertificateTypeEditComponent } from './certificate-type-edit/certificat
 import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { VideoMarksComponent } from './video-marks/video-marks.component';
 
 const routes: Routes = [
   
@@ -77,6 +78,7 @@ const routes: Routes = [
   { path: 'user-profile-edit', component:UserProfileEditComponent },
   { path: 'payment', component:PaymentComponent },
   { path: 'checkout', component:CheckoutComponent },
+  { path: 'video-marks', component:VideoMarksComponent },
   { path: '**', component: WelcomeComponent },  
 
 ];

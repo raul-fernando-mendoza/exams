@@ -70,7 +70,8 @@ import { RECAPTCHA_SETTINGS, RecaptchaFormsModule, RecaptchaModule, RecaptchaSet
 import { environment } from '../environments/environment';
 import { QuillModule } from 'ngx-quill';
 import { PaymentComponent } from './payment/payment.component';
-import { CheckoutComponent } from './checkout/checkout.component'
+import { CheckoutComponent } from './checkout/checkout.component';
+import { VideoMarksComponent } from './video-marks/video-marks.component'
 
 @NgModule({
     declarations: [
@@ -110,7 +111,8 @@ import { CheckoutComponent } from './checkout/checkout.component'
         CertificateTypeEditComponent,
         UserProfileEditComponent,
         PaymentComponent,
-        CheckoutComponent
+        CheckoutComponent,
+        VideoMarksComponent
     ],
     imports: [
         BrowserModule,
