@@ -116,7 +116,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
             node.obj["materia_name"] = doc.data().materia_name
           })
           this.examImprovisacionService.getUser(examGrade.student_uid).then( user =>{
-            node.obj['student_name'] = user.claims["displayName"] || user.displayName || user.email
+            let displayName = this.userLoginService.getDisplayNameForUser(user)
+            node.obj['student_name'] = displayName
           })
 
           return this.loadParameterGrades(examGrade.id,node.children)

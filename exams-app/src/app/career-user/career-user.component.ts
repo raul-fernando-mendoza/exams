@@ -21,6 +21,8 @@ export class CareerUserComponent implements OnInit {
   user_displayName:string
   organization_id:string
 
+  isAdmin:boolean = false
+
   careerUser = null
 
   constructor(
@@ -36,6 +38,7 @@ export class CareerUserComponent implements OnInit {
     this.career_id = this.route.snapshot.paramMap.get("career_id")
     
     if( this.userLogin.hasRole("role-admin-" + this.organization_id) ){
+      this.isAdmin = true
       this.user_uid = this.route.snapshot.paramMap.get("user_uid")
     }
     else{

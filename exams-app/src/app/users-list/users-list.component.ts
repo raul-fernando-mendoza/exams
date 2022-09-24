@@ -12,7 +12,7 @@ import { UserPreferencesService } from '../user-preferences.service';
 })
 export class UsersListComponent implements OnInit {
 
-  roles = ['role-admin','role-readonly','role-evaluador','role-estudiante'];
+  roles = ['role-admin','role-readonly','role-evaluador'];
 
   users_formarray = new UntypedFormArray([])
 

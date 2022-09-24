@@ -181,19 +181,16 @@ export class ExamenImprovisacionFormComponent {
     })
 
 
-    var userReq = {
-        "claims":"role-estudiante-" + this.organization_id
-    }      
-
     this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
       let students = data["result"] as Array<any>;
       this.students = []
       for( let i =0; i<students.length; i++){
         let estudiante = students[i]
+        let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
         let obj:User = {
           "uid":estudiante.uid,
           "email":estudiante.email,
-          "displayName":(estudiante.displayName != null && estudiante.displayName != '')? estudiante.displayName : estudiante.email,
+          "displayName":displayName,
           "claims":estudiante.claims
         }
         this.students.push(obj)

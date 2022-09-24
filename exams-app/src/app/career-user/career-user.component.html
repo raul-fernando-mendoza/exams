@@ -42,7 +42,7 @@
                 </span>
                 <span class="example-spacer"></span>
                 <span>
-                <button mat-raised-button *ngIf="m.materia.isEnrollmentActive" mat-button color="primary" (click)="onMateriaDetalles(m.materia.id)">Enrolar</button>
+                <button mat-raised-button *ngIf=" !isAdmin && m.materia.isEnrollmentActive" mat-button color="primary" (click)="onMateriaDetalles(m.materia.id)">Enrolar</button>
                 </span>
             </mat-toolbar-row>           
            </mat-card>

@@ -41,7 +41,7 @@ export class LoginFormComponent {
           this.router.navigate(['/']);
         },
         reason => {
-          console.error("ERROR: " + reason)
+          alert("ERROR: " + reason)
         })
     }
     else{
@@ -63,7 +63,7 @@ export class LoginFormComponent {
           this.router.navigate(['/']);
         },
         reason => {
-          console.error("ERROR: " + reason)
+          alert("ERROR: " + reason)
         })
       })  
     }

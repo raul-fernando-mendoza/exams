@@ -133,18 +133,18 @@ export class UserLoginService {
             _resolve()
           })
           .catch((error) => {
-           alert("error retriving claims"+ error);
-           _reject()
+           console.error("error retriving claims"+ error);
+           _reject(error)
           });         
         }).catch(function(error) {
-          alert("the id token could not be retrieved")
-          _reject()
+          console.error("the id token could not be retrieved")
+          _reject(error)
         });
     
       })
       .catch( error =>{
-        alert("Error in loging:" + error.code + " " + error.message)
-        _reject()
+        console.error("Error in loging:" + error.code + " " + error.message)
+        _reject(error)
       })
   
     })
@@ -252,7 +252,7 @@ export class UserLoginService {
     return (this.user)?this.user.email:null
   }
   getDisplayName(){
-    let displayName = null 
+    let displayName = "unknown" 
     if(this.user){
       if(this.user_claims && this.user_claims["displayName"]){
         displayName = this.user_claims.displayName
@@ -266,7 +266,7 @@ export class UserLoginService {
     return displayName
   }
   getDisplayNameForUser(user){
-    let displayName = "" 
+    let displayName = "unknown" 
     if(user){
       if(user.claims && user.claims["displayName"]){
         displayName = user.claims.displayName

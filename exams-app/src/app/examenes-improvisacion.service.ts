@@ -97,14 +97,18 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     }      
 
     const response = await this.authApiInterface("getUser", null, userReq)
-    const user = response["result"]
-    var result:User = {
-      "uid" : user["uid"],
-      "email" : user["email"],
-      "displayName" : (user["displayName"] != null && user["displayName"] != '')? user["displayName"] : user["email"],
-      "claims" : user["claims"]
+    if( response["result"] ){
+      const user = response["result"]
+      var result:User = {
+        "uid" : user["uid"],
+        "email" : user["email"],
+        "displayName" : (user["displayName"] != null && user["displayName"] != '')? user["displayName"] : user["email"],
+        "claims" : user["claims"]
+      }
     }
-    
+    else{
+      result = null
+    }  
     return result
   }  
 /*

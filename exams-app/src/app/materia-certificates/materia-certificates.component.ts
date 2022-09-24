@@ -98,9 +98,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
                 parent:null
               }
 
-              if( "role-estudiante-" + this.organization_id in u.claims ){
-                this.nodeList.push(userNode)
-              }
+              this.nodeList.push(userNode)
             }
             this.nodeList.sort( (a,b) =>{ return a.user.displayName>b.user.displayName?1:-1})
             resolve()
