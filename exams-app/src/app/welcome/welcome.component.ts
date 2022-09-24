@@ -22,6 +22,7 @@ interface MyEnrollment {
   materia_name:string
   certificateUrl:string
   iconCertificateUrl:string
+  certificateBadgeUrl?:string
   exams:MyExam[]
 }
 
@@ -100,6 +101,7 @@ export class WelcomeComponent implements OnInit {
               materia_name:materiaEnrollment.materia.materia_name,
               certificateUrl:materiaEnrollment.certificateUrl,
               iconCertificateUrl:materia.materiaIconUrl,
+              certificateBadgeUrl: materiaEnrollment.certificateBadgeUrl,
               exams:[]
             }
             

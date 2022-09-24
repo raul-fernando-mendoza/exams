@@ -13,7 +13,7 @@ firebase init
 
 
 #use to deploy the app first compile for deployment
-ng build --prod 
+ng build --configuration="production"
 firebase deploy
 
 

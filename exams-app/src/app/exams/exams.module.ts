@@ -184,6 +184,7 @@ export interface MateriaEnrollment{
   isDeleted?:boolean
   certificateUrl?:string
   certificatePath?:string
+  certificateBadgeUrl?:string
 }
 
 export interface ExamRequest{
