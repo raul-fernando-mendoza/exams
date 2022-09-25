@@ -16,6 +16,7 @@ export class LoginFormComponent {
     recaptchaReactive:[null, Validators.required],
   });
   isRegister = false
+  hide = true;
 
   token: string|undefined;
 
@@ -79,5 +80,7 @@ export class LoginFormComponent {
     //alert("going to call login with Logout")
     this.userLoginService.logout()
   }
-
+  onPasswordResetEmail(){
+    this.router.navigate(['/password-reset-email']);
+  }
 }

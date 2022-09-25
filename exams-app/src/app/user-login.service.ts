@@ -214,6 +214,10 @@ export class UserLoginService {
     });
   }
 
+  sendPasswordResetEmail(email):Promise<void>{
+    return firebase.auth().sendPasswordResetEmail(email)
+  }
+
   logout(){
     this.reset()    
     firebase.auth().signOut().then(function(result) {

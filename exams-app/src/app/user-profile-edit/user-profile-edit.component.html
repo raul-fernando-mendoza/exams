@@ -3,5 +3,9 @@
     <mat-form-field class="displayName">
         <mat-label>Nombre de Usuario</mat-label>
         <input matInput placeholder="Cambie su nombre" formControlName="displayName" (change)="onDisplayNameChange($event)">
-    </mat-form-field>   
+    </mat-form-field>  
+    <mat-divider></mat-divider>
+
+    <button mat-raised-button color="primary" (click)="onPasswordResetEmail()">Cambiar Password</button>
+
 </form>

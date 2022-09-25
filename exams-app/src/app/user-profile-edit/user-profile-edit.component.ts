@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
 
@@ -19,7 +20,8 @@ export class UserProfileEditComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,
     private userLogin: UserLoginService,
-    private examImprovisation: ExamenesImprovisacionService
+    private examImprovisation: ExamenesImprovisacionService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -50,4 +52,14 @@ export class UserProfileEditComponent implements OnInit {
       alert("token error:" + error.errorCode + " " + error.errorMessage)
     })
   }  
+
+  onPasswordResetEmail(){
+    this.userLogin.sendPasswordResetEmail(this.userLogin.getUserEmail()).then( () =>{
+      alert("Un email ha sido enviado a su correo electronico")
+      this.router.navigate(['/']);
+    },
+    reason => {
+      alert("ERROR: " + reason)
+    }) 
+  } 
 }

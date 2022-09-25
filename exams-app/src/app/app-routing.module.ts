@@ -36,6 +36,7 @@ import { CertificateTypeEditComponent } from './certificate-type-edit/certificat
 import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { PasswordResetEmailComponent } from './password-reset-email/password-reset-email.component';
 
 const routes: Routes = [
   
@@ -76,7 +77,8 @@ const routes: Routes = [
   { path: 'certificate-type-edit', component:CertificateTypeEditComponent },
   { path: 'user-profile-edit', component:UserProfileEditComponent },
   { path: 'payment', component:PaymentComponent },
-  { path: 'checkout', component:CheckoutComponent },
+  { path: 'checkout', component:CheckoutComponent },  
+  { path: 'password-reset-email', component:PasswordResetEmailComponent },
   { path: '**', component: WelcomeComponent },  
 
 ];
