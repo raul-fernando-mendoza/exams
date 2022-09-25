@@ -261,27 +261,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   
-  timerId = null
-
-
-  periodicRefreshChange(){
-    
-    if( this.periodicRefresh == false ){
-      console.log("removing timeout")
-      clearInterval(this.timerId);
-      this.timerId = null
-    }
-    else{
-      this.applicationFilterChange(null)
-      console.log("adding timeout")
-      this.timerId = setTimeout(
-        () => { 
-          console.log("calling refresh")
-          this.periodicRefreshChange()
-        }
-        , 7000);
-    }
-  } 
   onCreate(){
     this.router.navigate(['/ExamenImprovisacionFormComponent']);
   }  
