@@ -39,7 +39,7 @@ export class ExamTableDataSource extends DataSource<ExamGrade> {
       this.sort.sortChange
     ];
 
-    return merge(...dataMutations).pipe(map(() => {
+    return merge(dataMutations).pipe(map(() => {
       return this.getPagedData(this.getSortedData([...this.data]));
     }));
   }
@@ -71,7 +71,7 @@ export class ExamTableDataSource extends DataSource<ExamGrade> {
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'title': return compare(+a.title, +b.title, isAsc);
+        case 'title': return compare(a.title, b.title, isAsc);
         default: return 0;
       }
     });

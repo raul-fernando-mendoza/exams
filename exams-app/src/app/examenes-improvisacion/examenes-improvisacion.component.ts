@@ -59,13 +59,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
   submitting = false
 
-  open_transactions:Set<string> = new Set()
 
-  transactionStart(id){
-    this.open_transactions.add(id)
-  }
   updateTable(){
       this.dataSource = new ExamenesImprovisacionDataSource(this.examenes);
+      
       var examenesSort = localStorage.getItem('jsonExamenesSort')
       if( examenesSort ){
         var jsonExamenesSort = JSON.parse(examenesSort)
@@ -76,6 +73,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         this.sort.active = 'materia'
         this.sort.direction = 'asc'
       }
+      
 
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
@@ -359,5 +357,10 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   getDisplayNameForUser(user){
     return this.userLoginService.getDisplayNameForUser(user)
   }
-  
+  sortData($event){
+    console.log("sort:" + $event)
+    let json = { active:$event["active"], direction:$event["direction"]}
+    localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
+    this.updateTable()
+  }
 }
