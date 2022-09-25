@@ -5,7 +5,7 @@
     </mat-card-content>
 </mat-card>
 
-<div >
+<div *ngIf="careers.length;  else elseBlock">
   <mat-accordion multi>
     <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" expanded="true">
       <mat-expansion-panel-header>
@@ -99,3 +99,7 @@
     </mat-expansion-panel>        
   </mat-accordion>
 </div>
+<ng-template #elseBlock>
+  Cargando información.
+  <mat-spinner></mat-spinner>
+</ng-template>

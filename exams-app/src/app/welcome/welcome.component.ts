@@ -48,7 +48,7 @@ export class WelcomeComponent implements OnInit {
   myEnrollments:MyEnrollment[] = []
   materias:Array<Materia> = []
   organization_id:string = null
-  careers:Career[] = []
+  careers:Career[] = null
   
 
   ngOnInit(): void {
@@ -220,7 +220,7 @@ export class WelcomeComponent implements OnInit {
   }
 
   loadCareers(){
-    this.careers.length = 0
+    this.careers = []
     db.collection("careers")
     .where( "organization_id" , "==", this.organization_id)
     .where( "isDeleted", "==", false)
