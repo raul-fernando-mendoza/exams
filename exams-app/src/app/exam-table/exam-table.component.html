@@ -54,7 +54,7 @@ Calificaciones
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Release</th>
       <td mat-cell *matCellDef="let row">
         <div *ngIf="row.nodeClass == 'examGrade'">
-          <button *ngIf="row.obj.isCompleted && !row.obj.isReleased" mat-raised-button color="primary" (click)="updateRelease(row, true)">Liberar Calificacion</button>
+          <button *ngIf="row.obj.isCompleted && !row.obj.isReleased" mat-raised-button color="primary" (click)="updateRelease(row, true)">Publicar Calificacion</button>
         </div>
       </td>
     </ng-container>
@@ -62,7 +62,7 @@ Calificaciones
       <th mat-header-cell *matHeaderCellDef mat-sort-header>UnRelease</th>
       <td mat-cell *matCellDef="let row">
         <div *ngIf="row.nodeClass == 'examGrade'">
-          <button *ngIf="row.obj.isReleased == true" mat-raised-button color="primary" (click)="updateRelease(row, false)">no liberar</button>
+          <button *ngIf="row.obj.isReleased == true" mat-raised-button color="primary" (click)="updateRelease(row, false)">No publicar</button>
         </div>
         <div *ngIf="row.nodeClass == 'parameterGrade'">
           <button mat-raised-button color="primary" (click)="onEditParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id)" >Edit</button> 

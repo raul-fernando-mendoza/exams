@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -19,7 +19,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './exam-table.component.html',
   styleUrls: ['./exam-table.component.css']
 })
-export class ExamTableComponent implements AfterViewInit, OnInit {
+export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
@@ -41,6 +41,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   organization_id = null
 
+  snapshots:Array<any> = []
   
   constructor( 
       private router: Router
@@ -85,11 +86,12 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         this.applicationDate = new Date( saved_applicationDate )
       }      
 
-      db.collection("examGrades")
+      var unsubscribe = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
       .where( "applicationDate", "==", this.applicationDate)
-      .get().then( set =>{
+      .onSnapshot( set =>{
+        this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
           let examGrade:ExamGrade = doc.data() as ExamGrade
           let node:NodeTableRow = {
@@ -125,12 +127,14 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
         })
         Promise.all(m).then( () =>{
           console.log("End loading Exams")
+          this.updateList()
           _resolve()
         }) 
         .catch(reason =>{
           console.error("Error waiting for parameters:" + reason)
         }) 
       })
+      this.snapshots.push( unsubscribe )
     })        
       
   }
@@ -139,8 +143,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
     var _resolve = null
     return new Promise<void>((resolve, reject) =>{  
       _resolve = resolve
-      db.collection(`examGrades/${examGrade_id}/parameterGrades`)
-      .get().then( set =>{
+      var unsubscribe = db.collection(`examGrades/${examGrade_id}/parameterGrades`)
+      .onSnapshot( set =>{
+        parent.length = 0
         let m = set.docs.map( doc =>{
           let parameterGrade = {
             id:doc.data().id,
@@ -166,12 +171,13 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
           parent.push(node)          
         })
 
+        this.updateList()
+
         console.log("End loading ParameterGrades")
         _resolve()
       })
-      .catch( reason =>{
-        console.log("error loading parameterGrades" + reason)
-      })
+     
+      this.snapshots.push( unsubscribe )
     })        
       
   }
@@ -282,5 +288,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit {
 
   onEditParameterGrade(examGrade_id, parameterGrade_id){
     this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
-  }  
+  } 
+  ngOnDestroy(): void {
+    this.snapshots.map( func =>{
+      func()
+    })
+  }   
 }
