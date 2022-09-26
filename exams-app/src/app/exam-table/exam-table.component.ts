@@ -132,6 +132,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         }) 
         .catch(reason =>{
           console.error("Error waiting for parameters:" + reason)
+          reject()
         }) 
       })
       this.snapshots.push( unsubscribe )
@@ -273,4 +274,78 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       func()
     })
   }   
+  onReset(examGrade_id, parameterGrade_id, title){
+    if( !confirm("Esta seguro de querer limpiar:" +  title) ){
+      return
+    }    
+
+    this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then( ()=>{
+      this.update()
+    })
+    .catch( ()=>{
+      console.log("ERROR: reseteando el examen")
+    })
+
+  }  
+  resetExamGradeParameter(examGrade_id, parameterGrade_id):Promise<void>{
+
+    return new Promise<void>( (resolve, reject) => {
+
+      
+      let examGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
+
+
+      examGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
+        let criteriaMap = criteriaSet.docs.map( criteriaDoc =>{
+          return this.resetCriteria(criteriaDoc)
+        })
+        Promise.all( criteriaMap ).then( ()=>{
+          examGradeDoc.update({
+            isCompleted:false,
+            score:null, 
+            evaluator_comment:null     
+          }).then( () =>{
+            resolve()
+          })         
+          
+        })
+        .catch( () =>{
+          reject()
+        })        
+      })
+      .catch( () =>{
+        reject()
+      })
+    })
+
+    
+  }
+
+
+  resetCriteria(criteriaDoc):Promise<void>{
+    return new Promise<void>( (resolve, reject)=>{
+      criteriaDoc.ref.update({
+        score:null
+      })
+      criteriaDoc.ref.collection('aspectGrades').get().then( aspectGradeSet =>{
+        let aspectMap = aspectGradeSet.docs.map( aspectGradeDoc=>{
+          return aspectGradeDoc.ref.update({
+            score:1,
+            missingElements:null
+          })
+        })
+        Promise.all( aspectMap ).then( ()=>{
+          resolve()
+        })
+        .catch( () =>{
+          reject()
+        })
+      })
+      .catch( () =>{
+        reject()
+      })
+
+    })
+  }  
+
 }

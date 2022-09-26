@@ -104,7 +104,7 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
         case 'materia': return compare(a.exam.label, b.exam.label, isAsc);
         case 'fechaApplicacion': return compareDate(a,b, isAsc);
         case 'estudiante': return compare(a.student.displayName, b.student.displayName, isAsc);
-        case 'maestro': return compare(a.approver.displayName, b.approver.displayName, isAsc);
+        case 'evaluador': return compare(a.approver.displayName, b.approver.displayName, isAsc);
         case 'parametro': return compare(a.parameterGrade.label, b.parameterGrade.label, isAsc);
         
         case 'completed': return compareCompleted(a.examGrade, b.examGrade, isAsc);        

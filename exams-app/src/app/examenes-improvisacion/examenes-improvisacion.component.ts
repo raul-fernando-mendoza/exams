@@ -31,7 +31,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = [ "title", 'materia', 'estudiante', 'maestro', 'parametro', 'fechaApplicacion', 'completed',"id"];
+  displayedColumns = [ "title", 'materia', 'estudiante', 'evaluador', 'parametro', 'fechaApplicacion', 'completed'];
   
 
   evaluator_name = null
@@ -114,7 +114,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     }
 
     if( this.isReadOnly() ){
-      const index = this.displayedColumns.indexOf('maestro', 0);
+      const index = this.displayedColumns.indexOf('evaluador', 0);
       if (index > -1) {
          this.displayedColumns.splice(index, 1);
       }
@@ -380,78 +380,5 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
     this.updateTable()
   }
-  onReset(examGrade_id, parameterGrade_id, title){
-    if( !confirm("Esta seguro de querer limpiar:" +  title) ){
-      return
-    }    
-
-    this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then( ()=>{
-      this.update()
-    })
-    .catch( ()=>{
-      console.log("ERROR: reseteando el examen")
-    })
-
-  }  
-  resetExamGradeParameter(examGrade_id, parameterGrade_id):Promise<void>{
-
-    return new Promise<void>( (resolve, reject) => {
-
-      
-      let examGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
-
-
-      examGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
-        let criteriaMap = criteriaSet.docs.map( criteriaDoc =>{
-          return this.resetCriteria(criteriaDoc)
-        })
-        Promise.all( criteriaMap ).then( ()=>{
-          examGradeDoc.update({
-            isCompleted:false,
-            score:null, 
-            evaluator_comment:null     
-          }).then( () =>{
-            resolve()
-          })         
-          
-        })
-        .catch( () =>{
-          reject()
-        })        
-      })
-      .catch( () =>{
-        reject()
-      })
-    })
-
-    
-  }
-
-
-  resetCriteria(criteriaDoc):Promise<void>{
-    return new Promise<void>( (resolve, reject)=>{
-      criteriaDoc.ref.update({
-        score:null
-      })
-      criteriaDoc.ref.collection('aspectGrades').get().then( aspectGradeSet =>{
-        let aspectMap = aspectGradeSet.docs.map( aspectGradeDoc=>{
-          return aspectGradeDoc.ref.update({
-            score:1,
-            missingElements:null
-          })
-        })
-        Promise.all( aspectMap ).then( ()=>{
-          resolve()
-        })
-        .catch( () =>{
-          reject()
-        })
-      })
-      .catch( () =>{
-        reject()
-      })
-
-    })
-  }  
 
 }

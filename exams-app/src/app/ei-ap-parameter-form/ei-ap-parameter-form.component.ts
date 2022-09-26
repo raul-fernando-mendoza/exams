@@ -43,6 +43,7 @@ export class EiApParameterFormComponent implements OnInit {
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
+      this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
     }
   
   examGrade_id = null
@@ -54,8 +55,8 @@ export class EiApParameterFormComponent implements OnInit {
 
   isDisabled = false
   organization_id = null
-  
- 
+  isAdmin = false
+
   nvl(val1, val2){
     if( val1 != undefined && val1 != null){
       return val1
@@ -96,7 +97,7 @@ export class EiApParameterFormComponent implements OnInit {
         materia_name:[null],        
     
     
-        title: [{value:e.title,disabled:!this.isAdmin()}],
+        title: [{value:e.title,disabled:!this.isAdmin}],
         expression: [e.expression],
         score:[e.score],
         isApproved:[e.isApproved],
@@ -134,7 +135,7 @@ export class EiApParameterFormComponent implements OnInit {
           label:[p.label],
           description:[p.description],
           scoreType:[p.scoreType],
-          score:[{value:p.score, disable: !this.isAdmin()}],
+          score:[{value:p.score, disable: !this.isAdmin}],
           evaluator_uid:[p.evaluator_uid],
           evaluator_name:[null],
           evaluator_comment:[p.evaluator_comment],
@@ -473,9 +474,7 @@ export class EiApParameterFormComponent implements OnInit {
     return JSON.stringify(this.examGrade)
   }  
 
-  isAdmin(){
-    return this.userLoginService.hasRole("role-admin-" + this.organization_id)
-  }
+
 
   isEvaluador(){
     return this.userLoginService.hasRole("role-evaluador-" + this.organization_id)

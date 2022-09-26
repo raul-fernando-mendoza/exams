@@ -39,8 +39,8 @@
         <td mat-cell *matCellDef="let row">{{ getDisplayNameForUser(row.student) }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="maestro">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>maestro</th>
+      <ng-container matColumnDef="evaluador">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>evaluador</th>
         <td mat-cell *matCellDef="let row">{{ getDisplayNameForUser(row.approver) }}</td>
       </ng-container>   
 
@@ -61,30 +61,6 @@
           <span *ngIf="row.isCompleted == true">{{ row.parameterGrade.score }}</span>
         </td>
       </ng-container> 
-
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
-        <td mat-cell *matCellDef="let row"> 
-          <button mat-icon-button [matMenuTriggerFor]="menu" >
-            <mat-icon>more_vert</mat-icon>
-          </button>                                    
-          <mat-menu #menu="matMenu" >
-
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEdit(row.examGrade.id, row.parameterGrade.id)" [disabled]="submitting">
-              <mat-icon>edit</mat-icon>
-              <span>Corregir</span>
-            </button> 
-            <button  mat-menu-item color="primary" (click)="onEdit(row.examGrade.id, row.parameterGrade.id)" [disabled]="submitting">
-              <mat-icon>visibility</mat-icon>
-              <span>ver</span>
-            </button>  
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onReset(row.examGrade.id, row.parameterGrade.id, row.examGrade.title)" [disabled]="submitting">
-              <mat-icon>change_circle</mat-icon>
-              <span>Reset</span>
-            </button>             
-          </mat-menu>         
-        </td>
-      </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
