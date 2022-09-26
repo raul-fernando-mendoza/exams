@@ -53,6 +53,16 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
   }
 
+  toFixed(num, fixed){
+    if(num == null){
+      return null
+    }
+    else{
+      num = Math.trunc(num*100)/100
+      return num
+    }
+  }
+
 
   ngOnInit() {
     this.update()
@@ -102,7 +112,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
               "student_uid":examGrade.student_uid,
               "student_name":null,
               "title":examGrade.title,
-              "score":examGrade.score,
+              "score":this.toFixed(examGrade.score,2),
               "isReleased":examGrade.isReleased,
               "isCompleted":examGrade.isCompleted
             },
@@ -151,7 +161,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           let parameterGrade = {
             id:doc.data().id,
             label:doc.data().label,
-            score:doc.data().score,
+            score:this.toFixed( doc.data().score,2),
             isCompleted:doc.data().isCompleted,
             idx:doc.data().idx
           }
@@ -160,7 +170,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
               "examGrade_id":examGrade_id,
               "parameterGrade_id":parameterGrade.id,
               "label":parameterGrade.label,
-              "score":parameterGrade.score,
+              "score":this.toFixed( parameterGrade.score,2),
               "isCompleted":parameterGrade.isCompleted,
               "idx":parameterGrade.idx
             },
@@ -291,16 +301,16 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
     return new Promise<void>( (resolve, reject) => {
 
-      
-      let examGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
+     
+      let parameterGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
 
 
-      examGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
+      parameterGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
         let criteriaMap = criteriaSet.docs.map( criteriaDoc =>{
           return this.resetCriteria(criteriaDoc)
         })
         Promise.all( criteriaMap ).then( ()=>{
-          examGradeDoc.update({
+          parameterGradeDoc.update({
             isCompleted:false,
             score:null, 
             evaluator_comment:null     
