@@ -45,3 +45,8 @@ html { translate:"no" }
 .example-full-width{
     width:80%;
   }
+
+.examId{
+    text-align:right; 
+    font-size: x-small; 
+}  

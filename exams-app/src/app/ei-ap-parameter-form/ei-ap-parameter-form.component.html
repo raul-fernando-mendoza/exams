@@ -1,6 +1,6 @@
 <div *ngIf="examGrade" [formGroup]="examGrade">
-    <div>Applicación de examen</div>
-    <div>id: {{ examGrade.controls.id.value }}</div>
+    <div>Aplicación de examen</div>
+    <div class="examId">id:{{ examGrade.controls.id.value }}</div>
     <div>estudiante: {{ examGrade.controls.student_name.value  }}</div>
     <div>Habilidad: {{  examGrade.controls.materia_name.value }}</div>
     <div *ngIf="!isAdmin">Titulo: {{  examGrade.controls.title.value }}</div>
