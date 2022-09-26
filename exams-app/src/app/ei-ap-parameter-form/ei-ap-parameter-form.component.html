@@ -1,9 +1,11 @@
 <div *ngIf="examGrade" [formGroup]="examGrade">
-    <div>Aplicación de examen</div>
-    <div class="examId">id:{{ examGrade.controls.id.value }}</div>
-    <div>estudiante: {{ examGrade.controls.student_name.value  }}</div>
+    <div class="flex-container">
+        <div>Aplicación de examen</div>
+        <div class="examId">id:{{ examGrade.controls.id.value }}</div>
+    </div>
+    <div>estudiante: <b>{{ examGrade.controls.student_name.value  }}</b></div>
     <div>Habilidad: {{  examGrade.controls.materia_name.value }}</div>
-    <div *ngIf="!isAdmin">Titulo: {{  examGrade.controls.title.value }}</div>
+    <div *ngIf="!isAdmin">Titulo: <b>{{  examGrade.controls.title.value }}</b></div>
     <mat-form-field *ngIf="isAdmin" appearance="standard" (change)="updateHeader($event)">
         <mat-label>Titulo</mat-label>
         <input matInput type="text"  formControlName="title">

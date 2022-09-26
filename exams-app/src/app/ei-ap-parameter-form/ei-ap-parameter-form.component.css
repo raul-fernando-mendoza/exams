@@ -46,7 +46,10 @@ html { translate:"no" }
     width:80%;
   }
 
+.flex-container {
+    display: flex;
+}
 .examId{
-    text-align:right; 
+    margin-left: auto;
     font-size: x-small; 
 }  
