@@ -14,6 +14,7 @@ import { db } from 'src/environments/environment';
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import * as firebase from 'firebase';
 import { UserPreferencesService } from '../user-preferences.service';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 
 
@@ -135,6 +136,22 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
         }
       }
     )
+  }
+
+  update(){
+    this.userLoginService.getUserIdToken().then(
+      token => {
+        this.updateList(token, this.hideCompleted,  this.applicationDate ? this.applicationDate: null)
+      },
+      error => {
+        if( error.status == 401 ){
+          this.router.navigate(['/loginForm']);
+        }
+        else{
+          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
+        }
+      }
+    )    
   }
 
   updateList( token , hideCompleted,  applicationDate){
@@ -363,4 +380,78 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
     this.updateTable()
   }
+  onReset(examGrade_id, parameterGrade_id, title){
+    if( !confirm("Esta seguro de querer limpiar:" +  title) ){
+      return
+    }    
+
+    this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then( ()=>{
+      this.update()
+    })
+    .catch( ()=>{
+      console.log("ERROR: reseteando el examen")
+    })
+
+  }  
+  resetExamGradeParameter(examGrade_id, parameterGrade_id):Promise<void>{
+
+    return new Promise<void>( (resolve, reject) => {
+
+      
+      let examGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
+
+
+      examGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
+        let criteriaMap = criteriaSet.docs.map( criteriaDoc =>{
+          return this.resetCriteria(criteriaDoc)
+        })
+        Promise.all( criteriaMap ).then( ()=>{
+          examGradeDoc.update({
+            isCompleted:false,
+            score:null, 
+            evaluator_comment:null     
+          }).then( () =>{
+            resolve()
+          })         
+          
+        })
+        .catch( () =>{
+          reject()
+        })        
+      })
+      .catch( () =>{
+        reject()
+      })
+    })
+
+    
+  }
+
+
+  resetCriteria(criteriaDoc):Promise<void>{
+    return new Promise<void>( (resolve, reject)=>{
+      criteriaDoc.ref.update({
+        score:null
+      })
+      criteriaDoc.ref.collection('aspectGrades').get().then( aspectGradeSet =>{
+        let aspectMap = aspectGradeSet.docs.map( aspectGradeDoc=>{
+          return aspectGradeDoc.ref.update({
+            score:1,
+            missingElements:null
+          })
+        })
+        Promise.all( aspectMap ).then( ()=>{
+          resolve()
+        })
+        .catch( () =>{
+          reject()
+        })
+      })
+      .catch( () =>{
+        reject()
+      })
+
+    })
+  }  
+
 }

@@ -78,6 +78,10 @@
               <mat-icon>visibility</mat-icon>
               <span>ver</span>
             </button>  
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onReset(row.examGrade.id, row.parameterGrade.id, row.examGrade.title)" [disabled]="submitting">
+              <mat-icon>change_circle</mat-icon>
+              <span>Reset</span>
+            </button>             
           </mat-menu>         
         </td>
       </ng-container>
