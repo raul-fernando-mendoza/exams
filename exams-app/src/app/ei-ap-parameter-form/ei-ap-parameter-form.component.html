@@ -3,7 +3,7 @@
         <div>Aplicación de examen</div>
         <div class="examId">id:{{ examGrade.controls.id.value }}</div>
     </div>
-    <div>estudiante: <b>{{ examGrade.controls.student_name.value  }}</b></div>
+    <div>Estudiante: <b>{{ examGrade.controls.student_name.value  }}</b></div>
     <div>Habilidad: {{  examGrade.controls.materia_name.value }}</div>
     <div *ngIf="!isAdmin">Titulo: <b>{{  examGrade.controls.title.value }}</b></div>
     <mat-form-field *ngIf="isAdmin" appearance="standard" (change)="updateHeader($event)">
