@@ -93,7 +93,7 @@ def materiaEnrollmentUpdate(db, documentId):
                         .get()
                     for materiaEnrollmentDoc in enrollments:
                         materiaEnrollment = materiaEnrollmentDoc.to_dict()
-                        if materiaEnrollment["certificateUrl"] != None:
+                        if "certificateUrl" in materiaEnrollment and materiaEnrollment["certificateUrl"] != None:
                             if group_grade_type_id == 0 or group_materias_approved < group_grade_type_id:
                                 career_materias_approved += 1
                                 level_materias_approved += 1
