@@ -1,6 +1,7 @@
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
 import { outputAst } from '@angular/compiler';
 import {Component, ElementRef, Input, OnDestroy, OnInit, Output, EventEmitter , ViewChild, ViewEncapsulation} from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import videojs from 'video.js';
 
 @Component({
@@ -27,9 +28,15 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
   };
 
   @Input() source:string
+  @Input() controls:boolean = true
+  @Input() events: Observable<string>;
   @Output() currentTime = new EventEmitter<string>();
+  @Output() isPlaying = new EventEmitter<boolean>();
 
   player: videojs.Player;
+  private eventsSubscription: Subscription;
+  private isRunning = false
+  
 
   constructor(
     private elementRef: ElementRef,
@@ -38,12 +45,12 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
   // Instantiate a Video.js player OnInit
   ngOnInit() {
 
-
+    this.eventsSubscription = this.events.subscribe((seconds) => this.play(seconds));
 
     var options = {
       fluid: false,
       autoplay: false,
-      controls:true,
+      controls:this.controls,
       width:640,
       height:480,
       sources: [{
@@ -59,7 +66,15 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
       this.on("timeupdate",function onTimeUpdate() {
         //console.log("time has changed" + thiz)
         thiz.showCurrentTime()
-      } )
+      })
+      this.on("playing",function onTimeUpdate() {
+        thiz.isRunning = true
+        thiz.isPlaying.emit(true)
+      })  
+      this.on("pause",function onTimeUpdate() {
+        thiz.isRunning = false
+        thiz.isPlaying.emit(false)
+      })            
     });
 
  
@@ -76,5 +91,19 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
     let currentTime = this.player.currentTime();
     this.currentTime.emit(currentTime)
    
+  }
+  play(seconds){
+    if( seconds != ""){
+      this.player.currentTime(parseFloat(seconds))
+      if( this.isRunning == false){
+        this.player.play()
+      }
+      this.player.pause()
+    }
+    else{    
+      if( this.isRunning == true)
+        this.player.pause()
+      else this.player.play()
+    }
   }
 }

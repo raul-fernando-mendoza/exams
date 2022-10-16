@@ -37,6 +37,7 @@ import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { VideoMarksComponent } from './video-marks/video-marks.component';
+import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component';
 
 const routes: Routes = [
   
@@ -79,6 +80,7 @@ const routes: Routes = [
   { path: 'payment', component:PaymentComponent },
   { path: 'checkout', component:CheckoutComponent },
   { path: 'video-marks', component:VideoMarksComponent },
+  { path: 'canvas-painter', component:CanvasPainterComponent },
   { path: '**', component: WelcomeComponent },  
 
 ];

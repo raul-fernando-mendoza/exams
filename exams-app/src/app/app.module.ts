@@ -71,7 +71,8 @@ import { environment } from '../environments/environment';
 import { QuillModule } from 'ngx-quill';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
-import { VideoMarksComponent } from './video-marks/video-marks.component'
+import { VideoMarksComponent } from './video-marks/video-marks.component';
+import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component'
 
 @NgModule({
     declarations: [
@@ -112,7 +113,8 @@ import { VideoMarksComponent } from './video-marks/video-marks.component'
         UserProfileEditComponent,
         PaymentComponent,
         CheckoutComponent,
-        VideoMarksComponent
+        VideoMarksComponent,
+        CanvasPainterComponent
     ],
     imports: [
         BrowserModule,

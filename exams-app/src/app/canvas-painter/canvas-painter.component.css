@@ -1,0 +1,19 @@
+p {
+  font-family: Lato;
+}
+div.canvas_container {
+  position:relative;
+  width:520px;
+  height:520px;  
+  border: 2px solid rgba(0,255,0,0.12);
+}
+
+canvas.blackboard {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width:500px;
+  height:500px;
+  margin:0;
+  border: 1px solid rgba(255,0,0,0.12);
+}

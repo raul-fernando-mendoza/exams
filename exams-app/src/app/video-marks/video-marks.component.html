@@ -1,6 +1,22 @@
 <p>video-marks works!</p>
-<div class="video-container">
-    <app-vjs-player  source="https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fmaterias%2F99b3da9a-85cc-4bae-8a57-ceb0fe685ab9%2Fvideo.jpg?alt=media&token=c627c19f-0d01-4536-a347-70acf2464051"
-      (currentTime)="onCurrentTime($event)"></app-vjs-player>  
+<div class="container">
+  
+  <div class="video-container">
+      <app-vjs-player  source="https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fmaterias%2F99b3da9a-85cc-4bae-8a57-ceb0fe685ab9%2Fvideo.jpg?alt=media&token=c627c19f-0d01-4536-a347-70acf2464051"
+        (currentTime)="onCurrentTime($event)"
+        [controls]="false"
+        [events]="eventsSubject.asObservable()"
+        (isPlaying)="onIsPlaying($event)"></app-vjs-player>  
+  </div>
+ 
+  <canvas #blackboard class="blackboard" id="blackboard"></canvas>
+
 </div>
+<button (click)="resumePlay()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Pause</span></button>
+<button (click)="save()" *ngIf="isPlaying==false">Save</button>
+<button (click)="onRestart()" >restart</button>
 <span>time:{{currentTime}}</span>    
+
+<div *ngFor="let b of breakPoints" (click)="onMoveToTime(b.id)">
+  id: {{ b.id }}
+</div>
