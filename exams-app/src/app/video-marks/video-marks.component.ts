@@ -43,7 +43,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   unsubscribe = null
 
-  lastbreakPoint = ""
+  lastbreakPoint = "0"
 
   constructor() { }
 
@@ -66,10 +66,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.currentTime = $event.toFixed(1)
     for( let i = 0; this.isPlaying == true && i< this.breakPoints.length ; i++){
       let breakPoint = this.breakPoints[i]
-      if( parseFloat(breakPoint.id) - 0.2 <= parseFloat( this.currentTime ) &&
-          parseFloat( this.currentTime ) <= parseFloat(breakPoint.id) + 0.2 &&
-          this.lastbreakPoint != breakPoint.id){
-            this.lastbreakPoint = breakPoint.id
+      if( parseFloat(this.lastbreakPoint) < parseFloat(breakPoint.id) && 
+          parseFloat(breakPoint.id) <= parseFloat( this.currentTime )
+          ){
         this.onMoveToTime( breakPoint.id )
         break;
       }
@@ -303,6 +302,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onMoveToTime(seconds){
     this.clear()
     this.eventsSubject.next(seconds);
+    this.lastbreakPoint = seconds
     db.collection('drawings/' + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
@@ -312,7 +312,8 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     })
   }
   onRestart(){
-    this.eventsSubject.next('0');
+    this.lastbreakPoint = "0"
+    this.eventsSubject.next("0");
   }
 
 }
