@@ -1,8 +1,8 @@
-<p>video-marks works!</p>
 <div class="container">
   
   <div class="video-container">
-      <app-vjs-player  source="https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fmaterias%2F99b3da9a-85cc-4bae-8a57-ceb0fe685ab9%2Fvideo.jpg?alt=media&token=c627c19f-0d01-4536-a347-70acf2464051"
+      <app-vjs-player  
+        source="{{source}}"
         (currentTime)="onCurrentTime($event)"
         [controls]="false"
         [events]="eventsSubject.asObservable()"
@@ -12,11 +12,26 @@
   <canvas #blackboard class="blackboard" id="blackboard"></canvas>
 
 </div>
-<button (click)="resumePlay()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Pause</span></button>
-<button (click)="save()" *ngIf="isPlaying==false">Save</button>
-<button (click)="onRestart()" >restart</button>
-<span>time:{{currentTime}}</span>    
+<button mat-raised-button (click)="resumePlay()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Pause</span></button>
+<!-- <button (click)="save()" *ngIf="isPlaying==false">Save</button> -->
+<button mat-raised-button (click)="onRestart()" >restart</button>
+<span>time:{{currentTime}}</span>   
 
-<div *ngFor="let b of breakPoints" (click)="onMoveToTime(b.id)">
-  id: {{ b.id }}
-</div>
+
+<button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false">GRABAR</button>
+<button mat-raised-button (click)="onStopRecording()" *ngIf="isAdmin && isRecording==true">STOP</button>
+
+<button mat-raised-button (click)="onUndo()" *ngIf="isAdmin && isPlaying==false">Undo</button>
+
+<div id="commentStatus"></div> 
+
+<mat-divider></mat-divider>
+
+<mat-list>
+  <mat-list-item *ngFor="let b of breakPoints">
+      <button mat-stroked-button (click)="onMoveToTime(b.id, true)">Observacion en: {{ b.id }}</button>
+      <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(b.id)">Delete</button>
+  </mat-list-item>
+</mat-list>
+
+

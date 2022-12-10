@@ -37,6 +37,14 @@
                   </td>
               </tr>
             </table>  
+            <h3>laboratories</h3>
+            <table>
+              <tr *ngFor="let l of me.laboratories">
+                  <td>
+                    <button mat-button (click)='onOpenLaboratoryGrade(l)'>{{ l.laboratory_name }} : {{ laboratoryStatusName(l.status) }}</button>
+                  </td>
+              </tr>
+            </table>             
           </mat-card-content>
         </mat-card>
       </mat-expansion-panel-content>  

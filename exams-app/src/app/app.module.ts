@@ -72,7 +72,14 @@ import { QuillModule } from 'ngx-quill';
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { VideoMarksComponent } from './video-marks/video-marks.component';
-import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component'
+import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component';
+import { LaboratoryEditComponent } from './laboratory-edit/laboratory-edit.component';
+import { LaboratoryGradeEditComponent } from './laboratory-grade-edit/laboratory-grade-edit.component';
+import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory-grade-list.component';
+import { DateSelectorComponent } from './date-selector/date-selector.component';
+import { UserSelectorComponent } from './user-selector/user-selector.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { FileLoaderComponent } from './file-loader/file-loader.component';
 
 @NgModule({
     declarations: [
@@ -114,7 +121,13 @@ import { CanvasPainterComponent } from './canvas-painter/canvas-painter.componen
         PaymentComponent,
         CheckoutComponent,
         VideoMarksComponent,
-        CanvasPainterComponent
+        CanvasPainterComponent,
+        LaboratoryEditComponent,
+        LaboratoryGradeEditComponent,
+        LaboratoryGradeListComponent,
+        DateSelectorComponent,
+        UserSelectorComponent,
+        FileLoaderComponent
     ],
     imports: [
         BrowserModule,
@@ -155,7 +168,8 @@ import { CanvasPainterComponent } from './canvas-painter/canvas-painter.componen
         MatProgressBarModule,
         RecaptchaModule,
         RecaptchaFormsModule,
-        QuillModule
+        QuillModule,
+        MatAutocompleteModule
     ],
     providers: [
         UserLoginService,

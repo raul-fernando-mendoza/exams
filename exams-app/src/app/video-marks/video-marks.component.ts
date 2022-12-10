@@ -1,6 +1,11 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { db } from 'src/environments/environment';
+import { db , storage} from 'src/environments/environment';
+import { FileLoadObserver } from "../load-observers/load-observers.module"
+import * as uuid from 'uuid';
+import { UserPreferencesService } from '../user-preferences.service';
+import { UserLoginService } from '../user-login.service';
+
 
 const BLACKBOARD = 'blackboard'
 @Component({
@@ -13,6 +18,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   currentTime
 
   @ViewChild(BLACKBOARD) canvas: ElementRef<HTMLCanvasElement>;
+  @Input() source:string = "https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fsounds%2Fclaudia.mp4?alt=media&token=dfa60d5a-4501-486b-bde2-829c2d2675d5"
+  @Input() path:string = "drawing"
+  @Input() drawing_id = "123"
   public ctx: CanvasRenderingContext2D;
   elem:HTMLCanvasElement
   ppts = [];  
@@ -37,7 +45,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   paths = []
 
-  drawing_id = "123"
+
 
   breakPoints = [] 
 
@@ -45,7 +53,25 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   lastbreakPoint = "0"
 
-  constructor() { }
+  breakPointData = null
+
+  organization_id = null
+
+
+  mediaRecorder
+  isRecording:boolean = false
+  audioBlob = null 
+  isAdmin = false 
+
+  constructor(
+    private userPreferencesService: UserPreferencesService
+    ,private userLoginService: UserLoginService
+  ) {
+    this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+    if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
+      this.isAdmin = true
+    }    
+  }
 
   ngOnInit(): void {
     this.isTouch = !!('ontouchstart' in window);
@@ -255,6 +281,14 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     }  
   } 
   
+  onUndo(){
+    this.paths.pop()
+    this.clear()
+    this.paths.map( path =>{
+      this.paintPath( path )
+    })    
+  }
+
   eventsSubject: Subject<string> = new Subject<string>();
 
   resumePlay() {
@@ -266,27 +300,35 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   save(){
     
-    let breakPoint:string = this.currentTime
-    let id = 12
-    let paths = this.paths
+    this.lastbreakPoint = this.currentTime
 
-    db.collection('drawings').doc(this.drawing_id).set({"id":this.drawing_id})
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(this.lastbreakPoint).set({"id":this.lastbreakPoint}).then( () =>{
+      this.saveSound()          
+      db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").get().then( pathSet =>{
+        var mapDelete = pathSet.docs.map( pathDoc =>{
+          console.log( pathDoc.id )
+          return db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc(pathDoc.id).delete()
+        })
+        Promise.all( mapDelete ).then( () =>{
+          for(let i = 0; i < this.paths.length; i++){
+            let path = this.paths[i]
+              db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc("path_" + i).set({"path":path})
+          }
+        })
+      })
 
-    db.collection('drawings/' + this.drawing_id + "/breakPoints").doc(breakPoint).set({"id":breakPoint}).then( () =>{
-      for(let i = 0; i < this.paths.length; i++){
-        let path = this.paths[i]
-          db.collection('drawings/' + this.drawing_id + "/breakPoints/" + breakPoint + "/paths").doc("path_" + i).set({"path":path})
-      }
+    },
+    error=>{
+      console.log("error reading breakpoints:" + error)
     })
-
   }
   loadBreakPoints(){
 
-    db.collection('drawings').doc( this.drawing_id ).get().then( doc =>{
+    db.collection(this.path).doc( this.drawing_id ).get().then( doc =>{
       let data = doc.data()
       console.log("document loaded " + data)
     })
-    this.unsubscribe = db.collection('drawings/' + this.drawing_id + "/breakPoints").onSnapshot( breakPointSet =>{
+    this.unsubscribe = db.collection(this.path + "/" + this.drawing_id + "/breakPoints").onSnapshot( breakPointSet =>{
       this.breakPoints.length = 0
       breakPointSet.docs.map( breakPointDoc =>{
         const breakPoint = breakPointDoc.data() 
@@ -296,17 +338,43 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         (a,b) => { 
           return parseFloat(a.id) - parseFloat(b.id) 
         })
+     },
+     error =>{
+        console.log("ERROR breakpoints:" + error)
      })
   }
 
-  onMoveToTime(seconds){
+  onMoveToTime(seconds, stop=false){
     this.clear()
     this.eventsSubject.next(seconds);
     this.lastbreakPoint = seconds
-    db.collection('drawings/' + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
+    this.audioBlob = null
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( seconds ).get().then( doc =>{
+      this.breakPointData = doc.data()
+      var storageRef = storage.ref( this.breakPointData["commentPath"] )
+
+      storageRef.getDownloadURL().then( audioBlob =>{
+
+        //const audioUrl = URL.createObjectURL(audioBlob);
+        this.audioBlob = audioBlob
+        const audio = new Audio(audioBlob); 
+        if( stop == false){
+          var thiz = this
+          audio.addEventListener('ended', (event) => {
+            console.log("sound has ended")
+            thiz.resumePlay()
+          });       
+        }
+        audio.play()       
+      })
+    }) 
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
         const ppts = doc.data()
+        this.paths.push( ppts.path )
         this.paintPath( ppts.path )
       })
     })
@@ -316,4 +384,77 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.eventsSubject.next("0");
   }
 
+  /********* recording  */
+
+
+  onStartRecording(){
+    navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+     this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.start();
+      this.isRecording = true;
+      
+      const audioChunks = [];
+
+      this.mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+      });
+
+      this.mediaRecorder.addEventListener("stop", () => {
+        this.audioBlob = new Blob(audioChunks);
+        const audioUrl = URL.createObjectURL(this.audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play() 
+      });      
+
+      /*
+      setTimeout(() => {
+        this.mediaRecorder.stop();
+      }, 3000);  
+      */    
+
+    });    
+  }
+  onStopRecording(){
+    this.mediaRecorder.stop();
+    this.isRecording = false;
+    this.save()
+  }
+
+  saveSound(){
+    if( this.audioBlob != null ){
+      const path = this.path + "/" + this.drawing_id + "/breakPoints" 
+      const id = this.lastbreakPoint 
+      const property = "comment"
+
+      const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + this.lastbreakPoint + ".wav"
+
+    
+      var storageRef = storage.ref( bucketName )
+
+      var uploadTask = storageRef.put(this.audioBlob)
+      var element = document.getElementById("commentStatus")
+      var fileLoadObserver = new FileLoadObserver(storageRef, path, id, property, element );
+      uploadTask.on("state_change", fileLoadObserver)
+    }       
+  }
+
+  onDelete( id ){
+
+    const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + id + ".wav"
+    var storageRef = storage.ref( bucketName )
+    storageRef.delete().then( () =>{
+      console.log("file deleted")
+    })
+    .then(() =>{
+      db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( id ).delete().then( data =>{
+        console.log("deleted")
+      })
+    })
+    .catch( reason =>{
+      console.log("there has been an error:" + reason)
+    })
+    
+    
+  }
 }

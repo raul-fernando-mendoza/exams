@@ -10,21 +10,9 @@ import { MatSelectChange } from '@angular/material/select';
 export class ExamFormService {
 
   constructor(private fb: UntypedFormBuilder) { }
+  
+  
 
-  
-  formatDate(d:Date) {
-    var 
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-  
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-  
-    return [year, month, day].join('-');
-  }
   replacer(key, value) {
     // Filtrando propiedades 
     if (key === "applicationDate") {

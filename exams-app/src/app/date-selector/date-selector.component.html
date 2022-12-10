@@ -1,0 +1,8 @@
+<mat-form-field appearance="fill">
+    <mat-label>date {{selectedDay}}</mat-label>
+<mat-select [(ngModel)]="selectedDay" name="date" (selectionChange)="onDateChange($event)">
+    <mat-option *ngFor="let day of filterDays" [value]="day.id">
+      {{day.displayName}}
+    </mat-option>
+</mat-select>
+</mat-form-field>

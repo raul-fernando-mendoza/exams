@@ -21,6 +21,7 @@
       <a mat-list-item routerLink="/home">home</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/materia-list">Habilidades</a>
       <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() || isStudent()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Calificar Laboratorios</a>
        
       <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar</a>  
       
@@ -49,7 +50,7 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">TOTH 3.3.3 </a>
+      <a class="main_link" routerLink="/home">TOTH 3.4 </a>
       
       <mat-form-field appearance="fill">
         <mat-label>Organizaciones </mat-label>

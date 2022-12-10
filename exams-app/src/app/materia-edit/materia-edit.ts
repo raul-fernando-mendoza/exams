@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@ang
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
-import { CertificateType, Exam, Materia } from "../exams/exams.module"
+import { CertificateType, Exam, Laboratory, Materia } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage  } from 'src/environments/environment';
 
@@ -15,6 +15,7 @@ import { NavigationService } from "../navigation.service"
 import { UserPreferencesService } from "../user-preferences.service"
 import { Observable, Observer } from "rxjs"
 import { FileLoadObserver } from "../load-observers/load-observers.module"
+import { DialogNameDialog } from "../name-dialog/name-dlg"
 
 
 var storageRef
@@ -140,10 +141,11 @@ export class DialogMateriaDialog implements OnInit{
           label4:[""], 
           color1:[""], 
           color2:[""], 
-          exams:new FormArray([])            
+          exams:new FormArray([]),
+          laboratories:new FormArray([])           
         })
         this.loadExams(this.materia_id, this.m.controls.exams as FormArray)
-        this.hasMateriaEnrollment()  
+        this.loadLaboratories(this.materia_id, this.m.controls.laboratories as FormArray)  
     }
     else{
       this.m = this.fb.group({
@@ -511,6 +513,84 @@ export class DialogMateriaDialog implements OnInit{
       console.log("hasEnrollment:" + hasEnrollment)
     })
   }
+  loadLaboratories(materia_id:string, laboratories:FormArray):Promise<void>{
+    return new Promise<void>((resolve, reject) =>{
+      laboratories.controls.length = 0
+      db.collection("materias/" + materia_id + "/laboratory")
+      .where("isDeleted","==", false)
+      .get().then( snapshot =>{
+        snapshot.docs.map( doc =>{
+          const laboratory = doc.data() as Laboratory
+          var fc:FormGroup = this.fb.group({
+            id:[laboratory.id],
+            label:[laboratory.label]
+          })
+          laboratories.controls.push(fc)
+        })
+        
+        laboratories.controls.sort( (a,b) => {
+          const af = a as FormGroup
+          const bf = b as FormGroup
+          return af.controls.label.value > bf.controls.label.value ? 1:-1})
+        resolve()
+        
+      },
+      reason =>{
+        console.log("ERROR reading Laboratory:" + reason)
+        reject()
+      })
+    })
+  }
+
+  onCreateLaboratory(){
+
+    const dialogRef = this.dialog.open(DialogNameDialog, {
+      height: '400px',
+      width: '250px',
+      data: { label:"Laboratorio", name:"" }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if( result != undefined ){
+        console.debug( result )
+        this.createLaboratory(this.materia_id, result.name)
+      }
+      else{
+        console.debug("none")
+      }
+    });
+  }
+
+  createLaboratory(materia_id, label:string){
+
+    var id = uuid.v4()
+    const laboratory:Laboratory = {
+      id:id,
+      label:label,
+      
+      isDeleted:false,
+      isRequired:false
+    }
+    db.collection('materias/' + materia_id + '/laboratory').doc(id).set(laboratory).then( () =>{
+      this.update()
+    },
+    reason =>{
+      alert("ERROR creating exam:" + reason)
+    })
+  }
+  onDeleteLaboratory(materia_id, laboratory_id:string){
+    db.collection("materias/" + materia_id + "/laboratory").doc(laboratory_id).update({"isDeleted":true}).then(
+      result =>{
+        console.log("exam delted")
+        this.update()
+      }
+    )
+  }  
+  onEditLaboratory(materia_id, laboratory_id){
+    this.router.navigate(['/laboratory-edit',{materia_id:materia_id, laboratory_id:laboratory_id}]);
+  }
+
   
 }
   
@@ -533,5 +613,7 @@ export class DialogMateriaDialog implements OnInit{
     }
   
   }
+
+
 
   

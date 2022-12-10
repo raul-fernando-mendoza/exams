@@ -45,7 +45,8 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
   // Instantiate a Video.js player OnInit
   ngOnInit() {
 
-    this.eventsSubscription = this.events.subscribe((seconds) => this.play(seconds));
+    if( this.events )
+      this.eventsSubscription = this.events.subscribe((seconds) => this.play(seconds));
 
     var options = {
       fluid: false,
@@ -57,6 +58,9 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
           src: this.source,
           type: "video/mp4",
       }],
+      controlBar: {
+        resizeManager: false
+      }      
     };
 
     var thiz = this
@@ -76,7 +80,6 @@ export class AppVjsPlayerComponent implements OnInit, OnDestroy {
         thiz.isPlaying.emit(false)
       })            
     });
-
  
   }
 
