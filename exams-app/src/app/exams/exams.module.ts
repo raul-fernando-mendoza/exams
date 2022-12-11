@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UntypedFormGroup } from '@angular/forms';
 
 import * as uuid from 'uuid';
+import { MatMonthView } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [],
@@ -97,6 +98,16 @@ export interface Exam{
   isDeleted?:boolean 
 
   parameters?: Parameter[] 
+}
+
+export interface Laboratory{
+  id:string 
+  label?:string 
+  description?:string 
+  isRequired?:boolean 
+  isDeleted?:boolean 
+  videoPath?:string
+  videoUrl?:string
 }
 
 export interface Materia{
@@ -315,6 +326,45 @@ export interface ExamGrade{
   created_on?:Date
   updated_on?:Date
 }
+
+export enum LaboratoryGradeStatus { initial , requestGrade , rework , accepted }
+export interface LaboratoryGrade{
+  id?:string 
+  organization_id?:string
+
+  laboratory_id?:string
+  laboratory?:Laboratory
+
+  materia_id?:string 
+  materia?:Materia;
+
+  status:LaboratoryGradeStatus
+  applicationDate?:Date 
+
+  student_uid?:string 
+  student?:User
+
+  laboratory_name?:string 
+
+
+  score?:number 
+
+  isWaiver?:boolean
+
+  createdDay?:number
+  createdMonth?:number
+  createdYear?:number
+  requestedDay?:number
+  requestedMonth?:number
+  requestedYear?:number
+
+  studentData:LaboratoryGradeStudentData
+}
+export interface LaboratoryGradeStudentData{
+  videoPath?:string
+  videoUrl?:string  
+}
+
 export interface AspectGradeRequest{
   examGrades:{
     id:string,

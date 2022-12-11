@@ -1,0 +1,26 @@
+
+
+div.container {
+    position:relative;
+    left:100;
+    top:200;
+    width: 520px;
+    height: 520px;
+    border: 2px solid rgba(0,255,0,0.12);
+}
+app-vjs-player{
+    width: 640px;
+    height:480px;
+}  
+canvas.blackboard {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 640px;
+    height:480px;
+    margin:0;
+    border: 2px solid rgba(255,0,0,0.12);
+}
+button{
+    margin:5px;
+}

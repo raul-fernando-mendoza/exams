@@ -76,6 +76,35 @@ service cloud.firestore {
         allow read: if isExamGradeStudent()
       }      
     } 
+    match /laboratoryGrades/{laboratoryGrade} {
+      function isLaboratoryGradeEvaluator() {
+        return request.auth.uid in get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.evaluators 
+      }  
+      function isLaboratoryGradeStudent() {
+        return request.auth.uid == get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.student_uid
+      }
+      function isLaboratoryAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.organization_id) in request.auth.token
+      }
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+      allow read, write: if request.auth.uid == request.resource.data.student_uid
+      allow read: if request.auth.uid == resource.data.evaluator_uid 
+      allow read: if request.auth.uid == resource.data.student_uid 
+
+			match /studentData/{data} {    
+        allow read, write: if isLaboratoryAdmin(request)   
+        allow read, update: if isLaboratoryGradeEvaluator() 
+        allow read, write: if isLaboratoryGradeStudent()
+      } 
+
+			match /{document=**} {    
+        allow read, write: if isLaboratoryAdmin(request)   
+        allow read, update: if isLaboratoryGradeEvaluator() 
+        allow read: if isLaboratoryGradeStudent()
+      }  
+      
+    }     
     
     match /careerAdvance/{careerAdvanceId} {
 
@@ -98,6 +127,15 @@ service cloud.firestore {
     match /{path=**}/parameterGrades/{parameterGradesId} {    
       allow read, write, create: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, update: if ( request.auth.uid == resource.data.evaluator_uid   )   
-    }       
+    }    
+    match /drawings/{drawingId} {
+      allow read: if true
+      allow write: if true 
+      match /{document=**} {    
+        allow read, write: if true 
+
+      }     
+    }      
   }
+ 
 }

@@ -38,6 +38,7 @@ export class FileLoadObserver implements Observer<any>  {
       var obj = {}
       obj[this.propertyName + "Url"]=url
       obj[this.propertyName + "Path"]=this.storageRef.fullPath
+      
       db.collection(this.collection_name).doc(this.id).update(obj).then( () =>{
         console.log(`update as completed ${this.id} / ${url}`)
         //this.fc.setValue(url)
@@ -87,3 +88,4 @@ export class VideoLoadObserver implements Observer<any>  {
     })      
   });
 }
+

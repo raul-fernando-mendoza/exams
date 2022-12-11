@@ -91,7 +91,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
   }
 
-  async getUser(uid){
+  async getUser(uid):Promise<User>{
+    var result:User = null
     var userReq = {
       "uid":uid
     }      
@@ -99,7 +100,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     const response = await this.authApiInterface("getUser", null, userReq)
     if( response["result"] ){
       const user = response["result"]
-      var result:User = {
+      result = {
         "uid" : user["uid"],
         "email" : user["email"],
         "displayName" : (user["displayName"] != null && user["displayName"] != '')? user["displayName"] : user["email"],
@@ -111,6 +112,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     }  
     return result
   }  
+
 /*
   curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost \
   -H "Authorization:bearer $(gcloud auth print-identity-token)" \

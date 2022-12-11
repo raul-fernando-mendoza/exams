@@ -3,16 +3,26 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
-import { Career, copyObj, Exam, ExamGrade, Materia, MateriaEnrollment } from '../exams/exams.module';
+import { Career, copyObj, Exam, ExamGrade, Laboratory, LaboratoryGrade, Materia, MateriaEnrollment, LaboratoryGradeStatus } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
 import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { map } from 'rxjs/operators';
+import * as uuid from 'uuid';
+import { ExamFormService } from '../exam-form.service';
+import { DateFormatService } from '../date-format.service';
 
 interface MyExam {
   examGrade_id:string
   exam_name:string
+  isReleased:boolean
+  isRequired:boolean
+}
+
+interface MyLaboratory {
+  laboratoryGrade_id:string
+  laboratory_name:string
   isReleased:boolean
   isRequired:boolean
 }
@@ -23,7 +33,8 @@ interface MyEnrollment {
   certificateUrl:string
   iconCertificateUrl:string
   certificateBadgeUrl?:string
-  exams:MyExam[]
+  exams:MyExam[],
+  laboratories:LaboratoryGrade[]
 }
 
 @Component({
@@ -39,8 +50,10 @@ export class WelcomeComponent implements OnInit {
       private router: Router
     , private userLoginService:UserLoginService
     , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private dateFormatService:DateFormatService
     , private sortingService:SortingService
-    , private userPreferencesService:UserPreferencesService) { 
+    , private userPreferencesService:UserPreferencesService
+    , private examFormService:ExamFormService) { 
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
     }
 
@@ -102,10 +115,12 @@ export class WelcomeComponent implements OnInit {
               certificateUrl:materiaEnrollment.certificateUrl,
               iconCertificateUrl:materia.materiaIconUrl,
               certificateBadgeUrl: materiaEnrollment.certificateBadgeUrl,
-              exams:[]
+              exams:[],
+              laboratories:[]
             }
             
-            this.loadExamsForRow(materia_id, myEnrollment.exams)          
+            this.loadExamsForRow(materia_id, myEnrollment.exams)    
+            this.loadLaboratoriesForRow(materia_id, myEnrollment.laboratories)      
             this.myEnrollments.push(myEnrollment)      
           })
           
@@ -191,6 +206,60 @@ export class WelcomeComponent implements OnInit {
     })
   }
 
+  loadLaboratoriesForRow(materia_id:string, laboratories:Array<LaboratoryGrade>):Promise<void>{
+
+    var _resolve
+    var _reject
+
+    return new Promise<void>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+      const query = db.collection("materias/" + materia_id + "/laboratory")
+      .where("isDeleted","==",false)
+      query.get().then( set => {
+  
+        var map = set.docs.map( doc =>{
+  
+          var laboratory:Laboratory = doc.data() as Laboratory
+          var laboratoryGrade:LaboratoryGrade = { 
+            id:null, 
+            organization_id:this.organization_id,
+            materia_id:materia_id,
+            laboratory_id:laboratory.id,          
+            laboratory_name:laboratory.label,
+            student_uid:this.userLoginService.getUserUid(),
+            status:LaboratoryGradeStatus.initial,
+            studentData:null
+          }
+          laboratories.push(laboratoryGrade)
+
+          const grades = db.collection("laboratoryGrades")
+          .where("organization_id", "==", this.organization_id )
+          .where("student_uid","==", this.userLoginService.getUserUid())
+          .where("materia_id","==", materia_id)
+          .where("laboratory_id","==",laboratory.id)
+    
+          return grades.get().then( snapshot => {
+  
+            snapshot.docs.map( doc =>{
+              var existingLaboratoryGrade:LaboratoryGrade = doc.data() as LaboratoryGrade
+              laboratoryGrade.id = existingLaboratoryGrade.id
+              laboratoryGrade.status = existingLaboratoryGrade.status
+            })
+          })
+        })
+        Promise.all(map).then(()=>{ 
+          laboratories.sort( (a,b)=>{return a.laboratory_name > b.laboratory_name ? 1 : -1})
+          _resolve()
+        })
+      },
+      reason =>{
+        console.error("ERROR: ")
+      })
+
+    })
+  }
+
   onOpenExamGrade( examGrade_id ){
     this.router.navigate(['/report',{examGrade_id:examGrade_id}]);
   }
@@ -241,4 +310,44 @@ export class WelcomeComponent implements OnInit {
   onCareerMyProgress(career_id:string){
     this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
   }  
+
+  onOpenLaboratoryGrade( laboratoryGrade:LaboratoryGrade){
+    if( laboratoryGrade.id == null){
+      this.createLaboratoryGrade( laboratoryGrade )
+    }
+    else{
+      this.openLaboratoryGrade( laboratoryGrade.id )
+    }
+  }
+
+  createLaboratoryGrade( laboratoryGrade:LaboratoryGrade ){
+    const id = uuid.v4()
+    laboratoryGrade.id = id
+
+    laboratoryGrade.createdDay = this.dateFormatService.getDayId(new Date())
+    laboratoryGrade.createdMonth = this.dateFormatService.getMonthId(new Date())
+    laboratoryGrade.createdYear = this.dateFormatService.getYearId(new Date())
+
+    db.collection("laboratoryGrades").doc(id).set(laboratoryGrade).then(data =>{
+      this.openLaboratoryGrade( id )
+    })
+  }
+  openLaboratoryGrade( laboratory_grade_id ){
+    this.router.navigate(['/laboratory-grade-edit',{laboratory_grade_id:laboratory_grade_id}]);
+    
+  }
+  laboratoryStatusName( status:LaboratoryGradeStatus ):string{
+    var statusName:string = ""
+    switch( status ){
+      case LaboratoryGradeStatus.initial: statusName = "Pending"
+        break
+      case LaboratoryGradeStatus.accepted: statusName = "Approvado"
+        break
+      case LaboratoryGradeStatus.requestGrade: statusName = "Enviado"
+        break
+      case LaboratoryGradeStatus.rework: statusName = "Retrabajo"
+        break
+    }
+    return statusName
+  }
 }

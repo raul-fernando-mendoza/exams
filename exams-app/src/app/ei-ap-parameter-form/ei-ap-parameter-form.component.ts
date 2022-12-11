@@ -10,6 +10,7 @@ import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaG
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
 import { UserPreferencesService } from '../user-preferences.service';
+import { DateFormatService } from '../date-format.service';
 
 export interface DialogData {
   calificacion: number,
@@ -38,6 +39,7 @@ export class EiApParameterFormComponent implements OnInit {
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
+    , private dateFormat:DateFormatService
     , private navigation: NavigationService
     , private userPreferencesService:UserPreferencesService ) { 
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
@@ -88,7 +90,7 @@ export class EiApParameterFormComponent implements OnInit {
         exam_label:[e.exam_label],
     
         completed: [e.completed],
-        applicationDate:[this.examFormService.formatDate(e.applicationDate.toDate())],
+        applicationDate:[this.dateFormat.formatDate(e.applicationDate.toDate())],
     
         student_uid:[e.student_uid, Validators.required],
         student_name:[null],

@@ -37,6 +37,11 @@ import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.
 import { PaymentComponent } from './payment/payment.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { PasswordResetEmailComponent } from './password-reset-email/password-reset-email.component';
+import { VideoMarksComponent } from './video-marks/video-marks.component';
+import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component';
+import { LaboratoryEditComponent } from './laboratory-edit/laboratory-edit.component';
+import { LaboratoryGradeEditComponent } from './laboratory-grade-edit/laboratory-grade-edit.component';
+import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory-grade-list.component';
 
 const routes: Routes = [
   
@@ -79,6 +84,12 @@ const routes: Routes = [
   { path: 'payment', component:PaymentComponent },
   { path: 'checkout', component:CheckoutComponent },  
   { path: 'password-reset-email', component:PasswordResetEmailComponent },
+  { path: 'checkout', component:CheckoutComponent },
+  { path: 'video-marks', component:VideoMarksComponent },
+  { path: 'canvas-painter', component:CanvasPainterComponent },
+  { path: 'laboratory-edit', component:LaboratoryEditComponent},
+  { path: 'laboratory-grade-edit', component:LaboratoryGradeEditComponent },
+  { path: 'laboratory-grade-list', component:LaboratoryGradeListComponent },
   { path: '**', component: WelcomeComponent },  
 
 ];

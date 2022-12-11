@@ -1,0 +1,30 @@
+<p>Laboratories</p>
+<mat-slide-toggle [(ngModel)]="isReleased" (change)="onReleased()">Released: {{isReleased}}</mat-slide-toggle>
+<app-date-selector [value]="selectedDay" (change)="onDateSelect($event)"></app-date-selector>
+<app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
+
+<mat-list>
+        <mat-list-item *ngFor="let l of laboratoryGrades" (click)='onOpenLaboratoryGrade(l.id)'>
+                {{ l.laboratory_name }}  <span *ngIf="l.student">{{ l.student.displayName }}</span> 
+        </mat-list-item>
+</mat-list>
+
+
+<mat-table mat-table [dataSource]="laboratoryGrades">
+        <ng-container matColumnDef="laboratory_name">
+                <mat-header-cell *matHeaderCellDef>Laboratorio</mat-header-cell>
+                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.laboratory_name}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="student.displayName">
+                <mat-header-cell *matHeaderCellDef>Estudiante</mat-header-cell>
+                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.student.displayName}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef>Estatus</mat-header-cell>
+                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.status}} </mat-cell>
+        </ng-container>        
+
+        <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+        <mat-row mat-row *matRowDef="let row; columns: columnsToDisplay" (click)="onOpenLaboratoryGrade(row.id)"></mat-row> 
+</mat-table>
+

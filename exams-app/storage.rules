@@ -1,8 +1,29 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+
     match /{allPaths=**} {
-      allow read, write: if request.auth!=null;
+    
+      allow read: if true;
+    }
+    match /organizations/{organization_id}/{collection}/{docId} {
+      function isAdmin() {
+        return ('role-admin-' + firestore.get(/databases/(default)/documents/$(collection)/$(docId)).data.organization_id) in request.auth.token
+      }      
+      allow read, write: if isAdmin();
+      
+      match /{document=**} { 
+      	allow read, write: if isAdmin()
+      }
+    }
+    
+ 
+    match /organizations/{organization_id}/laboratoryGrades/{laboratoryGradeId}/studentData/practiceData/{fileId} {
+      function isLaboratoryGradeStudent() {
+        return request.auth.uid == firestore.get(/databases/(default)/documents/laboratoryGrades/$(laboratoryGradeId)).data.student_uid
+      }     
+      allow read, write: if isLaboratoryGradeStudent()  
     }
   }
+  
 }

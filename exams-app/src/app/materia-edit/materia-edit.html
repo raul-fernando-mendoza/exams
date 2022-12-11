@@ -135,7 +135,33 @@ Habilidad
             </mat-menu>
         </div>
       </div> 
-    
+
+      <div class="examen-container">
+        <h3>Laboratorios<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menuLab" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button></h3>
+        <mat-menu #menuLab="matMenu" >
+          <button mat-menu-item (click)="onCreateLaboratory()" [disabled]="submitting">
+            <mat-icon>library_add</mat-icon>
+            <span>Nuevo Laboratorio</span>
+          </button>            
+        </mat-menu>      
+        <div *ngFor="let l of m.controls.laboratories.controls">
+          <span *ngIf="!isAdmin"><li>{{l.controls.label.value}}</li></span>
+          <button *ngIf="isAdmin && m.controls.id.value" mat-button (click)="onEditLaboratory(m.controls.id.value,l.controls.id.value)">{{l.controls.label.value}}</button>
+          <button *ngIf="isAdmin && m.controls.id.value" mat-icon-button [matMenuTriggerFor]="menu" >
+              <mat-icon>more_vert</mat-icon>
+          </button>
+            <mat-menu #menu="matMenu" >
+              <button  mat-menu-item (click)="onDeleteLaboratory(m.controls.id.value, l.controls.id.value)" [disabled]="submitting">
+                <mat-icon>delete</mat-icon>
+                <span>Borrar Laboratorio</span>
+              </button>      
+            </mat-menu>
+        </div>
+      </div> 
+      
+
     </mat-card-content>
     <mat-card-actions>
 

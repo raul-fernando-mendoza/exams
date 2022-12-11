@@ -1,0 +1,15 @@
+<form>
+    <div id="{{property}}Status"></div>
+    <mat-form-field>
+        <mat-label>Change video</mat-label>
+        <input matInput disabled> 
+        <button mat-icon-button matSuffix (click)="video.click()">
+            <mat-icon>attach_file</mat-icon> 
+        </button>
+        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
+        <mat-icon>delete</mat-icon>
+        </button>      
+        <input hidden (change)="selectFile($event)" name="video" #video type="file" >
+    </mat-form-field>
+</form>
+

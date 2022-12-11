@@ -1,0 +1,37 @@
+<div class="container" *ngIf="source">
+  
+  <div class="video-container">
+      <app-vjs-player  
+        source="{{source}}"
+        (currentTime)="onCurrentTime($event)"
+        [controls]="false"
+        [events]="eventsSubject.asObservable()"
+        (isPlaying)="onIsPlaying($event)"></app-vjs-player>  
+  </div>
+ 
+  <canvas #blackboard class="blackboard" id="blackboard"></canvas>
+
+</div>
+<button mat-raised-button (click)="resumePlay()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Pause</span></button>
+<!-- <button (click)="save()" *ngIf="isPlaying==false">Save</button> -->
+<button mat-raised-button (click)="onRestart()" >restart</button>
+<span>time:{{currentTime}}</span>   
+
+
+<button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false">GRABAR</button>
+<button mat-raised-button (click)="onStopRecording()" *ngIf="isAdmin && isRecording==true">STOP</button>
+
+<button mat-raised-button (click)="onUndo()" *ngIf="isAdmin && isPlaying==false">Undo</button>
+
+<div id="commentStatus"></div> 
+
+<mat-divider></mat-divider>
+
+<mat-list>
+  <mat-list-item *ngFor="let b of breakPoints">
+      <button mat-stroked-button (click)="onMoveToTime(b.id, true)">Observacion en: {{ b.id }}</button>
+      <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(b.id)">Delete</button>
+  </mat-list-item>
+</mat-list>
+
+
