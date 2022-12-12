@@ -24,6 +24,19 @@ firebase emulators:start
 firebase use <project_id>
 also check the default project in .firebaserc
 
+
+#to use http requests on storage use the cloud shell to create a file called cors.json with this content:
+[
+    {
+      "origin": ["*"],
+      "method": ["GET"],
+      "maxAgeSeconds": 3600
+    }
+]
+#then run this command gsutil cors set cors.json gs://thoth-dev-346022.appspot.com
+
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 
 ## Development server

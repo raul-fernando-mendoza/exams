@@ -7,8 +7,6 @@ import "firebase/auth";
 import 'firebase/firestore';
 import 'firebase/storage';
 
-
-
 export var environment = { 
   production: false,
   firebase:{
@@ -53,6 +51,7 @@ const app = firebase.initializeApp(environment.firebase)
 const auth = firebase.auth();
 export const storage = firebase.storage()
 export const db = firebase.firestore();
+
 /*
 if (location.hostname === "localhost") {
   console.log("localhost detected!");

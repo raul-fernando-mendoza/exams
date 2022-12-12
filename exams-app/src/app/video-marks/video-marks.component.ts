@@ -5,6 +5,8 @@ import { FileLoadObserver } from "../load-observers/load-observers.module"
 import * as uuid from 'uuid';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
+import { HttpClient } from '@angular/common/http';
+
 
 
 const BLACKBOARD = 'blackboard'
@@ -62,10 +64,22 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   isRecording:boolean = false
   audioBlob = null 
   isAdmin = false 
+  stopAfterPlaying = false
+
+/* sound variables */
+
+  URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/123941/Yodel_Sound_Effect.mp3';
+  AudioContext = window.AudioContext ;
+  context = new AudioContext(); // Make it crossbrowser
+  yodelBuffer = void 0;
+  gainNode = null
+
+  buffers = {}
 
   constructor(
     private userPreferencesService: UserPreferencesService
     ,private userLoginService: UserLoginService
+    , private http: HttpClient
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -116,6 +130,37 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.elem = this.canvas.nativeElement
     this.resizeCanvasToDisplaySize(this.elem)
     this.draw()
+
+    //sound
+    this.gainNode = this.context.createGain();
+    this.gainNode.gain.value = 1; // set volume to 100%
+
+    var storageRef = storage.ref( "organizations/" + this.organization_id + "/laboratoryGrades/unmute.wav"  )
+
+   
+    var thiz = this
+    storageRef.getDownloadURL().then( url =>{
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = e => {
+        console.log(xhr.response);
+        var audioBlob:Blob = xhr.response
+        audioBlob.arrayBuffer()
+        .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
+          audioBuffer => {
+            this.yodelBuffer = audioBuffer;
+           },
+           error =>
+             console.error(error)
+        ))
+      }
+      xhr.onerror = e =>{
+        console.log( "error:" + e)
+      }
+      xhr.open('GET', url);
+      xhr.send();   
+
+    })
   }  
 
   resizeCanvasToDisplaySize(canvas) {
@@ -333,6 +378,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       breakPointSet.docs.map( breakPointDoc =>{
         const breakPoint = breakPointDoc.data() 
         this.breakPoints.push(breakPoint)
+        this.loadSound( breakPoint["id"], breakPoint["commentUrl"])
       })
       this.breakPoints.sort( 
         (a,b) => { 
@@ -343,11 +389,24 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         console.log("ERROR breakpoints:" + error)
      })
   }
+  updateLoadingStatus(e){
+    console.log(e)
+    var audioElement = e.srcElement as HTMLAudioElement
+    audioElement.play()
+  }
+
 
   onMoveToTime(seconds, stop=false){
+
     this.clear()
     this.eventsSubject.next(seconds);
     this.lastbreakPoint = seconds
+    this.stopAfterPlaying = stop
+
+    // now plays the sound
+    this.onClickPlayUrl(seconds, stop) 
+
+    /*
     this.audioBlob = null
 
     db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( seconds ).get().then( doc =>{
@@ -366,10 +425,17 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
             thiz.resumePlay()
           });       
         }
-        audio.play()       
+        try{
+          audio.play()
+        }
+        catch(err){
+          alert("error playing:" + err)
+        }
+               
       })
+      
     }) 
-
+    */
     db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
@@ -390,7 +456,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onStartRecording(){
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
-     this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.start();
       this.isRecording = true;
       
@@ -406,13 +472,6 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         const audio = new Audio(audioUrl);
         audio.play() 
       });      
-
-      /*
-      setTimeout(() => {
-        this.mediaRecorder.stop();
-      }, 3000);  
-      */    
-
     });    
   }
   onStopRecording(){
@@ -432,7 +491,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     
       var storageRef = storage.ref( bucketName )
 
-      var uploadTask = storageRef.put(this.audioBlob)
+      var uploadTask = storageRef.put(this.audioBlob, { contentType: 'audio/wav'})
       var element = document.getElementById("commentStatus")
       var fileLoadObserver = new FileLoadObserver(storageRef, path, id, property, element );
       uploadTask.on("state_change", fileLoadObserver)
@@ -457,4 +516,119 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     
     
   }
+
+
+  play(audioBuffer, stop) {
+    var thiz = this
+    var source = this.context.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(this.context.destination);
+    source.addEventListener("ended", (e) =>{
+      if( stop == false){
+        this.resumePlay()
+      }
+    })    
+    source.start();
+
+  };
+
+  unmute(){
+    this.play(this.yodelBuffer, true);
+  }
+
+  unlock() {
+    console.log("unlocking")
+    this.play(this.yodelBuffer, true);
+  }
+
+
+  onClickPlayUrl(seconds, stop){
+    this.play( this.buffers[seconds], stop )
+  }
+  onClickPlay(seconds){
+
+    this.clear()
+    this.eventsSubject.next(seconds);
+    this.lastbreakPoint = seconds
+    this.audioBlob = null
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( seconds ).get().then( doc =>{
+      this.breakPointData = doc.data()
+      var storageRef = storage.ref( this.breakPointData["commentPath"] )
+
+   
+      var thiz = this
+      storageRef.getDownloadURL().then( url =>{
+
+        var xhr = new XMLHttpRequest();
+        
+        
+        xhr.responseType = 'blob';
+        xhr.onload = e => {
+          console.log(xhr.response);
+          var audioBlob:Blob = xhr.response
+          audioBlob.arrayBuffer()
+          .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
+            audioBuffer => {
+               thiz.play(audioBuffer, false);
+             },
+             error =>
+               console.error(error)
+          ))
+          var source = this.context.createBufferSource()
+          source.buffer = this.audioBlob;
+          source.connect(this.context.destination);
+          source.start();           
+        }
+        xhr.onerror = e =>{
+          console.log( "error:" + e)
+        }
+        xhr.open('GET', url);
+        xhr.send();   
+
+         
+      })
+    })
+  }
+
+  loadSound( id, url ){
+    var thiz = this
+    var xhr = new XMLHttpRequest();
+        
+        
+    xhr.responseType = 'blob';
+    xhr.onload = e => {
+      console.log(xhr.response);
+      var audioBlob:Blob = xhr.response
+      audioBlob.arrayBuffer()
+      .then(
+        arrayBuffer => 
+          thiz.context.decodeAudioData(arrayBuffer,
+        audioBuffer => {
+           thiz.buffers[id] = audioBuffer
+         },
+         error =>
+           console.error(error)
+      ))
+          
+    }
+    xhr.onerror = e =>{
+      console.log( "error:" + e)
+    }
+    xhr.open('GET', url);
+    xhr.send();   
+
+  }
+  isIOS() {
+    return [
+      'iPad Simulator',
+      'iPhone Simulator',
+      'iPod Simulator',
+      'iPad',
+      'iPhone',
+      'iPod'
+    ].includes(navigator.platform)
+    // iPad on iOS 13 detection
+    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+  }  
 }
