@@ -86,7 +86,7 @@ export class FileLoaderComponent implements OnInit {
 
     
 
-    if( file.size > 200 * 1024*1024) {
+    if( file.size > 4000 * 1024*1024) {
       alert( "El archivo es muy grande")
       return
     }
