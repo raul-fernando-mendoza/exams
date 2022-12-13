@@ -1,20 +1,19 @@
 <p>Laboratorio</p>
 <div *ngIf="laboratoryGrade">
     <h1>{{laboratoryGrade.laboratory_name}}</h1> 
-    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">El video ha sido enviado a revision</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">Por favor veo el video de instrucciones y envie un video cumpliendo con las instrucciones para su revision</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video ha sido enviado a revision</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.accepted ">El video ha sido aceptado</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.rework">
         Su video requiere ser retrabajado. por favor revise las observaciones, suba un nuevo video y solicite una nueva revision
     </span>
-    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">su video ha sido aceptado</span>
 
     <mat-stepper orientation="vertical">
         <mat-step>
           <ng-template matStepLabel>Intrucciones</ng-template>
           <ng-template matStepContent>
             <div *ngIf="laboratory">
-                <video *ngIf="laboratory.videoUrl" controls>
+                <video *ngIf="laboratory.videoUrl" controls width="80%">
                     <source src="{{laboratory.videoUrl}}" type="video/mp4">
                 </video>
             </div>

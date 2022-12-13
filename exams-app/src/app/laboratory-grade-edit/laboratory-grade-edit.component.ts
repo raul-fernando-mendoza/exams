@@ -181,6 +181,15 @@ export class LaboratoryGradeEditComponent implements OnInit {
   }
   fileDeleted(path){
     console.log("file deleted:" + path)
+    const data = {
+      requestedDay:this.dateFormatService.getDayId(new Date()),
+      requestedMonth:this.dateFormatService.getMonthId(new Date()),
+      requestedYear:this.dateFormatService.getYearId(new Date()),
+      updatedon:new Date() 
+    }   
+    db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update(data).then( data =>{
+      console.log("video has beed deleted")
+    })      
   }
 
 }
