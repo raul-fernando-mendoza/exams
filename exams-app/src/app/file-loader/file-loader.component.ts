@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observer } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 import { db , storage  } from 'src/environments/environment';
 
 class FileLoadObserver implements Observer<any>  {
@@ -8,8 +8,8 @@ class FileLoadObserver implements Observer<any>  {
     private collection_name,
     private id:string, 
     private propertyName:string,
-    private statusElement:HTMLElement){
-
+    private statusElement:HTMLElement,
+    private onload:EventEmitter<string>){
   } 
   next=(snapshot =>{
     console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
@@ -33,7 +33,7 @@ class FileLoadObserver implements Observer<any>  {
         if( snapshot.exists ){
           db.collection(this.collection_name).doc(this.id).update(obj).then( () =>{
             console.log(`update as completed ${this.id} / ${url}`)
-            //this.fc.setValue(url)
+            this.onload.emit(this.storageRef.fullPath)
           },
           reason=>{
             alert("ERROR update to collection:" + reason)
@@ -42,7 +42,7 @@ class FileLoadObserver implements Observer<any>  {
         else{
           db.collection(this.collection_name).doc(this.id).set(obj).then( () =>{
             console.log(`update as completed ${this.id} / ${url}`)
-            //this.fc.setValue(url)
+            this.onload.emit(this.storageRef.fullPath)
           },
           reason=>{
             alert("ERROR update to collection:" + reason)
@@ -69,6 +69,8 @@ export class FileLoaderComponent implements OnInit {
   @Input() docId = "abc"
   @Input() property ="fileName"
   @Input() maxSize = 200 * 1024*1024 
+  @Output() onload = new EventEmitter<string>();
+  @Output() ondelete = new EventEmitter<string>();
 
   constructor() { }
 
@@ -99,7 +101,7 @@ export class FileLoaderComponent implements OnInit {
     var uploadTask = storageRef.put(file)
     var element = document.getElementById(this.property + "Status")
     this.removePropertyValue(this.property)
-    var fileLoadObserver = new FileLoadObserver(storageRef, this.collectionPath , this.docId, this.property, element);
+    var fileLoadObserver = new FileLoadObserver(storageRef, this.collectionPath , this.docId, this.property, element,this.onload);
     uploadTask.on("state_change", fileLoadObserver)
   }   
 
@@ -118,6 +120,7 @@ export class FileLoaderComponent implements OnInit {
           loadedFile[this.property + "Path"]=null
           db.collection(this.collectionPath ).doc(this.docId).update( loadedFile ).then( () =>{
             console.log("property was removed")
+            this.ondelete.emit(storageRef.fullPath)
           },
           reason =>{
             alert("the data can not be removed:" + reason)

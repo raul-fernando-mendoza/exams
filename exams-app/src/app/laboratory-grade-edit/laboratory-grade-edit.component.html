@@ -1,27 +1,55 @@
 <p>Laboratorio</p>
-<h1>Video de instrucciones</h1>
-<div class="video-container">   
-    <app-vjs-player *ngIf="laboratory && laboratory.videoUrl" source="{{laboratory.videoUrl}}"></app-vjs-player>             
+<div *ngIf="laboratoryGrade">
+    <h1>{{laboratoryGrade.laboratory_name}}</h1> 
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">El video ha sido enviado a revision</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video ha sido enviado a revision</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.accepted ">El video ha sido aceptado</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.rework">
+        Su video requiere ser retrabajado. por favor revise las observaciones, suba un nuevo video y solicite una nueva revision
+    </span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">su video ha sido aceptado</span>
+
+    <mat-stepper orientation="vertical">
+        <mat-step>
+          <ng-template matStepLabel>Intrucciones</ng-template>
+          <ng-template matStepContent>
+            <div *ngIf="laboratory">
+                <video *ngIf="laboratory.videoUrl" controls>
+                    <source src="{{laboratory.videoUrl}}" type="video/mp4">
+                </video>
+            </div>
+            <button mat-button matStepperNext>Next</button>
+          </ng-template>
+        </mat-step>
+        <mat-step *ngIf="(laboratoryGrade.status == LaboratoryGradeStatus.requestGrade && isAdmin ) || laboratoryGrade.status == LaboratoryGradeStatus.rework || laboratoryGrade.status == LaboratoryGradeStatus.accepted">
+            <ng-template matStepLabel>View Revisiones</ng-template>
+            <ng-template matStepContent>
+                <div >
+                    <app-video-marks  *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" source="{{laboratoryGrade.studentData.videoUrl}}" path="{{path}}" drawing_id="{{laboratoryGrade.id}}"></app-video-marks>
+            
+                    <div *ngIf="isAdmin">
+                        <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onReleased()">Liberar Revision</button>
+                        <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onRework()">Re-trabajar</button>
+                    </div>
+                </div>              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </ng-template>
+          </mat-step>        
+          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework">
+            <ng-template matStepLabel>Load Video</ng-template>
+            <ng-template matStepContent>
+              <div  class="studentData">
+                  <h1>Sube tu video</h1>
+                  <div class="videocontainer">
+                      <video *ngIf="laboratoryGrade.studentData" controls width="100%">
+                          <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
+                      </video>     
+                  </div>       
+                  <app-file-loader [organizationId]="organizationId" [collectionPath]="collectionPath" docId="practiceData" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+                  <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
+              </div> 
+              <button mat-button matStepperPrevious>Back</button>
+            </ng-template>
+          </mat-step>
+      </mat-stepper>
 </div>  
-<h1 *ngIf="laboratoryGrade && laboratoryGrade.status == LaboratoryGradeStatus.rework">
-    Su video requiere ser retrabajado. por favor revise las observaciones, suba un nuevo video y solicite una nueva revision
-</h1>
-
-<h1>Observaciones</h1>
-<app-video-marks  *ngIf="laboratoryGrade && laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" source="{{laboratoryGrade.studentData.videoUrl}}" path="{{path}}" drawing_id="{{laboratoryGrade.id}}"></app-video-marks>
-
-<div *ngIf="isAdmin">
-    <div *ngIf="laboratoryGrade && laboratoryGrade.status == LaboratoryGradeStatus.accepted ">El video ha sido aceptado</div>
-    <div *ngIf="laboratoryGrade && laboratoryGrade.status == LaboratoryGradeStatus.rework ">El video ha sido enviado a retrabajo</div>
-    <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onReleased()">Liberar Revision</button>
-    <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onRework()">Re-trabajar</button>
-</div>
-
-<div class="studentData" *ngIf="!isAdmin && laboratoryGrade && laboratoryGrade.status != LaboratoryGradeStatus.accepted" >
-
-    <h1>Sube tu video</h1>
-    <app-file-loader [organizationId]="organizationId" [collectionPath]="collectionPath" docId="practiceData" property="video"></app-file-loader>
-
-    <div *ngIf="laboratoryGrade && laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video ha sido enviado a revision</div>
-    <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
-</div> 

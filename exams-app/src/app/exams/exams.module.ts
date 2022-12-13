@@ -328,6 +328,21 @@ export interface ExamGrade{
 }
 
 export enum LaboratoryGradeStatus { initial , requestGrade , rework , accepted }
+export function getLaboratoryStatusName( status:LaboratoryGradeStatus ):string{
+  var statusName:string = ""
+  switch( status ){
+    case LaboratoryGradeStatus.initial: statusName = "Pending"
+      break
+    case LaboratoryGradeStatus.accepted: statusName = "Approvado"
+      break
+    case LaboratoryGradeStatus.requestGrade: statusName = "Enviado"
+      break
+    case LaboratoryGradeStatus.rework: statusName = "Retrabajo"
+      break
+  }
+  return statusName
+}
+
 export interface LaboratoryGrade{
   id?:string 
   organization_id?:string

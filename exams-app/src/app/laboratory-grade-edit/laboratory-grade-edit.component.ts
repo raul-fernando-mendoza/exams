@@ -7,10 +7,12 @@ import { NavigationService } from '../navigation.service';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
-import { FileLoadObserver } from "../load-observers/load-observers.module"
-import { Laboratory, LaboratoryGrade, LaboratoryGradeStatus, LaboratoryGradeStudentData } from '../exams/exams.module';
+import { getLaboratoryStatusName, Laboratory, LaboratoryGrade, LaboratoryGradeStatus, LaboratoryGradeStudentData } from '../exams/exams.module';
 import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
+import { Observer } from 'rxjs';
+import { FileLoadObserver } from '../load-observers/load-observers.module';
+
 
 @Component({
   selector: 'app-laboratory-grade-edit',
@@ -28,6 +30,7 @@ export class LaboratoryGradeEditComponent implements OnInit {
   laboratoryGrade:LaboratoryGrade = null
   laboratory:Laboratory = null
   unsubscribe = null
+  unsubscribeStudentData = null
 
   videoUrl:[null]
   videoPath:[null]  
@@ -56,10 +59,13 @@ export class LaboratoryGradeEditComponent implements OnInit {
   }
   ngAfterViewInit(): void {
 
-    db.collection("laboratoryGrades").doc(this.laboratoryGradeId).get().then( doc =>{
+    this.unsubscribe = db.collection("laboratoryGrades").doc(this.laboratoryGradeId).onSnapshot( doc =>{
       this.laboratoryGrade  = doc.data() as LaboratoryGrade
       this.loadLaboratory( this.laboratoryGrade.materia_id, this.laboratoryGrade.laboratory_id )
-      this.unsubscribe = db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").onSnapshot( snapshot =>{
+      if( this.unsubscribeStudentData ){ 
+        this.unsubscribeStudentData() 
+      }
+      this.unsubscribeStudentData = db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").onSnapshot( snapshot =>{
         var laboratoryGradeStudentData:LaboratoryGradeStudentData = snapshot.data() as LaboratoryGradeStudentData
         this.laboratoryGrade.studentData = laboratoryGradeStudentData
       })
@@ -84,12 +90,13 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.unsubscribe()
+    if( this.unsubscribeStudentData ){
+      this.unsubscribeStudentData()
+    }
   }
 
   ngOnInit(): void {
 
- 
-    
   }
 
 
@@ -104,12 +111,12 @@ export class LaboratoryGradeEditComponent implements OnInit {
     
 
     const organizationPath = "organizations/" + this.organizationId + "/" 
-    const pathCollection = "laboratoryGrades/" + this.laboratoryGrade.id + "/studentData" 
-    const bucketName = organizationPath + pathCollection + "/studentVideo/" + property + ".jpg"
+    const pathCollection = "laboratoryGrades/"
+    const bucketName = organizationPath + pathCollection +  this.laboratoryGrade.id   +  "/studentVideo/" + property + ".jpg"
 
     var file:File = selectedFiles[0]
 
-    if( file.size > 200 * 1024*1024) {
+    if( file.size > 20000 * 1024*1024) {
       alert( "El archivo es muy grande")
       return
     }
@@ -117,7 +124,7 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
     var uploadTask = storageRef.put(file)
     var element = document.getElementById(property + "Status")
-    var fileLoadObserver = new FileLoadObserver(storageRef, pathCollection , "studentVideo", property, element );
+    var fileLoadObserver = new FileLoadObserver(storageRef, pathCollection , this.laboratoryGrade.id , property, element );
     uploadTask.on("state_change", fileLoadObserver)
   }   
   removePropertyValue(property){
@@ -136,7 +143,8 @@ export class LaboratoryGradeEditComponent implements OnInit {
       status:LaboratoryGradeStatus.requestGrade,
       requestedDay:this.dateFormatService.getDayId(new Date()),
       requestedMonth:this.dateFormatService.getMonthId(new Date()),
-      requestedYear:this.dateFormatService.getYearId(new Date()) 
+      requestedYear:this.dateFormatService.getYearId(new Date()),
+      updatedon:new Date()
     }   
     db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update(data).then( data =>{
       alert("su video ha sido enviado a revision")
@@ -154,5 +162,25 @@ export class LaboratoryGradeEditComponent implements OnInit {
       this.laboratoryGrade.status = LaboratoryGradeStatus.rework
     })
   }  
+
+  getLaboratoryGradeStatusName(laboratoryGradeStatus:LaboratoryGradeStatus){
+    return getLaboratoryStatusName(laboratoryGradeStatus)
+  }
+
+  fileLoaded(path){
+    console.log("file loaded:" + path)
+    const data = {
+      requestedDay:this.dateFormatService.getDayId(new Date()),
+      requestedMonth:this.dateFormatService.getMonthId(new Date()),
+      requestedYear:this.dateFormatService.getYearId(new Date()),
+      updatedon:new Date() 
+    }   
+    db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update(data).then( data =>{
+      console.log("video has changed")
+    })    
+  }
+  fileDeleted(path){
+    console.log("file deleted:" + path)
+  }
 
 }

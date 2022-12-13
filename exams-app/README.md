@@ -33,7 +33,9 @@ also check the default project in .firebaserc
       "maxAgeSeconds": 3600
     }
 ]
-#then run this command gsutil cors set cors.json gs://thoth-dev-346022.appspot.com
+#then run this command 
+gsutil cors set cors.json gs://thoth-dev-346022.appspot.com
+gsutil cors set cors.json gs://thoth-qa.appspot.com
 
 
 

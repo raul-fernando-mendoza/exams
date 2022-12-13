@@ -3,7 +3,7 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
-import { Career, copyObj, Exam, ExamGrade, Laboratory, LaboratoryGrade, Materia, MateriaEnrollment, LaboratoryGradeStatus } from '../exams/exams.module';
+import { Career, copyObj, Exam, ExamGrade, Laboratory, LaboratoryGrade, Materia, MateriaEnrollment, LaboratoryGradeStatus, getLaboratoryStatusName } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
 import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
@@ -337,17 +337,6 @@ export class WelcomeComponent implements OnInit {
     
   }
   laboratoryStatusName( status:LaboratoryGradeStatus ):string{
-    var statusName:string = ""
-    switch( status ){
-      case LaboratoryGradeStatus.initial: statusName = "Pending"
-        break
-      case LaboratoryGradeStatus.accepted: statusName = "Approvado"
-        break
-      case LaboratoryGradeStatus.requestGrade: statusName = "Enviado"
-        break
-      case LaboratoryGradeStatus.rework: statusName = "Retrabajo"
-        break
-    }
-    return statusName
+    return getLaboratoryStatusName(status)
   }
 }
