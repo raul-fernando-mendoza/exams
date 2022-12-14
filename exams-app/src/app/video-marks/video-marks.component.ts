@@ -68,7 +68,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
 /* sound variables */
 
-  URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/123941/Yodel_Sound_Effect.mp3';
+  //URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/123941/Yodel_Sound_Effect.mp3';
   AudioContext = window.AudioContext ;
   context = new AudioContext(); // Make it crossbrowser
   yodelBuffer = void 0;
@@ -226,35 +226,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       x: this.point.x,
       y: this.point.y
     });
-/*
-    if (this.ppts.length === 3) {
-      var b = this.ppts[0];
-      this.ctx.beginPath();
-      this.ctx.arc(b.x, b.y, this.ctx.lineWidth / 2, 0, Math.PI * 2, !0);
-      this.ctx.fill();
-      this.ctx.closePath();
-      return;
-    }
-*/
-    // Tmp canvas is always cleared up before drawing.
-/*    
-    this.ctx.beginPath();
-    this.ctx.clearRect(0, 0, this.elem.width, this.elem.height);
-    this.ctx.moveTo(0, 0);
-    this.ctx.lineTo(e.offsetX, e.offsetY)
-    this.ctx.stroke()
-    this.ctx.closePath()
-*/
-/*
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.ppts[0].x, this.ppts[0].y);
 
-    for (var i = 1; i < this.ppts.length - 2; i++) {
-      var c = (this.ppts[i].x + this.ppts[i + 1].x) / 2;
-      var d = (this.ppts[i].y + this.ppts[i + 1].y) / 2;
-      this.ctx.quadraticCurveTo(this.ppts[i].x, this.ppts[i].y, c, d);
-    }
-*/
     // For the last 2 points
     if ( this.ppts.length > 2){
       let i = this.ppts.length - 2
@@ -398,44 +370,19 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   onMoveToTime(seconds, stop=false){
 
+    // now plays the sound
+
+    this.play( this.buffers[seconds], stop )    
+
     this.clear()
     this.eventsSubject.next(seconds);
     this.lastbreakPoint = seconds
     this.stopAfterPlaying = stop
 
-    // now plays the sound
-    this.onClickPlayUrl(seconds, stop) 
+  
 
-    /*
-    this.audioBlob = null
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( seconds ).get().then( doc =>{
-      this.breakPointData = doc.data()
-      var storageRef = storage.ref( this.breakPointData["commentPath"] )
 
-      storageRef.getDownloadURL().then( audioBlob =>{
-
-        //const audioUrl = URL.createObjectURL(audioBlob);
-        this.audioBlob = audioBlob
-        const audio = new Audio(audioBlob); 
-        if( stop == false){
-          var thiz = this
-          audio.addEventListener('ended', (event) => {
-            console.log("sound has ended")
-            thiz.resumePlay()
-          });       
-        }
-        try{
-          audio.play()
-        }
-        catch(err){
-          alert("error playing:" + err)
-        }
-               
-      })
-      
-    }) 
-    */
     db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
