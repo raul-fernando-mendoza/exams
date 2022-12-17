@@ -74,7 +74,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   yodelBuffer = void 0;
   gainNode = null
 
-  buffers = {}
+  sounds = []
 
   constructor(
     private userPreferencesService: UserPreferencesService
@@ -347,6 +347,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     })
     this.unsubscribe = db.collection(this.path + "/" + this.drawing_id + "/breakPoints").onSnapshot( breakPointSet =>{
       this.breakPoints.length = 0
+      this.sounds.length = 0
       breakPointSet.docs.map( breakPointDoc =>{
         const breakPoint = breakPointDoc.data() 
         this.breakPoints.push(breakPoint)
@@ -372,16 +373,13 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
     // now plays the sound
 
-    this.play( this.buffers[seconds], stop )    
+    this.play( this.sounds[seconds], stop )
+    /*  
 
     this.clear()
     this.eventsSubject.next(seconds);
     this.lastbreakPoint = seconds
     this.stopAfterPlaying = stop
-
-  
-
-
 
     db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
       this.paths.length = 0
@@ -390,7 +388,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         this.paths.push( ppts.path )
         this.paintPath( ppts.path )
       })
+       
     })
+    */
   }
   onRestart(){
     this.lastbreakPoint = "0"
@@ -403,7 +403,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onStartRecording(){
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
-      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder = new MediaRecorder(stream, { mimeType:"sound/mp4"});
       this.mediaRecorder.start();
       this.isRecording = true;
       
@@ -490,7 +490,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
 
   onClickPlayUrl(seconds, stop){
-    this.play( this.buffers[seconds], stop )
+    this.play( this.sounds[seconds], stop )
   }
   onClickPlay(seconds){
 
@@ -552,7 +552,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         arrayBuffer => 
           thiz.context.decodeAudioData(arrayBuffer,
         audioBuffer => {
-           thiz.buffers[id] = audioBuffer
+           thiz.sounds[id] = audioBuffer
          },
          error =>
            console.error(error)

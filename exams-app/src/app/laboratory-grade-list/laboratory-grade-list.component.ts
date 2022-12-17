@@ -47,7 +47,7 @@ export class LaboratoryGradeListComponent implements OnInit{
     var qry = db.collection("laboratoryGrades")
     .where("organization_id", "==", this.organization_id )
     if( !this.isReleased ){
-      qry = qry.where("status","==", LaboratoryGradeStatus.requestGrade)
+      qry = qry.where("status","in", [LaboratoryGradeStatus.requestGrade, LaboratoryGradeStatus.rework])
     }
     
 

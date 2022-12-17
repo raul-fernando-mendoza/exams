@@ -29,7 +29,7 @@
 
 <mat-divider></mat-divider>
 <div *ngFor="let b of breakPoints">
-  <button mat-stroked-button (click)="onMoveToTime(b.id, true)">Observacion en: {{ b.id }}</button>
+  <button mat-stroked-button (click)="onClickPlayUrl(b.id, true)">Observacion en onClickPlayUrl: {{ b.id }}</button>
   <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(b.id)">Delete</button>
 </div>
 

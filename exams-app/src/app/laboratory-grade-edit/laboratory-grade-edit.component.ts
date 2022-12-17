@@ -101,14 +101,10 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
 
   selectFile(event) {
-
-    
     var selectedFiles = event.target.files;
     const property = event.srcElement.name
     this.laboratoryGrade[property + "Url"] = null
     this.laboratoryGrade[property + "Path"] = null
-
-    
 
     const organizationPath = "organizations/" + this.organizationId + "/" 
     const pathCollection = "laboratoryGrades/"
