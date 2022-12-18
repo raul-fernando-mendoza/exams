@@ -2,8 +2,8 @@
 
 div.container {
     position:relative;
-    left:100;
-    top:200;
+    left:0;
+    top:0;
     width: 520px;
     height: 520px;
     border: 2px solid rgba(0,255,0,0.12);

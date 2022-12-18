@@ -373,8 +373,8 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
     // now plays the sound
 
-    this.play( this.sounds[seconds], stop )
-    /*  
+    
+      
 
     this.clear()
     this.eventsSubject.next(seconds);
@@ -388,9 +388,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         this.paths.push( ppts.path )
         this.paintPath( ppts.path )
       })
+      this.play( this.sounds[seconds], stop )
        
     })
-    */
+    
   }
   onRestart(){
     this.lastbreakPoint = "0"
@@ -403,7 +404,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onStartRecording(){
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
-      this.mediaRecorder = new MediaRecorder(stream, { mimeType:"sound/mp4"});
+
+  
+      this.mediaRecorder = new MediaRecorder(stream, { mimeType:"audio/webm"});
       this.mediaRecorder.start();
       this.isRecording = true;
       
