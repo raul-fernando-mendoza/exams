@@ -40,14 +40,14 @@
               <div  class="studentData">
                   <h1>Sube tu video</h1>
                   <div class="videocontainer">
-                      <video *ngIf="laboratoryGrade.studentData" controls width="100%">
+                      <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
                           <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
                       </video>     
                   </div>       
                   <app-file-loader [organizationId]="organizationId" [collectionPath]="collectionPath" docId="practiceData" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
                   <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
               </div> 
-              <button mat-button matStepperPrevious>Back</button>
+             
             </ng-template>
           </mat-step>
       </mat-stepper>

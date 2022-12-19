@@ -2,13 +2,13 @@
 <mat-slide-toggle [(ngModel)]="isReleased" (change)="onReleased()">Released: {{isReleased}}</mat-slide-toggle>
 <app-date-selector [value]="selectedDay" (change)="onDateSelect($event)"></app-date-selector>
 <app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
-
+<!--
 <mat-list>
         <mat-list-item *ngFor="let l of laboratoryGrades" (click)='onOpenLaboratoryGrade(l.id)'>
                 {{ l.laboratory_name }}  <span *ngIf="l.student">{{ l.student.displayName }}</span> 
         </mat-list-item>
 </mat-list>
-
+-->
 
 <mat-table mat-table [dataSource]="laboratoryGrades">
         <ng-container matColumnDef="laboratory_name">

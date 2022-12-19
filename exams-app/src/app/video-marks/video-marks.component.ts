@@ -281,8 +281,27 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         console.log( "count paths:" + this.paths.length)
       }
   } 
+  @HostListener('touchend')
+  touchend() {
+      this.MOUSE_DOWN = false;
+      console.log("touch up:")
+      if(this.ppts.length) {
+        this.paths.push(this.ppts.slice())
+        this.ppts.length = 0
+        console.log( "count paths:" + this.paths.length)
+      }
+  } 
+
   @HostListener('mousemove', ['$event'])
   onMousemove(e: MouseEvent) {
+    //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
+    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isPlaying==false) {
+      e.preventDefault();
+      this.paint(e);
+    }
+  }
+  @HostListener('touchmove', ['$event'])
+  touchmove(e: MouseEvent) {
     //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
     if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isPlaying==false) {
       e.preventDefault();
@@ -297,6 +316,15 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       this.ppts.length = 0
     }  
   } 
+  
+  @HostListener('touchstart', ['$event'])
+  touchstart(e) {
+    console.log("touch down:" + e.target["id"] + " " +  e)
+    if ( BLACKBOARD == e.target["id"] ){
+      this.MOUSE_DOWN = true;
+      this.ppts.length = 0
+    }  
+  }   
   
   onUndo(){
     this.paths.pop()
@@ -405,8 +433,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
 
+    
   
-      this.mediaRecorder = new MediaRecorder(stream, { mimeType:"audio/webm"});
+      this.mediaRecorder = new MediaRecorder(stream );
       this.mediaRecorder.start();
       this.isRecording = true;
       
