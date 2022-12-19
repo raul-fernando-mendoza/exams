@@ -5,7 +5,7 @@ import { FileLoadObserver } from "../load-observers/load-observers.module"
 import * as uuid from 'uuid';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 
 
@@ -75,6 +75,8 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   gainNode = null
 
   sounds = []
+
+  logmsg = ""
 
   constructor(
     private userPreferencesService: UserPreferencesService
@@ -199,9 +201,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     };
   }; 
   setPointFromEvent(point, e) {
+    
     if (this.isTouch) {
-      point.x = e.changedTouches[0].pageX - this.getOffset(e.target).left;
-      point.y = e.changedTouches[0].pageY - this.getOffset(e.target).top;
+      this.logmsg = "(y:" + e.changedTouches[0].pageY + " o:" + this.getOffset(e.target).top + " sy:" + Math.floor(window.scrollY) + ")"
+
+      point.x = e.changedTouches[0].pageX - this.getOffset(e.target).left - Math.floor(window.scrollX);
+      point.y = e.changedTouches[0].pageY - this.getOffset(e.target).top - Math.floor(window.scrollY);
     } else {
       point.x = e.offsetX !== undefined ? e.offsetX : e.layerX;
       point.y = e.offsetY !== undefined ? e.offsetY : e.layerY;
@@ -609,5 +614,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     ].includes(navigator.platform)
     // iPad on iOS 13 detection
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-  }  
+  } 
+  getLog(){
+    return this.logmsg
+  }   
 }
+

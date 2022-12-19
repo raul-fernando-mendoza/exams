@@ -1,3 +1,4 @@
+log:{{getLog()}}
 <div class="container" *ngIf="source">
   
   <div class="video-container">
@@ -12,6 +13,7 @@
   <canvas #blackboard class="blackboard" id="blackboard"></canvas>
 
 </div>
+
 <button mat-raised-button (click)="resumePlay()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Pause</span></button>
 <!-- <button (click)="save()" *ngIf="isPlaying==false">Save</button> -->
 <button mat-raised-button (click)="onRestart()" >restart</button>
