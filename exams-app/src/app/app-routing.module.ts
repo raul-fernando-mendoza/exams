@@ -84,14 +84,13 @@ const routes: Routes = [
   { path: 'payment', component:PaymentComponent },
   { path: 'checkout', component:CheckoutComponent },  
   { path: 'password-reset-email', component:PasswordResetEmailComponent },
-  { path: 'checkout', component:CheckoutComponent },
   { path: 'video-marks', component:VideoMarksComponent },
   { path: 'canvas-painter', component:CanvasPainterComponent },
   { path: 'laboratory-edit', component:LaboratoryEditComponent},
   { path: 'laboratory-grade-edit', component:LaboratoryGradeEditComponent },
   { path: 'laboratory-grade-list', component:LaboratoryGradeListComponent },
   { path: '**', component: WelcomeComponent },  
-
+  
 ];
 
 @NgModule({

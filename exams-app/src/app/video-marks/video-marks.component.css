@@ -1,11 +1,12 @@
 
+@import '~video.js/dist/video-js.css';
 
 div.container {
     position:relative;
     left:0;
     top:0;
-    width: 520px;
-    height: 520px;
+    width: 650px;
+    height: 490px;
     border: 2px solid rgba(0,255,0,0.12);
 }
 app-vjs-player{
@@ -23,4 +24,12 @@ canvas.blackboard {
 }
 button{
     margin:5px;
+}
+
+.loop-controls{
+    margin:5px;
+}
+
+.selected-observation{
+    background-color: burlywood;
 }

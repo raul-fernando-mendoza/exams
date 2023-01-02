@@ -20,9 +20,7 @@
             <button mat-button matStepperNext>Next</button>
           </ng-template>
         </mat-step>
-        <mat-step *ngIf="(laboratoryGrade.status == LaboratoryGradeStatus.requestGrade && isAdmin ) || laboratoryGrade.status == LaboratoryGradeStatus.rework || laboratoryGrade.status == LaboratoryGradeStatus.accepted">
-            <ng-template matStepLabel>View Revisiones</ng-template>
-            <ng-template matStepContent>
+        <mat-step *ngIf="(laboratoryGrade.status == LaboratoryGradeStatus.requestGrade && isAdmin ) || laboratoryGrade.status == LaboratoryGradeStatus.rework || laboratoryGrade.status == LaboratoryGradeStatus.accepted" label="Revisiones">
                 <div >
                     <app-video-marks  *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" source="{{laboratoryGrade.studentData.videoUrl}}" path="{{path}}" drawing_id="{{laboratoryGrade.id}}"></app-video-marks>
             
@@ -32,7 +30,6 @@
                     </div>
                 </div>              <button mat-button matStepperPrevious>Back</button>
               <button mat-button matStepperNext>Next</button>
-            </ng-template>
           </mat-step>        
           <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework">
             <ng-template matStepLabel>Load Video</ng-template>

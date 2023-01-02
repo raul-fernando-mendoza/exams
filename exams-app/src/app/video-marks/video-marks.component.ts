@@ -1,25 +1,26 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { db , storage} from 'src/environments/environment';
 import { FileLoadObserver } from "../load-observers/load-observers.module"
-import * as uuid from 'uuid';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-
+import videojs from 'video.js';
 
 
 const BLACKBOARD = 'blackboard'
 @Component({
   selector: 'app-video-marks',
   templateUrl: './video-marks.component.html',
-  styleUrls: ['./video-marks.component.css']
+  styleUrls: ['./video-marks.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   currentTime
 
   @ViewChild(BLACKBOARD) canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('target') target: ElementRef;
+
   @Input() source:string = "https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fsounds%2Fclaudia.mp4?alt=media&token=dfa60d5a-4501-486b-bde2-829c2d2675d5"
   @Input() path:string = "drawing"
   @Input() drawing_id = "123"
@@ -39,8 +40,6 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     y: 0
   };
 
-  undoCache = [];
-
   mouseDown:boolean = false
 
   isPlaying = false
@@ -55,8 +54,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   lastbreakPoint = "0"
 
-  breakPointData = null
-
+  
   organization_id = null
 
 
@@ -64,11 +62,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   isRecording:boolean = false
   audioBlob = null 
   isAdmin = false 
-  stopAfterPlaying = false
+ 
 
 /* sound variables */
 
-  //URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/123941/Yodel_Sound_Effect.mp3';
   AudioContext = window.AudioContext ;
   context = new AudioContext(); // Make it crossbrowser
   yodelBuffer = void 0;
@@ -76,7 +73,14 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   sounds = []
 
-  logmsg = ""
+  player = null
+  videoDuration = null
+
+  isMarkerActive:boolean = false
+  isMarkerEdited:boolean = false
+  startMarker:number = null
+  loopDuration = 0
+  percentage = 0
 
   constructor(
     private userPreferencesService: UserPreferencesService
@@ -101,25 +105,19 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   ngOnDestroy(): void {
     this.unsubscribe()
   }   
-
-
-  onCurrentTime($event){
-    console.log("the time has chaged to:" + $event)
-    this.currentTime = $event.toFixed(1)
+  onCurrentTime(currentTime){
     for( let i = 0; this.isPlaying == true && i< this.breakPoints.length ; i++){
       let breakPoint = this.breakPoints[i]
       if( parseFloat(this.lastbreakPoint) < parseFloat(breakPoint.id) && 
-          parseFloat(breakPoint.id) <= parseFloat( this.currentTime )
+          parseFloat(breakPoint.id) <= parseFloat( currentTime )
           ){
-        this.onMoveToTime( breakPoint.id )
+        this.playMarker( breakPoint , false)
         break;
       }
     }
   }
 
-  onIsPlaying($event){
-    this.isPlaying = $event
-  }
+
   ngAfterViewInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');  
 
@@ -137,32 +135,48 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.gainNode = this.context.createGain();
     this.gainNode.gain.value = 1; // set volume to 100%
 
-    var storageRef = storage.ref( "organizations/" + this.organization_id + "/laboratoryGrades/unmute.wav"  )
 
-   
+    var options = {
+      fluid: false,
+      autoplay: false,
+      controls: false,
+      width:640,
+      height:480,
+      sources: [{
+          src: this.source,
+          type: "video/mp4",
+      }],
+      controlBar: {
+        resizeManager: false
+      }      
+    };
+
     var thiz = this
-    storageRef.getDownloadURL().then( url =>{
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
-      xhr.onload = e => {
-        console.log(xhr.response);
-        var audioBlob:Blob = xhr.response
-        audioBlob.arrayBuffer()
-        .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
-          audioBuffer => {
-            this.yodelBuffer = audioBuffer;
-           },
-           error =>
-             console.error(error)
-        ))
-      }
-      xhr.onerror = e =>{
-        console.log( "error:" + e)
-      }
-      xhr.open('GET', url);
-      xhr.send();   
 
-    })
+    this.player = videojs(this.target.nativeElement, options, function onPlayerReady() {
+      console.log('onPlayerReady', this);
+      this.on("timeupdate",function onTimeUpdate() {
+        console.log("time has changed" + this.currentTime())
+        thiz.showCurrentTime()
+        thiz.onCurrentTime( this.currentTime() )
+        if( thiz.isMarkerActive ){
+          if( thiz.player.currentTime() > (thiz.startMarker + thiz.loopDuration) ){
+            thiz.player.currentTime( thiz.startMarker )
+          }
+        }
+      })
+      this.on("playing",function onTimeUpdate() {
+        thiz.isPlaying = true
+        //thiz.isPlaying.emit(true)
+      })  
+      this.on("pause",function onTimeUpdate() {
+        thiz.isPlaying = false
+        //thiz.isPlaying.emit(false)
+      })
+   
+      
+    });
+     
   }  
 
   resizeCanvasToDisplaySize(canvas) {
@@ -190,7 +204,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
     const x = (this.canvas.nativeElement as HTMLCanvasElement).width / 2;
     const y = (this.canvas.nativeElement as HTMLCanvasElement).height / 2;
-    this.ctx.fillText('@realappie', x, y);
+    this.ctx.fillText('@raxacademy', x, y);
 
   }  
   getOffset(elem) {
@@ -203,8 +217,6 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   setPointFromEvent(point, e) {
     
     if (this.isTouch) {
-      this.logmsg = "(y:" + e.changedTouches[0].pageY + " o:" + this.getOffset(e.target).top + " sy:" + Math.floor(window.scrollY) + ")"
-
       point.x = e.changedTouches[0].pageX - this.getOffset(e.target).left - Math.floor(window.scrollX);
       point.y = e.changedTouches[0].pageY - this.getOffset(e.target).top - Math.floor(window.scrollY);
     } else {
@@ -215,7 +227,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   clear(){
     this.ctx.beginPath();
-    this.ctx.clearRect(0, 0, this.elem.width, this.elem.height);    
+    this.ctx.clearRect(0, 0, this.elem.width, this.elem.height);     
   }
   
   paint(e) {
@@ -300,7 +312,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('mousemove', ['$event'])
   onMousemove(e: MouseEvent) {
     //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
-    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isPlaying==false) {
+    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN ) {
       e.preventDefault();
       this.paint(e);
     }
@@ -308,7 +320,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('touchmove', ['$event'])
   touchmove(e: MouseEvent) {
     //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
-    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isPlaying==false) {
+    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN ) {
       e.preventDefault();
       this.paint(e);
     }
@@ -339,20 +351,22 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     })    
   }
 
-  eventsSubject: Subject<string> = new Subject<string>();
+
 
   resumePlay() {
-    this.eventsSubject.next("");
+    this.isMarkerActive = false
     this.clear()
     this.paths.length = 0
     this.ppts.length = 0
+    this.player.volume(1.0)
+    this.player.play();    
   }  
 
   save(){
     
-    this.lastbreakPoint = this.currentTime
+    this.lastbreakPoint = this.startMarker.toFixed(2)
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(this.lastbreakPoint).set({"id":this.lastbreakPoint}).then( () =>{
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(this.lastbreakPoint).set({"id":this.lastbreakPoint,"loopDuration":this.loopDuration}).then( () =>{
       this.saveSound()          
       db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").get().then( pathSet =>{
         var mapDelete = pathSet.docs.map( pathDoc =>{
@@ -360,10 +374,16 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
           return db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc(pathDoc.id).delete()
         })
         Promise.all( mapDelete ).then( () =>{
+          var promiseArray:Promise<void>[] = []
           for(let i = 0; i < this.paths.length; i++){
             let path = this.paths[i]
-              db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc("path_" + i).set({"path":path})
+              var p = db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc("path_" + i).set({"path":path})
+              promiseArray.push(p)
           }
+          Promise.all( promiseArray ).then( ()=>{
+            this.resetMarker()
+          })
+          
         })
       })
 
@@ -395,41 +415,41 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         console.log("ERROR breakpoints:" + error)
      })
   }
-  updateLoadingStatus(e){
-    console.log(e)
-    var audioElement = e.srcElement as HTMLAudioElement
-    audioElement.play()
-  }
 
-
-  onMoveToTime(seconds, stop=false){
+  playMarker(breakpoint, stop=false){
 
     // now plays the sound
 
     
-      
+    this.startMarker = parseFloat( breakpoint["id"] ) 
+    this.loopDuration = breakpoint["loopDuration"]
+    this.isMarkerActive = true
 
     this.clear()
-    this.eventsSubject.next(seconds);
-    this.lastbreakPoint = seconds
-    this.stopAfterPlaying = stop
+    this.player.currentTime(this.startMarker);
+    this.player.volume(0.3)
+    if( this.loopDuration > 0){
+      this.player.play()
+    }
+    else{
+      this.player.pause()
+    }
+    this.lastbreakPoint =  this.startMarker.toFixed(2)
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + seconds + "/paths").get().then(pathSet =>{
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.startMarker + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
         const ppts = doc.data()
         this.paths.push( ppts.path )
         this.paintPath( ppts.path )
       })
-      this.play( this.sounds[seconds], stop )
+      this.playSound( this.sounds[this.startMarker], stop )
        
     })
     
   }
-  onRestart(){
-    this.lastbreakPoint = "0"
-    this.eventsSubject.next("0");
-  }
+
 
   /********* recording  */
 
@@ -461,7 +481,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onStopRecording(){
     this.mediaRecorder.stop();
     this.isRecording = false;
+
+  }
+
+  onSave(){
     this.save()
+    this.isMarkerEdited = false
   }
 
   saveSound(){
@@ -502,13 +527,18 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }
 
 
-  play(audioBuffer, stop) {
+  playSound(audioBuffer, stop) {
     var thiz = this
     var source = this.context.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(this.context.destination);
     source.addEventListener("ended", (e) =>{
-      if( stop == false){
+      if( stop == true){
+        this.player.pause()
+        this.isMarkerActive = false
+        this.player.volume(1.0)
+      }
+      else{
         this.resumePlay()
       }
     })    
@@ -516,64 +546,6 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   };
 
-  unmute(){
-    this.play(this.yodelBuffer, true);
-  }
-
-  unlock() {
-    console.log("unlocking")
-    this.play(this.yodelBuffer, true);
-  }
-
-
-  onClickPlayUrl(seconds, stop){
-    this.play( this.sounds[seconds], stop )
-  }
-  onClickPlay(seconds){
-
-    this.clear()
-    this.eventsSubject.next(seconds);
-    this.lastbreakPoint = seconds
-    this.audioBlob = null
-
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( seconds ).get().then( doc =>{
-      this.breakPointData = doc.data()
-      var storageRef = storage.ref( this.breakPointData["commentPath"] )
-
-   
-      var thiz = this
-      storageRef.getDownloadURL().then( url =>{
-
-        var xhr = new XMLHttpRequest();
-        
-        
-        xhr.responseType = 'blob';
-        xhr.onload = e => {
-          console.log(xhr.response);
-          var audioBlob:Blob = xhr.response
-          audioBlob.arrayBuffer()
-          .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
-            audioBuffer => {
-               thiz.play(audioBuffer, false);
-             },
-             error =>
-               console.error(error)
-          ))
-          var source = this.context.createBufferSource()
-          source.buffer = this.audioBlob;
-          source.connect(this.context.destination);
-          source.start();           
-        }
-        xhr.onerror = e =>{
-          console.log( "error:" + e)
-        }
-        xhr.open('GET', url);
-        xhr.send();   
-
-         
-      })
-    })
-  }
 
   loadSound( id, url ){
     var thiz = this
@@ -615,8 +587,123 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     // iPad on iOS 13 detection
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
   } 
-  getLog(){
-    return this.logmsg
-  }   
+
+  playVideo(){
+      if( this.isPlaying ){
+        this.player.pause()
+      }
+      else{
+        this.player.play()
+        this.lastbreakPoint=this.player.currentTime()
+      }
+      this.resetMarker()
+      
+  } 
+  onStartEditMarker(){
+      this.player.pause()
+      this.startMarker = this.player.currentTime() 
+      this.loopDuration = 0
+      this.isMarkerActive = true
+      this.isMarkerEdited = true
+  }  
+
+  onSlide(value:number) {
+    console.log("This is emitted as the thumb slides");
+    var duration = this.player.duration()
+    var newTime = duration * (  value / 100)
+    this.player.currentTime(newTime)
+    this.resetMarker()
+  }  
+
+  showCurrentTime(){
+    this.currentTime = this.player.currentTime().toFixed(1)
+    this.videoDuration = this.player.duration().toFixed(1)
+    this.percentage = Math.floor( (this.currentTime / this.videoDuration) * 100)  
+ 
+  }
+  backward(){
+    this.resetMarker()
+    var currentTime = this.player.currentTime()
+    if(currentTime > 1){
+      this.player.currentTime(currentTime - 1)
+      this.startMarker = currentTime - 1
+      this.lastbreakPoint=this.startMarker.toFixed(2)
+    } 
+    else{
+      this.player.currentTime( 0 )
+      this.startMarker = 0
+      this.lastbreakPoint=( 0.0 ).toFixed(2)
+    }   
+  }
+  forward(){
+    this.resetMarker()
+    var currentTime = this.player.currentTime()
+    if( (currentTime + 1) < this.player.duration() ){
+      this.player.currentTime( currentTime + 1 )
+      this.startMarker = currentTime + 1
+      this.lastbreakPoint = this.startMarker.toFixed(2)
+    }
+    else{
+      var duration = this.player.duration()
+      this.player.currentTime( duration )
+      this.startMarker = duration
+      this.lastbreakPoint = duration
+    }
+  }
+
+  displayTime( value:number ){
+    if( value != null){
+      return value.toFixed(1)
+    }
+    else return ""
+  }
+
+  stop(){
+    if( this.isPlaying ) {
+      this.player.pause()
+    }
+    else{
+      this.player.play()
+    }
+  }
+
+  onLoopLength($event){
+    console.log("loop lenght changed" + $event.value)
+
+    var value = $event.value
+
+    if( (this.startMarker + value) <= this.player.duration() ){
+      this.loopDuration =  value 
+    }
+    else{
+      this.loopDuration = Math.floor( this.player.duration() - this.startMarker )
+    }  
+    this.player.currentTime( this.startMarker + this.loopDuration)      
+  }  
+
+  onCancel(){
+    this.isMarkerActive = false
+    this.resetMarker()
+    this.isMarkerEdited = false
+
+  }
+  resetMarker(){
+    this.clear()
+    this.paths.length = 0
+    this.ppts.length = 0    
+    this.loopDuration = 0
+    this.startMarker = null
+    this.isMarkerActive = false
+    this.player.volume(1.0)
+  }
+
+  onMute(){
+    var isMuted = this.player.muted()
+    this.player.muted( !isMuted )
+  }
+
+  onSpeedChange($event){
+    this.player.playbackRate($event.value)
+  }
 }
 
