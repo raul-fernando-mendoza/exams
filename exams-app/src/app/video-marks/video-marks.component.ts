@@ -119,6 +119,34 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
 
   ngAfterViewInit(): void {
+
+    var storageRef = storage.ref( "organizations/" + this.organization_id + "/laboratoryGrades/unmute.wav"  )
+
+   
+    var thiz = this
+    storageRef.getDownloadURL().then( url =>{
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = e => {
+        console.log(xhr.response);
+        var audioBlob:Blob = xhr.response
+        audioBlob.arrayBuffer()
+        .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
+          audioBuffer => {
+            this.yodelBuffer = audioBuffer;
+           },
+           error =>
+             console.error(error)
+        ))
+      }
+      xhr.onerror = e =>{
+        console.log( "error:" + e)
+      }
+      xhr.open('GET', url);
+      xhr.send();   
+
+    })
+
     this.ctx = this.canvas.nativeElement.getContext('2d');  
 
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
@@ -167,17 +195,23 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       })
       this.on("playing",function onTimeUpdate() {
         thiz.isPlaying = true
-        //thiz.isPlaying.emit(true)
       })  
       this.on("pause",function onTimeUpdate() {
         thiz.isPlaying = false
-        //thiz.isPlaying.emit(false)
       })
-   
-      
+      this.on("fullscreenchange", function onFullScreen(){
+        if(thiz.player.isFullscreen()){
+          thiz.player.exitFullscreen();
+        }
+      })
     });
      
   }  
+
+
+  unmute(){    
+    this.playSound(this.yodelBuffer, true)
+  } 
 
   resizeCanvasToDisplaySize(canvas) {
     // Lookup the size the browser is displaying the canvas in CSS pixels.
@@ -514,14 +548,16 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     storageRef.delete().then( () =>{
       console.log("file deleted")
     })
-    .then(() =>{
-      db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( id ).delete().then( data =>{
-        console.log("deleted")
-      })
-    })
     .catch( reason =>{
       console.log("there has been an error:" + reason)
     })
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( id ).delete().then( data =>{
+      console.log("deleted")
+    })
+    .catch( reason =>{
+      console.log("there has been an error:" + reason)
+    })        
     
     
   }
@@ -613,6 +649,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     var newTime = duration * (  value / 100)
     this.player.currentTime(newTime)
     this.resetMarker()
+    this.lastbreakPoint=newTime.toFixed(2)
   }  
 
   showCurrentTime(){

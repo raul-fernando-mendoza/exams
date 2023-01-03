@@ -8,6 +8,8 @@
 
 </div>
 
+<button mat-raised-button  *ngIf="isIOS()" (click)="unmute()">You are using IOS please click here to unmute</button>
+
 <div>
   <button mat-raised-button (click)="playVideo()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Stop</span></button>
 
@@ -61,7 +63,6 @@
 
 
 <mat-divider></mat-divider>
-{{ isMarkerActive }} {{ startMarker }}
 <div>
   <div *ngFor="let b of breakPoints" [ngClass]="isMarkerActive && startMarker==b.id ? 'selected-observation' : ''">
     <button mat-stroked-button (click)="playMarker(b, true)"><span >Observacion en: {{ b.id }}</span></button>
