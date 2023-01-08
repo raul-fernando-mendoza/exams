@@ -1,72 +1,74 @@
-<div class="container" *ngIf="source">
-  
-  <div class="video-container">
-    <video #target playsinline class="video-js"></video> 
-  </div>
- 
-  <canvas #blackboard class="blackboard" id="blackboard"></canvas>
-  <div #prev class="prev" id="prev" (click)="onPreviousMarker()"><mat-icon>rotate_left</mat-icon></div>
-
-  <div #current class="current" id="current">{{lastMarkerIdx + 1}}</div>
-
-  <div #prev class="next" id="next" (click)="onNextMarker()"><mat-icon>rotate_right</mat-icon></div>
-
-</div>
-
 <button mat-raised-button  *ngIf="isIOS()" (click)="unmute()">You are using IOS please click here to unmute</button>
-<div *ngIf="isUnmuted">
-  <div>
-    <button mat-raised-button *ngIf="isMarkerEdited==false" (click)="playVideo()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Stop</span></button>
-
-    <button mat-raised-button (click)="backward()">&lt;</button> 
-
-    <mat-slider min="0" max="100" discrete  (valueChange)="onSlide($event)" [value]="percentage">
-      <input matSliderThumb>
-    </mat-slider>
-
-    <button mat-raised-button (click)="forward()">&gt;</button> 
-
-    {{ displayTime(currentTime) }} of {{ displayTime(videoDuration) }}
-    <button (click)="onMute()">mute</button>  
-
-    <mat-form-field appearance="fill">
-      <mat-label>Speed</mat-label>
-      <mat-select  matNativeControl (selectionChange)="onSpeedChange($event)">
-        <mat-option value="1">1x</mat-option>
-        <mat-option value="0.5">0.5x</mat-option>
-        <mat-option value="0.1">0.1x</mat-option>
-      </mat-select >
-    </mat-form-field>
-
-    <button *ngIf="isAdmin && isMarkerEdited==false" (click)="onStartEditMarker()">Marker</button> 
 
 
+  <div class="container" *ngIf="source">
+    
+    <div class="video-container">
+      <video #target playsinline class="video-js"></video> 
+    </div>
+  
+    <canvas #blackboard class="blackboard" id="blackboard"></canvas>
+    <div *ngIf="isUnmuted" #prev class="prev" id="prev" (click)="onPreviousMarker()"><mat-icon>rotate_left</mat-icon></div>
+
+    <div *ngIf="isUnmuted" #current class="current" id="current" (click)="playMarker(lastMarkerIdx, true)">{{lastMarkerIdx + 1}} <mat-icon>autorenew</mat-icon></div>
+
+    <div *ngIf="isUnmuted" #prev class="next" id="next" (click)="onNextMarker()"><mat-icon>rotate_right</mat-icon></div>
 
   </div>
 
+<div *ngIf="isUnmuted">
+  <mat-card>
+    <mat-card-content>
+      <button mat-raised-button *ngIf="isMarkerEdited==false" (click)="playVideo()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Stop</span></button>
 
+      <button mat-raised-button (click)="backward()">&lt;</button> 
+
+      <mat-slider min="0" max="100" discrete  (valueChange)="onSlide($event)" [value]="percentage">
+        <input matSliderThumb>
+      </mat-slider>
+
+      <button mat-raised-button (click)="forward()">&gt;</button> 
+
+      {{ displayTime(currentTime) }} of {{ displayTime(videoDuration) }}
+      <button (click)="onMute()">mute</button>  
+
+      <mat-form-field appearance="fill">
+        <mat-label>Speed</mat-label>
+        <mat-select  matNativeControl (selectionChange)="onSpeedChange($event)">
+          <mat-option value="1">1x</mat-option>
+          <mat-option value="0.5">0.5x</mat-option>
+          <mat-option value="0.1">0.1x</mat-option>
+        </mat-select >
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="primary" *ngIf="isAdmin && isMarkerEdited==false" (click)="onStartEditMarker()">Marker</button>
+    </mat-card-actions> 
+  </mat-card>
   <div class="loop-controls" *ngIf="isMarkerEdited">
-    <mat-slider min="0" step="1" max="10" showTickMarks (input)="onLoopLength($event)">
-      <input matSliderThumb>
-    </mat-slider>
-    <button *ngIf="loopDuration>0" mat-raised-button (click)="playLoop()"><span *ngIf="isPlaying==true">stop loop</span><span *ngIf="isPlaying==false">play loop</span></button>
-    {{ displayTime(startMarker) }} - {{ displayTime(startMarker + loopDuration) }}
+    <mat-card>
+      <mat-card-content>
+        <mat-slider min="0" step="1" max="10" showTickMarks (input)="onLoopLength($event)">
+          <input matSliderThumb>
+        </mat-slider>
+        <button *ngIf="loopDuration>0" mat-raised-button (click)="playLoop()"><span *ngIf="isPlaying==true">stop loop</span><span *ngIf="isPlaying==false">play loop</span></button>
+        {{ displayTime(startMarker) }} - {{ displayTime(startMarker + loopDuration) }}
+        <button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false"><mat-icon>keyboard_voice</mat-icon></button>
 
-
-    <button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false">GRABAR</button>
-    <button mat-raised-button (click)="onStopRecording()" *ngIf="isAdmin && isRecording==true">STOP</button>
-
-    <button mat-raised-button (click)="onUndo()" *ngIf="isAdmin">Undo</button>
-
-    <button mat-raised-button (click)="onSave()">Guardar</button>
-    <button mat-raised-button (click)="onCancel()">Cancelar</button>
+        <button mat-raised-button (click)="onUndo()" *ngIf="isAdmin"><mat-icon>undo</mat-icon></button>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="onSave()">Guardar</button>
+        <button mat-raised-button (click)="onCancel()">Cancelar</button>
+      </mat-card-actions>
+    </mat-card>
 
   </div>
   <div id="commentStatus"></div> 
   <mat-divider></mat-divider>
   <div>
     <div *ngFor="let b of markers; index as i;" [ngClass]="isMarkerActive && this.lastMarkerIdx == i ? 'selected-observation' : ''">
-      <button mat-stroked-button (click)="playMarker(i, true)"><span >Observacion en: {{i}}-{{ displayTime(b.startTime) }}</span></button>
+      <button mat-stroked-button (click)="playMarker(i, true)"><span >Observacion en: {{i+1}}-{{ displayTime(b.startTime) }}</span></button>
       <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(b.id)">Delete</button>
     </div>
   </div>

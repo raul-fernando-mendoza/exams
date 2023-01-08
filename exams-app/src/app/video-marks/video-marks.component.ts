@@ -854,22 +854,23 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   onPreviousMarker(){
     if( this.markers.length > 0){
-      if( this.lastMarkerIdx != null && this.lastMarkerIdx -1 > 0){
-        this.playMarker(this.lastMarkerIdx - 1, true)
-      }
-      else{
+      if( this.lastMarkerIdx == null ){
         this.playMarker(0, true)
       }
+      else if( this.lastMarkerIdx != null && this.lastMarkerIdx -1 >= 0){
+        this.playMarker(this.lastMarkerIdx - 1, true)
+      }
+
     }     
 
   }
   onNextMarker(){
     if( this.markers.length > 0){
-      if( this.lastMarkerIdx != null && this.lastMarkerIdx + 1 < this.markers.length){
-        this.playMarker(this.lastMarkerIdx + 1, true)
-      }
-      else{
+      if( this.lastMarkerIdx == null ){
         this.playMarker(0, true)
+      }
+      else if( this.lastMarkerIdx != null && this.lastMarkerIdx + 1 < this.markers.length){
+        this.playMarker(this.lastMarkerIdx + 1, true)
       }
     } 
   }
