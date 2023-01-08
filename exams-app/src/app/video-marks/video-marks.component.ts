@@ -4,7 +4,11 @@ import { FileLoadObserver } from "../load-observers/load-observers.module"
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TimerDialog } from '../timer-dialog/timer-dlg';
 import videojs from 'video.js';
+import * as uuid from 'uuid';
+import { MatDialog } from '@angular/material/dialog';
+
 
 
 const BLACKBOARD = 'blackboard'
@@ -16,7 +20,7 @@ const BLACKBOARD = 'blackboard'
 })
 export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
-  currentTime
+  currentTime:number = 0.00
 
   @ViewChild(BLACKBOARD) canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('target') target: ElementRef;
@@ -47,14 +51,14 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   paths = []
 
 
+  //the purpose is to know if a marker should be started.
+  lastMarkerIdx:number = null // indicate the last marker played
+  lastScrolledTime:number = 0 // indicate the last time to which the user scrolled
 
-  breakPoints = [] 
+  markers = [] 
 
   unsubscribe = null
 
-  lastbreakPoint = "0"
-
-  
   organization_id = null
 
 
@@ -74,18 +78,25 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   sounds = []
 
   player = null
-  videoDuration = null
+  videoDuration:number = 0.0
 
   isMarkerActive:boolean = false
   isMarkerEdited:boolean = false
   startMarker:number = null
-  loopDuration = 0
-  percentage = 0
+  loopDuration:number = 0
+  percentage:number = 0
 
+  isUnmuted = false
+  isPlayingLoop = false
+  isPlayingAllMarkers = false
+
+  sourceAudioBuffer = null
+  
   constructor(
     private userPreferencesService: UserPreferencesService
     ,private userLoginService: UserLoginService
     , private http: HttpClient
+    , public dialog: MatDialog
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -100,21 +111,32 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.PAINT_END = this.isTouch ? 'touchend' : 'mouseup';    
     console.log( this.isTouch )
 
+    if( !this.isIOS() ){
+      this.isUnmuted = true
+    }
+
     this.loadBreakPoints()
   }
   ngOnDestroy(): void {
     this.unsubscribe()
-  }   
-  onCurrentTime(currentTime){
-    for( let i = 0; this.isPlaying == true && i< this.breakPoints.length ; i++){
-      let breakPoint = this.breakPoints[i]
-      if( parseFloat(this.lastbreakPoint) < parseFloat(breakPoint.id) && 
-          parseFloat(breakPoint.id) <= parseFloat( currentTime )
-          ){
-        this.playMarker( breakPoint , false)
-        break;
+  }
+
+  
+  
+  onCurrentTime(currentTime:number){
+    if( this.isMarkerActive == false && this.isPlayingAllMarkers == true && this.isPlayingLoop == false){ // we can only start a new marker if no other marker is been played and we are in a playing state
+      //find the next marker that has a time larger than the previous played and larger than the lastScrolledTime
+      for( let i = this.lastMarkerIdx != null ? this.lastMarkerIdx + 1 : 0; i< this.markers.length ; i++){
+        let breakPoint = this.markers[i]
+        if( breakPoint.startTime <= currentTime && 
+          breakPoint.startTime >= this.lastScrolledTime &&
+          currentTime >= this.lastScrolledTime 
+            ){   
+            this.playMarker( i , false)
+          break;
+        }
       }
-    }
+    }  
   }
 
 
@@ -187,16 +209,18 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         console.log("time has changed" + this.currentTime())
         thiz.showCurrentTime()
         thiz.onCurrentTime( this.currentTime() )
-        if( thiz.isMarkerActive ){
+        if( thiz.isMarkerActive || thiz.isPlayingLoop){
           if( thiz.player.currentTime() > (thiz.startMarker + thiz.loopDuration) ){
             thiz.player.currentTime( thiz.startMarker )
           }
         }
       })
       this.on("playing",function onTimeUpdate() {
+        console.log("isPlaying true")
         thiz.isPlaying = true
       })  
       this.on("pause",function onTimeUpdate() {
+        console.log("isPlaying false")
         thiz.isPlaying = false
       })
       this.on("fullscreenchange", function onFullScreen(){
@@ -211,6 +235,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   unmute(){    
     this.playSound(this.yodelBuffer, true)
+    this.isUnmuted = true;
   } 
 
   resizeCanvasToDisplaySize(canvas) {
@@ -388,7 +413,6 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
 
   resumePlay() {
-    this.isMarkerActive = false
     this.clear()
     this.paths.length = 0
     this.ppts.length = 0
@@ -397,21 +421,21 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }  
 
   save(){
-    
-    this.lastbreakPoint = this.startMarker.toFixed(2)
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(this.lastbreakPoint).set({"id":this.lastbreakPoint,"loopDuration":this.loopDuration}).then( () =>{
-      this.saveSound()          
-      db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").get().then( pathSet =>{
+    var id = uuid.v4()
+
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(id).set({"id":id, "startTime":this.startMarker,"loopDuration":this.loopDuration}).then( () =>{
+      this.saveSound(id)          
+      db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").get().then( pathSet =>{
         var mapDelete = pathSet.docs.map( pathDoc =>{
           console.log( pathDoc.id )
-          return db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc(pathDoc.id).delete()
+          return db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").doc(pathDoc.id).delete()
         })
         Promise.all( mapDelete ).then( () =>{
           var promiseArray:Promise<void>[] = []
           for(let i = 0; i < this.paths.length; i++){
             let path = this.paths[i]
-              var p = db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.lastbreakPoint + "/paths").doc("path_" + i).set({"path":path})
+              var p = db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").doc("path_" + i).set({"path":path})
               promiseArray.push(p)
           }
           Promise.all( promiseArray ).then( ()=>{
@@ -433,16 +457,16 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       console.log("document loaded " + data)
     })
     this.unsubscribe = db.collection(this.path + "/" + this.drawing_id + "/breakPoints").onSnapshot( breakPointSet =>{
-      this.breakPoints.length = 0
+      this.markers.length = 0
       this.sounds.length = 0
       breakPointSet.docs.map( breakPointDoc =>{
         const breakPoint = breakPointDoc.data() 
-        this.breakPoints.push(breakPoint)
+        this.markers.push(breakPoint)
         this.loadSound( breakPoint["id"], breakPoint["commentUrl"])
       })
-      this.breakPoints.sort( 
+      this.markers.sort( 
         (a,b) => { 
-          return parseFloat(a.id) - parseFloat(b.id) 
+          return  a.startTime - b.startTime 
         })
      },
      error =>{
@@ -450,14 +474,15 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
      })
   }
 
-  playMarker(breakpoint, stop=false){
-
+  playMarker(index, stop=false){
+    console.log("starting marker:" + index)
     // now plays the sound
+    this.isMarkerActive = true
+    this.lastMarkerIdx = index
 
     
-    this.startMarker = parseFloat( breakpoint["id"] ) 
-    this.loopDuration = breakpoint["loopDuration"]
-    this.isMarkerActive = true
+    this.startMarker = this.markers[index]["startTime"]  
+    this.loopDuration = this.markers[index]["loopDuration"]
 
     this.clear()
     this.player.currentTime(this.startMarker);
@@ -468,17 +493,17 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     else{
       this.player.pause()
     }
-    this.lastbreakPoint =  this.startMarker.toFixed(2)
+ 
 
-
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.startMarker + "/paths").get().then(pathSet =>{
+    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.markers[index]["id"] + "/paths").get().then(pathSet =>{
       this.paths.length = 0
       pathSet.docs.map( doc =>{
         const ppts = doc.data()
         this.paths.push( ppts.path )
         this.paintPath( ppts.path )
       })
-      this.playSound( this.sounds[this.startMarker], stop )
+      console.log("marker start sound:" + index)
+      this.playSound( this.sounds[this.markers[index]["id"]], stop )
        
     })
     
@@ -509,7 +534,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         const audioUrl = URL.createObjectURL(this.audioBlob);
         const audio = new Audio(audioUrl);
         audio.play() 
-      });      
+      }); 
+      
+      this.onTimerStart()
     });    
   }
   onStopRecording(){
@@ -523,13 +550,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.isMarkerEdited = false
   }
 
-  saveSound(){
+  saveSound(id){
     if( this.audioBlob != null ){
       const path = this.path + "/" + this.drawing_id + "/breakPoints" 
-      const id = this.lastbreakPoint 
       const property = "comment"
 
-      const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + this.lastbreakPoint + ".wav"
+      const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + id + ".wav"
 
     
       var storageRef = storage.ref( bucketName )
@@ -564,21 +590,43 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
 
   playSound(audioBuffer, stop) {
+    console.log("marker play sound:")
     var thiz = this
-    var source = this.context.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(this.context.destination);
-    source.addEventListener("ended", (e) =>{
+    if( this.sourceAudioBuffer != null){
+      this.sourceAudioBuffer.stop()
+    }
+
+    this.sourceAudioBuffer = this.context.createBufferSource();
+    this.sourceAudioBuffer.buffer = audioBuffer;
+    this.sourceAudioBuffer.connect(this.context.destination);
+    this.sourceAudioBuffer.addEventListener("ended", (e) =>{
       if( stop == true){
-        this.player.pause()
-        this.isMarkerActive = false
+        console.log("marker stop sound:")
+        if( this.isPlaying == true){
+          this.player.pause()
+          this.player.currentTime(this.startMarker)
+          thiz = this
+          var interval = setInterval( () => { 
+            if(thiz.isPlaying == false)
+              {
+                thiz.isMarkerActive = false; 
+                clearInterval(interval)
+              }
+           }, 100)
+        }
+        else{
+          this.isMarkerActive = false
+        }
         this.player.volume(1.0)
+     
       }
       else{
+        console.log("marker end sound:")
+        this.isMarkerActive = false
         this.resumePlay()
       }
     })    
-    source.start();
+    this.sourceAudioBuffer.start();
 
   };
 
@@ -627,79 +675,101 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   playVideo(){
       if( this.isPlaying ){
         this.player.pause()
+        if( this.sourceAudioBuffer != null){
+          this.sourceAudioBuffer.stop()
+        }
+        this.isPlayingAllMarkers = false
       }
       else{
+        this.clear()
         this.player.play()
-        this.lastbreakPoint=this.player.currentTime()
+        this.isPlayingAllMarkers = true
       }
-      this.resetMarker()
-      
   } 
   onStartEditMarker(){
       this.player.pause()
-      this.startMarker = this.player.currentTime() 
-      this.loopDuration = 0
-      this.isMarkerActive = true
+      this.resetMarker()      
       this.isMarkerEdited = true
   }  
 
   onSlide(value:number) {
     console.log("This is emitted as the thumb slides");
     var duration = this.player.duration()
-    var newTime = duration * (  value / 100)
+    var newTime:number = parseFloat( (duration * (  value / 100)).toFixed(2) )
     this.player.currentTime(newTime)
     this.resetMarker()
-    this.lastbreakPoint=newTime.toFixed(2)
+    this.lastScrolledTime=parseFloat( newTime.toFixed(2) )
+    this.lastMarkerIdx = null
   }  
 
   showCurrentTime(){
-    this.currentTime = this.player.currentTime().toFixed(1)
-    this.videoDuration = this.player.duration().toFixed(1)
+    this.currentTime = parseFloat( this.player.currentTime().toFixed(2) )
+    this.videoDuration = parseFloat( this.player.duration().toFixed(2) )
     this.percentage = Math.floor( (this.currentTime / this.videoDuration) * 100)  
  
   }
   backward(){
-    this.resetMarker()
-    var currentTime = this.player.currentTime()
+    var currentTime = parseFloat( this.player.currentTime().toFixed(2) )
     if(currentTime > 1){
-      this.player.currentTime(currentTime - 1)
-      this.startMarker = currentTime - 1
-      this.lastbreakPoint=this.startMarker.toFixed(2)
+      currentTime = currentTime -1
+      this.player.currentTime(currentTime)
+
     } 
     else{
-      this.player.currentTime( 0 )
-      this.startMarker = 0
-      this.lastbreakPoint=( 0.0 ).toFixed(2)
-    }   
+      currentTime = 0
+      this.player.currentTime( currentTime )
+    } 
+
+    this.lastScrolledTime= parseFloat( currentTime.toFixed(2) )
+    if( this.isMarkerEdited == true){
+      this.startMarker = this.startMarker - 1
+    }
+    else{  
+      this.lastMarkerIdx = null
+    }
+      
   }
   forward(){
-    this.resetMarker()
-    var currentTime = this.player.currentTime()
+    var currentTime = parseFloat( this.player.currentTime().toFixed(2) )
     if( (currentTime + 1) < this.player.duration() ){
-      this.player.currentTime( currentTime + 1 )
-      this.startMarker = currentTime + 1
-      this.lastbreakPoint = this.startMarker.toFixed(2)
+      currentTime = currentTime + 1 
+      this.player.currentTime( currentTime )
     }
     else{
-      var duration = this.player.duration()
+      var duration = parseFloat( this.player.duration().toFixed(2) )
       this.player.currentTime( duration )
-      this.startMarker = duration
-      this.lastbreakPoint = duration
+    }
+    this.lastScrolledTime= parseFloat( currentTime.toFixed(2) )
+    if( this.isMarkerEdited == true){
+      this.startMarker = this.startMarker + 1
+    }
+    else{  
+      this.lastMarkerIdx = null
     }
   }
 
   displayTime( value:number ){
     if( value != null){
-      return value.toFixed(1)
+      return value.toFixed(2)
     }
     else return ""
   }
 
-  stop(){
-    if( this.isPlaying ) {
+  playLoop(){
+    if( this.isPlayingLoop ) {
       this.player.pause()
+      var thiz = this
+      var interval = setInterval( () => { 
+        if(thiz.isPlaying == false)
+          {
+            thiz.isPlayingLoop = false; 
+            clearInterval(interval)
+          }
+       }, 100)
     }
     else{
+      this.isPlayingLoop = true
+      this.player.currentTime( this.startMarker )      
       this.player.play()
     }
   }
@@ -719,18 +789,21 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }  
 
   onCancel(){
-    this.isMarkerActive = false
     this.resetMarker()
     this.isMarkerEdited = false
-
   }
   resetMarker(){
+    //clear all paths
     this.clear()
     this.paths.length = 0
-    this.ppts.length = 0    
+    this.ppts.length = 0  
+    
+    //reset all marker variables
     this.loopDuration = 0
-    this.startMarker = null
-    this.isMarkerActive = false
+    this.startMarker = parseFloat( this.player.currentTime().toFixed(2) )
+    this.lastMarkerIdx = null
+
+    //reset volume of player
     this.player.volume(1.0)
   }
 
@@ -741,6 +814,26 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   onSpeedChange($event){
     this.player.playbackRate($event.value)
+  }
+
+  onTimerStart(){
+    const dialogRef = this.dialog.open(TimerDialog, {
+      height: '400px',
+      width: '250px',
+      data: { label:"Tiempo Restante", timeLeft:30}
+    });
+  
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('The dialog was closed');
+      if( data != undefined ){
+        console.debug( data )
+        this.onStopRecording()
+      }
+      else{
+        this.onStopRecording()
+      }
+    });
+
   }
 }
 

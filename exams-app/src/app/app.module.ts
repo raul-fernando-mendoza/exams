@@ -79,8 +79,9 @@ import { LaboratoryGradeEditComponent } from './laboratory-grade-edit/laboratory
 import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory-grade-list.component';
 import { DateSelectorComponent } from './date-selector/date-selector.component';
 import { UserSelectorComponent } from './user-selector/user-selector.component';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatAutocompleteModule} from '@angular/material/autocomplete';
 import { FileLoaderComponent } from './file-loader/file-loader.component';
+import { TimerDialog } from './timer-dialog/timer-dlg';
 
 @NgModule({
     declarations: [
@@ -114,6 +115,7 @@ import { FileLoaderComponent } from './file-loader/file-loader.component';
         MateriaListComponent,
         DialogMateriaExamDialog,
         DialogNameDialog,
+        TimerDialog,
         DialogListSelectDialog,
         CareerUserComponent,
         CertificateTypeListComponent,
