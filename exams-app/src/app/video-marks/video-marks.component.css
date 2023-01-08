@@ -22,6 +22,32 @@ canvas.blackboard {
     margin:0;
     border: 2px solid rgba(255,0,0,0.12);
 }
+
+div.prev {
+    position: absolute;
+    top: 100px;
+    left: 0px;
+    margin:5px;
+    background-color: white;
+    border: 2px solid rgba(255,0,0,0.12);
+}
+div.current {
+    position: absolute;
+    top: 240px;
+    left: 0px;
+    margin:5px;
+    background-color: white;
+    border: 2px solid rgba(255,0,0,0.12);
+}
+div.next {
+    position: absolute;
+    top: 330px;
+    left: 0px;
+    margin:5px;
+    background-color: white;
+    border: 2px solid rgba(132, 0, 255, 0.12);
+}
+
 button{
     margin:5px;
 }

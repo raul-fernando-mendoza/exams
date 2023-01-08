@@ -8,10 +8,13 @@ import { TimerDialog } from '../timer-dialog/timer-dlg';
 import videojs from 'video.js';
 import * as uuid from 'uuid';
 import { MatDialog } from '@angular/material/dialog';
+import { TitleStrategy } from '@angular/router';
 
 
 
 const BLACKBOARD = 'blackboard'
+const NEXT = 'next'
+const PREV = 'prev'
 @Component({
   selector: 'app-video-marks',
   templateUrl: './video-marks.component.html',
@@ -391,6 +394,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       this.MOUSE_DOWN = true;
       this.ppts.length = 0
     }  
+    if ( PREV == e.target["id"] ){
+      this.onPreviousMarker()
+    }    
+    if ( NEXT == e.target["id"] ){
+      this.onNextMarker()
+    }       
   } 
   
   @HostListener('touchstart', ['$event'])
@@ -399,7 +408,13 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     if ( BLACKBOARD == e.target["id"] ){
       this.MOUSE_DOWN = true;
       this.ppts.length = 0
-    }  
+    } 
+    if ( PREV == e.target["id"] ){
+      this.onPreviousMarker()
+    }    
+    if ( NEXT == e.target["id"] ){
+      this.onNextMarker()
+    }       
   }   
   
   onUndo(){
@@ -674,10 +689,11 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   playVideo(){
       if( this.isPlaying ){
-        this.player.pause()
+
         if( this.sourceAudioBuffer != null){
           this.sourceAudioBuffer.stop()
         }
+        this.player.pause()        
         this.isPlayingAllMarkers = false
       }
       else{
@@ -834,6 +850,28 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       }
     });
 
+  }
+
+  onPreviousMarker(){
+    if( this.markers.length > 0){
+      if( this.lastMarkerIdx != null && this.lastMarkerIdx -1 > 0){
+        this.playMarker(this.lastMarkerIdx - 1, true)
+      }
+      else{
+        this.playMarker(0, true)
+      }
+    }     
+
+  }
+  onNextMarker(){
+    if( this.markers.length > 0){
+      if( this.lastMarkerIdx != null && this.lastMarkerIdx + 1 < this.markers.length){
+        this.playMarker(this.lastMarkerIdx + 1, true)
+      }
+      else{
+        this.playMarker(0, true)
+      }
+    } 
   }
 }
 

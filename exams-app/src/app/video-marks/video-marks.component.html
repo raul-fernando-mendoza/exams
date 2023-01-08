@@ -5,6 +5,11 @@
   </div>
  
   <canvas #blackboard class="blackboard" id="blackboard"></canvas>
+  <div #prev class="prev" id="prev" (click)="onPreviousMarker()"><mat-icon>rotate_left</mat-icon></div>
+
+  <div #current class="current" id="current">{{lastMarkerIdx + 1}}</div>
+
+  <div #prev class="next" id="next" (click)="onNextMarker()"><mat-icon>rotate_right</mat-icon></div>
 
 </div>
 
@@ -57,16 +62,11 @@
     <button mat-raised-button (click)="onCancel()">Cancelar</button>
 
   </div>
-
   <div id="commentStatus"></div> 
-
-
-
   <mat-divider></mat-divider>
-  lastMarker:{{this.lastMarkerIdx }} lastScrolledTime:{{lastScrolledTime}} isMarkerActive:{{isMarkerActive}} this.isPlayingAllMarkers:{{isPlayingAllMarkers}} isPlayingLoop:{{isPlayingLoop}}
   <div>
     <div *ngFor="let b of markers; index as i;" [ngClass]="isMarkerActive && this.lastMarkerIdx == i ? 'selected-observation' : ''">
-      <button mat-stroked-button (click)="playMarker(i, true)"><span >Observacion en: {{ displayTime(b.startTime) }}</span></button>
+      <button mat-stroked-button (click)="playMarker(i, true)"><span >Observacion en: {{i}}-{{ displayTime(b.startTime) }}</span></button>
       <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(b.id)">Delete</button>
     </div>
   </div>
