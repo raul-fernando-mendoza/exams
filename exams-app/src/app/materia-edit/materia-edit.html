@@ -137,13 +137,13 @@ Habilidad
       </div> 
 
       <div class="examen-container">
-        <h3>Laboratorios<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menuLab" aria-label="Example icon-button with a menu">
+        <h3>Lecciones interactivas<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menuLab" aria-label="Example icon-button with a menu">
           <mat-icon>more_vert</mat-icon>
         </button></h3>
         <mat-menu #menuLab="matMenu" >
           <button mat-menu-item (click)="onCreateLaboratory()" [disabled]="submitting">
             <mat-icon>library_add</mat-icon>
-            <span>Nuevo Laboratorio</span>
+            <span>Nueva Leccion Interactiva</span>
           </button>            
         </mat-menu>      
         <div *ngFor="let l of m.controls.laboratories.controls">
@@ -155,7 +155,7 @@ Habilidad
             <mat-menu #menu="matMenu" >
               <button  mat-menu-item (click)="onDeleteLaboratory(m.controls.id.value, l.controls.id.value)" [disabled]="submitting">
                 <mat-icon>delete</mat-icon>
-                <span>Borrar Laboratorio</span>
+                <span>Borrar leccion interactiva</span>
               </button>      
             </mat-menu>
         </div>

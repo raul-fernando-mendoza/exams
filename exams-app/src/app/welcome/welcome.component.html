@@ -25,6 +25,7 @@
                                           
           </mat-card-title-group>
           <mat-card-content>
+            <h3>Examenes</h3>
             <table>
               <tr *ngFor="let e of me.exams">
                   <td>
@@ -33,11 +34,10 @@
                   </td>
                   <td>
                     <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
-                 
                   </td>
               </tr>
             </table>  
-            <h3>laboratories</h3>
+            <h3>Lecciones interactivas</h3>
             <table>
               <tr *ngFor="let l of me.laboratories">
                   <td>

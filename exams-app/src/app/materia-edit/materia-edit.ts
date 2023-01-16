@@ -547,7 +547,7 @@ export class DialogMateriaDialog implements OnInit{
     const dialogRef = this.dialog.open(DialogNameDialog, {
       height: '400px',
       width: '250px',
-      data: { label:"Laboratorio", name:"" }
+      data: { label:"Leccion interactiva", name:"" }
     });
   
     dialogRef.afterClosed().subscribe(result => {
