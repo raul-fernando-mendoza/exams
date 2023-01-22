@@ -12,7 +12,7 @@ export const environment = {
   firebase:{
     apiKey: "AIzaSyDB_dPrLkmeIm3-n_4TNxpt94BrUqn0_Rk",
 
-    authDomain: "thoth-qa.firebaseapp.com",
+    authDomain: "examenes.raxacademy.com",
   
     databaseURL: "https://thoth-qa-default-rtdb.firebaseio.com",
   
