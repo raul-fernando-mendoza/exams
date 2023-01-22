@@ -108,6 +108,8 @@ export interface Laboratory{
   isDeleted?:boolean 
   videoPath?:string
   videoUrl?:string
+  soundPath?:string
+  soundUrl?:string  
 }
 
 export interface Materia{

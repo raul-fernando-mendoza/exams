@@ -17,6 +17,14 @@
                     <source src="{{laboratory.videoUrl}}" type="video/mp4">
                 </video>
             </div>
+            <mat-divider></mat-divider>
+            <div *ngIf="laboratory.soundUrl">
+                <h3>Audio para practicas</h3>           
+                <audio controls>
+                    <source [src]="laboratory.soundUrl" type="audio/mp3">
+                    Your browser does not support the audio tag.
+                </audio>    
+            </div>         
             <button mat-button matStepperNext>Next</button>
           </ng-template>
         </mat-step>

@@ -1,21 +1,21 @@
 <p>Leccion interactiva</p>
-<form *ngIf="l" [formGroup]="l" >
-    <h1>Carge el video de instrucciones</h1>
+<form *ngIf="isAdmin && l" [formGroup]="l" >
+    <h1>Suba el video de instrucciones</h1>        
+    <mat-form-field>
+        <mat-label>Nombre</mat-label>
+        <input matInput placeholder="" formControlName="label" (change)="onPropertyChange($event)">
+    </mat-form-field>          
+    <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.videoPath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>        
     <div class="video-container">   
-        <app-vjs-player *ngIf="laboratory && laboratory.videoUrl" source="{{laboratory.videoUrl}}"></app-vjs-player>             
-    </div>            
-    <div *ngIf="isAdmin">
-        <div id="videoStatus"></div>
-        <mat-form-field>
-            <mat-label>Change video</mat-label>
-            <input matInput disabled> 
-            <button mat-icon-button matSuffix (click)="video.click()">
-                <mat-icon>attach_file</mat-icon> 
-            </button>
-            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
-            <mat-icon>delete</mat-icon>
-            </button>      
-            <input hidden (change)="selectFile($event)" name="video" #video type="file" >
-        </mat-form-field>
-    </div>
+        <video *ngIf="l.controls.videoPath.value" class="video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
+            <source src="{{ laboratory.videoUrl }}" type='video/mp4' />
+        </video>    
+    </div>  
+    <span>suba el audio para la practica</span>
+    <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.soundPath.value" (onload)="soundLoaded($event)" (ondelete)="soundDeleted($event)"></app-file-loader>        
+    <audio *ngIf="l.controls.soundPath.value" controls>
+        <source [src]="l.controls.soundUrl.value" type="audio/mp3">
+        Your browser does not support the audio tag.
+    </audio> 
 </form>
+            

@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;     
 }
-app-vjs-player{
-    width:80%;
+video{
+    width:640px;
+    height:480px;
 }
