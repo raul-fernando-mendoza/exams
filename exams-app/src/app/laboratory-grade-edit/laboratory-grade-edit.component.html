@@ -28,24 +28,19 @@
                         <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onReleased()">Liberar Revision</button>
                         <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onRework()">Re-trabajar</button>
                     </div>
-                </div>              <button mat-button matStepperPrevious>Back</button>
+                </div>              
+                <button mat-button matStepperPrevious>Back</button>
               <button mat-button matStepperNext>Next</button>
           </mat-step>        
-          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework">
-            <ng-template matStepLabel>Load Video</ng-template>
-            <ng-template matStepContent>
+          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework" label="Sube tu video">
               <div  class="studentData">
-                  <h1>Sube tu video</h1>
-                  <div class="videocontainer">
-                      <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
-                          <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
-                      </video>     
-                  </div>       
-                  <app-file-loader [organizationId]="organizationId" [collectionPath]="collectionPath" docId="practiceData" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
-                  <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
+                <h1>Sube tu video</h1>
+                <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
+                    <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
+                </video>     
+                <app-file-loader [basepath]="getBasePath()" [fullpath]="laboratoryGrade.studentData.videoPath" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+                <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
               </div> 
-             
-            </ng-template>
           </mat-step>
       </mat-stepper>
 </div>  

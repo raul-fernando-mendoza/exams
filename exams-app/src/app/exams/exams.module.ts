@@ -140,6 +140,7 @@ export interface Materia{
   
 
   exams?:Exam[]
+
 }
 export interface MateriaRequest{
   materias:Materia
@@ -473,5 +474,13 @@ export interface CertificateType{
   label4?:string
   color1?:string
   color2?:string
+}
+
+export interface MateriaReference{
+  id:string
+  label:string
+  desc:string
+  fileUrl:string
+  filePath:string
 }
 

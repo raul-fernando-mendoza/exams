@@ -1,0 +1,23 @@
+
+<form  [formGroup]="mr" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field class="name">
+      <mat-label>Nombre</mat-label>
+      <input matInput placeholder="" formControlName="label" >
+    </mat-form-field>   
+    <textarea  matInput maxlength="2000" rows="3" formControlName="desc"></textarea>
+    <mat-form-field class="url">
+      <mat-label>url</mat-label>
+      <input matInput placeholder="" formControlName="fileUrl" (change)="onUrlChange()">
+    </mat-form-field>  
+    <app-file-loader [basepath]="getBasePath()" [fullpath]="mr.controls.filePath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button> 
+    <button mat-button [disabled]="!mr.valid" type="submit">Ok</button>
+  </mat-dialog-actions>
+</form>
+
+
+
+ 

@@ -1,0 +1,30 @@
+<div class="title">
+<span>Referencias</span><button mat-icon-button (click)="onCreateMateriaReference()"><mat-icon>library_add</mat-icon></button>
+</div>
+<table mat-table [dataSource]="references" class="mat-elevation-z8">
+  <ng-container matColumnDef="label">
+    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+    <td mat-cell *matCellDef="let r">
+      <a href="{{ r.fileUrl }}">{{ r.label }}</a> 
+      <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menuLevel" >
+        <mat-icon>more_vert</mat-icon>
+      </button>                                    
+        <mat-menu #menuLevel="matMenu" >
+          <button mat-menu-item color="primary" (click)="onMateriaReferenceEdit(r)" [disabled]="submitting">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>    
+          <button mat-menu-item color="primary" (click)="onMateriaReferenceDelete(r)" [disabled]="submitting">
+            <mat-icon>remove</mat-icon>
+            <span>Borrar</span>
+          </button>         
+        </mat-menu>       
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Descripción</th>
+    <td mat-cell *matCellDef="let r">{{r.desc}}</td>
+  </ng-container>  
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>  

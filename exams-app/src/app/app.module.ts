@@ -82,6 +82,8 @@ import { UserSelectorComponent } from './user-selector/user-selector.component';
 import { MatAutocompleteModule} from '@angular/material/autocomplete';
 import { FileLoaderComponent } from './file-loader/file-loader.component';
 import { TimerDialog } from './timer-dialog/timer-dlg';
+import { MateriaReferenceComponent } from './materia-edit/materia-reference-list';
+import { MateriaReferenceDialog } from './materia-edit/materia-reference-edit';
 
 @NgModule({
     declarations: [
@@ -131,7 +133,9 @@ import { TimerDialog } from './timer-dialog/timer-dlg';
         LaboratoryGradeListComponent,
         DateSelectorComponent,
         UserSelectorComponent,
-        FileLoaderComponent
+        FileLoaderComponent,
+        MateriaReferenceComponent,
+        MateriaReferenceDialog
     ],
     imports: [
         BrowserModule,

@@ -1,14 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 import { db , storage  } from 'src/environments/environment';
 
 class FileLoadObserver implements Observer<any>  {
   constructor( 
-    private storageRef,
-    private collection_name,
-    private id:string, 
-    private propertyName:string,
+    private fullpath:string,
     private statusElement:HTMLElement,
+    private inputFileElement:HTMLElement,
     private onload:EventEmitter<string>){
   } 
   next=(snapshot =>{
@@ -16,12 +14,13 @@ class FileLoadObserver implements Observer<any>  {
     this.statusElement.innerText = snapshot.bytesTransferred + " of " + snapshot.totalBytes
   })
   error=(cause =>{
-    alert("error:" + cause)
+    this.statusElement.innerText = "Error:" + cause
   })
   complete=( () =>{
-    this.statusElement.innerText = ""
-    console.log("complete" + this.id + " " + this.propertyName)
-    console.log("Completed"); // progress of upload
+    this.statusElement.innerText = "Complete"
+    this.inputFileElement.innerText = this.fullpath.split("/").reverse()[0]
+    this.onload.emit(this.fullpath)
+    /*
     this.storageRef.getDownloadURL().then( url =>{
       console.log(url)        
       var obj = {}
@@ -53,10 +52,10 @@ class FileLoadObserver implements Observer<any>  {
     },
     reason =>{
       console.log("ERROR on url" + reason)
-    })      
+    })
+    */      
   });
 }
-
 
 @Component({
   selector: 'app-file-loader',
@@ -64,15 +63,18 @@ class FileLoadObserver implements Observer<any>  {
   styleUrls: ['./file-loader.component.css']
 })
 export class FileLoaderComponent implements OnInit {
-  @Input() organizationId = "myorganization"
-  @Input() collectionPath = "myfiles"
-  @Input() docId = "abc"
-  @Input() property ="fileName"
+  @Input() basepath:string
+  @Input() fullpath:string
   @Input() maxSize = 200 * 1024*1024 
   @Output() onload = new EventEmitter<string>();
   @Output() ondelete = new EventEmitter<string>();
 
-  constructor() { }
+  @ViewChild('status', {static: true}) statusElement: ElementRef;
+  @ViewChild('fileName', {static: true}) inputFileElement: ElementRef;
+
+  constructor() { 
+    
+  }
 
   ngOnInit(): void {
   }
@@ -90,23 +92,28 @@ export class FileLoaderComponent implements OnInit {
       alert( "El archivo es muy grande")
       return
     }
-    const nameParts = file.name.split(".").reverse()
-    var ext = ""
-    if( nameParts.length > 1 )
-      ext = "." + nameParts[0]
-    const bucketName = "organizations/" + this.organizationId + "/" + this.collectionPath + "/" + this.docId + "/" + this.property + ext
 
-    var storageRef = storage.ref( bucketName )
+    //path = "organizations/" + this.organizationId + "/" + this.collectionPath + "/" + this.docId + "/" + filename
+    this.fullpath =  this.basepath + "/" + file.name
+
+    var storageRef = storage.ref( this.fullpath )
 
     var uploadTask = storageRef.put(file)
-    var element = document.getElementById(this.property + "Status")
-    this.removePropertyValue(this.property)
-    var fileLoadObserver = new FileLoadObserver(storageRef, this.collectionPath , this.docId, this.property, element,this.onload);
+    var fileLoadObserver = new FileLoadObserver(this.fullpath, this.statusElement.nativeElement,this.inputFileElement.nativeElement, this.onload);
     uploadTask.on("state_change", fileLoadObserver)
   }   
 
-  removePropertyValue(property){
+  removePropertyValue(){
 
+    var storageRef = storage.ref( this.fullpath )
+    
+    storageRef.delete().then( () =>{
+      this.ondelete.emit(storageRef.fullPath)
+    })
+    .catch( reason => {
+      console.log("file was not deleted")      
+    })
+    /*
     const ref = db.collection(this.collectionPath).doc(this.docId)
     ref.get().then( doc => {
       if( doc.exists ){
@@ -137,5 +144,14 @@ export class FileLoaderComponent implements OnInit {
         })
       }
     })
-  }  
+    */
+  }
+
+  getFileName(){
+    if( this.fullpath != null){
+      return this.fullpath.split("/").reverse()[0] 
+    }
+    else return "File" 
+  }
+    
 }

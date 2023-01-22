@@ -1,0 +1,11 @@
+table{
+    width: 80%;
+}
+.title{
+    display:flex;
+    align-items: center;
+    width: 80%;
+}
+.title button{
+    margin-left: auto;
+}
