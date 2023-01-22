@@ -110,8 +110,8 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
   }  
   fileDeleted(path){
       console.log("file deleted:" + path)
-      this.l.controls.filePath.setValue( null )
-      this.l.controls.fileUrl.setValue( null )
+      this.l.controls.videoPath.setValue( null )
+      this.l.controls.videoUrl.setValue( null )
       let data = {
         videoPath: this.l.controls.videoPath.value,
         videoUrl: this.l.controls.videoUrl.value
@@ -171,8 +171,8 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
       this.l.controls.soundPath.setValue( null )
       this.l.controls.soundUrl.setValue( null )
       let data = {
-        videoPath: this.l.controls.soundPath.value,
-        videoUrl: this.l.controls.soundUrl.value
+        soundPath: this.l.controls.soundPath.value,
+        soundUrl: this.l.controls.soundUrl.value
       }
       db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
         console.log("url updated")

@@ -29,6 +29,7 @@ interface MyLaboratory {
 
 interface MyEnrollment {
   enrollment_id:string
+  materia_id:string
   materia_name:string
   certificateUrl:string
   iconCertificateUrl:string
@@ -111,6 +112,7 @@ export class WelcomeComponent implements OnInit {
             materiaEnrollment.materia = materia
             var myEnrollment:MyEnrollment = {
               enrollment_id:materiaEnrollment.id,
+              materia_id:materia_id,
               materia_name:materiaEnrollment.materia.materia_name,
               certificateUrl:materiaEnrollment.certificateUrl,
               iconCertificateUrl:materia.materiaIconUrl,
@@ -143,6 +145,7 @@ export class WelcomeComponent implements OnInit {
         console.error("ERROR: materiaEnrollment failed:"+ reason)
       })
     }
+    
   }
 
   
@@ -338,5 +341,5 @@ export class WelcomeComponent implements OnInit {
   }
   laboratoryStatusName( status:LaboratoryGradeStatus ):string{
     return getLaboratoryStatusName(status)
-  }
+  }  
 }

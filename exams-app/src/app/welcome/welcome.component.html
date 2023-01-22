@@ -16,7 +16,7 @@
       <mat-expansion-panel-content>
         <mat-card class="mat-elevation-z0" *ngFor="let me of myEnrollments" class="enrolled-materia-card">
           <mat-card-title-group>
-              <mat-card-title>{{ me.materia_name }}</mat-card-title>
+              <mat-card-title (click)="onMateriaDetalles(me.materia_id)">{{ me.materia_name }}</mat-card-title>
               <mat-card-subtitle>
                 <a *ngIf="me.certificateUrl" href="{{me.certificateUrl}}">certificado</a> 
                 <div *ngIf="!me.certificateUrl">En curso</div>
