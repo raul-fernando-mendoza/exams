@@ -5,6 +5,15 @@
     margin:5px;
 }
 
+.searchForm{
+    display:flex;
+    justify-content: center;
+    width:100%;
+}
+.hidden{
+    display:none
+}
+
 .materia-image{
     height: 300px;
 }

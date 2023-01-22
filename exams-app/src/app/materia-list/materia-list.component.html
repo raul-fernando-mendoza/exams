@@ -1,8 +1,17 @@
 <h1>Habilidades <button mat-button mat-raised-button (click)="onCreateMateria()"><mat-icon>add</mat-icon></button></h1>
-
-<mat-card *ngFor="let m of materias" class="materia-card">
+<form >
+  <div class="searchForm">
+    <mat-form-field class="example-full-width">
+    <span matPrefix> </span>
+    <input type="tel" matInput placeholder="Search" name= "search" [(ngModel)]= "search">
+    <button matSuffix mat-button><mat-icon >search</mat-icon></button>
+    </mat-form-field>
+    <br/>
+  </div>
+</form>
+<mat-card *ngFor="let m of materias" class="materia-card" [ngClass]="isSearched(m)">
     <mat-card-title-group>
-        <mat-card-title class="enroll-card">
+        <mat-card-title class="enroll-card"> 
           <button mat-button (click)="onEditMateria(m)">{{ m.materia_name }}</button>
           <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>

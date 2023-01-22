@@ -24,6 +24,8 @@ export class MateriaListComponent implements OnInit {
 
   organization_id:string
 
+  search = null
+
   constructor(
  
       private router: Router
@@ -178,6 +180,19 @@ export class MateriaListComponent implements OnInit {
       }) 
     }) 
        
+  }
+
+  isSearched( materia ):string{
+    if( this.search != null && this.search.length > 1){
+      if( materia.materia_name.toUpperCase().includes(this.search.toUpperCase()) != true ){
+        return "hidden"
+      }
+      else return ""
+      
+    }
+    else{
+      return ""
+    }
   }
 
 
