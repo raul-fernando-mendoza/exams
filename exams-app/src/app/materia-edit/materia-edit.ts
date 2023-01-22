@@ -115,6 +115,7 @@ export class DialogMateriaDialog implements OnInit{
       this.update()
     }
     this.loadMastersList()
+    this.hasMateriaEnrollment()
      
   }
 

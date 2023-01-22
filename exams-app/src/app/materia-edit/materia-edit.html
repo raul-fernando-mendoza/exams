@@ -161,7 +161,7 @@ Habilidad
         </div>
       </div> 
       <mat-divider></mat-divider>
-      <materia-reference-list materia_id="{{materia_id}}"></materia-reference-list>
+      <materia-reference-list *ngIf="hasEnrollment" materia_id="{{materia_id}}"></materia-reference-list>
     </mat-card-content>
     <mat-card-actions>
 
