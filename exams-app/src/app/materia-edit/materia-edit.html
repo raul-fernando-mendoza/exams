@@ -46,12 +46,11 @@ Habilidad
       
       <button mat-raised-button color="primary" *ngIf="isAdmin" (click)="onCertificateTypes()">Certificados Maestros</button>
     </mat-card-actions>
-  </mat-card>          
-  <mat-card>
+  </mat-card>  
+ 
+  <mat-card *ngIf="isAdmin || materia.pictureUrl || materia.pictureDescription">
     <mat-card-title-group>
       <mat-card-title>Objetivos</mat-card-title>
-
-
       <img class="image" src="{{materia.pictureUrl}}">
     </mat-card-title-group>
     <mat-card-content>
@@ -68,12 +67,13 @@ Habilidad
           <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
           <input class="nothing" matInput disabled> 
       </mat-form-field>
-
-      <quill-view-html *ngIf="!isAdmin" [content]="m.controls.pictureDescription.value"></quill-view-html>
+      
+      <quill-view-html *ngIf="!isAdmin && m.controls.pictureDescription.value" [content]="m.controls.pictureDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="pictureDescription" (onBlur)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></quill-editor>
-
+        
     </mat-card-content>
   </mat-card>
+
   <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
     <mat-card-title-group>
       <mat-card-title>Experiencias</mat-card-title>
@@ -103,10 +103,13 @@ Habilidad
             <input hidden (change)="selectFile($event)" name="video" #video type="file" >
         </mat-form-field>
       </div>
-      <quill-view-html *ngIf="!isAdmin" [content]="m.controls.videoDescription.value"></quill-view-html>
+      <quill-view-html *ngIf="!isAdmin && m.controls.videoDescription.value" [content]="m.controls.videoDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="videoDescription" (onBlur)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></quill-editor>
 
-
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-content>
       <div class="examen-container">
         <h3>Examenes<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
           <mat-icon>more_vert</mat-icon>
@@ -135,7 +138,10 @@ Habilidad
             </mat-menu>
         </div>
       </div> 
-
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-content>
       <div class="examen-container">
         <h3>Lecciones interactivas<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menuLab" aria-label="Example icon-button with a menu">
           <mat-icon>more_vert</mat-icon>
