@@ -1,4 +1,63 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "parameterGrades",
+      "queryScope": "COLLECTION_GROUP",	   
+      "fields": [
+      {
+        "fieldPath": "applicationDate",  
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "evaluator_uid",	   
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "isCompleted",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "isDeleted",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "organization_id",
+        "order": "ASCENDING"
+      }
+      ]
+    },
+    {
+      "collectionGroup": "parameterGrades",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+      {
+        "fieldPath": "applicationDate",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "isDeleted",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "organization_id",
+        "order": "ASCENDING"
+      }
+      ]
+    },
+    {
+      "collectionGroup": "parameterGrades",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+      {
+        "fieldPath": "isDeleted",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "organization_id",
+        "order": "ASCENDING"
+      }
+      ]
+    }    
+  ],
   "fieldOverrides": []
 }
