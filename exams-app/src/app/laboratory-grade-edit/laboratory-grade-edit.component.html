@@ -1,32 +1,29 @@
 <p>Leccion interactiva</p>
 <div *ngIf="laboratoryGrade">
     <h1>{{laboratoryGrade.laboratory_name}}</h1> 
-    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">Por favor veo el video de instrucciones y envie un video cumpliendo con las instrucciones para su revision</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">Por favor vea el video de instrucciones y envie un video cumpliendo con las instrucciones para su revision</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video ha sido enviado a revision</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.accepted ">El video ha sido aceptado</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.rework">
         Su video requiere ser retrabajado. por favor revise las observaciones, suba un nuevo video y solicite una nueva revision
     </span>
 
-    <mat-stepper orientation="vertical">
-        <mat-step>
-          <ng-template matStepLabel>Intrucciones</ng-template>
-          <ng-template matStepContent>
+    <mat-stepper orientation="vertical" >
+        <mat-step label="Intrucciones">
             <div *ngIf="laboratory">
                 <video *ngIf="laboratory.videoUrl" controls width="80%">
                     <source src="{{laboratory.videoUrl}}" type="video/mp4">
                 </video>
-            </div>
-            <mat-divider></mat-divider>
-            <div *ngIf="laboratory.soundUrl">
-                <h3>Audio para practicas</h3>           
-                <audio controls>
-                    <source [src]="laboratory.soundUrl" type="audio/mp3">
-                    Your browser does not support the audio tag.
-                </audio>    
-            </div>         
+                <mat-divider></mat-divider>
+                <div *ngIf="laboratory.soundUrl">
+                    <h3>Audio para practicas</h3>           
+                    <audio controls>
+                        <source [src]="laboratory.soundUrl" type="audio/mp3">
+                        Your browser does not support the audio tag.
+                    </audio>    
+                </div>  
+            </div>       
             <button mat-button matStepperNext>Next</button>
-          </ng-template>
         </mat-step>
         <mat-step *ngIf="(laboratoryGrade.status == LaboratoryGradeStatus.requestGrade && isAdmin ) || laboratoryGrade.status == LaboratoryGradeStatus.rework || laboratoryGrade.status == LaboratoryGradeStatus.accepted" label="Revisiones">
                 <div >
@@ -41,7 +38,7 @@
               <button mat-button matStepperNext>Next</button>
           </mat-step>        
           <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework" label="Sube tu video">
-              <div  class="studentData">
+              <div *ngIf="laboratoryGrade.studentData" class="studentData">
                 <h1>Sube tu video</h1>
                 <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
                     <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>

@@ -43,7 +43,8 @@ export class LaboratoryGradeEditComponent implements OnInit {
     ,private dateFormatService:DateFormatService
     ,private userLoginService: UserLoginService
     ,private userPreferencesService: UserPreferencesService
-    ,public dialog: MatDialog 
+    ,public dialog: MatDialog
+    ,private router:Router
   ) {
     this.organizationId = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organizationId) ){
@@ -66,7 +67,15 @@ export class LaboratoryGradeEditComponent implements OnInit {
       }
       this.unsubscribeStudentData = db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").onSnapshot( snapshot =>{
         var laboratoryGradeStudentData:LaboratoryGradeStudentData = snapshot.data() as LaboratoryGradeStudentData
-        this.laboratoryGrade.studentData = laboratoryGradeStudentData
+        if( laboratoryGradeStudentData == null ){
+          this.laboratoryGrade.studentData = {
+            videoPath:null,
+            videoUrl:null 
+          }
+        }
+        else{
+          this.laboratoryGrade.studentData = laboratoryGradeStudentData
+        }
       })
     })
 
@@ -113,17 +122,20 @@ export class LaboratoryGradeEditComponent implements OnInit {
     db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update(data).then( data =>{
       alert("su video ha sido enviado a revision")
       this.laboratoryGrade.status = LaboratoryGradeStatus.requestGrade
+      this.router.navigate(['/home'])
     })
   }
 
   onReleased(){
     db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update({ status:LaboratoryGradeStatus.accepted}).then( data =>{
       this.laboratoryGrade.status = LaboratoryGradeStatus.accepted
+      this.router.navigate(["/laboratory-grade-list"])
     })
   }  
   onRework(){
     db.collection("laboratoryGrades").doc(this.laboratoryGradeId).update({ status:LaboratoryGradeStatus.rework}).then( data =>{
       this.laboratoryGrade.status = LaboratoryGradeStatus.rework
+      this.router.navigate(["/laboratory-grade-list"])
     })
   }  
 

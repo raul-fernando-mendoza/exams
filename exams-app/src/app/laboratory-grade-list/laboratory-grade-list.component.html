@@ -21,7 +21,7 @@
         </ng-container>
         <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef>Estatus</mat-header-cell>
-                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.status}} </mat-cell>
+                <mat-cell *matCellDef="let laboratoryGrade"> {{getStatusText(laboratoryGrade.status)}} </mat-cell>
         </ng-container>        
 
         <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>

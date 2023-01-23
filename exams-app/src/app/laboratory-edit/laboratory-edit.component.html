@@ -1,21 +1,32 @@
 <p>Leccion interactiva</p>
-<form *ngIf="isAdmin && l" [formGroup]="l" >
-    <h1>Suba el video de instrucciones</h1>        
-    <mat-form-field>
-        <mat-label>Nombre</mat-label>
-        <input matInput placeholder="" formControlName="label" (change)="onPropertyChange($event)">
-    </mat-form-field>          
-    <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.videoPath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>        
-    <div class="video-container">   
+<form *ngIf="l" [formGroup]="l" >
+    <div *ngIf="isAdmin">
+        <h1>Suba el video de instrucciones</h1>        
+        <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input matInput placeholder="" formControlName="label" (change)="onPropertyChange($event)">
+        </mat-form-field>          
+        <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.videoPath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>        
+    </div>
+    <div *ngIf="!isAdmin">
+        <h1>{{ laboratory.label }}</h1>
+    </div>
+    <div class="video-container">
+        <h3>Video para la practica</h3>   
         <video *ngIf="l.controls.videoPath.value" class="video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
             <source src="{{ laboratory.videoUrl }}" type='video/mp4' />
         </video>    
-    </div>  
-    <span>suba el audio para la practica</span>
-    <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.soundPath.value" (onload)="soundLoaded($event)" (ondelete)="soundDeleted($event)"></app-file-loader>        
-    <audio *ngIf="l.controls.soundPath.value" controls>
-        <source [src]="l.controls.soundUrl.value" type="audio/mp3">
-        Your browser does not support the audio tag.
-    </audio> 
+    </div> 
+    <div class="sound-field-group" *ngIf="isAdmin">
+        <span>suba el audio para la practica</span>
+        <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.soundPath.value" (onload)="soundLoaded($event)" (ondelete)="soundDeleted($event)"></app-file-loader>        
+    </div> 
+    <div *ngIf="l.controls.soundPath.value">
+        <h3>Audio para la practica</h3>
+        <audio  controls>
+            <source [src]="l.controls.soundUrl.value" type="audio/mp3">
+            Your browser does not support the audio tag.
+        </audio> 
+    </div>
 </form>
             

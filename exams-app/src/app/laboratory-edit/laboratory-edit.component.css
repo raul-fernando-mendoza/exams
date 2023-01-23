@@ -1,8 +1,5 @@
 .video-container{
-    width:100%;
     margin:20px;
-    display: flex;
-    justify-content: center;     
 }
 video{
     width:640px;

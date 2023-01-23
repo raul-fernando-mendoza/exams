@@ -117,4 +117,9 @@ export class LaboratoryGradeListComponent implements OnInit{
     this.filterUid = uid
     this.update()
   }
+  getStatusText(id):string{
+    const laboratoryGradeStatusText = [ "inicial" , "Solicitud de calificacion" , "Retrabajo" , "Aceptado" ]
+    return laboratoryGradeStatusText[id]
+  }
+  
 }
