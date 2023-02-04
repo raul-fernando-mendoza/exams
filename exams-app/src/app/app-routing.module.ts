@@ -20,7 +20,6 @@ import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-paramet
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { UsersListComponent } from './users-list/users-list.component';
-import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { VideosListComponent } from './videos-list/videos-list.component';
 import { ExamgradesReportComponent } from './examgrades-report/examgrades-report.component';
@@ -42,6 +41,7 @@ import { CanvasPainterComponent } from './canvas-painter/canvas-painter.componen
 import { LaboratoryEditComponent } from './laboratory-edit/laboratory-edit.component';
 import { LaboratoryGradeEditComponent } from './laboratory-grade-edit/laboratory-grade-edit.component';
 import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory-grade-list.component';
+import { MateriaEnrollmentsListComponent } from './materia-enrollments-list/materia-enrollments-list.component';
 
 const routes: Routes = [
   
@@ -67,8 +67,7 @@ const routes: Routes = [
   { path: 'materia-list', component: MateriaListComponent },  
   { path: 'materia-edit', component: DialogMateriaDialog },  
   { path: 'user-list', component: UsersListComponent },
-  { path: 'login-selector', component: LoginSelectorComponent },
-
+ 
   { path: 'register', component: LoginFormComponent },
   { path: 'videos-list', component: VideosListComponent },
   { path: 'grades', component: ExamTableComponent },  
@@ -89,6 +88,7 @@ const routes: Routes = [
   { path: 'laboratory-edit', component:LaboratoryEditComponent},
   { path: 'laboratory-grade-edit', component:LaboratoryGradeEditComponent },
   { path: 'laboratory-grade-list', component:LaboratoryGradeListComponent },
+  { path: 'user-enrollments', component:MateriaEnrollmentsListComponent},
   { path: '**', component: WelcomeComponent },  
   
 ];

@@ -1,0 +1,23 @@
+<h1>Mi Avance</h1>
+<div *ngIf="submitting==false;  else spinnerBlock">
+    <mat-card class="mat-elevation-z0" *ngFor="let me of myEnrollments" class="enrolled-materia-card">
+        <mat-card-title-group>
+            <mat-card-title (click)="onMateriaDetalles(me.materia_id)">{{ me.materia_name }}</mat-card-title>
+            <mat-card-subtitle>
+            <a *ngIf="me.certificateUrl" href="{{me.certificateUrl}}">certificado</a> 
+            <div *ngIf="!me.certificateUrl">En curso</div>
+            </mat-card-subtitle>
+            <img *ngIf="me.certificateBadgeUrl" (click)="onMateriaDetalles(me.materia_id)" mat-card-sm-image src="{{me.certificateBadgeUrl}}">
+            
+        </mat-card-title-group>
+        <mat-card-content>
+            <app-exam-grades-list [materiaid]="me.materia_id" [useruid]="userUid"></app-exam-grades-list>                                        
+            <app-laboratory-grade-list [materiaid]="me.materia_id" [useruid]="userUid"></app-laboratory-grade-list>
+       </mat-card-content>
+    </mat-card>
+    <h3 *ngIf="myEnrollments.length == 0">Usted no esta enrollado en ninguna materia</h3>
+</div>
+<ng-template #spinnerBlock>
+    Cargando información.
+    <mat-spinner></mat-spinner>
+  </ng-template>

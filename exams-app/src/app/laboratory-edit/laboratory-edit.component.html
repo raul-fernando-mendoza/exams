@@ -1,27 +1,25 @@
 <p>Leccion interactiva</p>
 <form *ngIf="l" [formGroup]="l" >
-    <div *ngIf="isAdmin">
-        <h1>Suba el video de instrucciones</h1>        
-        <mat-form-field>
-            <mat-label>Nombre</mat-label>
-            <input matInput placeholder="" formControlName="label" (change)="onPropertyChange($event)">
-        </mat-form-field>          
-        <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.videoPath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>        
-    </div>
+
     <div *ngIf="!isAdmin">
-        <h1>{{ laboratory.label }}</h1>
+        <h1>{{ l.controls.label.value }}</h1>
     </div>
-    <div class="video-container">
-        <h3>Video para la practica</h3>   
-        <video *ngIf="l.controls.videoPath.value" class="video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
-            <source src="{{ laboratory.videoUrl }}" type='video/mp4' />
-        </video>    
+    {{l.controls.videoUrl.value}}
+    <div *ngIf="l.controls.videoUrl.value">
+        <h3>Video de instrucciones</h3>   
+        <iframe class="e2e-iframe-trusted-src" width="560" height="315" [src]="videoURL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                 
     </div> 
+    <div *ngIf="isAdmin">
+        <mat-form-field class="name">
+            <mat-label>Nombre</mat-label>
+            <input matInput placeholder="" formControlName="videoUrl" (change)="onPropertyChange($event)">
+        </mat-form-field>  
+    </div>    
     <div class="sound-field-group" *ngIf="isAdmin">
         <span>suba el audio para la practica</span>
-        <app-file-loader [basepath]="getBasePath()" [fullpath]="l.controls.soundPath.value" (onload)="soundLoaded($event)" (ondelete)="soundDeleted($event)"></app-file-loader>        
+        <app-file-loader label="archivo de audio" property="sound" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>        
     </div> 
-    <div *ngIf="l.controls.soundPath.value">
+    <div *ngIf="l.controls.soundUrl.value">
         <h3>Audio para la practica</h3>
         <audio  controls>
             <source [src]="l.controls.soundUrl.value" type="audio/mp3">

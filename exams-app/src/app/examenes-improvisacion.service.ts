@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { db, environment } from 'src/environments/environment';
+import { db, storage, environment } from 'src/environments/environment';
 import { MateriaEnrollment, Organization, User } from './exams/exams.module';
 import * as uuid from 'uuid';
+import { FileLoadedEvent } from './file-loader/file-loader.component';
 
 @Injectable({
   providedIn: 'root'
@@ -155,6 +156,34 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     })
   }
 
+  getMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<MateriaEnrollment>{
+    var result = false
+    var id = uuid.v4()
+    var _resolve
+    var _reject
+    return new Promise<MateriaEnrollment>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+
+      db.collection('materiaEnrollments')
+      .where("organization_id","==", organizationId)
+      .where("student_uid", "==", studentId)
+      .where("materia_id", "==", materiaId)
+      .where("isDeleted","==",false)
+      .get().then( set =>{
+        if( set.docs.length > 0){
+          var doc= set.docs[0]
+          var materiaEnrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
+          resolve(materiaEnrollment)
+        }
+        else{
+          resolve(null)
+        }
+      })
+    })
+  }
+
+
   createMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<void>{
     var id = uuid.v4()
     var _resolve
@@ -250,5 +279,63 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
 
     return this.http.post(url, request_data, {headers: myheaders})
   }  
+
+  fileLoaded(db_collection, id, e:FileLoadedEvent){
+    db.collection(db_collection).doc(id).get().then( data =>{
+      //first erase the old value if existed
+      var promises = []
+      var oldFilePath:string =data[e.property + "Path"]
+      if( oldFilePath && oldFilePath != e.fileFullPath){
+        var storageOldRef = storage.ref( oldFilePath )
+        
+        var promiseDelete = storageOldRef.delete().then( () =>{
+          console.log("old file was deleted:" + oldFilePath )
+        })
+        .catch( reason => {
+          console.log("old file could not be deleted")      
+        })
+        promises.push(promiseDelete)
+      }  
+      //now update the values of properties to kick a reload of the data page
+      var values = {}
+      values[e.property + "Path"]=null                       
+      values[e.property + "Url"]=null
+      var remove = db.collection(db_collection).doc(id).update(values).then( () =>{
+        console.log("property has been update:" + e.property + " " + e.fileFullPath)
+      },
+      reason =>{
+        alert("ERROR: writing property:" + reason)
+      }) 
+      promises.push( remove )
+
+      Promise.all( promises ).then( () =>{
+        //now update the values in materia
+        let storageRef = storage.ref( e.fileFullPath )
+        storageRef.getDownloadURL().then( url =>{
+            var values = {}
+            values[e.property + "Path"]=e.fileFullPath                       
+            values[e.property + "Url"]=url        
+            db.collection(db_collection).doc(id).update(values).then( () =>{
+              console.log("property has been update:" + e.property + " " + e.fileFullPath)
+            },
+            reason =>{
+              alert("ERROR: writing property:" + reason)
+            })        
+        })       
+      })
+    }) 
+  }  
+  fileDeleted(db_collection, id, e:FileLoadedEvent){
+      console.log("file deleted:" + e.fileFullPath)
+      var values = {}
+      values[e.property + "Path"]=null                       
+      values[e.property + "Url"]=null
+      db.collection(db_collection).doc(id).update(values).then( () =>{
+        console.log("property has been update:" + e.property + " " + e.fileFullPath)
+      },
+      reason =>{
+        alert("ERROR: writing property:" + reason)
+      })      
+  }
 
 }

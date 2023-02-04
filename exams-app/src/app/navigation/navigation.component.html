@@ -3,7 +3,7 @@
 
   <mat-sidenav-container class="sidenav-container">
   
-  <mat-sidenav #drawer class="sidenav" fixedInViewport
+  <mat-sidenav *ngIf="isLoggedIn()" #drawer class="sidenav" fixedInViewport
   [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
   [mode]="(isHandset$ | async) ? 'over' : 'side'"
   [opened]="(isHandset$ | async) === false">
@@ -17,10 +17,9 @@
       <mat-icon aria-label="Side nav toggle icon">navigate_before</mat-icon>
     </button>
     </mat-toolbar>
-    <mat-nav-list>
+    <mat-nav-list *ngIf="organization ">
       <a mat-list-item routerLink="/home">home</a>
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/materia-list">Habilidades</a>
-      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator() || isStudent()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
+      <a mat-list-item routerLink="/materia-list">Habilidades</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Calificar Lecciones interactiva</a>
        
       <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar</a>  
@@ -28,6 +27,7 @@
       <a *ngIf="isAdmin()" mat-list-item routerLink="/materiaCertificaciones">Enrolar y Certificaciones</a>
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/career-list">Carreras</a>
+      <a *ngIf="isAdmin() ||  isReadOnly() || isEvaluator()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
       <a *ngIf="isLoggedIn()" mat-list-item routerLink="/user-profile-edit">Preferencias</a>
@@ -43,7 +43,7 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="accent">    
-      <button
+      <button *ngIf="isLoggedIn()"
         type="button"
         aria-label="Toggle sidenav"
         mat-icon-button
@@ -51,21 +51,16 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <a class="main_link" routerLink="/home">TOTH 3.6.2 </a>
-      
-      <mat-form-field appearance="fill">
-        <mat-label>Organizaciones </mat-label>
-        <mat-select [(value)]="organization_id" (selectionChange)="onOrganizationChange($event)">
-          <mat-option *ngFor="let organization of organizations" [value]="organization.id">
-            {{organization.organization_name}} 
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <span *ngIf="organization" class="organization-name">{{organization.organization_name}}</span>
+
       
       <span class="example-spacer"></span>
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
-        Login
+        Ingresar
       </button>
-  
+      <button mat-stroked-button  aria-label="login" (click)="Register()" *ngIf="!isLoggedIn()">
+        Registrarte
+      </button>
       <span *ngIf="isLoggedIn()">{{ getUserName() }}</span>
       
       <button mat-stroked-button  aria-label="logout" (click)="logout()" *ngIf="isLoggedIn()">
@@ -73,7 +68,7 @@
       </button>    
               
     </mat-toolbar>    
-    <router-outlet></router-outlet>
+    <router-outlet *ngIf="organization"></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
 </div>

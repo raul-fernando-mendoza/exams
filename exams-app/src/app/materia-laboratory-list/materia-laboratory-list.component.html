@@ -1,0 +1,41 @@
+
+<h3>Lecciones Interactivas<button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>more_vert</mat-icon>
+  </button></h3>
+  <mat-menu #menu="matMenu" >
+    <button mat-menu-item (click)="onCreateLaboratory()" [disabled]="submitting">
+      <mat-icon>library_add</mat-icon>
+      <span>Nueva leccion interactiva</span>
+    </button>            
+  </mat-menu> 
+<div *ngIf="submitting==false;  else spinnerBlock">
+    <mat-list  *ngFor="let li of laboratoryList">
+        <mat-list-item>
+            {{ li.laboratory.label }} 
+            <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
+                <mat-icon>more_vert</mat-icon>
+            </button>
+              <mat-menu #menu="matMenu" >
+                <button mat-menu-item (click)="onEditLaboratory(li.laboratory.id)" [disabled]="submitting">
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar</span>
+                </button>    
+                <button  mat-menu-item (click)="onDeleteLaboratory(li.laboratory.id)" [disabled]="submitting">
+                  <mat-icon>delete</mat-icon>
+                  <span>Borrar</span>
+                </button>      
+                <button  mat-menu-item (click)="onDuplicateLaboratory(li.laboratory.id)" [disabled]="submitting">
+                  <mat-icon>content_copy</mat-icon>
+                  <span>Duplicar</span>
+                </button>       
+              </mat-menu>
+              <span>{{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
+            <button *ngIf="isEnrolled" (click)="onOpenLaboratoryGrade(li.laboratoryGrade)" mat-button >Abrir</button>
+
+        </mat-list-item>
+    </mat-list >
+</div>
+<ng-template #spinnerBlock>
+    Cargando información.
+    <mat-spinner></mat-spinner>
+</ng-template>

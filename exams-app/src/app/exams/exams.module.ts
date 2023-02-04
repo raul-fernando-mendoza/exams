@@ -376,7 +376,7 @@ export interface LaboratoryGrade{
   requestedMonth?:number
   requestedYear?:number
 
-  studentData:LaboratoryGradeStudentData
+  studentData?:LaboratoryGradeStudentData
 }
 export interface LaboratoryGradeStudentData{
   videoPath?:string

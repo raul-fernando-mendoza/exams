@@ -1,0 +1,10 @@
+<h3>Examenes</h3>
+
+<span *ngIf="examsList.length > 0">
+    <mat-grid-list *ngFor="let e of examsList" [cols]="isEnrolled ? 2 : 1">
+        <mat-grid-tile>{{ e.exam.label}}</mat-grid-tile>
+        <mat-grid-tile *ngIf="isEnrolled">{{ getExamGradeStatus( e.examGrade )  }}</mat-grid-tile>
+    </mat-grid-list>
+</span>
+<span *ngIf="examsList.length == 0">No hay examenes para esta materia</span>
+

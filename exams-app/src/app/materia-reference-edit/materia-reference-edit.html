@@ -10,7 +10,7 @@
       <mat-label>url</mat-label>
       <input matInput placeholder="" formControlName="fileUrl" (change)="onUrlChange()">
     </mat-form-field>  
-    <app-file-loader [basepath]="getBasePath()" [fullpath]="mr.controls.filePath.value" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+    <app-file-loader [label]="getLabel()" property="file" [basepath]="getBasePath()" [filename]="getFileName()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
   </mat-dialog-content>
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button> 

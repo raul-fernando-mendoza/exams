@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { map, shareReplay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -10,6 +13,13 @@ import { UserLoginService } from '../user-login.service';
   styleUrls: ['./login-form.component.css']
 })
 export class LoginFormComponent {
+
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    .pipe(
+      map(result => result.matches),
+      shareReplay()
+    );
+
   loginForm = this.fb.group({
     username: [null, Validators.required],
     password: [null, Validators.required],
@@ -20,7 +30,9 @@ export class LoginFormComponent {
 
   token: string|undefined;
 
-  constructor(private fb: UntypedFormBuilder, private route: ActivatedRoute, 
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    private fb: UntypedFormBuilder, private route: ActivatedRoute, 
     private router: Router, 
     private userLoginService:UserLoginService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
@@ -83,4 +95,8 @@ export class LoginFormComponent {
   onPasswordResetEmail(){
     this.router.navigate(['/password-reset-email']);
   }
+  signInWithPopup() {
+    //alert("going to call login with Login popup")
+    this.userLoginService.signInWithPopup()
+  }    
 }

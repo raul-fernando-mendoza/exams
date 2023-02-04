@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { Organization } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
+import { UserPreferencesService } from '../user-preferences.service';
 
 @Component({
   selector: 'app-user-profile-edit',
@@ -17,14 +19,23 @@ export class UserProfileEditComponent implements OnInit {
 
   })
 
+  organization:Organization = null
+  organizations:Array<Organization> = []
+
   constructor(
     private fb: UntypedFormBuilder,
     private userLogin: UserLoginService,
     private examImprovisation: ExamenesImprovisacionService,
-    private router: Router
+    private router: Router,
+    private userPreferencesService: UserPreferencesService
   ) { }
 
   ngOnInit(): void {
+    this.organization = this.userPreferencesService.getCurrentOrganization()
+    this.userPreferencesService.getOrganizations().then( organizations =>{
+      this.organizations = organizations
+    })
+
   }
   onDisplayNameChange(event){
     this.displayNameChange()
@@ -62,4 +73,9 @@ export class UserProfileEditComponent implements OnInit {
       alert("ERROR: " + reason)
     }) 
   } 
+  onOrganizationChange($event){
+    //console.debug($event)
+    const organization = $event.value
+    this.userPreferencesService.setCurrentOrganization(organization)
+  }  
 }

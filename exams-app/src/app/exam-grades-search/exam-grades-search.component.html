@@ -1,0 +1,12 @@
+<h3>Examenes</h3>
+<table>
+  <tr *ngFor="let e of exams">
+      <td>
+        <button *ngIf='isEnrolled && e.isReleased' mat-button (click)='onOpenExamGrade(e.examGrade_id)'>{{ e.exam_name }}</button>
+      </td>
+      <td>
+        <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
+      </td>
+  </tr>
+  <span *ngIf="exams.length == 0">No hay examenes para esta materia</span>
+</table>  

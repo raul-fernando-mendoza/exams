@@ -6,6 +6,8 @@ import { MateriaReference } from "../exams/exams.module";
 import { UserLoginService } from "../user-login.service";
 import { UserPreferencesService } from "../user-preferences.service";
 import * as uuid from 'uuid';
+import { ExamenesImprovisacionService } from "../examenes-improvisacion.service";
+import { FileLoadedEvent } from "../file-loader/file-loader.component";
 
 
 /* do not forget to add the dialog to the app.module.ts*/
@@ -20,19 +22,25 @@ import * as uuid from 'uuid';
     organization_id = null
 
     id = null
+
+    collection = null
+
+    
     
     constructor(  
       public dialogRef: MatDialogRef<MateriaReferenceDialog>,
       @Inject(MAT_DIALOG_DATA) public data,
       private fb: FormBuilder,
       private userLoginService: UserLoginService,
-      private userPreferencesService: UserPreferencesService
+      private userPreferencesService: UserPreferencesService,
+      private examenesImprovisacionService:ExamenesImprovisacionService
     ) 
     {
         this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
         if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
           this.isAdmin = true
         }   
+        this.collection = "materias/" + this.data.materia_id + "/materiaReference"
 
 
         this.mr = this.fb.group({
@@ -53,18 +61,80 @@ import * as uuid from 'uuid';
     getBasePath(){
         return "organizations/" + this.organization_id + "/materias/" + this.data.materia_id + "/materiaReference/" + this.id 
     }
-    fileLoaded(path){
-        this.mr.controls.filePath.setValue(path)
-        let storageRef = storage.ref( path )
-        storageRef.getDownloadURL().then( url =>{
-            this.mr.controls.fileUrl.setValue( url )
-        })        
-    }  
-    fileDeleted(path){
-        console.log("file deleted:" + path)
-        this.mr.controls.filePath.setValue( null )
-        this.mr.controls.fileUrl.setValue( null )
+    fileLoaded( e:FileLoadedEvent){
+        if( this.data.id ){
+            db.collection(this.collection).doc(this.data.id).get().then( doc =>{
+                var materiaRefence:MateriaReference = doc.data() as MateriaReference 
+                //first erase the old value if existed
+                var promises = []
+                var oldFilePath:string =materiaRefence[e.property + "Path"]
+                if( oldFilePath && oldFilePath != e.fileFullPath){
+                    var storageOldRef = storage.ref( oldFilePath )
+                    
+                    var promiseDelete = storageOldRef.delete().then( () =>{
+                    console.log("old file was deleted:" + oldFilePath )
+                    })
+                    .catch( reason => {
+                    console.log("old file could not be deleted")      
+                    })
+                    promises.push(promiseDelete)
+                }  
+                //now update the values of properties to kick a reload of the data page
+                var values = {}
+                values[e.property + "Path"]=null                       
+                values[e.property + "Url"]=null
+                var remove = db.collection(this.collection).doc(this.id).update(values).then( () =>{
+                    console.log("property has been update:" + e.property + " " + e.fileFullPath)
+                },
+                reason =>{
+                    alert("ERROR: writing property:" + reason)
+                }) 
+                promises.push( remove )
+
+                Promise.all( promises ).then( () =>{
+                    //now update the values in materia
+                    let storageRef = storage.ref( e.fileFullPath )
+                    storageRef.getDownloadURL().then( url =>{
+                        var values = {}
+                        values[e.property + "Path"]=e.fileFullPath                       
+                        values[e.property + "Url"]=url        
+                        db.collection(this.collection).doc(this.id).update(values).then( () =>{
+                        console.log("property has been update:" + e.property + " " + e.fileFullPath)
+                        },
+                        reason =>{
+                        alert("ERROR: writing property:" + reason)
+                        })        
+                    })  
+                })     
+            })
+        }
+        else{ // there is not an existing reference yet only load the file values in the form
+            let storageRef = storage.ref( e.fileFullPath )
+            storageRef.getDownloadURL().then( url =>{
+                this.mr.controls[e.property + "Path"].setValue(e.fileFullPath)
+                this.mr.controls[e.property + "Url"].setValue(url)        
+            })
+        }  
     }
+    fileDeleted( e:FileLoadedEvent){
+        if( this.data.id ){
+          console.log("file deleted:" + e.fileFullPath)
+          var values = {}
+          values[e.property + "Path"]=null                       
+          values[e.property + "Url"]=null
+          db.collection(this.collection).doc(this.data.id).update(values).then( () =>{
+            console.log("property has been update:" + e.property + " " + e.fileFullPath)
+          },
+          reason =>{
+            alert("ERROR: writing property:" + reason)
+          })      
+        }
+        else{
+            this.mr.controls[e.property + "Path"].setValue(null)
+            this.mr.controls[e.property + "Url"].setValue(null)              
+        }
+      }
+    
     onUrlChange(){
         console.log("url changed")
         this.mr.controls.filePath.setValue( null )        
@@ -135,6 +205,24 @@ import * as uuid from 'uuid';
         })   
     }  
 
+    getLabel(){
+        if( this.data.filePath ){
+            var path = this.data.filePath.split("/").reverse()
+            return path[0]
+        }
+        else{
+            return "Archivo"
+        }
+    }
+    getFileName(){
+        if( this.data.filePath ){
+            var path = this.data.filePath.split("/").reverse()
+            return path[0]
+        }
+        else{
+            return null
+        }
+    }    
     
 }
   

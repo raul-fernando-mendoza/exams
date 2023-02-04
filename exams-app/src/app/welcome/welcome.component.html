@@ -1,112 +1,41 @@
-<h1>Bienvenido</h1>
 <mat-card class="action-card" *ngIf="isLoggedIn() && !isEmailVerified()" >
     <mat-card-content>
       <span class="action-item">Su email no ha sido verificado. si desea enviar un nuevo link presione el boton</span> <button mat-raised-button (click)="emailVerify()" >Enviar email</button>
     </mat-card-content>
 </mat-card>
 
-<div *ngIf="careers.length;  else elseBlock">
-  <mat-accordion multi>
-    <mat-expansion-panel class="chains" *ngIf="isLoggedIn()" expanded="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Mis Habilidades
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <mat-expansion-panel-content>
-        <mat-card class="mat-elevation-z0" *ngFor="let me of myEnrollments" class="enrolled-materia-card">
-          <mat-card-title-group>
-              <mat-card-title (click)="onMateriaDetalles(me.materia_id)">{{ me.materia_name }}</mat-card-title>
-              <mat-card-subtitle>
-                <a *ngIf="me.certificateUrl" href="{{me.certificateUrl}}">certificado</a> 
-                <div *ngIf="!me.certificateUrl">En curso</div>
-              </mat-card-subtitle>
-              <img *ngIf="me.certificateBadgeUrl" mat-card-sm-image src="{{me.certificateBadgeUrl}}">
-                                          
-          </mat-card-title-group>
-          <mat-card-content>
-            <h3>Examenes</h3>
-            <table>
-              <tr *ngFor="let e of me.exams">
-                  <td>
-                    <button *ngIf='e && e.isReleased' mat-button (click)='onOpenExamGrade(e.examGrade_id)'>{{ e.exam_name }}</button>
-                    <div *ngIf='!(e && e.isReleased)' [class]='me.certificateUrl && !e.isRequired ? "exam-not-required-not-completed" : "exam"'>{{ e.exam_name }}</div>
-                  </td>
-                  <td>
-                    <div *ngIf='e.isReleased'><mat-icon>done</mat-icon></div>
-                  </td>
-              </tr>
-            </table>  
-            <h3>Lecciones interactivas</h3>
-            <table>
-              <tr *ngFor="let l of me.laboratories">
-                  <td>
-                    <button mat-button (click)='onOpenLaboratoryGrade(l)'>{{ l.laboratory_name }} : {{ laboratoryStatusName(l.status) }}</button>
-                  </td>
-              </tr>
-            </table>             
-          </mat-card-content>
-        </mat-card>
-      </mat-expansion-panel-content>  
-    </mat-expansion-panel>
-    <mat-expansion-panel expanded="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Proximas Habilidades
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <mat-card-content>
-        <mat-card *ngFor="let m of materias" class="materia-card">
-          <mat-card-title-group>
-              <mat-card-title class="enroll-card">{{ m.materia_name }}</mat-card-title>
-              <mat-card-subtitle>
-                {{ m.description }}
-              </mat-card-subtitle>
-              <img mat-card-sm-image src="{{ m.materiaIconUrl }}">
-                                          
-          </mat-card-title-group>
-          <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="onMateriaDetalles(m.id)">Detalles</button>
-          </mat-card-actions>
-        </mat-card>
-      </mat-card-content>  
-    </mat-expansion-panel>    
 
-    <mat-expansion-panel expanded="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Mis Carreras
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <mat-card-content>
-        <mat-card *ngFor="let c of careers" class="career-card">
-          <mat-card-title-group>
-              <mat-card-title class="enroll-card">{{ c.career_name }}</mat-card-title>
-              <mat-card-subtitle>
-                {{ c.description }}
-              </mat-card-subtitle>
-              <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">
-                                          
-          </mat-card-title-group>
-          
-          <mat-card-content>
-            <img class="materia-image" *ngIf="c.pictureUrl" src="{{ c.pictureUrl }}"> 
-          <!--
-            <video *ngIf="c.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
-            width="640" height="264" vjs-video vjs-setup="options">
-              <source src="{{ c.videoUrl }}" type='video/mp4' />
-            </video>            
-          -->  
-          </mat-card-content>
-          <mat-card-actions>
-            <button  mat-button color="primary" (click)="onCareerDetails(c.id)">Detalles</button>            
-            <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerMyProgress(c.id)">My avance</button>
-          </mat-card-actions>
-        </mat-card>
-      </mat-card-content>  
-    </mat-expansion-panel>        
-  </mat-accordion>
-</div>
+<h1 class="main">Rax Academy</h1>
+<h2 class="main">Academia de Danza Oriental y Fusiones</h2>
+<h3 class="main">División academica de Raks Sharki Monterrey</h3>
+
+<mat-card>
+  <div class="ejecutante">
+    <div class="ejecutante-title" (click)="onEjecutanteDetalles()">
+      <h1>Ejecutante</h1>
+      <button mat-button >Detalles</button>
+    </div>
+    <img mat-card-image src="/assets/fotos_de_salon apagado.jpg"><img>
+  </div>
+</mat-card>
+<mat-card>
+  <div class="diplomados">
+    <div class="diplomados-title" (click)="onCoreografoDetalles()">
+      <h1>Coreógrafo y Docente</h1>
+      <button mat-button >Detalles</button>
+    </div>
+    <img mat-card-image src="/assets/juniorOriental.jpg"><img>
+  </div>
+</mat-card>
+<mat-card>
+  <div class="comunidad">
+    <div class="comunidad-title">
+      <h1>Comunidad</h1>
+    </div>
+    <img mat-card-image src="/assets/diplomados.jpg"><img>
+  </div>
+</mat-card>
+
 <ng-template #elseBlock>
   Cargando información.
   <mat-spinner></mat-spinner>

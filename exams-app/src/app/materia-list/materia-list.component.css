@@ -1,19 +1,34 @@
-.mat-card{
-    border:1px;
-    border-color:black;
-    border-style:solid;
-    margin:5px;
+.materia-card{
+    margin-bottom: 8px;
+}
+.materia-card mat-card-title-group{
+    display:flex;
+    width:100%;      
+}
+.materia-card mat-card-title-group img{
+    align-self: right;
 }
 
 .searchForm{
     display:flex;
-    justify-content: center;
     width:100%;
 }
+.spacer{
+    flex:1 1 0;
+}
+.search-box{
+    justify-self: center;
+    margin-right: 20px;
+}
+.enrolledoption{
+    justify-self: right;
+}
+
 .hidden{
     display:none
 }
 
-.materia-image{
-    height: 300px;
-}
+
+
+
+

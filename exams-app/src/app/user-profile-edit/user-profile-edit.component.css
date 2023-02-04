@@ -1,3 +1,6 @@
 .displayName {
     width:80%;
 }
+mat-form-field{
+    display:block;
+}

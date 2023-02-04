@@ -1,39 +1,33 @@
-.action-card{
-    max-width: 100%;
-    margin: 10px;
+.main{
+    text-align: center;
 }
-
-.enrolled-materia-card{
-    max-width:80%;
-    margin:10px;
+.ejecutante{
+    position:relative;
 }
-
-.mat-card-sm-image{
-    border: 1px;
-    border-style: solid;
-    border-color: black;
-    border-radius: 50px;
-    margin:20px;
+.ejecutante-title{
+    position:absolute;
+    color:white;
+    left:30%;
+    top:50%;
+    text-align: center;
 }
-
-.mat-grid-list *{
-    margin-top: 10px;
-    padding: 0px;
-    border:0px;
-    border-style: solid;
-    border-color:red;
-
+.diplomados{
+    position:relative;
 }
-
-.exam-not-required-not-completed{
-    color:lightgray;
-    margin-left:15px;
+.diplomados-title{
+    position:absolute;
+    color:white;
+    left:30%;
+    top:50%;
+    text-align: center;
 }
-
-.materia-image{
-    height: 300px;
+.comunidad{
+    position:relative;
 }
-
-.action-item{
-    margin-right:10px;
+.comunidad-title{
+    position:absolute;
+    color:white;
+    left:30%;
+    top:50%;
+    text-align: center;
 }

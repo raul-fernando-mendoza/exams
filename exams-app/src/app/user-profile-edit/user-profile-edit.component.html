@@ -6,6 +6,15 @@
     </mat-form-field>  
     <mat-divider></mat-divider>
 
+    <mat-form-field *ngIf="organizations.length > 1" appearance="fill">
+      <mat-label>Organizaciones </mat-label>
+      <mat-select  [(value)]="organization" (selectionChange)="onOrganizationChange($event)">
+        <mat-option *ngFor="let organization of organizations" [value]="organization">
+          {{organization.organization_name}} 
+        </mat-option>
+      </mat-select>
+    </mat-form-field>    
+
     <button mat-raised-button color="primary" (click)="onPasswordResetEmail()">Cambiar Password</button>
 
 </form>

@@ -64,8 +64,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     , public router:Router
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
-      this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
-      this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+      this.organization_id = userPreferencesService.getCurrentOrganizationId()
+      
       if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
         this.isAdmin = true
       }   

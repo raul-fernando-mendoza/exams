@@ -44,7 +44,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { StarSliderComponent } from './star-slider/star-slider.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { RoleListComponent } from './role-list/role-list.component';
-import { LoginSelectorComponent } from './login-selector/login-selector.component';
 import { WelcomeComponent } from './welcome/welcome.component'; 
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -56,7 +55,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { CareerDialog, CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
-import { DialogMateriaDialog, DialogMateriaExamDialog } from './materia-edit/materia-edit';
+import { DialogMateriaDialog } from './materia-edit/materia-edit';
 import { DialogEnrollMateriaDialog, MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
 import { DialogNameDialog } from './name-dialog/name-dlg';
@@ -82,8 +81,14 @@ import { UserSelectorComponent } from './user-selector/user-selector.component';
 import { MatAutocompleteModule} from '@angular/material/autocomplete';
 import { FileLoaderComponent } from './file-loader/file-loader.component';
 import { TimerDialog } from './timer-dialog/timer-dlg';
-import { MateriaReferenceComponent } from './materia-edit/materia-reference-list';
-import { MateriaReferenceDialog } from './materia-edit/materia-reference-edit';
+import { MateriaEnrollmentsListComponent } from './materia-enrollments-list/materia-enrollments-list.component';
+
+import { MateriaLaboratoryListComponent } from './materia-laboratory-list/materia-laboratory-list.component';
+import { MateriaExamsListComponent } from './materia-exams-list/materia-exams-list.component';
+import { MateriaReferenceComponent } from './materia-reference-list/materia-reference-list';
+import { MateriaReferenceDialog } from './materia-reference-edit/materia-reference-edit';
+import { ExamGradesSearchComponent } from './exam-grades-search/exam-grades-search.component';
+import { ExamGradesListComponent } from './exam-grades-list/exam-grades-list.component';
 
 @NgModule({
     declarations: [
@@ -102,7 +107,6 @@ import { MateriaReferenceDialog } from './materia-edit/materia-reference-edit';
         StarSliderComponent,
         UsersListComponent,
         RoleListComponent,
-        LoginSelectorComponent,
         WelcomeComponent,
         VideosListComponent,
         AppVjsPlayerComponent,
@@ -115,7 +119,6 @@ import { MateriaReferenceDialog } from './materia-edit/materia-reference-edit';
         MateriaCertificatesComponent,
         DialogEnrollMateriaDialog,
         MateriaListComponent,
-        DialogMateriaExamDialog,
         DialogNameDialog,
         TimerDialog,
         DialogListSelectDialog,
@@ -135,7 +138,12 @@ import { MateriaReferenceDialog } from './materia-edit/materia-reference-edit';
         UserSelectorComponent,
         FileLoaderComponent,
         MateriaReferenceComponent,
-        MateriaReferenceDialog
+        MateriaReferenceDialog,
+        MateriaEnrollmentsListComponent,
+        ExamGradesSearchComponent,
+        MateriaLaboratoryListComponent,
+        MateriaExamsListComponent,
+        ExamGradesListComponent
     ],
     imports: [
         BrowserModule,

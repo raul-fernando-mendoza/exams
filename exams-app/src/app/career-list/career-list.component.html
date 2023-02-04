@@ -1,4 +1,5 @@
-Lista de Carreras
+<h1>Lista de Carreras</h1>
+<!--
 <mat-toolbar>
   <button mat-icon-button  (click)="onCreateCareer()">
     <mat-icon>library_add</mat-icon>
@@ -41,4 +42,37 @@ Lista de Carreras
   [pageSize]="50"
   [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
+-->
+<div *ngIf="submitting==false;  else spinnerBlock">
+  <mat-card *ngFor="let c of careers">
+    <mat-card-title-group>
+        <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" >
+            <button mat-menu-item (click)="onDelete(career.id)">
+              <mat-icon>delete</mat-icon>
+              <span>Borrar</span>
+            </button>      
+          </mat-menu>     
+      </mat-card-title>   
+        <mat-card-subtitle (click)="onCareerDetails(c.id)">
+          {{ c.description }}  
+        </mat-card-subtitle>
+        <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">
+                                    
+    </mat-card-title-group>
+    
+    <mat-card-content>
+      <img img mat-card-image *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
+    </mat-card-content>
+    <mat-card-actions>
+      <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerMyProgress(c.id)">My avance</button>
+    </mat-card-actions>
+  </mat-card>
+
 </div>
+<ng-template #spinnerBlock>
+  Cargando información.
+  <mat-spinner></mat-spinner>
+</ng-template>

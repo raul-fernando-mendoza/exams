@@ -4,8 +4,8 @@ import { MateriaReference } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage} from 'src/environments/environment';
 import { UserPreferencesService } from "../user-preferences.service"
-import { MateriaReferenceDialog } from "./materia-reference-edit"
 import { MatTable } from "@angular/material/table";
+import { MateriaReferenceDialog } from "../materia-reference-edit/materia-reference-edit";
 
 
 /* do not forget to add the dialog to the app.module.ts*/
@@ -17,7 +17,7 @@ import { MatTable } from "@angular/material/table";
 
 export class MateriaReferenceComponent implements OnInit, OnDestroy{ 
    
-  @Input() materia_id:string
+  @Input() materiaid:string
   @ViewChild(MatTable) table: MatTable<any>;
 
   isAdmin:boolean = false
@@ -50,28 +50,26 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
 
 
   ngOnInit(): void {
-    if ( this.materia_id ){
-      this.unsubscribe = db.collection("materias/" + this.materia_id + "/materiaReference").onSnapshot( 
-        snapshot =>{
-          this.references.length = 0
-          snapshot.docs.map( doc=>{
-            var materiaReference:MateriaReference =  doc.data() as MateriaReference
-            this.references.push(materiaReference)
-          })
-          this.references.sort( (a,b) => a.label >= b.label ? 1 : -1 )
-          this.table.renderRows()
-
-        },
-        error=>{
-          console.log("ERROR reading materia")
+    this.unsubscribe = db.collection("materias/" + this.materiaid + "/materiaReference").onSnapshot( 
+      snapshot =>{
+        this.references.length = 0
+        snapshot.docs.map( doc=>{
+          var materiaReference:MateriaReference =  doc.data() as MateriaReference
+          this.references.push(materiaReference)
         })
-    }
+        this.references.sort( (a,b) => a.label >= b.label ? 1 : -1 )
+        this.table.renderRows()
+
+      },
+      error=>{
+        console.log("ERROR reading materia")
+      })
     
   }
 
   onCreateMateriaReference(){
     var data = {
-      materia_id: this.materia_id,
+      materia_id: this.materiaid,
       id:null,
       label:"",
       desc:"",
@@ -91,7 +89,7 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
 
   onMateriaReferenceEdit(materiaReference:MateriaReference){
     var data = {
-      materia_id: this.materia_id,
+      materia_id: this.materiaid,
       id:materiaReference.id,
       label:materiaReference.label,
       desc:materiaReference.desc,
@@ -124,7 +122,7 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
             transactions.push( trans_delete )
         }
         Promise.all( transactions ).then( () => {
-            db.collection("materias/" + this.materia_id + "/materiaReference").doc(materiaReference.id).delete().then( ()=>{
+            db.collection("materias/" + this.materiaid + "/materiaReference").doc(materiaReference.id).delete().then( ()=>{
                 console.log("materiaReference has been deleted")
             })
         })

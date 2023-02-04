@@ -9,25 +9,15 @@ Habilidad
           <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" >
         </mat-form-field>  
       </mat-card-title>
-      <img mat-card-sm-image src="{{materia.materiaIconUrl}}">
+      <img mat-card-sm-image *ngIf="materia.materiaIconUrl" mat-card-sm-image src="{{materia.materiaIconUrl}}">
+      
     </mat-card-title-group>
     <mat-card-content>
-      <mat-form-field *ngIf="isAdmin" class="attach-file"> 
-        <div id="materiaIconStatus"></div> 
-        <mat-label>change icon</mat-label>        
-        <button mat-icon-button matSuffix (click)="materiaIcon.click()">
-            <mat-icon>attach_file</mat-icon> 
-        </button>
-        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('materiaIcon')">
-        <mat-icon>delete</mat-icon>
-        </button>      
-        <input hidden (change)="selectFile($event)" name="materiaIcon" #materiaIcon type="file" >
-        <input class="nothing" matInput disabled> 
-      </mat-form-field>
+      <app-file-loader label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
       <div class="description" *ngIf="!isAdmin">{{m.controls.description.value}}</div> 
-      <mat-form-field *ngIf="isAdmin" appearance="outline">
+      <mat-form-field class="description" *ngIf="isAdmin" appearance="outline">
         <mat-label>description</mat-label>
-        <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+        <textarea class="description" matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
       </mat-form-field> 
     </mat-card-content>
     <mat-card-actions *ngIf="isAdmin && materia_id">
@@ -51,23 +41,12 @@ Habilidad
   <mat-card *ngIf="isAdmin || materia.pictureUrl || materia.pictureDescription">
     <mat-card-title-group>
       <mat-card-title>Objetivos</mat-card-title>
-      <img class="image" src="{{materia.pictureUrl}}">
+      <img class="picture" src="{{materia.pictureUrl}}">    
+
     </mat-card-title-group>
     <mat-card-content>
-      
-      <div id="pictureStatus"></div>
-      <mat-form-field *ngIf="isAdmin && materia_id">    
-          <mat-label>Cambiar Imagen</mat-label>      
-          <button mat-icon-button matSuffix (click)="picture.click()">
-              <mat-icon>attach_file</mat-icon> 
-          </button>
-          <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('picture')">
-          <mat-icon>delete</mat-icon>
-          </button>      
-          <input hidden (change)="selectFile($event)" name="picture" #picture type="file" >
-          <input class="nothing" matInput disabled> 
-      </mat-form-field>
-      
+      <app-file-loader label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+
       <quill-view-html *ngIf="!isAdmin && m.controls.pictureDescription.value" [content]="m.controls.pictureDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="pictureDescription" (onBlur)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></quill-editor>
         
@@ -77,32 +56,15 @@ Habilidad
   <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
     <mat-card-title-group>
       <mat-card-title>Experiencias</mat-card-title>
-
+      <video  *ngIf="materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+      vjs-video vjs-setup="options">
+        <source src="{{ materia.videoUrl }}" type='video/mp4' />
+      </video>
     </mat-card-title-group>
     <mat-card-content>
-      <div class="video-container">
-        <app-vjs-player *ngIf="isAdmin && materia && materia.videoUrl" source="{{materia.videoUrl}}"></app-vjs-player>  
-        <video *ngIf="!isAdmin && materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
-        vjs-video vjs-setup="options">
-          <source src="{{ materia.videoUrl }}" type='video/mp4' />
-        </video> 
-      </div>    
 
-      <div *ngIf="isAdmin && materia">
-        <div id="videoStatus"></div>
+      <app-file-loader label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
-        <mat-form-field>
-            <mat-label>Change video</mat-label>
-            <input matInput disabled> 
-            <button mat-icon-button matSuffix (click)="video.click()">
-                <mat-icon>attach_file</mat-icon> 
-            </button>
-            <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
-            <mat-icon>delete</mat-icon>
-            </button>      
-            <input hidden (change)="selectFile($event)" name="video" #video type="file" >
-        </mat-form-field>
-      </div>
       <quill-view-html *ngIf="!isAdmin && m.controls.videoDescription.value" [content]="m.controls.videoDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="videoDescription" (onBlur)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></quill-editor>
 
@@ -110,76 +72,11 @@ Habilidad
   </mat-card>
   <mat-card>
     <mat-card-content>
-      <div class="examen-container">
-        <h3>Examenes<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-          <mat-icon>more_vert</mat-icon>
-        </button></h3>
-        <mat-menu #menu="matMenu" >
-          <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting">
-            <mat-icon>library_add</mat-icon>
-            <span>Nuevo Examen</span>
-          </button>            
-        </mat-menu>      
-        <div *ngFor="let e of m.controls.exams.controls">
-          <span *ngIf="!isAdmin"><li>{{e.controls.label.value}}</li></span>
-          <button *ngIf="isAdmin && m.controls.id.value" mat-button (click)="onEditExam(m.controls.id.value,e.controls.id.value)">{{e.controls.label.value}}</button>
-          <button *ngIf="isAdmin && m.controls.id.value" mat-icon-button [matMenuTriggerFor]="menu" >
-              <mat-icon>more_vert</mat-icon>
-          </button>
-            <mat-menu #menu="matMenu" >
-              <button  mat-menu-item (click)="onDeleteExam(m.controls.id.value, e.controls.id.value)" [disabled]="submitting">
-                <mat-icon>delete</mat-icon>
-                <span>Borrar</span>
-              </button>      
-              <button  mat-menu-item (click)="onDuplicateExam(m.controls.id.value, e.controls.id.value, e.controls.label.value)" [disabled]="submitting">
-                <mat-icon>content_copy</mat-icon>
-                <span>Duplicar</span>
-              </button>       
-            </mat-menu>
-        </div>
-      </div> 
+      <app-materia-laboratory-list [materiaid]="materia_id"></app-materia-laboratory-list>
+      <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
+      <materia-reference-list [materiaid]="materia_id"></materia-reference-list>
     </mat-card-content>
   </mat-card>
-  <mat-card>
-    <mat-card-content>
-      <div class="examen-container">
-        <h3>Lecciones interactivas<button *ngIf="isAdmin && materia" mat-icon-button [matMenuTriggerFor]="menuLab" aria-label="Example icon-button with a menu">
-          <mat-icon>more_vert</mat-icon>
-        </button></h3>
-        <mat-menu #menuLab="matMenu" >
-          <button mat-menu-item (click)="onCreateLaboratory()" [disabled]="submitting">
-            <mat-icon>library_add</mat-icon>
-            <span>Nueva Leccion Interactiva</span>
-          </button>            
-        </mat-menu>      
-        <div *ngFor="let l of m.controls.laboratories.controls">
-          <span *ngIf="!isAdmin"><li>{{l.controls.label.value}}</li></span>
-          <button *ngIf="isAdmin && m.controls.id.value" mat-button (click)="onEditLaboratory(m.controls.id.value,l.controls.id.value)">{{l.controls.label.value}}</button>
-          <button *ngIf="isAdmin && m.controls.id.value" mat-icon-button [matMenuTriggerFor]="menu" >
-              <mat-icon>more_vert</mat-icon>
-          </button>
-            <mat-menu #menu="matMenu" >
-              <button  mat-menu-item (click)="onDeleteLaboratory(m.controls.id.value, l.controls.id.value)" [disabled]="submitting">
-                <mat-icon>delete</mat-icon>
-                <span>Borrar leccion interactiva</span>
-              </button>      
-            </mat-menu>
-        </div>
-      </div> 
-      <mat-divider></mat-divider>
-      <materia-reference-list *ngIf="isAdmin || hasEnrollment" materia_id="{{materia_id}}"></materia-reference-list>
-    </mat-card-content>
-    <mat-card-actions>
-
-    </mat-card-actions> 
-  </mat-card> 
-  
-  <div>
-    <!--
-    <button mat-raised-button color="primary" *ngIf="isLoggedIn && materia && materia.isEnrollmentActive && (hasEnrollment==false)" (click)="onEnroll()">Enrolar</button>
-    -->
-    <span *ngIf="hasEnrollment">Usted ya esta enrolado en esta habilidad</span>  
-  </div>
 </form>
 
 

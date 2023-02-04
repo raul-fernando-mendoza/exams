@@ -1,4 +1,4 @@
-import { Component,ViewChild, Inject, OnInit } from '@angular/core';
+import { Component,ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 import { CareerTableDataSource } from './carrer-list-datasource';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -18,61 +18,57 @@ import { Router } from '@angular/router';
   templateUrl: './career-list.component.html',
   styleUrls: ['./career-list.component.css']
 })
-export class CareerListComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTable) table: MatTable<Career>;
-  dataSource: CareerTableDataSource
+export class CareerListComponent implements OnInit, OnDestroy {
 
-  displayedColumns = [  'career_name', 'id']
+  careers:Array<Career> = []
 
-  careerList:Array<Career> = []
-
-  careerListener = null
+  submitting = false
+  unsubscribe = null
+  organization_id = null
+  isAdmin = false
 
   constructor( private sortingService:SortingService
     , private router: Router
     , public dialog: MatDialog
     , private userPreferencesService:UserPreferencesService
     , private userLoginService:UserLoginService
-    ) { }
+    ) { 
+      this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
+      if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
+        this.isAdmin = true
+      } 
+
+    }
+  ngOnDestroy(): void {
+    this.unsubscribe()
+  }
 
   ngOnInit(): void {
-    this.update()
+    this.loadCareers()
   }
 
-  update(){
-    this.loadCareers().then( () =>{
-      this.careerList.sort( (a,b)=>{ return a.career_name > b.career_name ? 1:-1} )
-
-      //this.materiaItems = this.sortingService.sortBy(this.materiaItems,["nivel","materia_name"])
-      this.dataSource = new CareerTableDataSource(this.careerList)
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.table.dataSource = this.dataSource; 
-    })  
-  }
   loadCareers():Promise<void>{
-    this.careerList.length = 0
+    
     return new Promise<void>((resolve, reject) =>{
       const query = db.collection("careers")
       .where("isDeleted","==",false)
       .where("organization_id","==",this.userPreferencesService.getCurrentOrganizationId())
       
-      this.careerListener = query.get().then( 
+      this.submitting = true
+      this.unsubscribe =query.onSnapshot( 
         set =>{
-          this.careerList.length = 0
-          var docs = set.forEach(doc =>{
-            var career:Career = {
-              id:doc.id,
-              career_name:doc.data().career_name,           
-            }
-
-            this.careerList.push(
+          this.submitting = false
+          this.careers.length = 0
+          set.docs.map(doc =>{
+            var career:Career = doc.data() as Career           
+            this.careers.push(
               career
             )
-      
           })
+          this.careers.sort( (a,b)=>{
+            return a.career_name > b.career_name ? 1 : 0
+          })
+          
           console.log( "***DONE careers***" )
           resolve()
         },
@@ -90,7 +86,6 @@ export class CareerListComponent implements OnInit {
   onDelete(career_id){
     db.collection("careers").doc(career_id).update({"isDeleted":true}).then(()=>{
         console.log("careers deleted")
-        this.update()
       }
     )    
   }
@@ -107,7 +102,7 @@ export class CareerListComponent implements OnInit {
       if( result != undefined ){
         console.debug( result )
         this.createMateria(result.career_name).then( ()=>{
-          this.update()
+          console.log("carrer create")
         })
       }
       else{
@@ -146,6 +141,15 @@ export class CareerListComponent implements OnInit {
       )      
     })
   }
+  isLoggedIn() : boolean{
+    return this.userLoginService.getIsloggedIn()
+  }  
+  onCareerMyProgress(career_id:string){
+    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
+  }   
+  onCareerDetails(career_id:string){
+    this.router.navigate(['career-edit',{ id:career_id }])
+  }   
 }
 
 export interface CareerData {

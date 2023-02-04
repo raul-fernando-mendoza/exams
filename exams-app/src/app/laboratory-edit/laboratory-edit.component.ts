@@ -9,13 +9,14 @@ import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
 import { FileLoadObserver } from "../load-observers/load-observers.module"
 import { Laboratory } from '../exams/exams.module';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-laboratory-edit',
   templateUrl: './laboratory-edit.component.html',
   styleUrls: ['./laboratory-edit.component.css']
 })
-export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestroy{
+export class LaboratoryEditComponent implements OnInit , OnDestroy{
 
   organization_id = null
   isAdmin = false
@@ -26,12 +27,17 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
   laboratory:Laboratory = null
   unsubscribe = null
 
+  videoURL = "https://www.youtube.com/embed/1ozGKlOzEVc"
+  safeURL = null
+
   constructor(
     private fb: FormBuilder
     ,private route: ActivatedRoute
     ,private userLoginService: UserLoginService
     ,private userPreferencesService: UserPreferencesService
     ,public dialog: MatDialog    
+    ,private examImprovisacionService:ExamenesImprovisacionService
+    ,private _sanitizer: DomSanitizer
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -42,11 +48,8 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
     }
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.laboratory_id = this.route.snapshot.paramMap.get('laboratory_id')
-  }
-  ngAfterViewInit(): void {
 
-
-  
+    this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
   }
 
   ngOnDestroy(): void {
@@ -76,49 +79,11 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
   getBasePath(){
     return "organizations/" + this.organization_id + "/materias/" + this.materia_id + "/laboratory/" + this.laboratory_id
   }
-  fileLoaded(path){
-    this.l.controls.videoPath.setValue(null)
-    this.l.controls.videoUrl.setValue( null )      
-      
-
-    var oldPath = this.l.controls.videoPath.value
-    var transactions = []
-    if( oldPath && oldPath != path){
-      let storageRef = storage.ref( oldPath )
-      var trans_del = storageRef.delete().then( () =>{
-          console.log("old file removed")
-      })
-      .catch( reason =>{
-          console.log("old file can not be erased")
-      })
-      transactions.push(trans_del)        
-    } 
-    Promise.all( transactions ).then( () =>{
-      let storageRef = storage.ref( path )     
-      storageRef.getDownloadURL().then( url =>{
-        this.l.controls.videoPath.setValue(path)
-        this.l.controls.videoUrl.setValue( url )
-        let data = {
-          videoPath: this.l.controls.videoPath.value,
-          videoUrl: this.l.controls.videoUrl.value
-        }
-        db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
-          console.log("url updated")
-        })        
-      })  
-    })               
+  fileLoaded(e){
+    this.examImprovisacionService.fileLoaded("materias/" + this.materia_id + "/laboratory", this.laboratory.id, e)
   }  
-  fileDeleted(path){
-      console.log("file deleted:" + path)
-      this.l.controls.videoPath.setValue( null )
-      this.l.controls.videoUrl.setValue( null )
-      let data = {
-        videoPath: this.l.controls.videoPath.value,
-        videoUrl: this.l.controls.videoUrl.value
-      }
-      db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
-        console.log("url updated")
-      })       
+  fileDeleted(e){
+    this.examImprovisacionService.fileDeleted("materias/" + this.materia_id + "/laboratory", this.laboratory.id, e)
   }
   onPropertyChange(event){
 
@@ -133,50 +98,4 @@ export class LaboratoryEditComponent implements OnInit , AfterViewInit, OnDestro
       alert("ERROR: writing property:" + reason)
     })    
   }  
-  soundLoaded(path){
-    this.l.controls.soundPath.setValue(null)
-    this.l.controls.soundUrl.setValue(null)      
-      
-
-    var oldPath = this.l.controls.soundPath.value
-    var transactions = []
-    if( oldPath && oldPath != path){
-      let storageRef = storage.ref( oldPath )
-      var trans_del = storageRef.delete().then( () =>{
-          console.log("old file removed")
-      })
-      .catch( reason =>{
-          console.log("old file can not be erased")
-      })
-      transactions.push(trans_del)        
-    } 
-    Promise.all( transactions ).then( () =>{
-      let storageRef = storage.ref( path )     
-      storageRef.getDownloadURL().then( url =>{
-
-        let data = {
-          soundPath: path,
-          soundUrl: url
-        }
-        db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
-          this.l.controls.soundPath.setValue(path)
-          this.l.controls.soundUrl.setValue( url )          
-          console.log("url updated")
-        })        
-      })  
-    })               
-  }  
-  soundDeleted(path){
-      console.log("file deleted:" + path)
-      this.l.controls.soundPath.setValue( null )
-      this.l.controls.soundUrl.setValue( null )
-      let data = {
-        soundPath: this.l.controls.soundPath.value,
-        soundUrl: this.l.controls.soundUrl.value
-      }
-      db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
-        console.log("url updated")
-      })       
-  }  
-
 }

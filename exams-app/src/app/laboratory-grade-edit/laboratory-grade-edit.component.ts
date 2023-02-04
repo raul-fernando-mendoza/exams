@@ -196,5 +196,29 @@ export class LaboratoryGradeEditComponent implements OnInit {
   getBasePath(){
     return "organizations/" + this.organizationId + "/laboratoryGrades/" + this.laboratoryGradeId + "/studentData/" + "practiceData"
   }
+/*
+  createLaboratoryGrade( ){
+    const id = uuid.v4()
+    if( l.laboratoryGrade == null){
+      var lgNew:LaboratoryGrade = {
+        student_uid:this.userUid,
+        materia_id:this.materiaid,
+        organization_id:this.organization_id,
+        laboratory_id:l.laboratory.id, 
+        status:LaboratoryGradeStatus.initial
+      }
+      this.createLaboratoryGrade( lgNew )
+    }
 
+    laboratoryGrade.id = id
+
+    laboratoryGrade.createdDay = this.dateFormatService.getDayId(new Date())
+    laboratoryGrade.createdMonth = this.dateFormatService.getMonthId(new Date())
+    laboratoryGrade.createdYear = this.dateFormatService.getYearId(new Date())
+
+    db.collection("laboratoryGrades").doc(id).set(laboratoryGrade).then(data =>{
+      this.openLaboratoryGrade( id )
+    })
+  }
+*/
 }

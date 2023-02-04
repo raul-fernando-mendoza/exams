@@ -1,7 +1,11 @@
-<p>Laboratories</p>
+<h3>Laboratories</h3>
+
+<div *ngIf="materiaid == null || useruid == null">
 <mat-slide-toggle [(ngModel)]="isReleased" (change)="onReleased()">Released: {{isReleased}}</mat-slide-toggle>
 <app-date-selector [value]="selectedDay" (change)="onDateSelect($event)"></app-date-selector>
 <app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
+</div>
+
 <!--
 <mat-list>
         <mat-list-item *ngFor="let l of laboratoryGrades" (click)='onOpenLaboratoryGrade(l.id)'>
@@ -13,7 +17,7 @@
 <mat-table mat-table [dataSource]="laboratoryGrades">
         <ng-container matColumnDef="laboratory_name">
                 <mat-header-cell *matHeaderCellDef>Leccion interactiva</mat-header-cell>
-                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.laboratory_name}} </mat-cell>
+                <mat-cell *matCellDef="let laboratoryGrade"><span (click)='onOpenLaboratoryGrade(laboratoryGrade)'>{{laboratoryGrade.laboratory_name}}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="student.displayName">
                 <mat-header-cell *matHeaderCellDef>Estudiante</mat-header-cell>
@@ -27,4 +31,5 @@
         <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
         <mat-row mat-row *matRowDef="let row; columns: columnsToDisplay" (click)="onOpenLaboratoryGrade(row.id)"></mat-row> 
 </mat-table>
+<span *ngIf="laboratoryGrades.length == 0">no hay laboratorios para esta materia</span>
 

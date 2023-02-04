@@ -1,43 +1,57 @@
-<h1>Habilidades <button mat-button mat-raised-button (click)="onCreateMateria()"><mat-icon>add</mat-icon></button></h1>
-<form >
+<h1>Habilidades <button *ngIf="isAdmin" mat-button mat-raised-button (click)="onCreateMateria()"><mat-icon>add</mat-icon></button></h1>
+
   <div class="searchForm">
-    <mat-form-field class="example-full-width">
-    <span matPrefix> </span>
-    <input type="tel" matInput placeholder="Search" name= "search" [(ngModel)]= "search">
+    <div class="spacer"></div>    
+    <mat-form-field class="search-box">
+    <input matInput placeholder="Search" name= "search" [(ngModel)]= "search">
     <button matSuffix mat-button><mat-icon >search</mat-icon></button>
     </mat-form-field>
-    <br/>
+    <div class="spacer"></div>
+    <mat-button-toggle-group  [(ngModel)]="enrolledOnly" aria-label="Show only enrolled">
+      <mat-button-toggle class="enrolledoption" [value]="true">Solo mis materias</mat-button-toggle>
+      <mat-button-toggle class="enrolledoption" [value]="false">Todas</mat-button-toggle> 
+    </mat-button-toggle-group>
   </div>
-</form>
-<mat-card *ngFor="let m of materias" class="materia-card" [ngClass]="isSearched(m)">
-    <mat-card-title-group>
-        <mat-card-title class="enroll-card"> 
-          <button mat-button (click)="onEditMateria(m)">{{ m.materia_name }}</button>
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+
+
+<div *ngIf="submitting==false;  else spinnerBlock">
+  <mat-card class="materia-card" *ngFor="let mi of materiasList" class="materia-card" [ngClass]="isSearched(mi)">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title class="enroll-card"><span (click)="onEditMateria(mi.materia)">{{ mi.materia.materia_name }}</span>
+          <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu" >
-            <button mat-menu-item (click)="onRemoveMateria(m.id, m.materia_name)" [disabled]="submitting">
+
+            <button mat-menu-item (click)="onEditMateria(mi.materia)" [disabled]="submitting">
+              <mat-icon>edit</mat-icon>
+              <span>Editar</span>
+            </button>
+
+            <button mat-menu-item (click)="onRemoveMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting">
               <mat-icon>delete</mat-icon>
-              <span>Delete</span>
+              <span>Borrar</span>
             </button>            
-            <button mat-menu-item (click)="onDuplicateMateria(m.id, m.materia_name)" [disabled]="submitting">
+            <button mat-menu-item (click)="onDuplicateMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting">
               <mat-icon>library_add</mat-icon>
               <span>Duplicate</span>
             </button>            
-          </mat-menu>            
-        </mat-card-title>
-        <mat-card-subtitle>
-          {{ m.description }}
-        </mat-card-subtitle>
-        <img mat-card-sm-image src="{{ m.materiaIconUrl }}">
-                                    
-    </mat-card-title-group>
-    <mat-card-content>
-      <img class="materia-image" *ngIf="m.pictureUrl" src="{{ m.pictureUrl }}"> 
-    </mat-card-content>
-    <mat-card-actions>
-    </mat-card-actions>
+          </mat-menu>  
+        </mat-card-title>  
+        <img mat-card-sm-image *ngIf="mi.materia.materiaIconUrl" (click)="onEditMateria(mi.materia)" src="{{ mi.materia.materiaIconUrl }}"> 
+      </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content (click)="onEditMateria(mi.materia)">
+        {{ mi.materia.description }}
+        <app-materia-laboratory-list *ngIf="mi.materiaEnrollment" [materiaid]="mi.materia.id"></app-materia-laboratory-list>
+    </mat-card-content> 
   </mat-card>
+</div>
+<ng-template #spinnerBlock>
+  Cargando información.
+  <mat-spinner></mat-spinner>
+</ng-template>
+
 
   

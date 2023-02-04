@@ -1,14 +1,11 @@
-.example-spacer {
-    flex: 1 1 auto;
-}
-
+/*
 .materia-icon{
     width:200px;
     height:200px;
     padding:5px;
 }
-
-
+*/
+/*
 .video-container{
     width:100%;
     margin:20px;
@@ -18,39 +15,49 @@
 .materia-video{
     width:80%;
 }
-
-.remove-property-button{
-    margin-left:50px
-}
+*/
 
 mat-form-field{
     display:block;
 }
 
+/*
 .description{
     width:80%;
     margin:10px;
 }
-.image{
-    object-fit: cover; /*this makes the image in src fit to the size specified below*/
-    width: 60%; /* Here you can use wherever you want to specify the width and also the height of the <img>*/
+*/
+/* this allows the picture to resize correctly */
+.picture{
+    object-fit: cover; 
+    width: 60%; 
 }
-
+.experiences{
+    object-fit: cover; 
+    width: 60%; 
+}
+/*
 .career-video{
     width:300px ;
     height: 300px ;
     display:block;
 }
-
+*/
 .remove-property-button{
     margin-left:50px
 }
-
+/*
 .examen-container{
     margin:10px;
 }
 
 .field-name{
     width:20em;
+}
+*/
+.description{
+    width:80%;
+    margin-left: auto;
+    margin-right:auto;
 }
 

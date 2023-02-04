@@ -11,9 +11,9 @@
     <mat-stepper orientation="vertical" >
         <mat-step label="Intrucciones">
             <div *ngIf="laboratory">
-                <video *ngIf="laboratory.videoUrl" controls width="80%">
-                    <source src="{{laboratory.videoUrl}}" type="video/mp4">
-                </video>
+                <iframe width="420" height="315"
+                src="{{laboratory.videoUrl}}">
+                </iframe>                 
                 <mat-divider></mat-divider>
                 <div *ngIf="laboratory.soundUrl">
                     <h3>Audio para practicas</h3>           
@@ -43,7 +43,7 @@
                 <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
                     <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
                 </video>     
-                <app-file-loader [basepath]="getBasePath()" [fullpath]="laboratoryGrade.studentData.videoPath" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+                <app-file-loader [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
                 <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
               </div> 
           </mat-step>

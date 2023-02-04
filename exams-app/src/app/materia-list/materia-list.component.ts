@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Exam, ExamRequest, Materia, MateriaRequest } from '../exams/exams.module';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Exam, ExamRequest, Materia, MateriaEnrollment, MateriaRequest } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
@@ -11,31 +11,47 @@ import { DialogNameDialog } from '../name-dialog/name-dlg';
 import * as uuid from 'uuid';
 import { Alert } from 'selenium-webdriver';
 
+interface MateriaItem{
+  materia:Materia
+  materiaEnrollment:MateriaEnrollment
+  
+}
+
 @Component({
   selector: 'app-materia-list',
   templateUrl: './materia-list.component.html',
   styleUrls: ['./materia-list.component.css']
 })
-export class MateriaListComponent implements OnInit {
+export class MateriaListComponent implements OnInit , OnDestroy{
 
-  materias:Array<Materia> = []
+  materiasList:Array<MateriaItem> = []
  
   submitting = false
 
   organization_id:string
+  isAdmin = false
 
   search = null
+
+  enrolledOnly = false
+
+  unsubscribe = null
+  userUid = null
 
   constructor(
  
       private router: Router
-    , private usetPreferenceService:UserPreferencesService
-    , private userLoginService:UserLoginService
     , private userPreferenceService:UserPreferencesService
+    , private userLoginService:UserLoginService
     , private examImprovisationService:ExamenesImprovisacionService
     , private dialog: MatDialog,
   ) { 
-    this.organization_id = this.usetPreferenceService.getCurrentOrganizationId()
+    this.organization_id = this.userPreferenceService.getCurrentOrganizationId()
+    this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
+    this.userUid = this.userLoginService.getUserUid()
+  }
+  ngOnDestroy(): void {
+    this.unsubscribe()
   }
 
   ngOnInit(): void {
@@ -48,20 +64,32 @@ export class MateriaListComponent implements OnInit {
   }
 
   loadMaterias():Promise<void>{
-    this.materias.length = 0
     return new Promise<void>((resolve, reject) =>{
-      db.collection("materias")
-      .where("organization_id","==", this.usetPreferenceService.getCurrentOrganizationId())
+      this.submitting = true
+      this.unsubscribe = db.collection("materias")
+      .where("organization_id","==", this.organization_id)
       .where("isDeleted","==", false)
-      .get().then( snapshot =>{
+      .onSnapshot( snapshot =>{
+        this.materiasList.length = 0
         snapshot.docs.map( doc =>{
           const materia = doc.data() as Materia
-          this.materias.push(materia)          
+
+          var materiaItem:MateriaItem = {
+            materia:materia,
+            materiaEnrollment:null
+          }
+          this.examImprovisationService.getMateriaEnrollment( this.organization_id, materia.id, this.userUid).then( materiaEnrollement =>{
+            materiaItem.materiaEnrollment = materiaEnrollement
+          })
+          this.materiasList.push(materiaItem)          
         })
-        this.materias.sort( (a,b) => {return a.materia_name > b.materia_name? 1:-1})
+        this.materiasList.sort( (a,b) => {return a.materia.materia_name > b.materia.materia_name? 1:-1})
+        this.submitting = false
         resolve()
       },
       reason =>{
+        this.submitting = false
+        console.log("materias where not loaded")
         reject()
       })
     })
@@ -182,9 +210,12 @@ export class MateriaListComponent implements OnInit {
        
   }
 
-  isSearched( materia ):string{
+  isSearched( materiaItem:MateriaItem ):string{
+    if( this.enrolledOnly && (materiaItem.materiaEnrollment == null)){
+      return "hidden"
+    }
     if( this.search != null && this.search.length > 1){
-      if( materia.materia_name.toUpperCase().includes(this.search.toUpperCase()) != true ){
+      if( materiaItem.materia.materia_name.toUpperCase().includes(this.search.toUpperCase()) != true ){
         return "hidden"
       }
       else return ""
