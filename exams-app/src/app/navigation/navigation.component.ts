@@ -46,6 +46,9 @@ export class NavigationComponent {
   Register(){
     this.router.navigate(['/register',{"isRegister":true}])
   }  
+  home(){
+    this.router.navigate(['/'])
+  }  
   logout(){
     this.userLoginService.logout()
     this.router.navigate(['/loginForm']);

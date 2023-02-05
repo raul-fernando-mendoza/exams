@@ -55,7 +55,7 @@ export class WelcomeComponent implements OnInit {
     const query = db.collection("careers")
     .where("isDeleted","==",false)
     .where("organization_id","==",this.organization.id)
-    .where("career_name","==","Interprete")
+    .where("career_name","==","Ejecutante")
     
     this.submitting = true
     query.get().then( resultSet =>{
@@ -85,4 +85,15 @@ export class WelcomeComponent implements OnInit {
   register(){
     this.router.navigate(['/loginForm',{"isRegister":true}])
   }  
+  onEmail(){
+    window.location.href = "mailto:rsharkimonterrey@yahoo.com.mx?subject=Solicito%20informacion&body=Saludos";
+  }
+  
+
+  onFacebook(){
+    window.location.href="https://www.facebook.com/raxacademy";
+  }
+  onInstagram(){
+    window.location.href="https://www.instagram.com/raksharkimty";
+  }
 }

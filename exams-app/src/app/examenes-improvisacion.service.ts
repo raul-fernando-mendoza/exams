@@ -130,7 +130,27 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
 
     return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
   }
+  hasEnrollments(organizationId:string, studentId:string):Promise<boolean>{
+    var _resolve
+    var _reject
+    return new Promise<boolean>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
 
+      db.collection('materiaEnrollments')
+      .where("organization_id","==", organizationId)
+      .where("student_uid", "==", studentId)
+      .where("isDeleted","==",false)
+      .get().then( set =>{
+        if( set.docs.length > 0){
+          resolve(true)
+        }
+        else{
+          resolve(false)
+        }
+      })
+    })
+  }
   hasMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<boolean>{
     var result = false
     var id = uuid.v4()

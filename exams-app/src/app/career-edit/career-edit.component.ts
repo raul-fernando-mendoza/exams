@@ -13,6 +13,7 @@ import { DialogListSelectDialog } from '../list-select/list-select-dialog';
 import { Observer } from 'rxjs';
 import videojs from 'video.js';
 import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-observers.module';
+import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
 @Component({
   selector: 'app-career-edit',
@@ -33,6 +34,9 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   isAdmin:boolean = false
   isLoggedIn =false
+  userUid = null
+
+  hasEnrollments = false
 
 
   c = this.fb.group({
@@ -59,9 +63,10 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     , private route: ActivatedRoute
     , private userLoginService:UserLoginService
     , public formService:ExamFormService
-    , public userPreferencesService:UserPreferencesService
+    , private userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
     , public router:Router
+    , private examenesImprovisacionService:ExamenesImprovisacionService
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -69,9 +74,15 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
         this.isAdmin = true
       }   
-      if( this.userLoginService.getUserUid() ){
+      if( this.userLoginService.getIsloggedIn() ){
+        this.userUid = this.userLoginService.getUserUid()
         this.isLoggedIn = true
+
+        this.examenesImprovisacionService.hasEnrollments(this.organization_id, this.userUid).then( hasEnrollments =>{
+          this.hasEnrollments = true
+        })
       }
+      
   }
   ngOnDestroy(): void {
     this.snapshots.map( func =>{

@@ -1,6 +1,7 @@
 .main{
     text-align: center;
 }
+
 .ejecutante{
     position:relative;
 }
@@ -30,4 +31,16 @@
     left:30%;
     top:50%;
     text-align: center;
+}
+.footer{
+    display:flex;
+}
+.spacer{
+    flex:1 1 0;
+}
+.phone{
+    justify-self: center;
+}
+.footer-icon{
+    justify-self:right;
 }

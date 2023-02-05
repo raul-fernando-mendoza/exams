@@ -9,9 +9,9 @@
 <h2 class="main">Academia de Danza Oriental y Fusiones</h2>
 <h3 class="main">División academica de Raks Sharki Monterrey</h3>
 
-<mat-card>
+<mat-card (click)="onEjecutanteDetalles()">
   <div class="ejecutante">
-    <div class="ejecutante-title" (click)="onEjecutanteDetalles()">
+    <div class="ejecutante-title" >
       <h1>Ejecutante</h1>
       <button mat-button >Detalles</button>
     </div>
@@ -19,8 +19,8 @@
   </div>
 </mat-card>
 <mat-card>
-  <div class="diplomados">
-    <div class="diplomados-title" (click)="onCoreografoDetalles()">
+  <div class="diplomados" (click)="onCoreografoDetalles()">
+    <div class="diplomados-title" >
       <h1>Coreógrafo y Docente</h1>
       <button mat-button >Detalles</button>
     </div>
@@ -35,6 +35,21 @@
     <img mat-card-image src="/assets/diplomados.jpg"><img>
   </div>
 </mat-card>
+
+<div class="footer">
+  <span class="spacer"></span>
+  <span class="phone"><h2>Tel: 81 17068503</h2></span>
+  <span class="spacer"></span>
+  <button class="footer-icon" mat-icon-button matSuffix (click)="onEmail()">
+    <mat-icon>mail</mat-icon> 
+  </button>  
+  <button class="footer-icon" mat-icon-button matSuffix (click)="onFacebook()">
+    <mat-icon>facebook</mat-icon> 
+  </button>
+  <button class="footer-icon" mat-icon-button matSuffix (click)="onInstagram()">
+    <mat-icon>photo_camera</mat-icon> 
+  </button>  
+</div>
 
 <ng-template #elseBlock>
   Cargando información.

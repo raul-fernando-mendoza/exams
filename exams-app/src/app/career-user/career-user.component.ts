@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
@@ -15,9 +15,9 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
   styleUrls: ['./career-user.component.css']
 })
 export class CareerUserComponent implements OnInit {
-
-  career_id:string
-  user_uid:string
+  
+  @Input() careerid:string
+  @Input() useruid:string
   user_displayName:string
   organization_id:string
 
@@ -35,21 +35,18 @@ export class CareerUserComponent implements OnInit {
 
     this.organization_id = this.userPreferences.getCurrentOrganizationId()
 
-    this.career_id = this.route.snapshot.paramMap.get("career_id")
+    if( this.careerid == null){
+      this.careerid = this.route.snapshot.paramMap.get("career_id")
+      this.useruid = this.route.snapshot.paramMap.get("user_uid")
+    }
     
     if( this.userLogin.hasRole("role-admin-" + this.organization_id) ){
       this.isAdmin = true
-      this.user_uid = this.route.snapshot.paramMap.get("user_uid")
     }
-    else{
-      this.user_uid = this.userLogin.getUserUid()
-    }
-      
-    
   }
 
   ngOnInit(): void {
-    this.examImprovisationService.getUser(this.user_uid).then( user =>{
+    this.examImprovisationService.getUser(this.useruid).then( user =>{
       this.user_displayName = user.displayName
       this.loadCareers()
     })    
@@ -57,7 +54,7 @@ export class CareerUserComponent implements OnInit {
   }
 
   loadCareers(){
-    db.collection("careers").doc( this.career_id ).get().then( doc =>{
+    db.collection("careers").doc( this.careerid ).get().then( doc =>{
        
       const career = doc.data() as Career
       const levels = []
@@ -68,9 +65,9 @@ export class CareerUserComponent implements OnInit {
         careerAdvance:null,
         levels:levels       
       }
-      this.getCarrerAdvance(this.organization_id, this.career_id, this.user_uid).then( careerAdvance =>{
+      this.getCarrerAdvance(this.organization_id, this.careerid, this.useruid).then( careerAdvance =>{
         this.careerUser.careerAdvance = careerAdvance
-        this.loadLevels( this.career_id, this.careerUser.levels)
+        this.loadLevels( this.careerid, this.careerUser.levels)
       })
 
 
@@ -98,7 +95,7 @@ export class CareerUserComponent implements OnInit {
           materias:[] } 
         groups.push( e )
         if( this.careerUser.careerAdvance){
-          this.loadGroupGrade( this.organization_id, career_id, this.user_uid, level_id, group.id).then( groupGrade =>{
+          this.loadGroupGrade( this.organization_id, career_id, this.useruid, level_id, group.id).then( groupGrade =>{
             e.groupGrade = groupGrade
           })
         }
@@ -120,7 +117,7 @@ export class CareerUserComponent implements OnInit {
             db.collection("materiaEnrollments")
             .where("isDeleted","==",false)
             .where("organization_id","==", this.organization_id)
-            .where("student_uid","==", this.user_uid)
+            .where("student_uid","==", this.useruid)
             .where("materia_id","==", materia.id)
             .get().then( set =>{
               set.docs.map( doc =>{
