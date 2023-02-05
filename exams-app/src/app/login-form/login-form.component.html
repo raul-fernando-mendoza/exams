@@ -1,8 +1,14 @@
-<mat-card-title *ngIf="isRegister">Registrate</mat-card-title>
-<mat-card-title *ngIf="!isRegister">Ingresa</mat-card-title>
+
 
 
 <div [ngClass]="(isHandset$ | async) ? 'login-handset' : 'login-desktop'">
+
+  <img class="rax-icon" src="/assets/rax_logo_and_text_1094.png" >
+    
+  <span class="title" *ngIf="isRegister">Registrate para certificar tu progreso</span>
+  <span class="title" *ngIf="!isRegister">Ingresa para verificar tu progreso</span>
+
+
 
   <img class="google-image" (click)="signInWithPopup()" src="/assets/btn_google_signin_small.png" >
 
