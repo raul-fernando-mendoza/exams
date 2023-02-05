@@ -337,5 +337,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         alert("ERROR: writing property:" + reason)
       })      
   }
-
+  getVideoId(videoPath){
+    return videoPath.split("/").reverse()[0]
+  }
 }

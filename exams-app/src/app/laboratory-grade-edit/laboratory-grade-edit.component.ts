@@ -45,6 +45,7 @@ export class LaboratoryGradeEditComponent implements OnInit {
     ,private userPreferencesService: UserPreferencesService
     ,public dialog: MatDialog
     ,private router:Router
+    ,private examenesImprovisacionService:ExamenesImprovisacionService
   ) {
     this.organizationId = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organizationId) ){
@@ -195,6 +196,9 @@ export class LaboratoryGradeEditComponent implements OnInit {
   }
   getBasePath(){
     return "organizations/" + this.organizationId + "/laboratoryGrades/" + this.laboratoryGradeId + "/studentData/" + "practiceData"
+  }
+  getVideoId(url){
+    return this.examenesImprovisacionService.getVideoId(url)
   }
 /*
   createLaboratoryGrade( ){

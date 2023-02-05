@@ -89,6 +89,7 @@ import { MateriaReferenceComponent } from './materia-reference-list/materia-refe
 import { MateriaReferenceDialog } from './materia-reference-edit/materia-reference-edit';
 import { ExamGradesSearchComponent } from './exam-grades-search/exam-grades-search.component';
 import { ExamGradesListComponent } from './exam-grades-list/exam-grades-list.component';
+import { YtPlayerAngularModule } from 'yt-player-angular';
 
 @NgModule({
     declarations: [

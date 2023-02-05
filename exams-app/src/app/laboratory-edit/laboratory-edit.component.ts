@@ -9,7 +9,6 @@ import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
 import { FileLoadObserver } from "../load-observers/load-observers.module"
 import { Laboratory } from '../exams/exams.module';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-laboratory-edit',
@@ -27,9 +26,6 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
   laboratory:Laboratory = null
   unsubscribe = null
 
-  videoURL = "https://www.youtube.com/embed/1ozGKlOzEVc"
-  safeURL = null
-
   constructor(
     private fb: FormBuilder
     ,private route: ActivatedRoute
@@ -37,7 +33,6 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
     ,private userPreferencesService: UserPreferencesService
     ,public dialog: MatDialog    
     ,private examImprovisacionService:ExamenesImprovisacionService
-    ,private _sanitizer: DomSanitizer
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -48,8 +43,6 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
     }
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.laboratory_id = this.route.snapshot.paramMap.get('laboratory_id')
-
-    this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
   }
 
   ngOnDestroy(): void {
@@ -98,4 +91,7 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
       alert("ERROR: writing property:" + reason)
     })    
   }  
+  getVideoId(videoPath){
+    return this.examImprovisacionService.getVideoId(videoPath)
+  }
 }
