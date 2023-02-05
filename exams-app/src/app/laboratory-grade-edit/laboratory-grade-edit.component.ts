@@ -12,6 +12,7 @@ import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observer } from 'rxjs';
 import { FileLoadObserver } from '../load-observers/load-observers.module';
+import { FileLoadedEvent } from '../file-loader/file-loader.component';
 
 
 @Component({
@@ -144,55 +145,13 @@ export class LaboratoryGradeEditComponent implements OnInit {
     return getLaboratoryStatusName(laboratoryGradeStatus)
   }
 
-  fileLoaded(path){
-    console.log("file loaded:" + path)
-    this.laboratoryGrade.studentData.videoPath = null
-    this.laboratoryGrade.studentData.videoUrl = null
-    
-    let storageRef = storage.ref( path )
-    storageRef.getDownloadURL().then( url =>{
-        
-        var data = {
-          videoPath:path,
-          videoUrl:url
-        }        
-        db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").set(data).then( ()=>{
-          this.laboratoryGrade.studentData.videoPath = path
-          this.laboratoryGrade.studentData.videoUrl = url
-          console.log("studentdata update")
-        })
-    })     
+  fileLoaded(e:FileLoadedEvent){
 
- 
-  }
-  fileDeleted(path){
-    console.log("file deleted:" + path)
+    this.examenesImprovisacionService.fileLoaded('laboratoryGrades/'+ this.laboratoryGradeId + "/studentData" , "practiceData", e)
 
-    let oldVideoPath = this.laboratoryGrade.studentData.videoPath
-
-    var transactions = []
-    //first erase the old file if it exists and is different from the old one
-    if( oldVideoPath && oldVideoPath != path){
-        let storageRef = storage.ref( oldVideoPath )
-        var trans_del = storageRef.delete().then( () =>{
-            console.log("old video removed")
-        })
-        .catch( reason =>{
-            console.log("old video can not be erased")
-        })
-        transactions.push(trans_del)        
-    } 
-    Promise.all( transactions ).then( () =>{
-      this.laboratoryGrade.studentData.videoPath = null
-      this.laboratoryGrade.studentData.videoUrl = null
-      var data = {
-        videoPath:null,
-        videoUrl:null
-      }        
-      db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").update(data).then( ()=>{
-        console.log("studentdata update")
-      })
-    })      
+  }  
+  fileDeleted(e:FileLoadedEvent){
+    this.examenesImprovisacionService.fileDeleted('laboratoryGrades/' + this.laboratoryGradeId + "/studentData", "practiceData", e)
   }
   getBasePath(){
     return "organizations/" + this.organizationId + "/laboratoryGrades/" + this.laboratoryGradeId + "/studentData/" + "practiceData"

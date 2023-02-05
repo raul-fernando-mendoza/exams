@@ -2,7 +2,7 @@
 <div *ngIf="laboratoryGrade">
     <h1 *ngIf="laboratory" >{{laboratory.label}}</h1> 
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial">Por favor vea el video de instrucciones y envie un video cumpliendo con las instrucciones para su revision</span>
-    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video ha sido enviado a revision</span>
+    <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.requestGrade">El video esta en espera de ser revisado</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.accepted ">El video ha sido aceptado</span>
     <span *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.rework">
         Su video requiere ser retrabajado. por favor revise las observaciones, suba un nuevo video y solicite una nueva revision
@@ -41,7 +41,7 @@
                 <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
                     <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
                 </video>     
-                <app-file-loader [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+                <app-file-loader label="tu video" [basepath]="getBasePath()" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
                 <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
               </div> 
           </mat-step>

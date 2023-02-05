@@ -30,7 +30,7 @@
                 </button>       
               </mat-menu>
               <span>{{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
-            <button *ngIf="isEnrolled" (click)="onOpenLaboratoryGrade(li.laboratoryGrade)" mat-button >Abrir</button>
+            <button *ngIf="isEnrolled" (click)="onOpenLaboratoryGrade(li)" mat-button >Abrir</button>
 
         </mat-list-item>
     </mat-list >

@@ -109,12 +109,42 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
       })    
   }
 
-  onOpenLaboratoryGrade( lg:LaboratoryGrade){
-    var laboratoryGradeId = null
-    if( lg ){
-      laboratoryGradeId = lg.id
+  onOpenLaboratoryGrade( li:LaboratoryItem){
+    if( li.laboratoryGrade == null ){
+      this.createLaboratoryGrade(li.laboratory).then( laboratoryGrade =>{
+        this.onEditLaboratoryGrade( laboratoryGrade.id )
+      })
     }
-    this.router.navigate(['/laboratory-grade-edit',{laboratory_grade_id:laboratoryGradeId}]);
+    else{
+      this.onEditLaboratoryGrade( li.laboratoryGrade.id )
+    }
+  }
+
+  createLaboratoryGrade(laboratory:Laboratory):Promise<LaboratoryGrade>{
+    return new Promise<LaboratoryGrade>( (resolve, reject) =>{
+      const id =uuid.v4()
+      const laboratoryGrade:LaboratoryGrade= {
+        id:id,
+        organization_id:this.organization_id,
+        materia_id:this.materiaid,
+        laboratory_id:laboratory.id,
+        student_uid:this.userUid,
+        status:LaboratoryGradeStatus.initial,
+        createdDay:this.dateFormatService.getDayId(new Date()),
+        createdMonth:this.dateFormatService.getMonthId(new Date()),
+        createdYear:this.dateFormatService.getYearId(new Date()),
+      }   
+      db.collection("laboratoryGrades").doc(id).set(laboratoryGrade).then( () =>{
+        resolve(laboratoryGrade)
+      },
+      reason=>{
+        alert("error:" + reason)
+      })
+    })
+  }  
+
+  onEditLaboratoryGrade(laboratory_grade_id){
+    this.router.navigate(['/laboratory-grade-edit',{laboratory_grade_id:laboratory_grade_id}]);
   }
 
   getStatusName( lg:LaboratoryGrade ){

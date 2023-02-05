@@ -1,31 +1,21 @@
 <h3>Laboratories</h3>
 
-<div *ngIf="materiaid == null || useruid == null">
 <mat-slide-toggle [(ngModel)]="isReleased" (change)="onReleased()">Released: {{isReleased}}</mat-slide-toggle>
 <app-date-selector [value]="selectedDay" (change)="onDateSelect($event)"></app-date-selector>
 <app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
-</div>
-
-<!--
-<mat-list>
-        <mat-list-item *ngFor="let l of laboratoryGrades" (click)='onOpenLaboratoryGrade(l.id)'>
-                {{ l.laboratory_name }}  <span *ngIf="l.student">{{ l.student.displayName }}</span> 
-        </mat-list-item>
-</mat-list>
--->
 
 <mat-table mat-table [dataSource]="laboratoryGrades">
         <ng-container matColumnDef="laboratory_name">
                 <mat-header-cell *matHeaderCellDef>Leccion interactiva</mat-header-cell>
-                <mat-cell *matCellDef="let laboratoryGrade"><span (click)='onOpenLaboratoryGrade(laboratoryGrade)'>{{laboratoryGrade.laboratory_name}}</span></mat-cell>
+                <mat-cell *matCellDef="let laboratoryGradeItem"><span (click)='onOpenLaboratoryGrade(laboratoryGradeItem.laboratoryGrade)'>{{laboratoryGradeItem.laboratory.label}}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="student.displayName">
                 <mat-header-cell *matHeaderCellDef>Estudiante</mat-header-cell>
-                <mat-cell *matCellDef="let laboratoryGrade"> {{laboratoryGrade.student.displayName}} </mat-cell>
+                <mat-cell *matCellDef="let laboratoryGradeItem"> {{laboratoryGradeItem.user.displayName}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef>Estatus</mat-header-cell>
-                <mat-cell *matCellDef="let laboratoryGrade"> {{getStatusText(laboratoryGrade.status)}} </mat-cell>
+                <mat-cell *matCellDef="let laboratoryGradeItem"> {{getStatusText(laboratoryGradeItem.laboratoryGrade.status)}} </mat-cell>
         </ng-container>        
 
         <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
