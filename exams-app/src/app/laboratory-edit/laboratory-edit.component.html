@@ -4,15 +4,20 @@
     <div *ngIf="!isAdmin">
         <h1>{{ l.controls.label.value }}</h1>
     </div>
-    {{l.controls.videoUrl.value}}
+    <mat-form-field *ngIf="isAdmin" class="name">
+        <mat-label>Nombre</mat-label>
+        <input matInput placeholder="" formControlName="label" (change)="onPropertyChange($event)">
+    </mat-form-field>  
+    
     <div *ngIf="l.controls.videoUrl.value">
         <h3>Video de instrucciones</h3>
-        <yt-player [videoId]="getVideoId(l.controls.videoUrl.value)"></yt-player>   
+        
+        <yt-player [videoId]="getVideoId(l.controls.videoUrl.value)"></yt-player>
 
     </div> 
     <div *ngIf="isAdmin">
         <mat-form-field class="name">
-            <mat-label>Nombre</mat-label>
+            <mat-label>video en youtube</mat-label>
             <input matInput placeholder="" formControlName="videoUrl" (change)="onPropertyChange($event)">
         </mat-form-field>  
     </div>    

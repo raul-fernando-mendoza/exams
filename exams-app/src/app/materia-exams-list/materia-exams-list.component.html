@@ -19,7 +19,7 @@
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                 </button>    
-                <button  mat-menu-item (click)="onDeleteExam(e)" [disabled]="submitting">
+                <button  mat-menu-item (click)="onDeleteExam(ei.exam)" [disabled]="submitting">
                   <mat-icon>delete</mat-icon>
                   <span>Borrar</span>
                 </button>      
@@ -28,7 +28,7 @@
                   <span>Duplicar</span>
                 </button>       
               </mat-menu>
-              <button *ngIf="ei.examGrade && ei.examGrade.isReleased" (click)="onExamGradeReport(ei.examGrade.id)" mat-button >open</button>
+              <button *ngIf="ei.examGrade && ei.examGrade.isReleased" (click)="onExamGradeReport(ei.examGrade.id)" mat-button >Abrir</button>
         </mat-list-item>
     </mat-list >
 </div>

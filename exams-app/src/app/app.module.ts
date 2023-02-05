@@ -186,7 +186,8 @@ import { YtPlayerAngularModule } from 'yt-player-angular';
         RecaptchaModule,
         RecaptchaFormsModule,
         QuillModule,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        YtPlayerAngularModule
     ],
     providers: [
         UserLoginService,

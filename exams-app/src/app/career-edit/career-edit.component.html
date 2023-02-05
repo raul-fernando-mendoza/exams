@@ -61,27 +61,11 @@ Carrera
             <mat-card-title>Experiencias</mat-card-title>      
             </mat-card-title-group>
             <mat-card-content >
-                <div class="video-container">
-                    <app-vjs-player *ngIf="isAdmin && career && career.videoUrl" [source]="career.videoUrl"></app-vjs-player>  
-                    <video *ngIf="!isAdmin && career && career.videoUrl" class="video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
-                      <source src="{{ career.videoUrl }}" type='video/mp4' />
-                    </video> 
-                </div>  
-                <div *ngIf="isAdmin && career">
-                    <div id="videoStatus"></div>
-            
-                    <mat-form-field>
-                        <mat-label>Change video</mat-label>
-                        <input matInput disabled> 
-                        <button mat-icon-button matSuffix (click)="video.click()">
-                            <mat-icon>attach_file</mat-icon> 
-                        </button>
-                        <button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue('video')">
-                        <mat-icon>delete</mat-icon>
-                        </button>      
-                        <input hidden (change)="selectFile($event)" name="video" #video type="file" >
-                    </mat-form-field>
-                </div>
+                <video *ngIf="career && career.videoUrl">
+                    <source src="{{ career.videoUrl }}" type='video/mp4' />
+                </video> 
+                <app-file-loader *ngIf="isAdmin && career" label="archivo de audio" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                    
+
                 <span *ngIf="!isAdmin">{{career.videoDescription}}</span>
                 <mat-form-field *ngIf="isAdmin" appearance="outline">
                     <mat-label>description del video</mat-label>

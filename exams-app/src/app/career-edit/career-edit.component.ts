@@ -14,6 +14,7 @@ import { Observer } from 'rxjs';
 import videojs from 'video.js';
 import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-observers.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { FileLoadedEvent } from '../file-loader/file-loader.component';
 
 @Component({
   selector: 'app-career-edit',
@@ -453,6 +454,13 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     }      
   }
 
+  fileLoaded(e:FileLoadedEvent){
 
+    this.examenesImprovisacionService.fileLoaded('careers', this.career.id, e)
+
+  }  
+  fileDeleted(e:FileLoadedEvent){
+    this.examenesImprovisacionService.fileDeleted('careers', this.career.id, e)
+  }
 }
 

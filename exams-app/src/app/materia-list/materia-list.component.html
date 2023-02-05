@@ -44,7 +44,9 @@
     </mat-card-header>
     <mat-card-content (click)="onEditMateria(mi.materia)">
         {{ mi.materia.description }}
+        <app-materia-exams-list *ngIf="mi.materiaEnrollment" [materiaid]="mi.materia.id"></app-materia-exams-list>
         <app-materia-laboratory-list *ngIf="mi.materiaEnrollment" [materiaid]="mi.materia.id"></app-materia-laboratory-list>
+
     </mat-card-content> 
   </mat-card>
 </div>

@@ -144,26 +144,51 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ei-tipo-edit',{materia_id:this.materiaid, exam_id:exam_id}]);
   }
 
-  createExam(label:string){
-
-    var id = uuid.v4()
-    const exam:Exam = {
-      id:id,
-      label:label,
-      
-      isDeleted:false,
-      isRequired:false
-    }
-    db.collection('materias/' + this.materiaid + '/exams').doc(id).set(exam).then( () =>{
-      console.log("examen created")
-    },
-    reason =>{
-      alert("ERROR creating exam:" + reason)
+  createExam(label:string):Promise<Exam>{
+    return new Promise<Exam>( (resolve, reject) =>{
+      var id = uuid.v4()
+      const exam:Exam = {
+        id:id,
+        label:label,
+        
+        isDeleted:false,
+        isRequired:false
+      }
+      db.collection('materias/' + this.materiaid + '/exams').doc(id).set(exam).then( () =>{
+        console.log("examen created")
+        resolve( exam )
+      },
+      reason =>{
+        alert("ERROR creating exam:" + reason)
+        reject(null)
+      })
     })
+
   }
   onCreateExam(){
-    this.router.navigate(['/ei-tipo-edit',{materia_id:this.materiaid, exam_id:null}]);
+    const dialogRef = this.dialog.open(DialogNameDialog, {
+      height: '400px',
+      width: '250px',
+      data: { label:"Examen", name:""}
+    });
+  
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('The dialog was closed');
+      if( data != undefined ){
+        console.debug( data )
+        this.createExam(data.name).then( (exam)=>{
+          this.onEditExam(exam.id)
+        },
+        reason =>{
+          alert("ERROR: removing level")
+        })
+      }
+      else{
+        console.debug("none")
+      }
+    });
   }
+
 
   onExamGradeReport(examGradeId:string){
     this.router.navigate(['/report',{examGrade_id:examGradeId}]);
