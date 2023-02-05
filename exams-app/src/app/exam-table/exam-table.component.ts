@@ -29,7 +29,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   dataSource: NodeTableDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
+  displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
 
   released = false
   periodicRefresh = false
@@ -94,19 +94,32 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       var saved_applicationDate = localStorage.getItem('applicationDate')
       if (saved_applicationDate && saved_applicationDate != 'null'){
         this.applicationDate = new Date( saved_applicationDate )
-      }      
-
-      var unsubscribe = db.collection("examGrades")
+      }    
+      
+      var qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
-      .where( "applicationDate", "==", this.applicationDate)
-      .onSnapshot( set =>{
+
+      if( this.applicationDate ){
+        qry = qry.where( "applicationDate", "==", this.applicationDate)
+      }
+      else{
+        qry = qry.orderBy("applicationDate","desc").limit(1000)
+      }
+      if( this.snapshots.length > 0){
+        this.snapshots.map( func =>{
+          func()
+        })
+        this.snapshots.length = 0
+      }
+      var unsubscribe = qry.onSnapshot( set =>{
         this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
           let examGrade:ExamGrade = doc.data() as ExamGrade
           let node:NodeTableRow = {
             obj:{
               "id":examGrade.id,
+              "applicationDate":this.examImprovisacionService.printDate(examGrade.applicationDate),
               "materia_id":examGrade.materia_id,
               "materia_name":null,
               "student_uid":examGrade.student_uid,
