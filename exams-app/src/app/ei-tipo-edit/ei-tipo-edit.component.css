@@ -19,6 +19,8 @@ mat-toolbar mat-form-field{
 
 .textcontainer{
   width:100%;
+  display:block;
+  text-align: left;
 }
 
 .mat-dialog-actions {
@@ -28,4 +30,12 @@ mat-toolbar mat-form-field{
 
 .mat-card-actions{
   background:white;
+}
+
+.textcontainer mat-form-field{
+  width:80%;
+}
+
+.textcontainer mat-form-field .description{
+  width:100%;
 }

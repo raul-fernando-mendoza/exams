@@ -13,7 +13,7 @@ Habilidad
       
     </mat-card-title-group>
     <mat-card-content>
-      <app-file-loader label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
+      <app-file-loader *ngIf="isAdmin" label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
       <div class="description" *ngIf="!isAdmin">{{m.controls.description.value}}</div> 
       <mat-form-field class="description" *ngIf="isAdmin" appearance="outline">
         <mat-label>description</mat-label>
@@ -45,7 +45,7 @@ Habilidad
 
     </mat-card-title-group>
     <mat-card-content>
-      <app-file-loader label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+      <app-file-loader *ngIf="isAdmin" label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
 
       <quill-view-html *ngIf="!isAdmin && m.controls.pictureDescription.value" [content]="m.controls.pictureDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="pictureDescription" (onBlur)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></quill-editor>
@@ -63,7 +63,7 @@ Habilidad
     </mat-card-title-group>
     <mat-card-content>
 
-      <app-file-loader label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
+      <app-file-loader *ngIf="isAdmin" label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
       <quill-view-html *ngIf="!isAdmin && m.controls.videoDescription.value" [content]="m.controls.videoDescription.value"></quill-view-html>
       <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="videoDescription" (onBlur)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></quill-editor>

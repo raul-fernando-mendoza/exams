@@ -80,4 +80,8 @@ export class NavigationComponent {
       return this.organization.organization_name
     else return null
   }
+
+  onConference(){
+    window.location.href = "https://openvidu.raxacademy.com";
+  }
 }

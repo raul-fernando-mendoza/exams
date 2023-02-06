@@ -38,7 +38,7 @@
           <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework" label="Sube tu video">
               <div *ngIf="laboratoryGrade.studentData" class="studentData">
                 <h1>Sube tu video</h1>
-                <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls width="100%">
+                <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls>
                     <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
                 </video>     
                 <app-file-loader label="tu video" [basepath]="getBasePath()" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  

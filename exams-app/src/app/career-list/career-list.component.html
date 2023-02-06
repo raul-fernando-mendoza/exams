@@ -50,7 +50,11 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu" >
-            <button mat-menu-item (click)="onDelete(career.id)">
+            <button mat-menu-item (click)="onEdit(c.id)">
+              <mat-icon>edit</mat-icon>
+              <span>editar</span>
+            </button>              
+            <button mat-menu-item (click)="onDelete(c)">
               <mat-icon>delete</mat-icon>
               <span>Borrar</span>
             </button>      
@@ -66,9 +70,6 @@
     <mat-card-content>
       <img img mat-card-image *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
     </mat-card-content>
-    <mat-card-actions>
-      <button *ngIf="isLoggedIn()" mat-button color="primary" (click)="onCareerMyProgress(c.id)">My avance</button>
-    </mat-card-actions>
   </mat-card>
 
 </div>

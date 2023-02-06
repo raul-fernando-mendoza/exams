@@ -7,15 +7,15 @@
         <input matInput formControlName="label" width="80%" (change)="onChangeExam(e)">
     </mat-form-field>
     </p>
-    <p>
-    <mat-form-field appearance="legacy">
+    <div class="textcontainer">
+    <mat-form-field >
         <mat-label>Descripcion del examen</mat-label>
-        <textarea matInput
+        <textarea class="description"  matInput
         cdkTextareaAutosize
         cdkAutosizeMinRows="1"
         cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeExam(e)"></textarea>
     </mat-form-field> 
-    </p>
+    </div>
 
     <mat-checkbox formControlName="isRequired" (change)="onChangeExam(e)">Es requerido</mat-checkbox>
 

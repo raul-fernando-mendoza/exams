@@ -83,8 +83,11 @@ export class CareerListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/career-edit',{id:career_id}]);
   }
 
-  onDelete(career_id){
-    db.collection("careers").doc(career_id).update({"isDeleted":true}).then(()=>{
+  onDelete(career:Career){
+    if( !confirm("Esta seguro de querer borrar la carrera:" +  career.career_name) ){
+      return
+    }      
+    db.collection("careers").doc(career.id).update({"isDeleted":true}).then(()=>{
         console.log("careers deleted")
       }
     )    

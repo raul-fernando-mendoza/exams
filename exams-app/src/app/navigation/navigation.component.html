@@ -55,10 +55,15 @@
 
       
       <span class="example-spacer"></span>
+
+      <button mat-stroked-button  aria-label="conferencias" (click)="onConference()" *ngIf="isLoggedIn()">
+        Conferencias
+      </button>
+
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Ingresar
       </button>
-      <button mat-stroked-button  aria-label="login" (click)="Register()" *ngIf="!isLoggedIn()">
+      <button mat-stroked-button  aria-label="register" (click)="Register()" *ngIf="!isLoggedIn()">
         Registrarte
       </button>
       <span *ngIf="isLoggedIn()">{{ getUserName() }}</span>

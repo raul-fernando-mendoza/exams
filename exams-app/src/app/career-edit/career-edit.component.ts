@@ -454,6 +454,10 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     }      
   }
 
+  getBasePath():string{
+    return "organizations/" + this.organization_id + "/careers/" + this.career.id
+
+  }
   fileLoaded(e:FileLoadedEvent){
 
     this.examenesImprovisacionService.fileLoaded('careers', this.career.id, e)

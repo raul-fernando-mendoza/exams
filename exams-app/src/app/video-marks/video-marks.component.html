@@ -8,11 +8,11 @@
     </div>
   
     <canvas #blackboard class="blackboard" id="blackboard"></canvas>
-    <div *ngIf="isUnmuted" #prev class="prev" id="prev" (click)="onPreviousMarker()"><mat-icon>rotate_left</mat-icon></div>
+    <div *ngIf="isUnmuted" #prev class="prev" id="prev" (click)="onPreviousMarker()"><mat-icon>arrow_back</mat-icon></div>
 
-    <div *ngIf="isUnmuted" #current class="current" id="current" (click)="playMarker(lastMarkerIdx, true)">{{lastMarkerIdx + 1}} <mat-icon>autorenew</mat-icon></div>
+    <div *ngIf="isUnmuted" #current class="current" id="current" (click)="playMarker(lastMarkerIdx, true)">{{lastMarkerIdx + 1}} / {{markers.length}} <mat-icon>autorenew</mat-icon></div>
 
-    <div *ngIf="isUnmuted" #prev class="next" id="next" (click)="onNextMarker()"><mat-icon>rotate_right</mat-icon></div>
+    <div *ngIf="isUnmuted" #prev class="next" id="next" (click)="onNextMarker()"><mat-icon>arrow_forward</mat-icon></div>
 
   </div>
 
