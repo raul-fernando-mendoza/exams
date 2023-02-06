@@ -13,7 +13,7 @@ Carrera
                 <img mat-card-sm-image src="{{career.iconUrl}}">
             </mat-card-title-group>
             <mat-card-content>
-                <app-file-loader label="Icono" property="icon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+                <app-file-loader *ngIf="isAdmin" label="Icono" property="icon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
         
                 <div *ngIf="!isAdmin">{{career.description}}</div> 
                 <mat-form-field *ngIf="isAdmin" appearance="outline">

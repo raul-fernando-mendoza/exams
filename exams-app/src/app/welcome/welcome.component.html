@@ -1,40 +1,33 @@
-<mat-card class="action-card" *ngIf="isLoggedIn() && !isEmailVerified()" >
-    <mat-card-content>
-      <span class="action-item">Su email no ha sido verificado. si desea enviar un nuevo link presione el boton</span> <button mat-raised-button (click)="emailVerify()" >Enviar email</button>
-    </mat-card-content>
-</mat-card>
+
 
 
 <h1 class="main">Rax Academy</h1>
-<h2 class="main">Academia de Danza Oriental y Fusiones</h2>
-<h3 class="main">División academica de Raks Sharki Monterrey</h3>
+<h2 class="subtitle">Academia de Danza Oriental y Fusiones</h2>
+<h3 class="description">División academica de Raks Sharki Monterrey</h3>
 
-<mat-card (click)="onEjecutanteDetalles()">
-  <div class="ejecutante">
-    <div class="ejecutante-title" >
-      <h1>Ejecutante</h1>
+
+  <div class="career-container" (click)="onEjecutanteDetalles()">
+    <div class="title-container">
+      <div class="career-title">Ejecutante</div>
       <button mat-button >Detalles</button>
     </div>
-    <img mat-card-image src="/assets/fotos_de_salon apagado.jpg"><img>
+    <img  src="/assets/fotos_de_salon apagado.jpg"><img>
   </div>
-</mat-card>
-<mat-card>
-  <div class="diplomados" (click)="onCoreografoDetalles()">
-    <div class="diplomados-title" >
-      <h1>Coreógrafo y Docente</h1>
+  <div class="career-container" (click)="onCoreografoDetalles()">
+    <div class="title-container">
+      <div class="career-title">Coreógrafo y Docente</div>
       <button mat-button >Detalles</button>
     </div>
-    <img mat-card-image src="/assets/juniorOriental.jpg"><img>
+    <img src="/assets/juniorOriental.jpg"><img>
   </div>
-</mat-card>
-<mat-card>
-  <div class="comunidad">
-    <div class="comunidad-title">
-      <h1>Comunidad</h1>
+
+
+  <div class="career-container">
+    <div class="title-container">
+      <div class="career-title">Comunidad</div>
     </div>
-    <img mat-card-image src="/assets/diplomados.jpg"><img>
+    <img src="/assets/diplomados.jpg"><img>
   </div>
-</mat-card>
 
 <div class="footer">
   <span class="spacer"></span>

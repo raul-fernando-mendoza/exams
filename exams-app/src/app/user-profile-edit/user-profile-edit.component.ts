@@ -28,6 +28,7 @@ export class UserProfileEditComponent implements OnInit {
     private examImprovisation: ExamenesImprovisacionService,
     private router: Router,
     private userPreferencesService: UserPreferencesService
+    , private userLoginService: UserLoginService    
   ) { }
 
   ngOnInit(): void {
@@ -77,5 +78,15 @@ export class UserProfileEditComponent implements OnInit {
     //console.debug($event)
     const organization = $event.value
     this.userPreferencesService.setCurrentOrganization(organization)
+  }  
+  onDone(){
+    this.router.navigate(['/']);
+  }
+  isEmailVerified(){
+    return this.userLoginService.getIsEmailVerified()
+  }
+
+  isLoggedIn(){
+    return this.userLoginService.getIsloggedIn()
   }  
 }

@@ -30,7 +30,8 @@
       <a *ngIf="isReadOnly() || isEvaluator()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
-      <a *ngIf="isLoggedIn()" mat-list-item routerLink="/user-profile-edit">Preferencias</a>
+      <a *ngIf="isLoggedIn()" mat-list-item (click)="onConference()">Aula digital</a>
+      <a *ngIf="isLoggedIn()" mat-list-item routerLink="/user-profile-edit">Configuracion</a>
       <a *ngIf="!isLoggedIn()" mat-list-item  routerLink="/login-selector">Login</a>
 
      <!-- <a *ngIf="isAdmin()" mat-list-item routerLink="/videos-list">Videos</a> -->
@@ -50,15 +51,11 @@
         (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <a class="main_link" routerLink="/home">TOTH 3.6.2 </a>
+     
       <span *ngIf="organization" (click)="home()" class="organization-name">{{organization.organization_name}}</span>
 
       
       <span class="example-spacer"></span>
-
-      <button mat-stroked-button  aria-label="conferencias" (click)="onConference()" *ngIf="isLoggedIn()">
-        Conferencias
-      </button>
 
       <button mat-stroked-button  aria-label="login" (click)="login()" *ngIf="!isLoggedIn()">
         Ingresar

@@ -1,36 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;900&display=swap');
+
+
 .main{
     text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 3em;   
+    margin-top:10px;    
+}
+.subtitle{
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2em;       
+}
+.description{
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5em;       
+}
+.career-container{
+    position:relative;
+}
+.career-container img{
+    object-fit: cover; 
+    display:block;  
+    width:100%;  
 }
 
-.ejecutante{
-    position:relative;
-}
-.ejecutante-title{
+.title-container{
     position:absolute;
     color:white;
     left:30%;
     top:50%;
-    text-align: center;
 }
-.diplomados{
-    position:relative;
+.title-container button{
+    display:block;
+    border:solid 1px white;
+    font-size: 1.5em;
+    margin-left: auto;
+    margin-right: auto;
 }
-.diplomados-title{
-    position:absolute;
+.career-title{
+    display:block;
     color:white;
-    left:30%;
-    top:50%;
+    font-family: 'Playfair Display', serif;
+    font-size: 4em;
     text-align: center;
-}
-.comunidad{
-    position:relative;
-}
-.comunidad-title{
-    position:absolute;
-    color:white;
-    left:30%;
-    top:50%;
-    text-align: center;
+    height: 1em;
 }
 .footer{
     display:flex;
