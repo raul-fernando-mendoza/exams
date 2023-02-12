@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
@@ -15,6 +15,7 @@ import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import * as firebase from 'firebase';
 import { UserPreferencesService } from '../user-preferences.service';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { DateFormatService } from '../date-format.service';
 
 
 
@@ -23,7 +24,7 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
   templateUrl: './examenes-improvisacion.component.html',
   styleUrls: ['./examenes-improvisacion.component.css'] 
 })
-export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
+export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<ExamenesImprovisacionItem>;
@@ -38,24 +39,32 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   evaluator_email = null
   student_uid = null
   student_email = null
-  hideCompleted = true
+  isShowAll = true
   periodicRefresh = false
   applicationDates = []
-  applicationDate = null
+  selectedDay = null
   releasedOnly = null
 
   examenes: ExamenesImprovisacionItem[] = [];  
 
   organization_id = null
 
+  unsubscribe = null
+
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesService: UserPreferencesService
+    , private dateFormatService: DateFormatService
     ) {
       
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
+  }
+  ngOnDestroy(): void {
+    if( this.unsubscribe ){
+      this.unsubscribe()
+    }
   }
 
   submitting = false
@@ -86,46 +95,12 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
 
     var saved_applicationDate = localStorage.getItem('applicationDate')
     if (saved_applicationDate && saved_applicationDate != 'null'){
-      this.applicationDate = new Date( saved_applicationDate )
+      this.selectedDay = new Date( saved_applicationDate )
     }
     
-    this.hideCompleted = String(localStorage.getItem('hideCompleted')) == "true"
-
-    if( this.isAdmin() ){
-      
-      this.evaluator_email = null
-      this.student_email = null
-      
-    }
-    else if ( this.isReadOnly() ){
-      this.evaluator_email = null
-      this.student_email = null 
-      this.releasedOnly = true
-    }
-    else if ( this.isEvaluador() ){
-      this.hideCompleted = true
-      this.evaluator_email = this.userLoginService.getUserEmail()
-      this.student_email = null
-    }
-    else{
-      this.hideCompleted = false
-      this.evaluator_email = null
-      this.student_email = this.userLoginService.getUserEmail()
-    }
-
-    if( this.isReadOnly() ){
-      const index = this.displayedColumns.indexOf('evaluador', 0);
-      if (index > -1) {
-         this.displayedColumns.splice(index, 1);
-      }
-    }
-
-    
-
-
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted,  this.applicationDate ? this.applicationDate: null)
+        this.updateList()
       },
       error => {
         if( error.status == 401 ){
@@ -139,9 +114,16 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
   }
 
   update(){
+    var saved_applicationDate = localStorage.getItem('applicationDate')
+    if (saved_applicationDate && saved_applicationDate != 'null'){
+      this.selectedDay = new Date( saved_applicationDate )
+    }
+    
+    this.isShowAll = String(localStorage.getItem('isShowAll')) == "true"
+
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted,  this.applicationDate ? this.applicationDate: null)
+        this.updateList()
       },
       error => {
         if( error.status == 401 ){
@@ -154,69 +136,65 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     )    
   }
 
-  updateList( token , hideCompleted,  applicationDate){
-    var showClosed = null
-    if ( hideCompleted == true ){
-      showClosed = false
-    }
-    else{
-      showClosed = null
-    }
+  updateList(){
 
-    this.examenes.length = 0
-    var qry
-    if( this.isAdmin() ){
-      qry = db.collectionGroup('parameterGrades')
-      .where("organization_id", "==", this.organization_id)
-      .where("isDeleted", "==", false)
-      if( applicationDate ){
-        qry = qry.where("applicationDate","==", applicationDate)      
-      }
-    }
-    else{
-      qry = db.collectionGroup('parameterGrades')
-      .where("organization_id", "==", this.organization_id)
-      .where("evaluator_uid", "==", this.userLoginService.getUserUid())
-      .where("isDeleted", "==", false)   
-      .where("isCompleted", '==', false)   
-      if( applicationDate ){
-        qry = qry.where("applicationDate","==", applicationDate)      
-      }      
-    }
+
     
-    qry.get().then( set => {
-      console.log("exams found:" + set.docs.length)
-            
-      var map = set.docs.map( doc =>{
-        const parameterGrade:ParameterGrade = doc.data()
-        var examGrade_id = doc.ref.path.split("/")[1]
-        return this.addParameterGrade(examGrade_id, parameterGrade)
-      })
-      Promise.all(map).then(()=>{
-        this.examenes.sort( (a,b) =>{
-          if (a.examGrade.title > b.examGrade.title)
-            return 1
-          else if (a.examGrade.title < b.examGrade.title)
-           return -1
-          else if (a.parameterGrade.label > b.parameterGrade.label)
-            return 1
-          else return -1
+    var qry
+
+    qry = db.collectionGroup('parameterGrades')
+      .where("organization_id", "==", this.organization_id)
+      .where("evaluator_uid", "==", this.userLoginService.getUserUid())       
+
+      //if( !this.isShowAll ){
+        qry = qry.where("isCompleted", '==', false)  
+      //}
+
+      if( this.selectedDay ){
+        qry = qry.where("applicationDay", "==", this.dateFormatService.getDayId(this.selectedDay) )
+      }
+
+      if( this.unsubscribe ){
+        this.unsubscribe()
+      }
+
+      this.submitting = true
+      this.unsubscribe = qry.onSnapshot( set => {
+        this.examenes.length = 0
+        
+        console.log("exams found:" + set.docs.length)
+              
+        var map = set.docs.map( doc =>{
+          const parameterGrade:ParameterGrade = doc.data()
+          var examGrade_id = doc.ref.path.split("/")[1]
+          return this.addParameterGrade(examGrade_id, parameterGrade)
+        })
+        Promise.all(map).then(()=>{
+          this.submitting = false
+          this.examenes.sort( (a,b) =>{
+          var ap = a as ExamenesImprovisacionItem
+          var bp = b as ExamenesImprovisacionItem
+          if( ap.examGrade.applicationDay == bp.examGrade.applicationDay ){
+            return a.examGrade.title > b.examGrade.title ? 1 : -1
+          }
+          else{
+            return a.examGrade.applicationDate < b.examGrade.applicationDate ? 1 : -1
+          }
         })
         this.updateTable()
+      },
+      reason =>{
+        console.log("error on filter snapshot:" + reason)
       })
     },
     reason =>{
       console.error("Error: reading exam list" + reason)
       alert("ERROR reading examGrades:" + reason)
+      this.submitting = false
     })
   } 
   addParameterGrade(examGrade_id:string,parameterGrade:ParameterGrade):Promise<void>{
-    var _resolve
-    var _reject
     return new Promise<void>((resolve, reject) =>{
-      _resolve = resolve
-      _reject = reject
-
       var transaction:Promise<void>[] = []
 
       var obj:ExamenesImprovisacionItem = {
@@ -230,57 +208,73 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       }
   
       transaction.push(
-        this.getUser(parameterGrade.evaluator_uid).then(doc =>{
-          obj.approver = doc
+        this.getUser(parameterGrade.evaluator_uid).then(user =>{
+          obj.approver = user
         }) 
       )  
       transaction.push(
-        this.loadExamGrade(examGrade_id, obj)
+        new Promise<void>( (resolve, reject) =>{
+          this.examImprovisacionService.getExamGrade(examGrade_id).then( examGrade =>{
+            var localTransactions = []
+            obj.examGrade = examGrade
+            localTransactions.push(
+              this.examImprovisacionService.getExam( examGrade.materia_id, examGrade.exam_id).then( exam =>{
+                obj.exam = exam
+                resolve()
+              },
+              reason =>{
+                console.log("ERROR reading exam:" + reason)
+                resolve()
+              })
+            )
+            localTransactions.push(
+              this.examImprovisacionService.getMateria( examGrade.materia_id).then( materia =>{
+                obj.materia = materia
+                resolve()
+              },
+              reason =>{
+                console.log("ERROR materia cannot be read:" + reason)
+                resolve()
+              })
+            )
+            localTransactions.push(
+              this.getUser(examGrade.student_uid).then(student =>{
+                obj.student = student
+                resolve()
+              },
+              reason =>{
+                console.log("ERROR student cannot be read:" + reason)
+                resolve()
+              }) 
+            )   
+            Promise.all( localTransactions ).then( () =>{
+              resolve()
+            },
+            reason=>{
+              console.log("ERROR localtransaction:" + reason)
+              resolve()
+            })         
+          },
+          reason =>{
+            console.log("ERROR loading examgrade:" + reason)
+            resolve() //will ignore the fact we can not read some records
+          })
+  
+        })
       )
       Promise.all(transaction).then(()=>{
-        this.examenes.push(obj)
+        if( obj.examGrade && obj.examGrade.isDeleted == false ){
+              this.examenes.push(obj)
+        }        
         resolve()
+      },
+      reason =>{
+        console.log("some errors has been found:" + reason)
+        reject()
       })
     })
   }
 
-  loadExamGrade(examGrade_id:string, e:ExamenesImprovisacionItem):Promise<void>{
-    return new Promise<void>((resolve, reject)=>{
-      var transaction:Promise<void>[] = []
-      db.collection("examGrades").doc(examGrade_id).get().then(doc =>{
-        const examGrade= doc.data() as ExamGrade
-        e.examGrade = examGrade
-  
-
-  
-        transaction.push(
-          this.getUser(examGrade.student_uid).then(user=>{
-            e.student = user
-          })
-        )
-        
-        transaction.push(
-          db.collection("materias").doc(examGrade.materia_id).get().then( doc =>{
-            e.materia = doc.data() as Materia
-          })
-        )
-        Promise.all(transaction).then(()=>{
-          db.collection("materias/" + examGrade.materia_id + "/exams").doc(examGrade.exam_id).get().then( doc =>{
-            e.exam = doc.data() as Exam
-            resolve()
-          })          
-        },
-        reason=>{
-          reject()
-        })
-      })
-    }) 
-     
-
-  }
-
-  ngAfterViewInit() {
-  }
   onCreate(){
     this.router.navigate(['/ExamenImprovisacionFormComponent']);
   }
@@ -307,39 +301,19 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
     return this.userLoginService.hasRole("role-evaluador-"  + this.organization_id)
   }
 
-  timerId = null
-
-  periodicRefreshChange(){
-    
-    if( this.periodicRefresh == false ){
-      console.log("removing timeout")
-      clearInterval(this.timerId);
-      this.timerId = null
-    }
-    else{
-      this.applicationFilterChange(null)
-      console.log("adding timeout")
-      this.timerId = setTimeout(
-        () => { 
-          console.log("calling refresh")
-          this.periodicRefreshChange()
-        }
-        , 7000);
-    }
-  }
   applicationFilterChange(e){
     if ( e instanceof MatDatepickerInputEvent ){
       if ( e.value == null ){
-        this.applicationDate = null
+        this.selectedDay = null
       }
-      else this.applicationDate = e.value
+      else this.selectedDay = e.value
     }
-    console.log("date changed to:" + this.applicationDate)
-    localStorage.setItem('hideCompleted' , this.hideCompleted.toString())
-    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
+    console.log("date changed to:" + this.selectedDay)
+    localStorage.setItem('isShowAll' , this.isShowAll.toString())
+    localStorage.setItem('applicationDate', this.selectedDay ? this.selectedDay : null)    
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.updateList(token, this.hideCompleted, this.applicationDate ? this.applicationDate: null)
+        this.updateList()
       },
       error => {
         if( error.status == 401 ){
@@ -362,6 +336,7 @@ export class ExamenesImprovisacionComponent implements AfterViewInit, OnInit {
       },
       reason =>{
         console.log("Error retriving user:" + reason)
+        reject(null)
       })
     
     })

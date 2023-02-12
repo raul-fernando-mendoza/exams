@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { db, storage, environment } from 'src/environments/environment';
-import { MateriaEnrollment, Organization, User } from './exams/exams.module';
+import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, User } from './exams/exams.module';
 import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
 
@@ -130,6 +130,39 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
 
     return this.http.post(url, JSON.stringify(request_data, null, 0), {headers: myheaders})
   }
+
+  getMateriasEnrolled(organizationId:string, studentUid:string):Promise<Array<Materia>>{
+    var _resolve
+    var _reject
+    return new Promise<Array<Materia>>((resolve, reject) =>{
+      _resolve = resolve
+      _reject = reject
+      var materias:Array<Materia> = Array<Materia>()
+
+      db.collection('materiaEnrollments')
+      .where("organization_id","==", organizationId)
+      .where("student_uid", "==", studentUid)
+      .where("isDeleted","==",false)
+      .get().then( set =>{
+        var allPromeses = set.docs.map( doc =>{
+          let enrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
+          return db.collection('materias').doc(enrollment.materia_id).get().then( materiaDoc =>{
+            var materia = materiaDoc.data() as Materia
+            materias.push(materia)
+          }) 
+        })
+        Promise.all(allPromeses).then(() =>{
+          materias.sort((a,b)=>a["materia_name"] > b["materia_name"] ? 1 : -1)
+          resolve(materias)
+        })
+        
+      },
+      reason=>{
+        console.log("Error retriving enrollments:" + reason)
+      })
+    })
+  }
+
   hasEnrollments(organizationId:string, studentId:string):Promise<boolean>{
     var _resolve
     var _reject
@@ -375,4 +408,109 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   getVideoId(videoPath){
     return videoPath.split("/").reverse()[0]
   }
+
+  getCriteria( materiaId, examId, parameterId ):Promise<Array<Criteria>>{
+    return new Promise<Array<Criteria>>( (resolve, reject) =>{
+      db.collection('materias/' + materiaId + '/exams/' + examId + '/parameters/' + parameterId + "/criterias").get().then( criteriasSet =>{
+        var criterias = new Array<Criteria>()
+        criteriasSet.docs.map( criteriaDoc =>{
+          var criteria:Criteria = criteriaDoc.data() as Criteria
+          criterias.push( criteria )
+        })
+        criterias.sort( (a,b) => a.label > b.label ? 1 : -1)
+        resolve(criterias)
+      })
+    })
+
+  }
+
+  getExams( materiaId ):Promise<Array<Parameter>>{
+    return new Promise<Array<Parameter>>( (resolve,reject) =>{
+      db.collection('materias/' + materiaId + '/exams/').where("isDeleted","==",false).get().then( examSet =>{
+        var exams = new Array<Exam>()
+        examSet.docs.map( examDoc =>{ 
+          let exam:Exam = examDoc.data() as Exam
+          exams.push( exam )
+        })
+        exams.sort( (a,b) => a.label > b.label ? 1 : -1 )
+        resolve( exams )
+      })
+    })
+  }  
+  getParameters( materiaId, examId):Promise<Array<Parameter>>{
+    return new Promise<Array<Parameter>>( (resolve,reject) =>{
+      db.collection('materias/' + materiaId + '/exams/' + examId + "/parameters").get().then( parametersSet =>{
+        var parameters = new Array<Parameter>()
+        parametersSet.docs.map( parameterDoc =>{ 
+          let parameter:Parameter = parameterDoc.data() as Parameter
+          parameters.push( parameter )
+        })
+        parameters.sort( (a,b) => a.label > b.label ? 1 : -1 )
+        resolve( parameters )
+      })
+    })
+  }   
+  getAspect( materiaId, examId, parameterId, criteriaId):Promise<Array<Aspect>>{
+    return new Promise<Array<Parameter>>( (resolve,reject) =>{
+      db.collection('materias/' + materiaId + '/exams/' + examId + "/parameters/" + parameterId + "/criterias/" + criteriaId + "/aspects/").get().then( aspectSet =>{
+        var aspects = new Array<Aspect>()
+        aspectSet.docs.map( aspectDoc =>{ 
+          let aspect:Aspect = aspectDoc.data() as Parameter
+          aspects.push( aspect )
+        })
+        aspects.sort( (a,b) => a.label > b.label ? 1 : -1 )
+        resolve( aspects )
+      })
+    })
+  }  
+  getExam( materiaId, examId ):Promise<Exam>{
+    return new Promise<Exam>( (resolve,reject) =>{
+      db.collection('materias/' + materiaId + "/exams").doc(examId).get().then( doc =>{
+        var exam = doc.data() as Exam
+        resolve( exam )
+      },
+      reason =>{
+        console.log("ERROR:" + reason)
+        reject(null)
+      })
+    })
+  } 
+
+  getExamGrade( examGradeId ):Promise<ExamGrade>{
+    return new Promise<ExamGrade>( (resolve,reject) =>{
+      db.collection('examGrades').doc(examGradeId).get().then( doc =>{
+        var examGrade = doc.data() as ExamGrade
+        resolve( examGrade )
+      },
+      reason =>{
+        console.log("ERROR:" + reason)
+        reject(null)
+      })
+    })
+  }  
+  getParameterGrades( examGradeId ):Promise<Array<ParameterGrade>>{
+    return new Promise<Array<ParameterGrade>>( (resolve,reject) =>{
+      db.collection('examGrades/' + examGradeId + "/parameterGrades").get().then( set =>{
+        var parameterGrades = new Array<ParameterGrade>()
+        set.docs.map( parameterGradeDoc =>{
+          let parameterGrade = parameterGradeDoc.data() as ParameterGrade
+          parameterGrades.push( parameterGrade )
+        })
+        resolve( parameterGrades )
+      })
+    })
+  }  
+  getMateria( materiaId ):Promise<Materia>{
+    return new Promise<Materia>( (resolve,reject) =>{
+      db.collection('materias').doc(materiaId).get().then( doc =>{
+        var materia = doc.data() as Materia
+        resolve( materia )
+      },
+      reason =>{
+        console.log("ERROR:" + reason)
+        reject(null)
+      })
+    })
+  }
+  
 }

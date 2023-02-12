@@ -289,7 +289,10 @@ export interface ParameterGrade{
   score?:number 
   evaluator_uid?:string 
   evaluator?:User
-  applicationDate?:Date 
+  applicationDate?:Date
+  applicationDay?:number
+  applicationMonth?: number
+  applicationYear?:number
 
   isCompleted?:boolean 
   evaluator_comment?:string
@@ -309,7 +312,10 @@ export interface ExamGrade{
   materia?:Materia;
 
   isCompleted?: boolean 
-  applicationDate?:Date 
+  applicationDate?:Date
+  applicationDay?:number
+  applicationMonth?:number
+  applicationYear?:number
 
   student_uid?:string 
   student?:User
@@ -325,6 +331,8 @@ export interface ExamGrade{
   parameterGrades?:ParameterGrade[] 
 
   isWaiver?:boolean
+
+  evaluators?:Array<string>
 
   created_on?:Date
   updated_on?:Date

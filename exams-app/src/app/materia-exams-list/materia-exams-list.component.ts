@@ -196,18 +196,22 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
 
   getExamGrade( examId ):Promise<ExamGrade>{
     return new Promise<ExamGrade>( (resolve, reject) =>{
-      const grades = db.collection("examGrades")
+      const qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id )
       .where("student_uid","==", this.userUid)
       .where("materia_id","==", this.materiaid)
       .where("exam_id","==",examId)
       .where("isDeleted","==",false)
 
-      grades.get().then( 
-        snapshot => {
-          if( snapshot.docs.length > 0 ){
-            var examGrade:ExamGrade = snapshot.docs[0].data()
-            resolve(examGrade)
+      qry.get().then( set => {
+          var examGrades = Array<ExamGrade>()
+          if( set.docs.length > 0){
+          set.docs.map( examGradeDoc =>{
+                let examGrade = examGradeDoc.data() as ExamGrade
+                examGrades.push(examGrade)
+            })
+            examGrades.sort( (a,b) => a.applicationDate < b.applicationDate ? 1 : -1)
+            resolve(examGrades[0])
           }
           else{
             reject(null)
@@ -215,8 +219,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
         },
         reason =>{
           console.error("ERROR reading examGrades:" + reason )
-        }
-      )
+      })
     })
   }
 

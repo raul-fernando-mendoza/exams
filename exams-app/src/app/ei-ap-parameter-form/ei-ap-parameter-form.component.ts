@@ -1,10 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormControl } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { UserLoginService } from '../user-login.service';
-import { ExamFormService } from '../exam-form.service';
 import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaGrade, ExamGrade, ExamGradeRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 
 import { db } from 'src/environments/environment';
@@ -33,18 +32,15 @@ export class EiApParameterFormComponent implements OnInit {
 
   constructor(private fb: UntypedFormBuilder
     , private route: ActivatedRoute
-    , private router: Router
     , private examImprovisacionService: ExamenesImprovisacionService
-    , private formBuilder: UntypedFormBuilder
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
-    , private examFormService:ExamFormService
     , private dateFormat:DateFormatService
     , private navigation: NavigationService
     , private userPreferencesService:UserPreferencesService ) { 
       this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
-      this.organization_id = userPreferencesService.getCurrentOrganizationId()
+      this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
       this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
     }
   
@@ -363,38 +359,7 @@ export class EiApParameterFormComponent implements OnInit {
         console.log("error updating aspect:" + reason )
       })
   
-    /*
-    console.log("updateComment")
-    var parameterGrade_arr = this.examGrade.controls.parameterGrades as FormArray
-    var parameter:FormGroup = parameterGrade_arr.controls[0] as FormGroup
-    var req:ParameterGradeRequest = {
-      examGrades:{
-        id:e.controls.id.value,
-        parameterGrades:{
-          id:p.controls.id.value,
-          evaluator_comment:parameter.controls.evaluator_comment.value
-        }
-      }
-    }
-    this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(data => {
-        this.close() 
-      },
-      error => {
-        this.submitting = false
-        alert("error updating comentario"  + error.errorCode + " " + error.errorMessage)
-      })    
-    },
-    error => {
-      this.submitting = false
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-      
-    })
-    */
   }  
-
-
-  
 
   selector(key, value) {
     const toSaveFields = new Set(["id","isGraded","score","missingElements"])    

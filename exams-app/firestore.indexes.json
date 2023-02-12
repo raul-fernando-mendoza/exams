@@ -1,25 +1,11 @@
 {
   "indexes": [
     {
-      "collectionGroup": "organization_members",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        {
-          "fieldPath": "isDeleted",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "parameterGrades",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
-          "fieldPath": "applicationDate",
+          "fieldPath": "applicationDay",
           "order": "ASCENDING"
         },
         {
@@ -28,10 +14,6 @@
         },
         {
           "fieldPath": "isCompleted",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "isDeleted",
           "order": "ASCENDING"
         },
         {
@@ -45,11 +27,11 @@
       "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
-          "fieldPath": "applicationDate",
+          "fieldPath": "applicationDay",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "isDeleted",
+          "fieldPath": "evaluator_uid",
           "order": "ASCENDING"
         },
         {
@@ -71,10 +53,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "isDeleted",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "organization_id",
           "order": "ASCENDING"
         }
@@ -85,7 +63,7 @@
       "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
-          "fieldPath": "isDeleted",
+          "fieldPath": "evaluator_uid",
           "order": "ASCENDING"
         },
         {
@@ -95,28 +73,5 @@
       ]
     }
   ],
-  "fieldOverrides": [
-    {
-      "collectionGroup": "parameterGrades",
-      "fieldPath": "evaluator_uid",
-      "indexes": [
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "DESCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "arrayConfig": "CONTAINS",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION_GROUP"
-        }
-      ]
-    }
-  ]
+  "fieldOverrides": []
 }

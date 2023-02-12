@@ -1,0 +1,141 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    } 
+    match /organizations/{organizationID} {
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/organizations/$(organizationID)).data.id) in request.auth.token
+      } 
+      
+      allow read: if true   
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write:  if ( ('role-admin-' + request. resource.data.organization_id) in request.auth.token  )
+			
+      match /{document=**} {    
+        allow read, write: if isAdmin(request) 
+        allow read: if true
+      }   
+    }
+    match /materias/{materiaId} {
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/materias/$(materiaId)).data.organization_id) in request.auth.token
+      }    
+    	allow read: if true
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write:  if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+      
+			match /{document=**} {    
+        allow read, write: if isAdmin(request) 
+        allow read: if true
+      }       
+    } 
+    match /exams/{examId} {
+    	allow read: if false
+      allow write: if false 
+    } 
+    match /careers/{careerId} {
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/careers/$(careerId)).data.organization_id) in request.auth.token
+      }    
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+			allow read: if true
+			match /{document=**} {    
+        allow read, write: if isAdmin(request)
+        allow read: if true
+      }       
+		}
+    match /materiaEnrollments/{materiaEnrollmentId} {  
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+
+
+			allow write: if ( request.auth.uid == request.resource.data.student_uid   ) 
+      allow read,write: if ( request.auth.uid == resource.data.student_uid  ) 
+    }   
+    match /examGrades/{examGrade} {
+      function isExamGradeEvaluator() {
+        return request.auth.uid in get(/databases/$(database)/documents/examGrades/$(examGrade)).data.evaluators 
+      }  
+      function isExamGradeStudent() {
+        return request.auth.uid == get(/databases/$(database)/documents/examGrades/$(examGrade)).data.student_uid
+      }
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/examGrades/$(examGrade)).data.organization_id) in request.auth.token
+      }
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+      allow read: if request.auth.uid == resource.data.evaluator_uid 
+      allow read: if request.auth.uid == resource.data.student_uid 
+
+			match /{document=**} {    
+        allow read, write: if isAdmin(request)   
+        allow read, update: if isExamGradeEvaluator() 
+        allow read: if isExamGradeStudent()
+      }      
+    } 
+    match /laboratoryGrades/{laboratoryGrade} {
+      function isLaboratoryGradeEvaluator() {
+        return request.auth.uid in get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.evaluators 
+      }  
+      function isLaboratoryGradeStudent() {
+        return request.auth.uid == get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.student_uid
+      }
+      function isLaboratoryAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.organization_id) in request.auth.token
+      }
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
+      allow read, write: if request.auth.uid == request.resource.data.student_uid
+      allow read: if request.auth.uid == resource.data.evaluator_uid 
+      allow read: if request.auth.uid == resource.data.student_uid 
+
+			match /studentData/{data} {    
+        allow read, write: if isLaboratoryAdmin(request)   
+        allow read, update: if isLaboratoryGradeEvaluator() 
+        allow read, write: if isLaboratoryGradeStudent()
+      } 
+
+			match /{document=**} {    
+        allow read, write: if isLaboratoryAdmin(request)   
+        allow read, update: if isLaboratoryGradeEvaluator() 
+        allow read: if isLaboratoryGradeStudent()
+      }  
+      
+    }     
+    
+    match /careerAdvance/{careerAdvanceId} {
+
+      function isStudent() {
+        return request.auth.uid == get(/databases/$(database)/documents/careerAdvance/$(careerAdvanceId)).data.student_uid
+      }
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/careerAdvance/$(careerAdvanceId)).data.organization_id) in request.auth.token
+      }
+      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )      
+      allow read: if request.auth.uid == resource.data.student_uid 
+
+			match /{document=**} {    
+        allow read, write: if isAdmin(request)   
+        allow read: if isStudent()
+      }      
+    }     
+    
+    match /{path=**}/parameterGrades/{parameterGradesId} {    
+      allow read, write, create: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, update: if ( request.auth.uid == resource.data.evaluator_uid   )   
+    }    
+    match /drawings/{drawingId} {
+      allow read: if true
+      allow write: if true 
+      match /{document=**} {    
+        allow read, write: if true 
+
+      }     
+    }      
+  }
+ 
+}

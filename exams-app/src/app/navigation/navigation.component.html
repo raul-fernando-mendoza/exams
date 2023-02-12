@@ -3,10 +3,10 @@
 
   <mat-sidenav-container class="sidenav-container">
   
-  <mat-sidenav *ngIf="isLoggedIn()" #drawer class="sidenav" fixedInViewport
+  <mat-sidenav  #drawer class="sidenav" fixedInViewport
   [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
   [mode]="(isHandset$ | async) ? 'over' : 'side'"
-  [opened]="(isHandset$ | async) === false">
+  [opened]="(isHandset$ | async) === false && isLoggedIn()">
 
     <mat-toolbar>
       <button

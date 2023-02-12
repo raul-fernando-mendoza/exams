@@ -13,6 +13,7 @@ import { db } from 'src/environments/environment';
 import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datasource';
 import { UserPreferencesService } from '../user-preferences.service';
 import { map } from 'rxjs/operators';
+import { DateFormatService } from '../date-format.service';
 
 @Component({
   selector: 'app-exam-table',
@@ -48,6 +49,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesService:UserPreferencesService
+    , private dateFormatService:DateFormatService
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
@@ -101,10 +103,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       .where( "isDeleted", "==", false)
 
       if( this.applicationDate ){
-        qry = qry.where( "applicationDate", "==", this.applicationDate)
-      }
-      else{
-        qry = qry.orderBy("applicationDate","desc").limit(1000)
+        var dateId = this.dateFormatService.getDayId(this.applicationDate)
+        qry = qry.where( "applicationDay", "==", dateId )
       }
       if( this.snapshots.length > 0){
         this.snapshots.map( func =>{
@@ -150,6 +150,20 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         })
         Promise.all(m).then( () =>{
           console.log("End loading Exams")
+          this.examGradeList.sort( (a,b) =>{
+            if( a.obj["applicationDate"] == b.obj["applicationDate"] ){
+              if ( a.obj["title"] ){
+                return a.obj["title"] > b.obj["title"] ? 1 : -1
+              }
+              if( a.obj["label"] ){
+                return a.obj["label"] > b.obj["label"] ? 1 : -1
+              }
+              
+            }
+            else{
+              return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
+            }
+          })
           this.updateList()
           _resolve()
         }) 
@@ -157,6 +171,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           console.error("Error waiting for parameters:" + reason)
           reject()
         }) 
+      },
+      reason =>{
+        alert("Error loading exams grades:" + reason)
       })
       this.snapshots.push( unsubscribe )
     })        
@@ -199,6 +216,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
         console.log("End loading ParameterGrades")
         _resolve()
+      },
+      reason =>{
+        alert( "error reading exams:" + reason)
       })
      
       this.snapshots.push( unsubscribe )

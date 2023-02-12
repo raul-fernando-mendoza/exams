@@ -1,5 +1,5 @@
 Editar Examen
-<form [formGroup]="examGrade" novalidate (ngSubmit)="onSubmit()">
+<form [formGroup]="examGradeFG" novalidate (ngSubmit)="onSubmit()">
 
   <mat-card >
     <mat-card-content > 
@@ -49,13 +49,13 @@ Editar Examen
         <input matInput placeholder="" value="" formControlName="expression">
       </mat-form-field>          
 
-      <div *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index">
+      <div *ngFor="let p of getFormGroupArray(examGradeFG,'parameterGradesFA'); let i=index">
         <div [formGroup]="p">
              <!--id: {{ p.controls.id.value }} -->
               {{ p.controls.label.value }}
               <mat-form-field appearance="fill" >
                 <mat-label>selecciona evaluator</mat-label>
-                <mat-select formControlName="evaluator_uid" (selectionChange)="examEvaluatorChange(p, $event)">
+                <mat-select formControlName="evaluator_uid">
                   <mat-option *ngFor="let m of getExamEvaluators()" [value]="m.uid">
                     {{getUserDisplayName(m)}}
                   </mat-option>                 
@@ -66,7 +66,7 @@ Editar Examen
               
               <mat-checkbox formControlName="isSelected" (change)="onParameterChange(p)"></mat-checkbox>
               
-              <div *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let ci=index" >
+              <div *ngFor="let c of getFormGroupArray(p,'criteriaGradeFA'); let ci=index" >
                 <div  [formGroup]="c">
                  
                   {{ c.controls.label.value }}
@@ -78,7 +78,7 @@ Editar Examen
      
     </mat-card-content>  
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit" [disabled]="submitting">Enviar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="submitting || examGradeFG.invalid">Enviar</button>
     </mat-card-actions> 
   </mat-card>  
     

@@ -5,19 +5,18 @@
 
     <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
     
-    <button mat-button value="refresh" (click)="applicationFilterChange(null)"><mat-icon>refresh</mat-icon></button>
-    <mat-slide-toggle class="filter_element"  [(ngModel)]="periodicRefresh" (change)="periodicRefreshChange()" aria-label="refresh group">auto</mat-slide-toggle>
-    
-
     <mat-form-field appearance="fill">
       <mat-label>date: </mat-label>
-      <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
+      <input matInput [matDatepicker]="picker" [(value)]="selectedDay"  (dateChange)="applicationFilterChange($event)">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
-    
-    <mat-slide-toggle class="filter_element"  [(ngModel)]="hideCompleted" (change)="applicationFilterChange($event)" aria-label="examenes abiertos solamente">Edit</mat-slide-toggle>
-
+ <!--
+    <mat-button-toggle-group  [(ngModel)]="isShowAll" aria-label="Show All" (change)="applicationFilterChange($event)">
+      <mat-button-toggle class="enrolledoption" [value]="true"><mat-icon>history</mat-icon></mat-button-toggle>
+      <mat-button-toggle class="enrolledoption" [value]="false"><mat-icon>event</mat-icon></mat-button-toggle> 
+    </mat-button-toggle-group>    
+-->   
   </mat-toolbar>
   
   <div class="mat-elevation-z8">

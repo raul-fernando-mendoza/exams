@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
@@ -10,6 +10,7 @@ import * as uuid from 'uuid';
 import { PromiseType } from 'protractor/built/plugins';
 import { ReplaySubject } from 'rxjs';
 import { UserPreferencesService } from '../user-preferences.service';
+import { DateFormatService } from '../date-format.service';
 
 
 @Component({
@@ -39,25 +40,16 @@ export class ExamenImprovisacionFormComponent {
 
   
   
-  examGrade = this.fb.group({
-    id: [uuid.v4()],
-    organization_id: [this.organization_id],
-    isDeleted: [false],
-    isCompleted:[false, Validators.required],
-    applicationDate: [null, Validators.required],
-    student_email: [null, Validators.required],
-    student_name:[null,Validators.required],
+  examGradeFG = this.fb.group({
+    id:[uuid.v4()],
     student_uid:[null,Validators.required],
-
-    exam_id: [null, Validators.required],
     materia_id:[null,Validators.required],
+    exam_id: [null, Validators.required],
+    applicationDate: [null, Validators.required],
 
     title:[null, Validators.required], 
     expression:[null], 
-    parameterGrades: new UntypedFormArray([]),
-    createdon:[this.today],
-    updateon:[this.today]
-
+    parameterGradesFA: new FormArray([])
   });
 
 
@@ -67,9 +59,11 @@ export class ExamenImprovisacionFormComponent {
     , private formBuilder: UntypedFormBuilder
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
-    , private userPreferencesService:UserPreferencesService) {
+    , private userPreferencesService:UserPreferencesService
+    , private dateFormatService:DateFormatService    
+  ) {
+    
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
-      this.examGrade.controls.organization_id.setValue(this.organization_id)
   }
 
   
@@ -96,90 +90,7 @@ export class ExamenImprovisacionFormComponent {
     })
   }
 
-  loadMateriaEnrollment(user_uid){
-    this.materias.length = 0
-
-    db.collection("materiaEnrollments")
-    .where("organization_id","==", this.organization_id)
-    .where("student_uid","==",user_uid)
-    .get().then( set =>{
-      console.log("materia start")
-
-      let map:Array<Promise<void>> = set.docs.map( doc =>{
-        console.log("processing enrollment:" + doc.data())
-        const materia_id = doc.data().materia_id
-        return db.collection("materias").doc(materia_id).get().then( doc=>{
-          console.log("materia name:" + doc.data().materia_name)
-          var materia:Materia = {
-            id:doc.data().id,
-            materia_name:doc.data().materia_name
-          }
-          this.materias.push(materia)
-        })      
-      })
-      Promise.all(map).then(()=>{
-        this.materias.sort( (a,b) => {
-          if( a["materia_name"] > b["materia_name"] ){
-            return 1
-          }
-          else return -1
-        } )      
-        console.log("end")
-      })    
-      console.log("materia end")      
-    },
-    reason =>{
-      console.error("ERROR: materiaEnrollment failed:"+ reason)
-    })
-  }
-
-  loadExams(materia_id){
-    this.exams.length = 0
-    db.collection("materias/" + materia_id + "/exams")
-    .where("isDeleted","==",false)
-    .get().then( set =>{
-      set.docs.map( doc => {
-          const exam:Exam = doc.data() as Exam
-
-          this.exams.push(exam)  
-      })    
-      this.exams.sort( (a,b) => {return a.label > b.label ? 1:-1})
-    },
-    reason =>{
-      console.log("ERROR reading exams:" + reason)
-    })  
-  }
-
-
   initialize(token){
-
-    var req:ExamMultipleRequest = {
-      "exams":[{
-          "id":null,
-          "label":null
-      }],
-      "orderBy":{
-        "field":"label"
-      }
-    }  
-
-
-
-    this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(data => {
-      let r:Exam[] = data["result"] as Array<any>;
-      this.exams = []
-      for( let i =0; i<r.length; i++){
-        let obj:Exam = {
-          "id":r[i].id,
-          "label":r[i].label
-        }
-        this.exams.push(obj)
-      }
-    },
-    error => {
-      alert( "error retriving type request" + error )
-    })
-
 
     this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
       let students = data["result"] as Array<any>;
@@ -225,77 +136,56 @@ export class ExamenImprovisacionFormComponent {
     })     
   }  
   
+  examStudentChange(event) {
+    var studentId = event.value
+    this.loadMateriaEnrollment(studentId)
+  }   
+
+  loadMateriaEnrollment(userUid){
+    this.materias.length = 0
+
+    this.examImprovisacionService.getMateriasEnrolled( this.organization_id, userUid ).then( materias =>{
+      this.materias = materias
+    })
+  }
+
+  loadExams(materiaId){
+    this.exams.length = 0
+    this.examImprovisacionService.getExams(materiaId).then( materias =>{
+        this.exams.length = 0
+        materias.forEach( exam =>{
+          this.exams.push(exam)  
+        })
+      },
+      reason =>{
+        console.log("ERROR reading exams:" + reason)
+    })  
+  }
+
+
   getExamTypes(){
     return this.exams;
   }
 
+  //retrive the list of parameters for the selected materia-exam and create a subform for each of them*/
   examChange(event) {
     var examId = event.value
 
-    var materia_id = this.examGrade.controls.materia_id.value
-    var parameterGrades:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
-    parameterGrades.clear()      
-
-    var req:ExamRequest = {
-      materias:{
-        id:materia_id,
-        exams:{
-            id:examId,
-            label:null,
-            parameters:[{
-              id:null,
-              idx:null,
-              label:null,
-              description:null,
-              scoreType:null,
-              criterias:[{
-                id:null,
-                label:null,
-                description:null,
-                idx:null,
-                initiallySelected:null,              
-                aspects:[{
-                  id:null,
-                  idx:null,
-                  label:null,
-                  description:null,
-                }]
-              }]
-            }]
-        }
-      }
-    }  
-    
-    this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("get", token, req).subscribe(data => {
-        let exam:Exam = data["result"].exams
-        this.addExam(parameterGrades, exam)
-      },
-      error => {
-          alert( error )
-      }) 
-    },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    })       
+    var materiaId = this.examGradeFG.controls.materia_id.value
+    var parameterGradesFA:FormArray= this.examGradeFG.controls.parameterGradesFA as FormArray
+    this.examImprovisacionService.getParameters(materiaId, examId).then( parameters =>{
+      parameterGradesFA.clear()     
+      parameters.forEach( parameter =>{
+        let parameterFG = this.examGradeFG.controls.parameterGradesFA as FormArray
+        this.addParameter(  this.examGradeFG.controls.materia_id.value , examId, parameter, parameterFG)
+      })
+    })    
   }
-  addExam(parameterGrades:UntypedFormArray, exam:Exam){
 
-    for( let i=0; i<exam.parameters.length; i++){
-      let parameter = exam.parameters[i]
-      this.addParameter(parameterGrades, parameter)
-    }
-
-    parameterGrades.controls.sort( (a, b) => {
-      var afg:UntypedFormGroup = a as UntypedFormGroup 
-      var bfg:UntypedFormGroup = b as UntypedFormGroup
-      return  afg.controls.idx.value - bfg.controls.idx.value 
-    })       
-  }
-  addParameter(parameterGrade_array:UntypedFormArray, p:Parameter){
+  addParameter(materiaId, examId, p:Parameter, parameterGradeFA:FormArray){
 
     var g=this.fb.group({
-      id: [p.id],
+      id: [uuid.v4()],
       organization_id: [this.organization_id],
       idx: [p.idx],
       label: [p.label],
@@ -303,14 +193,8 @@ export class ExamenImprovisacionFormComponent {
       scoreType: [p.scoreType],
       score: [null],
       evaluator_uid:[null, Validators.required],
-      evaluator_name:[null],
-      evaluator_email:[null],
-      student_email:[null],
-      student_name:[null],
-      student_uid:[null],
-      isCompleted: [false],
       isSelected:[true],
-      criteriaGrades: new UntypedFormArray([])         
+      criteriaGradeFA: new FormArray([])         
     })
 
     g.valueChanges.subscribe(parameter => {
@@ -326,45 +210,42 @@ export class ExamenImprovisacionFormComponent {
 
     g.controls["evaluator_uid"].setErrors({ 'incorrect': true});
 
-    parameterGrade_array.push(g) 
-
-    var criteriaGrades_Array = g.controls.criteriaGrades as UntypedFormArray
-    for( let i=0; i<p.criterias.length; i++){
-      let criteria:Criteria = p.criterias[i]
-      this.addCriteria(criteriaGrades_Array, criteria)
-    }
-    criteriaGrades_Array.controls.sort( (a, b) => {
-      var afg:UntypedFormGroup = a as UntypedFormGroup 
-      var bfg:UntypedFormGroup = b as UntypedFormGroup
-      return  afg.controls.idx.value - bfg.controls.idx.value 
-    })    
+    parameterGradeFA.controls.push(g)
+    
+    //now get the criterias and add them too
+    var criteriaGradeFA = g.controls.criteriaGradeFA as FormArray
+    this.examImprovisacionService.getCriteria(materiaId, examId, p.id).then( criterias =>{
+      criterias.forEach( criteria =>{
+        this.addCriteria( materiaId, examId, p.id, criteria, criteriaGradeFA )
+      })
+    })
   }
 
-  addCriteria(criteriaGrade_array:UntypedFormArray, c:Criteria){
+  addCriteria(materiaId, examId, parameterId, criteria:Criteria, criteriaGradeFG:FormArray){
     var g = this.fb.group({
       id:[uuid.v4()],
-      idx:[c.idx],
-      label:[c.label],
-      description:[c.description],
+      idx:[criteria.idx],
+      label:[criteria.label],
+      description:[criteria.description],
       score:[null],
-      isSelected:[ c.initiallySelected ],
-      aspectGrades: new UntypedFormArray([])
+      isSelected:[ criteria.initiallySelected ],
+      aspectGradesFA: new FormArray([])
     })
-    criteriaGrade_array.push(g)
+    criteriaGradeFG.controls.push(g)
 
-    var aspectGrades_arr = g.controls.aspectGrades as UntypedFormArray
-    for(let i=0; i<c.aspects.length; i++){
-      let aspect:Aspect = c.aspects[i]
-      this.addAspect(aspectGrades_arr as UntypedFormArray, aspect)
-    }
-    aspectGrades_arr.controls.sort( (a, b) => {
-      var afg:UntypedFormGroup = a as UntypedFormGroup 
-      var bfg:UntypedFormGroup = b as UntypedFormGroup
-      return  afg.controls.idx.value - bfg.controls.idx.value 
-    }) 
+    var aspectGradesFA = g.controls.aspectGradesFA as FormArray
+
+    this.examImprovisacionService.getAspect( materiaId,examId,parameterId, criteria.id).then( aspects =>{
+      aspects.forEach( a => {
+        
+        this.addAspect( a, aspectGradesFA)
+      })
+      
+    })
+ 
   }
 
-  addAspect(question_array:UntypedFormArray, a: Aspect ){
+  addAspect( a: Aspect, aspectFA:FormArray ){
     var g = this.fb.group({
       id:[uuid.v4()],
       idx:[a.idx],
@@ -374,8 +255,7 @@ export class ExamenImprovisacionFormComponent {
       score:[1.0],
       hasMedal:[false]
     })
-    question_array.push(g)
-
+    aspectFA.controls.push(g)
   }  
 
   getExamStudents(){
@@ -392,7 +272,7 @@ export class ExamenImprovisacionFormComponent {
   }   
   getformValue(){
     //return JSON.stringify(this.examGrade.value)
-    return this.examGrade.invalid
+    return this.examGradeFG.invalid
   }  
 
   tojson(value){
@@ -429,117 +309,103 @@ export class ExamenImprovisacionFormComponent {
 
   onSubmit() {
     this.submitting = true
-    if( this.examGrade.invalid ){
-      const invalid = [];
-      const controls = this.examGrade.controls;
-      for (const name in controls) {
-          if (controls[name].invalid) {
-              invalid.push(name);
-          }
-      }
-      alert( "invalid:" + invalid.join(" "));
+    let applicationDate = this.examGradeFG.controls.applicationDate.value
+    let examGrade:ExamGrade = {
+      id:uuid.v4(), 
+      organization_id:this.organization_id,
+      exam_id:this.examGradeFG.controls.exam_id.value,
+      materia_id:this.examGradeFG.controls.materia_id.value, 
+      isCompleted: false, 
+      applicationDate: applicationDate,
+      applicationDay:this.dateFormatService.getDayId(applicationDate),
+      applicationMonth:this.dateFormatService.getMonthId(applicationDate),
+      applicationYear: this.dateFormatService.getYearId(applicationDate),    
+      student_uid:this.examGradeFG.controls.student_uid.value, 
+      title:this.examGradeFG.controls.title.value,
+      expression:this.examGradeFG.controls.expression.value,
+      score:null, 
+      isDeleted:false, 
+      isReleased:false, 
+      isApproved:false ,
+      evaluators:[]
+    }
+    this.submitting = true
+
+    const parametersFA = this.examGradeFG.controls.parameterGradesFA as FormArray
+   
+    for( let i=0; i<parametersFA.controls.length; i++){
+      const parameterFG = parametersFA.controls[i] as FormGroup
+      const evaluator_uid = parameterFG.controls["evaluator_uid"].value
+      examGrade.evaluators.push( evaluator_uid )
+    }
+    
+    db.collection("examGrades").doc(examGrade["id"]).set(examGrade).then(()=>{
       this.submitting = false
-    }
-    else{
-
-      let examGrade:ExamGrade = {
-        id:null, 
-        organization_id:null,
-        exam_id:null,
-        exam:null,
-        materia_id:null, 
-        materia:null,
-        isCompleted: null, 
-        applicationDate:null,
-        student_uid:null, 
-        student:null,
-        title:null,
-        expression:null,
-        score:null, 
-        isDeleted:null, 
-        isReleased:null, 
-        isApproved:null ,
-        parameterGrades:null      
-      }
-      let json = copyFromForm(examGrade, this.examGrade)
-
-      //adding all the evaluators
-      const parametersFA = this.examGrade.controls.parameterGrades as UntypedFormArray
-      const evaluators:Array<string> = []
-      for( let i=0; i<parametersFA.controls.length; i++){
-        const parameterFG = parametersFA.controls[i] as UntypedFormGroup
-        const evaluator_uid = parameterFG.controls["evaluator_uid"].value
-        evaluators.push( evaluator_uid )
-      }
-      json["evaluators"] = evaluators
+      console.log("adding parameters")
       
+      let parameterGradesFA = this.examGradeFG.controls.parameterGradesFA as FormArray
+      let pa = parameterGradesFA.controls.map(p =>{
+        let parameterFG = p as FormGroup
+        if( parameterFG.controls.isSelected.value == true)
+          return this.saveParameterGrade(examGrade, parameterFG)
+      })
+      Promise.all(pa).then( () =>{
+        console.log("End Saving All")
+        alert("Examen Creado!")
+        this.router.navigate(['/ExamenesImprovisacion']);
 
-      db.collection("examGrades").doc(examGrade["id"]).set(json).then(()=>{
-        console.log("adding examGrade")
-        
-        let parameterGrades = this.examGrade.controls.parameterGrades as UntypedFormArray
-        let pa = parameterGrades.controls.filter(p =>{
-          let pFG = p as UntypedFormGroup
-          return (pFG.controls["isSelected"].value == true)
-        }).map(e =>{
-         
-          let p = e as UntypedFormGroup
-          return this.addParameterGrade(examGrade, p)
-        })
-        Promise.all(pa).then( () =>{
-          console.log("End Saving All")
-          alert("Examen Creado!")
-          this.router.navigate(['/ExamenesImprovisacion']);
+      }) 
+      .catch(reason =>{
+        console.error("Error waiting for parameters:" + reason)
+        this.submitting = false
+      })  
 
-        }) 
-        .catch(reason =>{
-          console.error("Error waiting for parameters:" + reason)
-          this.submitting = false
-        })  
-  
-      },
-      reason => {
-        console.error("ERROR creating examGrade:" + reason)
-      })           
-    }
+    },
+    reason => {
+      console.error("ERROR creating examGrade:" + reason)
+    })           
+
   } 
 
   
-  addParameterGrade(examGrade:ExamGrade, pFG:UntypedFormGroup):Promise<void>{
+  saveParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
+
+    let applicationDate = examGrade.applicationDate
+
     let parameterGrade:ParameterGrade = {
-      id:null, 
-      organization_id:null,  
-      idx: null, 
-      label: null,
-      description:null, 
-      scoreType:null, 
-      score:null, 
-      evaluator_uid:null, 
-      evaluator:null,
-      applicationDate:null,
+      id:uuid.v4(), 
+      organization_id:this.organization_id,  
+      idx: pFG.controls.idx.value, 
+      label: pFG.controls.label.value,
+      description:pFG.controls.description.value, 
+      scoreType:pFG.controls.scoreType.value, 
+      score:pFG.controls.score.value, 
+      evaluator_uid:pFG.controls.evaluator_uid.value, 
+      applicationDate:applicationDate,
+      applicationDay:this.dateFormatService.getDayId( applicationDate ),
+      applicationMonth:this.dateFormatService.getMonthId( applicationDate ),
+      applicationYear:this.dateFormatService.getYearId( applicationDate ),
     
-      isCompleted:null, 
-      evaluator_comment:null,
-    
-      criteriaGrades: null     
+      isCompleted:false, 
+      evaluator_comment:null     
     }
-    let json = copyFromForm(parameterGrade,pFG)
-    json["applicationDate"] = examGrade.applicationDate
-    json["isDeleted"] = false
 
     var parameter_resolve = null
     return new Promise<void>((resolve, reject) =>{
       parameter_resolve = resolve
-      db.collection(`examGrades/${examGrade.id}/parameterGrades`).doc(parameterGrade["id"]).set(json).then(()=>{
+      db.collection(`examGrades/${examGrade.id}/parameterGrades`).doc(parameterGrade["id"]).set(parameterGrade).then(()=>{
     
         console.log("adding parameterGrade" + parameterGrade.label)
-        let criteriaGradesFA = pFG.controls.criteriaGrades as UntypedFormArray
+        let criteriaGradesFA = pFG.controls.criteriaGradeFA as FormArray
         
         let cm = criteriaGradesFA.controls.map( c => {
-            return this.addCriteriaGrades(examGrade, parameterGrade, c as UntypedFormGroup)             
+          let criteriaFG = c as FormGroup 
+          if( criteriaFG.controls.isSelected.value == true){
+            return this.saveCriteriaGrades(examGrade, parameterGrade, criteriaFG )             
+          }
         })
         Promise.all(cm).then( () =>{
-          parameter_resolve()
+          resolve()
         })
         .catch(reason =>{
           console.error("Error waiting for criteria:" + reason)
@@ -552,29 +418,26 @@ export class ExamenImprovisacionFormComponent {
     })
   }
 
-  addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:UntypedFormGroup):Promise<void>{
-    let cg:CriteriaGrade = {
-      id:null,
-      idx:null,
-      label:null,
-      description:null,
+  saveCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:FormGroup):Promise<void>{
+    let criteriaGrade:CriteriaGrade = {
+      id:uuid.v4(),
+      idx:criteriaGradeFG.controls.idx.value,
+      label:criteriaGradeFG.controls.label.value,
+      description:criteriaGradeFG.controls.description.value,
       score:null,
-      isSelected:null,
-      aspectGrades: null     
+      isSelected:true     
     }
-    let criteriaGrade = copyFromForm(cg,criteriaGradeFG)
-    var criteria_resolve = null
     return new Promise<void>((resolve, reject) =>{
-      criteria_resolve = resolve    
       db.collection(`examGrades/${examGrade.id}/parameterGrades/${parameterGrade.id}/criteriaGrades`).doc(criteriaGrade["id"]).set(criteriaGrade).then(()=>{
-        console.log("adding CriteriaGrade" + cg.label)
-        let aspectGradesFA = criteriaGradeFG.controls.aspectGrades as UntypedFormArray
+        console.log("adding CriteriaGrade" + criteriaGrade.label)
+        let aspectGradesFA = criteriaGradeFG.controls.aspectGradesFA as FormArray
         let am = aspectGradesFA.controls.map( a =>{
-          return this.addAspectGrades(examGrade, parameterGrade, cg, a as UntypedFormGroup)        
+          let aspectFG = a as FormGroup
+          return this.saveAspectGrades(examGrade, parameterGrade, criteriaGrade, aspectFG )        
         })
         Promise.all(am).then( () =>{
           //console.log(value)
-          criteria_resolve()
+          resolve()
         })
         .catch( reason =>{
           console.log(reason)
@@ -587,23 +450,20 @@ export class ExamenImprovisacionFormComponent {
     })         
   }
 
-  addAspectGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGrade:CriteriaGrade, aspectGradeFG:UntypedFormGroup):Promise<void>{
+  saveAspectGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGrade:CriteriaGrade, aspectGradeFG:FormGroup):Promise<void>{
     let aspectoGrade:AspectGrade = {
-      id:null,
-      idx:null,
-      label:null,
-      description:null,
-      isGraded:null,
+      id:uuid.v4(),
+      idx:aspectGradeFG.controls.idx.value,
+      label:aspectGradeFG.controls.label.value,
+      description:aspectGradeFG.controls.description.value,
+      isGraded:false,
       score:null,
-      hasMedal:null
+      hasMedal:false
     }
-    let json = copyFromForm(aspectoGrade,aspectGradeFG)
-    var aspect_resolve = null
     return new Promise<void>((resolve, reject) =>{
-      aspect_resolve = resolve      
-      db.collection(`examGrades/${examGrade.id}/parameterGrades/${parameterGrade.id}/criteriaGrades/${criteriaGrade.id}/aspectGrades`).doc(json["id"]).set(json).then(()=>{
+      db.collection(`examGrades/${examGrade.id}/parameterGrades/${parameterGrade.id}/criteriaGrades/${criteriaGrade.id}/aspectGrades`).doc(aspectoGrade["id"]).set(aspectoGrade).then(()=>{
         console.log("adding addAspectGrades" + aspectoGrade.label)
-        aspect_resolve()
+        resolve()
       },
       reason =>{
         alert("ERROR: " + reason)
@@ -618,44 +478,23 @@ export class ExamenImprovisacionFormComponent {
   }
 
 
-  examStudentChange(event) {
-    var studentId = event.value
-    for( let i =0; i< this.students.length; i++){
-      let student:User = this.students[i]
-      if( student.uid == studentId ){
-        this.examGrade.controls.student_email.setValue( student.email )
-        this.examGrade.controls.student_name.setValue( student.displayName )
-        this.examGrade.controls.student_uid.setValue( student.uid )
-        this.loadMateriaEnrollment(student.uid)
-        break;
-      } 
-    }
-  }   
+
 
   materiaChange(event) {
     var materiaId = event.value
     this.loadExams(materiaId)
   }     
 
-  examEvaluatorChange(parameter,event) {
-    var evaluatorId = event.value
-    for( let i =0; i< this.evaluators.length; i++){
-      let evaluator:User = this.evaluators[i]
-      if( evaluator.uid == evaluatorId ){
-        parameter.controls.evaluator_name.setValue( evaluator.displayName )
-        parameter.controls.evaluator_email.setValue( evaluator.email )
-        console.log( "evaluator:" + parameter.controls.evaluator_name.value )
-        break;
-      } 
-    }
-  }    
   onParameterChange(p){
     console.log("parameterChange")
     if( !p.value.isSelected){
+      p.controls.evaluator_uid.setValue(null)
       p.controls.evaluator_uid.disable()
+      p.controls.evaluator_uid.clearValidators()
     }
     else{
       p.controls.evaluator_uid.enable()
+      p.controls.evaluator_uid.setValidators([Validators.required])
     }
   }
 }
