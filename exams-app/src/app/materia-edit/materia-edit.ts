@@ -56,6 +56,7 @@ export class DialogMateriaDialog implements OnInit{
 
   userUid= null
   isEnrolled = false
+  materiaEnrollment = null
 
   constructor(
       private fb: FormBuilder
@@ -94,6 +95,13 @@ export class DialogMateriaDialog implements OnInit{
   update(){
     this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( isEnrolled =>{
       this.isEnrolled = isEnrolled
+
+      if( this.isEnrolled ){
+        this.examImprovisacionService.getMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( materiaEnrollment =>{
+          this.materiaEnrollment = materiaEnrollment
+        })
+      }
+          
                   
       var unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
         snapshot =>{
@@ -212,6 +220,9 @@ export class DialogMateriaDialog implements OnInit{
   fileDeleted(e:FileLoadedEvent){
     this.examImprovisacionService.fileDeleted('materias', this.materia.id, e)
   }
+  onCopyToClipboard(){
+    alert("url ha sido copiada al portapapeles")
+  }    
 
 }
 

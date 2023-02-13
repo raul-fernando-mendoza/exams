@@ -56,8 +56,10 @@ mat-form-field{
 }
 */
 .description{
-    width:80%;
+    width:50%;
     margin-left: auto;
     margin-right:auto;
 }
-
+.certificate-grid{
+    width:80%;
+}

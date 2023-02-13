@@ -72,6 +72,15 @@ Habilidad
   </mat-card>
   <mat-card>
     <mat-card-content>
+
+      <mat-grid-list *ngIf="materiaEnrollment && materiaEnrollment.certificateUrl" class="certificate-grid" cols="2" rowHeight="4em">
+        <mat-grid-tile><a  [href]="materiaEnrollment.certificateUrl">certificado</a></mat-grid-tile>
+        <mat-grid-tile><button *ngIf="materiaEnrollment && materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>content_copy</mat-icon></button></mat-grid-tile>
+      </mat-grid-list>
+      
+      
+      
+
       <app-materia-laboratory-list [materiaid]="materia_id"></app-materia-laboratory-list>
       <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
       <materia-reference-list [materiaid]="materia_id"></materia-reference-list>
