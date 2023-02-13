@@ -66,7 +66,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
             ei.examGrade = examGrade
           },
           reason =>{
-            console.log("no examgrade found")
+            console.log("no materia exams found")
           })
         })
         
@@ -75,7 +75,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
         resolve()
       },
       reason =>{
-        console.log("ERROR reading Laboratory:" + reason)
+        console.log("ERROR reading exam:" + reason)
         reject()
       })
     })
@@ -202,6 +202,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
       .where("materia_id","==", this.materiaid)
       .where("exam_id","==",examId)
       .where("isDeleted","==",false)
+      .where("isReleased","==",true)      
 
       qry.get().then( set => {
           var examGrades = Array<ExamGrade>()
@@ -222,5 +223,4 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
       })
     })
   }
-
 }

@@ -47,38 +47,41 @@ Editar Examen
       <mat-form-field class="example-full-width">
         <mat-label>Expresion</mat-label>
         <input matInput placeholder="" value="" formControlName="expression">
-      </mat-form-field>          
-
-      <div *ngFor="let p of getFormGroupArray(examGradeFG,'parameterGradesFA'); let i=index">
-        <div [formGroup]="p">
-             <!--id: {{ p.controls.id.value }} -->
-              {{ p.controls.label.value }}
-              <mat-form-field appearance="fill" >
-                <mat-label>selecciona evaluator</mat-label>
-                <mat-select formControlName="evaluator_uid">
-                  <mat-option *ngFor="let m of getExamEvaluators()" [value]="m.uid">
-                    {{getUserDisplayName(m)}}
-                  </mat-option>                 
-                </mat-select>
-              </mat-form-field>
-            
-             
+      </mat-form-field> 
+      
+      
+      <div formArrayName="parameterGradesFA">
+        <div *ngFor="let p of parameterGradesFA.controls; let i=index">
+          <div [formGroup]="p">
+              <!--id: {{ p.controls.id.value }} -->
+                {{ p.controls.label.value }}
+                <mat-form-field appearance="fill" >
+                  <mat-label>selecciona evaluator</mat-label>
+                  <mat-select formControlName="evaluator_uid">
+                    <mat-option *ngFor="let m of getExamEvaluators()" [value]="m.uid">
+                      {{getUserDisplayName(m)}}
+                    </mat-option>                 
+                  </mat-select>
+                </mat-form-field>
               
-              <mat-checkbox formControlName="isSelected" (change)="onParameterChange(p)"></mat-checkbox>
               
-              <div *ngFor="let c of getFormGroupArray(p,'criteriaGradeFA'); let ci=index" >
-                <div  [formGroup]="c">
-                 
-                  {{ c.controls.label.value }}
-                  <mat-checkbox formControlName="isSelected"></mat-checkbox>
-                </div>
-              </div>              
-        </div>   
+                
+                <mat-checkbox formControlName="isSelected" (change)="onParameterChange(p)"></mat-checkbox>
+                
+                <div *ngFor="let c of getFormGroupArray(p,'criteriaGradeFA'); let ci=index" >
+                  <div  [formGroup]="c">
+                  
+                    {{ c.controls.label.value }}
+                    <mat-checkbox formControlName="isSelected"></mat-checkbox>
+                  </div>
+                </div>              
+          </div>   
+        </div>
       </div>
      
     </mat-card-content>  
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit" [disabled]="submitting || examGradeFG.invalid">Enviar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="submitting || !examGradeFG.valid">Enviar</button>
     </mat-card-actions> 
   </mat-card>  
     

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
@@ -11,7 +11,20 @@ import { PromiseType } from 'protractor/built/plugins';
 import { ReplaySubject } from 'rxjs';
 import { UserPreferencesService } from '../user-preferences.service';
 import { DateFormatService } from '../date-format.service';
+import { NavigationService } from '../navigation.service';
 
+
+function AllChildValid(control: AbstractControl): ValidationErrors | null {
+  var formArray = control as FormArray
+  var result = {}
+  formArray.controls.forEach( c =>{
+    var fg = c as FormGroup
+    if( fg.valid == false ){
+      result = { "child":"error" }
+    }
+  })
+  return  result;
+};
 
 @Component({
   selector: 'app-examen-improvisacion-form',
@@ -49,7 +62,7 @@ export class ExamenImprovisacionFormComponent {
 
     title:[null, Validators.required], 
     expression:[null], 
-    parameterGradesFA: new FormArray([])
+    parameterGradesFA: this.fb.array([],AllChildValid)
   });
 
 
@@ -60,7 +73,8 @@ export class ExamenImprovisacionFormComponent {
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
     , private userPreferencesService:UserPreferencesService
-    , private dateFormatService:DateFormatService    
+    , private dateFormatService:DateFormatService 
+    , private navigationService:NavigationService   
   ) {
     
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -80,8 +94,17 @@ export class ExamenImprovisacionFormComponent {
   }
   
 
-
+  formArray= new FormArray([], [Validators.required]);
   ngOnInit() {
+
+    
+    console.log(this.formArray.status);
+    this.formArray.push(new FormControl());
+    console.log(this.formArray.status);
+
+    console.log(this.examGradeFG.controls.parameterGradesFA.status)
+
+
     this.userLoginService.getUserIdToken().then( token => {
       this.initialize(token)
     },
@@ -194,23 +217,28 @@ export class ExamenImprovisacionFormComponent {
       score: [null],
       evaluator_uid:[null, Validators.required],
       isSelected:[true],
-      criteriaGradeFA: new FormArray([])         
+      criteriaGradeFA: this.fb.array([])         
     })
 
     g.valueChanges.subscribe(parameter => {
       if(parameter) {
         if( parameter.isSelected == true){
           g.controls.evaluator_uid.setValidators([Validators.required]);
+          parameterGradeFA.updateValueAndValidity();
         }
         else{
           g.controls.evaluator_uid.clearValidators();
+          parameterGradeFA.updateValueAndValidity();
         }
       }
     });   
+    parameterGradeFA.controls.push(g)    
 
-    g.controls["evaluator_uid"].setErrors({ 'incorrect': true});
+    //g.controls["evaluator_uid"].setErrors({ 'incorrect': true});
+    parameterGradeFA.updateValueAndValidity();
 
-    parameterGradeFA.controls.push(g)
+
+
     
     //now get the criterias and add them too
     var criteriaGradeFA = g.controls.criteriaGradeFA as FormArray
@@ -220,6 +248,22 @@ export class ExamenImprovisacionFormComponent {
       })
     })
   }
+
+  validateAllFormFields(formGroup: FormGroup | FormArray):boolean{
+    var result:boolean = true
+    Object.keys(formGroup.controls).forEach(field => {
+      const control = formGroup.get(field);
+      if (control instanceof FormControl) {
+        control.markAsTouched({ onlySelf: true });
+        if( control.invalid ) result = false
+      } else if (control instanceof FormGroup || control instanceof FormArray) {
+        if (this.validateAllFormFields(control) ) {
+          result = false
+        };
+      }
+    });
+    return result
+  }  
 
   addCriteria(materiaId, examId, parameterId, criteria:Criteria, criteriaGradeFG:FormArray){
     var g = this.fb.group({
@@ -352,7 +396,7 @@ export class ExamenImprovisacionFormComponent {
       Promise.all(pa).then( () =>{
         console.log("End Saving All")
         alert("Examen Creado!")
-        this.router.navigate(['/ExamenesImprovisacion']);
+        this.navigationService.back()
 
       }) 
       .catch(reason =>{
@@ -496,5 +540,9 @@ export class ExamenImprovisacionFormComponent {
       p.controls.evaluator_uid.enable()
       p.controls.evaluator_uid.setValidators([Validators.required])
     }
+  }
+  get parameterGradesFA(){
+    console.log("parameterGradesFA:" + this.examGradeFG.controls.parameterGradesFA.status)
+    return this.examGradeFG.controls.parameterGradesFA as FormArray
   }
 }
