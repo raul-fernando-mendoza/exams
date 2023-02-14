@@ -20,11 +20,11 @@
     <mat-nav-list *ngIf="organization ">
       <a mat-list-item routerLink="/home">home</a>
       <a mat-list-item routerLink="/materia-list">Habilidades</a>
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Calificar Lecciones interactiva</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Lecciones interactiva</a>
        
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Publicar Examenes</a>  
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Examenes</a>  
       
-      <a *ngIf="isAdmin()" mat-list-item routerLink="/materiaCertificaciones">Enrolar y Certificaciones</a>
+      <a *ngIf="isAdmin()" mat-list-item routerLink="/materiaCertificaciones">Inscribir y Certificar</a>
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/career-list">Carreras</a>
       <a *ngIf="isReadOnly() || isEvaluator()" mat-list-item routerLink="/ExamenesImprovisacion">Examenes</a>
@@ -37,7 +37,7 @@
      <!-- <a *ngIf="isAdmin()" mat-list-item routerLink="/videos-list">Videos</a> -->
 
       <button mat-stroked-button  aria-label="logout" (click)="logout()" *ngIf="isLoggedIn()">
-        logout
+        Cerrar sesión
       </button>    
 
     </mat-nav-list>
