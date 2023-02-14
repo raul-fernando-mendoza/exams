@@ -31,7 +31,7 @@
 
       <a *ngIf="isAdmin()" mat-list-item routerLink="/user-list">Users</a>
       <a *ngIf="isLoggedIn()" mat-list-item (click)="onConference()">Aula digital</a>
-      <a *ngIf="isLoggedIn()" mat-list-item routerLink="/user-profile-edit">Configuracion</a>
+      <a *ngIf="isLoggedIn()" mat-list-item routerLink="/user-profile-edit">Configuración</a>
       <a *ngIf="!isLoggedIn()" mat-list-item  routerLink="/login-selector">Login</a>
 
      <!-- <a *ngIf="isAdmin()" mat-list-item routerLink="/videos-list">Videos</a> -->
