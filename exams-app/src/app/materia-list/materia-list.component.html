@@ -7,10 +7,14 @@
     <button matSuffix mat-button><mat-icon >search</mat-icon></button>
     </mat-form-field>
     <div class="spacer"></div>
+
+  </div>
+  <div class="searchForm">
+    <div class="spacer"></div>
     <mat-button-toggle-group  [(ngModel)]="enrolledOnly" aria-label="Show only enrolled">
-      <mat-button-toggle class="enrolledoption" [value]="true">Solo mis materias</mat-button-toggle>
+      <mat-button-toggle class="enrolledoption" [value]="true">Mis materias</mat-button-toggle>
       <mat-button-toggle class="enrolledoption" [value]="false">Todas</mat-button-toggle> 
-    </mat-button-toggle-group>
+    </mat-button-toggle-group>    
   </div>
 
 

@@ -8,10 +8,12 @@ import { SortingService } from '../sorting.service';
 import { ExamgradesReportComponent } from '../examgrades-report/examgrades-report.component';
 import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import * as uuid from 'uuid';
 import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
+import { Observable } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 
 @Component({
@@ -20,6 +22,12 @@ import { DateFormatService } from '../date-format.service';
   styleUrls: ['./welcome.component.css']
 })
 export class WelcomeComponent implements OnInit {
+
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    .pipe(
+      map(result => result.matches),
+      shareReplay()
+    );  
 
   submitting = false
   organization:Organization = null  
@@ -31,7 +39,8 @@ export class WelcomeComponent implements OnInit {
     , private dateFormatService:DateFormatService
     , private sortingService:SortingService
     , private userPreferencesService:UserPreferencesService
-    , private examFormService:ExamFormService) { 
+    , private examFormService:ExamFormService
+    , private breakpointObserver: BreakpointObserver) { 
         this.organization = userPreferencesService.getCurrentOrganization()
     }
   

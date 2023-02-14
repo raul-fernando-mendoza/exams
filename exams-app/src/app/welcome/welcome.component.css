@@ -49,6 +49,14 @@
     text-align: center;
     height: 1em;
 }
+.career-title-small{
+    display:block;
+    color:white;
+    font-family: 'Playfair Display', serif;
+    font-size: 2em;
+    text-align: center;
+    height: 1em;
+}
 .footer{
     display:flex;
 }

@@ -8,14 +8,14 @@
 
   <div class="career-container" (click)="onEjecutanteDetalles()">
     <div class="title-container">
-      <div class="career-title">Ejecutante</div>
+      <div [class]="(isHandset$ | async) ? 'career-title-small' : 'career-title'">Ejecutante</div>
       <button mat-button >Detalles</button>
     </div>
     <img  src="/assets/fotos_de_salon apagado.jpg"><img>
   </div>
   <div class="career-container" (click)="onCoreografoDetalles()">
     <div class="title-container">
-      <div class="career-title">Coreógrafo y Docente</div>
+      <div [class]="(isHandset$ | async) ? 'career-title-small' : 'career-title'" >Coreógrafo y Docente</div>
       <button mat-button >Detalles</button>
     </div>
     <img src="/assets/juniorOriental.jpg"><img>
@@ -24,7 +24,7 @@
 
   <div class="career-container">
     <div class="title-container">
-      <div class="career-title">Comunidad</div>
+      <div [class]="(isHandset$ | async) ? 'career-title-small' : 'career-title'">Comunidad</div>
     </div>
     <img src="/assets/diplomados.jpg"><img>
   </div>
