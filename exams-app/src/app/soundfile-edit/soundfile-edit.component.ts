@@ -3,6 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { TimerDialog } from '../timer-dialog/timer-dlg';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
+import { db, storage, environment } from 'src/environments/environment';
+import { FileLoadObserver } from '../load-observers/load-observers.module';
 
 @Component({
   selector: 'app-soundfile-edit',
@@ -10,15 +12,22 @@ import { UserPreferencesService } from '../user-preferences.service';
   styleUrls: ['./soundfile-edit.component.css']
 })
 export class SoundfileEditComponent implements OnInit {
+ 
+  @Input() collection:string  // the collection 
+  @Input() id:string          // id of the document
+  @Input() property:string    // property where to save the property + "Url" and property + "Path"
 
-  @Input() collection:string
-  @Input() property:string
+  organizationId = null
 
-  organizationId
+  mediaRecorder = null
+  isRecording = false
+  audioBlob = null
+  isPlaying = false
 
-  mediaRecorder
-  isRecording
-  audioBlob
+  AudioContext = window.AudioContext ;
+  context = new AudioContext(); // Make it crossbrowser
+  sourceAudioBuffer = null
+
 
   constructor( 
      public dialog: MatDialog 
@@ -84,17 +93,16 @@ export class SoundfileEditComponent implements OnInit {
 
   saveSound(id){
     if( this.audioBlob != null ){
-      const path = this.path + "/" + this.drawing_id + "/breakPoints" 
-      const property = "comment"
+     
 
-      const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + id + ".wav"
+      const bucketName = "organizations/" + this.organizationId + "/" + this.collection + "/" + this.id
 
     
       var storageRef = storage.ref( bucketName )
 
       var uploadTask = storageRef.put(this.audioBlob, { contentType: 'audio/wav'})
       var element = document.getElementById("commentStatus")
-      var fileLoadObserver = new FileLoadObserver(storageRef, path, id, property, element );
+      var fileLoadObserver = new FileLoadObserver(storageRef, this.collection, this.id, this.property, element );
       uploadTask.on("state_change", fileLoadObserver)
     }       
   }
@@ -109,63 +117,45 @@ export class SoundfileEditComponent implements OnInit {
     this.sourceAudioBuffer.buffer = audioBuffer;
     this.sourceAudioBuffer.connect(this.context.destination);
     this.sourceAudioBuffer.addEventListener("ended", (e) =>{
-      if( stop == true){
-        console.log("marker stop sound:")
-        if( this.isPlaying == true){
-          this.player.pause()
-          this.player.currentTime(this.startMarker)
-          thiz = this
-          var interval = setInterval( () => { 
-            if(thiz.isPlaying == false)
-              {
-                thiz.isMarkerActive = false; 
-                clearInterval(interval)
-              }
-           }, 100)
-        }
-        else{
-          this.isMarkerActive = false
-        }
-        this.player.volume(1.0)
-     
-      }
-      else{
-        console.log("marker end sound:")
-        this.isMarkerActive = false
-        this.resumePlay()
-      }
+      console.log("sound ended")
+      this.isPlaying = false
     })    
     this.sourceAudioBuffer.start();
 
   };
 
-  loadSound( id, url ){
-    var thiz = this
-    var xhr = new XMLHttpRequest();
-        
-        
-    xhr.responseType = 'blob';
-    xhr.onload = e => {
-      console.log(xhr.response);
-      var audioBlob:Blob = xhr.response
-      audioBlob.arrayBuffer()
-      .then(
-        arrayBuffer => 
-          thiz.context.decodeAudioData(arrayBuffer,
-        audioBuffer => {
-           thiz.sounds[id] = audioBuffer
-         },
-         error =>
-           console.error(error)
-      ))
-          
-    }
-    xhr.onerror = e =>{
-      console.log( "error:" + e)
-    }
-    xhr.open('GET', url);
-    xhr.send();   
+  loadSound( url ):Promise<any>{
+    return new Promise<any>( (resolve, reject) =>{
 
+
+      var thiz = this
+      var xhr = new XMLHttpRequest();
+          
+          
+      xhr.responseType = 'blob';
+      xhr.onload = e => {
+        console.log(xhr.response);
+        var audioBlob:Blob = xhr.response
+        audioBlob.arrayBuffer()
+        .then(
+          arrayBuffer => 
+            thiz.context.decodeAudioData(arrayBuffer,
+          audioBuffer => {
+            resolve(audioBuffer)
+          },
+          error =>{
+            console.error(error)
+            reject(error)
+
+          })
+        )
+      }
+      xhr.onerror = e =>{
+        console.log( "error:" + e)
+      }
+      xhr.open('GET', url);
+      xhr.send();   
+    })  
   }
 
 
