@@ -85,8 +85,8 @@ import { MateriaEnrollmentsListComponent } from './materia-enrollments-list/mate
 
 import { MateriaLaboratoryListComponent } from './materia-laboratory-list/materia-laboratory-list.component';
 import { MateriaExamsListComponent } from './materia-exams-list/materia-exams-list.component';
-import { MateriaReferenceComponent } from './materia-reference-list/materia-reference-list';
-import { MateriaReferenceDialog } from './materia-reference-edit/materia-reference-edit';
+import { ReferenceComponent } from './reference-list/reference-list';
+import { ReferenceDialog } from './reference-edit/reference-edit';
 import { ExamGradesSearchComponent } from './exam-grades-search/exam-grades-search.component';
 import { ExamGradesListComponent } from './exam-grades-list/exam-grades-list.component';
 import { YtPlayerAngularModule } from 'yt-player-angular';
@@ -138,8 +138,8 @@ import { YtPlayerAngularModule } from 'yt-player-angular';
         DateSelectorComponent,
         UserSelectorComponent,
         FileLoaderComponent,
-        MateriaReferenceComponent,
-        MateriaReferenceDialog,
+        ReferenceComponent,
+        ReferenceDialog,
         MateriaEnrollmentsListComponent,
         ExamGradesSearchComponent,
         MateriaLaboratoryListComponent,

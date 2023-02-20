@@ -79,11 +79,9 @@ Habilidad
       </mat-grid-list>
       
       
-      
-
       <app-materia-laboratory-list [materiaid]="materia_id"></app-materia-laboratory-list>
       <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
-      <materia-reference-list [materiaid]="materia_id"></materia-reference-list>
+      <reference-list *ngIf="materiaEnrollment || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
     </mat-card-content>
   </mat-card>
 </form>

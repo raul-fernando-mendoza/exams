@@ -19,6 +19,8 @@
 
     <mat-checkbox formControlName="isRequired" (change)="onChangeExam(e)">Es requerido</mat-checkbox>
 
+    <reference-list [collection]="getExamCollection()"></reference-list>
+
     <div *ngFor="let p of getFormGroupArray(e,'parameters'); let i=index">
         
         <div class="parameter" [formGroup]="p">

@@ -21,8 +21,9 @@ import { ExamFormService } from '../exam-form.service';
 export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
 
-
-
+  materia_id:string
+  exam_id:string
+  exam:Exam = null
   examGrade_id:string
   exam_label:string
 
@@ -36,78 +37,86 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     ,private navigationService:NavigationService
     ,private examFormService:ExamFormService
   ) {
-    this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id') 
+    this.materia_id = this.route.snapshot.paramMap.get('materia_id')
+    this.exam_id = this.route.snapshot.paramMap.get('exam_id')
+    if( this.route.snapshot.paramMap.get('examGrade_id') != 'null'){
+      this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id') 
+    }
 
    }
 
   ngAfterViewInit(): void {
-    db.collection("examGrades").doc(this.examGrade_id).get().then( doc =>{
-      const examGrade:ExamGrade = doc.data() as ExamGrade
-      this.examGrade = {
-        id:examGrade.id,
-        exam_id:examGrade.exam_id,
-        title:examGrade.title,
-        student_uid:examGrade.student_uid,
-        materia_id:examGrade.materia_id,
-        applicationDate:doc.data().applicationDate,
-        parameterGrades:[]
-      }
-      
-      
-      
-      var labels = []
-      let scores = []
 
-      db.collection("materias/" + examGrade.materia_id + "/exams").doc(this.examGrade.exam_id).get().then( doc =>{
-        this.exam_label = doc.data().label
-      })
-
-      
-      this.examenesImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
-        this.examGrade.student = {
-          uid:user.uid,
-          displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
-        }
-
-        db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").get().then( set =>{
-
-          set.docs.map( doc =>{
-            var parameterGrade:ParameterGrade = {
-              id:doc.data().id,
-              label:doc.data().label,
-              score:doc.data().score,
-              applicationDate:doc.data().applicationDate.toDate(),
-              evaluator_comment:doc.data().evaluator_comment,
-              criteriaGrades:[]
-            }
-           
-            this.examGrade.parameterGrades.push(parameterGrade)
-
-            this.addCriteriaGrades(this.examGrade, parameterGrade)
-          })
-
-          this.examGrade.parameterGrades.sort((a,b) =>{
-            return a.label > b.label ? 1: -1
-          })
-
-          for( let i=0; i< this.examGrade.parameterGrades.length; i++){
-            let p = this.examGrade.parameterGrades[i]
-            labels[i] = p.label
-            scores[i] = p.score
-          }  
-          this.createGraph(this.examGrade_id, this.examGrade.student.displayName, labels, scores)        
-
-        },
-        reason =>{
-          console.error("ERROR: reading parameterGrades:" + reason)
-        })
-
-      })
+    db.collection("materias/" + this.materia_id + "/exams").doc( this.exam_id ).get().then( doc =>{
+      this.exam = doc.data() as Exam      
     })
 
-    
-    
-    //this.createGraph(e.student_name, labels, scores)
+    if( this.examGrade_id){
+      db.collection("examGrades").doc(this.examGrade_id).get().then( doc =>{
+        const examGrade:ExamGrade = doc.data() as ExamGrade
+        this.examGrade = {
+          id:examGrade.id,
+          exam_id:examGrade.exam_id,
+          title:examGrade.title,
+          student_uid:examGrade.student_uid,
+          materia_id:examGrade.materia_id,
+          isReleased:examGrade.isReleased,
+          applicationDate:doc.data().applicationDate,
+          parameterGrades:[]
+        }
+        
+        
+        
+        var labels = []
+        let scores = []
+
+        db.collection("materias/" + examGrade.materia_id + "/exams").doc(this.examGrade.exam_id).get().then( doc =>{
+          this.exam_label = doc.data().label
+        })
+
+        
+        this.examenesImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
+          this.examGrade.student = {
+            uid:user.uid,
+            displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
+          }
+
+          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").get().then( set =>{
+
+            set.docs.map( doc =>{
+              var parameterGrade:ParameterGrade = {
+                id:doc.data().id,
+                label:doc.data().label,
+                score:doc.data().score,
+                applicationDate:doc.data().applicationDate.toDate(),
+                evaluator_comment:doc.data().evaluator_comment,
+                criteriaGrades:[]
+              }
+            
+              this.examGrade.parameterGrades.push(parameterGrade)
+
+              this.addCriteriaGrades(this.examGrade, parameterGrade)
+            })
+
+            this.examGrade.parameterGrades.sort((a,b) =>{
+              return a.label > b.label ? 1: -1
+            })
+
+            for( let i=0; i< this.examGrade.parameterGrades.length; i++){
+              let p = this.examGrade.parameterGrades[i]
+              labels[i] = p.label
+              scores[i] = p.score
+            }  
+            this.createGraph(this.examGrade_id, this.examGrade.student.displayName, labels, scores)        
+
+          },
+          reason =>{
+            console.error("ERROR: reading parameterGrades:" + reason)
+          })
+
+        })
+      })
+    }  
   }
 
   ngOnInit(): void {
@@ -214,4 +223,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     return this.examenesImprovisacionService.printDate(d)
   }
 
+  getExamCollection():string{
+    return "materias/" + this.materia_id + "/exams/" + this.exam_id + "/references"
+  }
 }

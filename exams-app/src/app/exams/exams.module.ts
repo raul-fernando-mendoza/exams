@@ -486,7 +486,7 @@ export interface CertificateType{
   color2?:string
 }
 
-export interface MateriaReference{
+export interface Reference{
   id:string
   label:string
   desc:string

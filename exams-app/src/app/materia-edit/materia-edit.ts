@@ -58,6 +58,8 @@ export class DialogMateriaDialog implements OnInit{
   isEnrolled = false
   materiaEnrollment = null
 
+  materiaReferenceCollection = null
+
   constructor(
       private fb: FormBuilder
       ,private route: ActivatedRoute
@@ -79,8 +81,10 @@ export class DialogMateriaDialog implements OnInit{
     }
     if( this.route.snapshot.paramMap.get('materia_id') != 'null'){
       this.materia_id = this.route.snapshot.paramMap.get('materia_id')
+      this.materiaReferenceCollection = "materias/" + this.materia_id + "/materiaReference"
     }
 
+    
         
   }
 
@@ -223,7 +227,9 @@ export class DialogMateriaDialog implements OnInit{
   onCopyToClipboard(){
     alert("url ha sido copiada al portapapeles")
   }    
-
+  getMateriaReferenceCollection(){
+    return this.materiaReferenceCollection
+  }
 }
 
 

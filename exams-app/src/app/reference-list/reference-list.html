@@ -1,5 +1,5 @@
 <div class="title">
-<span>Referencias</span><button mat-icon-button (click)="onCreateMateriaReference()"><mat-icon>library_add</mat-icon></button>
+<span>Referencias</span><button  *ngIf="isAdmin"  mat-icon-button (click)="onCreateReference()"><mat-icon>library_add</mat-icon></button>
 </div>
 <table mat-table [dataSource]="references" class="mat-elevation-z8">
   <ng-container matColumnDef="label">
@@ -10,11 +10,11 @@
         <mat-icon>more_vert</mat-icon>
       </button>                                    
         <mat-menu #menuLevel="matMenu" >
-          <button mat-menu-item color="primary" (click)="onMateriaReferenceEdit(r)" [disabled]="submitting">
+          <button mat-menu-item color="primary" (click)="onReferenceEdit(r)" [disabled]="submitting">
             <mat-icon>edit</mat-icon>
             <span>Editar</span>
           </button>    
-          <button mat-menu-item color="primary" (click)="onMateriaReferenceDelete(r)" [disabled]="submitting">
+          <button mat-menu-item color="primary" (click)="onReferenceDelete(r)" [disabled]="submitting">
             <mat-icon>remove</mat-icon>
             <span>Borrar</span>
           </button>         

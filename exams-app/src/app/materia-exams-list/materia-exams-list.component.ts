@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Exam, ExamGrade } from '../exams/exams.module';
+import { Exam, ExamGrade, MateriaEnrollment } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
@@ -11,7 +11,7 @@ import { DialogNameDialog } from '../name-dialog/name-dlg';
 
 interface examItem{
   exam:Exam
-  examGrade:ExamGrade
+  examGrade:ExamGrade  
 }
 
 @Component({
@@ -27,6 +27,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   submitting = false
   exams:Array<examItem> = []
   userUid = null
+  isEnrolled = false
   constructor(
     private userPreferenceService:UserPreferencesService
     , private userLoginService:UserLoginService
@@ -46,6 +47,9 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
     if( this.materiaid != null){
       this.loadExams()
     }
+    this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled =>{
+      this.isEnrolled = isEnrolled
+    })
   }
   loadExams():Promise<void>{
     return new Promise<void>((resolve, reject) =>{
@@ -190,8 +194,8 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   }
 
 
-  onExamGradeReport(examGradeId:string){
-    this.router.navigate(['/report',{examGrade_id:examGradeId}]);
+  onExamGradeReport(exam:Exam, examGrade:ExamGrade){
+    this.router.navigate(['/report',{materia_id:this.materiaid, exam_id:exam.id,examGrade_id:examGrade ? examGrade.id : null}]);
   }
 
   getExamGrade( examId ):Promise<ExamGrade>{

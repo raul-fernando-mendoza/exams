@@ -995,4 +995,8 @@ export class EiTipoEditComponent implements OnInit {
     }
   } 
 
+  getExamCollection():string{
+      return "materias/" + this.materia_id + "/exams/" + this.exam_id + "/references"
+  }
+
 }

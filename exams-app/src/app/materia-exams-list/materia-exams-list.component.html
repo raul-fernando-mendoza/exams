@@ -28,7 +28,7 @@
                   <span>Duplicar</span>
                 </button>       
               </mat-menu>
-              <button *ngIf="ei.examGrade && ei.examGrade.isReleased" (click)="onExamGradeReport(ei.examGrade.id)" mat-button >Abrir</button>
+              <button *ngIf="isEnrolled" (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button >Abrir Reporte</button>
         </mat-list-item>
     </mat-list >
 </div>

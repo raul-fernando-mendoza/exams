@@ -6,6 +6,11 @@ import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organiza
 import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
 
+export interface FileLoaded{
+  path:string
+  url:string
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -333,65 +338,79 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     return this.http.post(url, request_data, {headers: myheaders})
   }  
 
-  fileLoaded(db_collection, id, e:FileLoadedEvent){
-    db.collection(db_collection).doc(id).get().then( doc =>{
-      var promises = []
-      var docExists = false
-      if( doc.exists ){
-        //first erase the old value if existed
-        docExists = true
+  fileLoaded(db_collection, id, e:FileLoadedEvent):Promise<FileLoaded>{
+    return new Promise<FileLoaded>( (resolve, reject) =>{
+      db.collection(db_collection).doc(id).get().then( doc =>{
+        var promises = []
+        var docExists = false
+        if( doc.exists ){
+          //first erase the old value if existed
+          docExists = true
 
-        var oldFilePath:string =doc[e.property + "Path"]
-        if( oldFilePath && oldFilePath != e.fileFullPath){
-          var storageOldRef = storage.ref( oldFilePath )
-          
-          var promiseDelete = storageOldRef.delete().then( () =>{
-            console.log("old file was deleted:" + oldFilePath )
-          })
-          .catch( reason => {
-            console.log("old file could not be deleted")      
-          })
-          promises.push(promiseDelete)
-        }  
-        //now update the values of properties to kick a reload of the data page
-        var values = {}
-        values[e.property + "Path"]=null                       
-        values[e.property + "Url"]=null
-        var remove = db.collection(db_collection).doc(id).update(values).then( () =>{
-          console.log("property has been update:" + e.property + " " + e.fileFullPath)
-        },
-        reason =>{
-          alert("ERROR: writing property:" + reason)
-        }) 
-        promises.push( remove )
-      }
+          var oldFilePath:string =doc.data()[e.property + "Path"]
+          if( oldFilePath && oldFilePath != e.fileFullPath){
+            var storageOldRef = storage.ref( oldFilePath )
+            
+            var promiseDelete = storageOldRef.delete().then( () =>{
+              console.log("old file was deleted:" + oldFilePath )
+            })
+            .catch( reason => {
+              console.log("old file could not be deleted")      
+            })
+            promises.push(promiseDelete)
+          }  
+          //now update the values of properties to kick a reload of the data page
+          var values = {}
+          values[e.property + "Path"]=null                       
+          values[e.property + "Url"]=null
+          var remove = db.collection(db_collection).doc(id).update(values).then( () =>{
+            console.log("property has been update:" + e.property + " " + e.fileFullPath)
+          },
+          reason =>{
+            alert("ERROR: writing property:" + reason)
+          }) 
+          promises.push( remove )
+        }
 
-      Promise.all( promises ).then( () =>{
-        //now update the values in materia
-        let storageRef = storage.ref( e.fileFullPath )
-        storageRef.getDownloadURL().then( url =>{
-            var values = {}
-            values[e.property + "Path"]=e.fileFullPath                       
-            values[e.property + "Url"]=url     
-            if( docExists == true ){   
-              db.collection(db_collection).doc(id).update(values).then( () =>{
-                console.log("property has been update:" + e.property + " " + e.fileFullPath)
-              },
-              reason =>{
-                alert("ERROR: writing property:" + reason)
-              })        
-            }
-            else{
-              db.collection(db_collection).doc(id).set(values).then( () =>{
-                console.log("property has been set:" + e.property + " " + e.fileFullPath)
-              },
-              reason =>{
-                alert("ERROR: writing property:" + reason)
-              })                  
-            }  
-        })       
-      })
-    }) 
+        Promise.all( promises ).then( () =>{
+          //now update the values in materia
+          let storageRef = storage.ref( e.fileFullPath )
+          storageRef.getDownloadURL().then( url =>{
+              var values = {}
+              values[e.property + "Path"]=e.fileFullPath                       
+              values[e.property + "Url"]=url     
+              if( docExists == true ){   
+                db.collection(db_collection).doc(id).update(values).then( () =>{
+                  console.log("property has been update:" + e.property + " " + e.fileFullPath)
+                  var fileLoaded = {
+                    path:e.fileFullPath,
+                    url:url
+                  }
+                  resolve( fileLoaded )
+                },
+                reason =>{
+                  alert("ERROR: writing property:" + reason)
+                  reject(reason)
+                })        
+              }
+              else{
+                db.collection(db_collection).doc(id).set(values).then( () =>{
+                  console.log("property has been set:" + e.property + " " + e.fileFullPath)
+                  var fileLoaded = {
+                    path:e.fileFullPath,
+                    url:url
+                  }
+                  resolve( fileLoaded )                  
+                },
+                reason =>{
+                  alert("ERROR: writing property:" + reason)
+                  reject(reason)
+                })                  
+              }  
+          })       
+        })
+      }) 
+    })  
   }  
   fileDeleted(db_collection, id, e:FileLoadedEvent){
       console.log("file deleted:" + e.fileFullPath)

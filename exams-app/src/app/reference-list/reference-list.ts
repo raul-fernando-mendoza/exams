@@ -1,23 +1,23 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core"
 import { MatDialog } from "@angular/material/dialog"
-import { MateriaReference } from "../exams/exams.module"
+import { Reference } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage} from 'src/environments/environment';
 import { UserPreferencesService } from "../user-preferences.service"
 import { MatTable } from "@angular/material/table";
-import { MateriaReferenceDialog } from "../materia-reference-edit/materia-reference-edit";
+import { ReferenceDialog } from "../reference-edit/reference-edit";
 
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
-    selector: 'materia-reference-list',
-    templateUrl: 'materia-reference-list.html',
-    styleUrls: ['materia-reference-list.css']
+    selector: 'reference-list',
+    templateUrl: 'reference-list.html',
+    styleUrls: ['reference-list.css']
   })
 
-export class MateriaReferenceComponent implements OnInit, OnDestroy{ 
+export class ReferenceComponent implements OnInit, OnDestroy{ 
    
-  @Input() materiaid:string
+  @Input() collection:string
   @ViewChild(MatTable) table: MatTable<any>;
 
   isAdmin:boolean = false
@@ -26,7 +26,7 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
 
   unsubscribe = null
 
-  references = Array<MateriaReference>()
+  references = Array<Reference>()
 
   displayedColumns: string[] = ['label', 'description'];  
 
@@ -45,38 +45,41 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
     }
   }
   ngOnDestroy(): void {
-    this.unsubscribe()
+    if( this.unsubscribe){
+      this.unsubscribe()
+    }
+    
   }
 
-
+ //"materias/" + this.materiaid + "/materiaReference"
   ngOnInit(): void {
-    this.unsubscribe = db.collection("materias/" + this.materiaid + "/materiaReference").onSnapshot( 
+    this.unsubscribe = db.collection(this.collection).onSnapshot( 
       snapshot =>{
         this.references.length = 0
         snapshot.docs.map( doc=>{
-          var materiaReference:MateriaReference =  doc.data() as MateriaReference
-          this.references.push(materiaReference)
+          var reference:Reference =  doc.data() as Reference
+          this.references.push(reference)
         })
         this.references.sort( (a,b) => a.label >= b.label ? 1 : -1 )
         this.table.renderRows()
 
       },
       error=>{
-        console.log("ERROR reading materia")
+        console.log("ERROR reading reference")
       })
     
   }
 
-  onCreateMateriaReference(){
+  onCreateReference(){
     var data = {
-      materia_id: this.materiaid,
+      collection: this.collection,
       id:null,
       label:"",
       desc:"",
       fileUrl:null,
       filePath:null
     }
-    const dialogRef = this.dialog.open(MateriaReferenceDialog, {
+    const dialogRef = this.dialog.open(ReferenceDialog, {
       height: '400px',
       width: '250px',
       data: data
@@ -87,16 +90,16 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
     });
   }
 
-  onMateriaReferenceEdit(materiaReference:MateriaReference){
+  onReferenceEdit(reference:Reference){
     var data = {
-      materia_id: this.materiaid,
-      id:materiaReference.id,
-      label:materiaReference.label,
-      desc:materiaReference.desc,
-      fileUrl:materiaReference.fileUrl,
-      filePath:materiaReference.filePath
+      collection: this.collection,
+      id:reference.id,
+      label:reference.label,
+      desc:reference.desc,
+      fileUrl:reference.fileUrl,
+      filePath:reference.filePath
     }    
-    const dialogRef = this.dialog.open(MateriaReferenceDialog, {
+    const dialogRef = this.dialog.open(ReferenceDialog, {
       height: '400px',
       width: '250px',
       data: data
@@ -107,11 +110,11 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
     });
   }
 
-  onMateriaReferenceDelete( materiaReference:MateriaReference ):Promise<void>{
+  onReferenceDelete( reference:Reference ):Promise<void>{
     return new Promise<void>( ( resolve, reject) => {
         let transactions = []
-        if( materiaReference.filePath  ){
-            let storageRef = storage.ref( materiaReference.filePath )
+        if( reference.filePath  ){
+            let storageRef = storage.ref( reference.filePath )
         
             var trans_delete = storageRef.delete().then( () =>{
                 console.log("previous file removed")
@@ -122,8 +125,11 @@ export class MateriaReferenceComponent implements OnInit, OnDestroy{
             transactions.push( trans_delete )
         }
         Promise.all( transactions ).then( () => {
-            db.collection("materias/" + this.materiaid + "/materiaReference").doc(materiaReference.id).delete().then( ()=>{
-                console.log("materiaReference has been deleted")
+            db.collection(this.collection).doc(reference.id).delete().then( ()=>{
+              console.log("reference has been deleted")
+            },
+            reason =>{
+              console.log("documento can not be erase")
             })
         })
     })

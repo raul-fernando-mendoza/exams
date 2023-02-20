@@ -29,7 +29,7 @@
                   <span>Duplicar</span>
                 </button>       
               </mat-menu>
-              <span>{{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
+            <span *ngIf="isEnrolled"> {{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
             <button *ngIf="isEnrolled" (click)="onOpenLaboratoryGrade(li)" mat-button >Abrir</button>
 
         </mat-list-item>

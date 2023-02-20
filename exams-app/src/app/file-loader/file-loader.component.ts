@@ -45,7 +45,7 @@ export class FileLoaderComponent implements AfterViewInit{
   @Input() basepath:string //the folder where the file should be written
   @Input() label:string //displayName
   @Input() property:string //this is just an id sent by the requestor and is returned as part of the event not used internally
-  @Input() filename:string //if this parameter exist the name of the file will be overwritten
+  @Input() filename:string //optional if present this will be the name used instead of label
   
   @Input() maxSize = 200 * 1024*1024 
   @Output() onload = new EventEmitter<FileLoadedEvent>();
@@ -61,8 +61,8 @@ export class FileLoaderComponent implements AfterViewInit{
   }
   ngAfterViewInit(): void {
     if( this.filename ){
-      this.fullpath = this.basepath + "/" + this.filename
-    }  
+      this.label = this.filename.split("/").reverse()[0] 
+    } 
   }
 
   selectFile(event) {
@@ -78,6 +78,8 @@ export class FileLoaderComponent implements AfterViewInit{
     }
 
     this.fullpath = this.basepath + "/"+ file.name.replace(" ","_")
+
+    this.label = this.fullpath.split("/").reverse()[0] 
 
     var storageRef = storage.ref( this.fullpath )
 
@@ -105,7 +107,7 @@ export class FileLoaderComponent implements AfterViewInit{
   }
 
   getFileName(){
-    if( this.fullpath != null){
+    if( this.fullpath ){
       return this.fullpath.split("/").reverse()[0] 
     }
     else return this.label
