@@ -28,6 +28,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   exams:Array<examItem> = []
   userUid = null
   isEnrolled = false
+
   constructor(
     private userPreferenceService:UserPreferencesService
     , private userLoginService:UserLoginService
@@ -113,6 +114,10 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
     return new Promise<null>((resolve, reject)=>{
       _resolve = resolve
       _reject = reject
+
+      if( exam_id == null || exam_label == null){
+        reject(null)
+      }
       var req = {
         materias:{
           id:this.materiaid,
