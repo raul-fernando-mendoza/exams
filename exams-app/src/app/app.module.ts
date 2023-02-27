@@ -90,6 +90,7 @@ import { ReferenceDialog } from './reference-edit/reference-edit';
 import { ExamGradesSearchComponent } from './exam-grades-search/exam-grades-search.component';
 import { ExamGradesListComponent } from './exam-grades-list/exam-grades-list.component';
 import { YtPlayerAngularModule } from 'yt-player-angular';
+import { SoundfileEditComponent } from './soundfile-edit/soundfile-edit.component';
 
 @NgModule({
     declarations: [
@@ -144,7 +145,8 @@ import { YtPlayerAngularModule } from 'yt-player-angular';
         ExamGradesSearchComponent,
         MateriaLaboratoryListComponent,
         MateriaExamsListComponent,
-        ExamGradesListComponent
+        ExamGradesListComponent,
+        SoundfileEditComponent
     ],
     imports: [
         BrowserModule,

@@ -296,6 +296,8 @@ export interface ParameterGrade{
 
   isCompleted?:boolean 
   evaluator_comment?:string
+  commentSoundPath?:string
+  commentSoundUrl?:string
 
   criteriaGrades?: CriteriaGrade[] 
 }

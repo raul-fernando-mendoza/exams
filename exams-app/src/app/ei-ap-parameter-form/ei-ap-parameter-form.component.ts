@@ -13,7 +13,10 @@ import { DateFormatService } from '../date-format.service';
 
 export interface DialogData {
   calificacion: number,
-  comentario: string
+  comentario: string,
+  collection:string,
+  id:string,
+  property:string
 }
 
 export interface DescriptionDlgData {
@@ -42,6 +45,7 @@ export class EiApParameterFormComponent implements OnInit {
       this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
       this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
       this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
+      this.collection = "examGrades/" + this.examGrade_id + "/parameterGrades"  
     }
   
   examGrade_id = null
@@ -54,6 +58,8 @@ export class EiApParameterFormComponent implements OnInit {
   isDisabled = false
   organization_id = null
   isAdmin = false
+
+  collection:string = null
 
   nvl(val1, val2){
     if( val1 != undefined && val1 != null){
@@ -321,7 +327,14 @@ export class EiApParameterFormComponent implements OnInit {
 
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       width: '250px',
-      data: {calificacion:calificacion, comentario: comentario}
+      data: {
+        calificacion:calificacion, 
+        comentario: comentario,
+        collection: this.collection,
+        id: this.parameterGrade_id,
+        property: "commentSound"
+      }
+      
     });
 
     dialogRef.afterClosed().subscribe(result => {
