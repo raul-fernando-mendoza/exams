@@ -223,7 +223,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     return this.examenesImprovisacionService.printDate(d)
   }
   formatDecimal(value){
-    return value.toFixed(2)
+    return value.toFixed(1)
   }
 
   getExamCollection():string{
