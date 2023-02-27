@@ -1,32 +1,9 @@
-/*
-.materia-icon{
-    width:200px;
-    height:200px;
-    padding:5px;
-}
-*/
-/*
-.video-container{
-    width:100%;
-    margin:20px;
-    display: flex;
-    justify-content: center;     
-}
-.materia-video{
-    width:80%;
-}
-*/
 
 mat-form-field{
     display:block;
+    width:90%;
 }
 
-/*
-.description{
-    width:80%;
-    margin:10px;
-}
-*/
 /* this allows the picture to resize correctly */
 .picture{
     object-fit: cover; 
@@ -36,25 +13,9 @@ mat-form-field{
     object-fit: cover; 
     width: 60%; 
 }
-/*
-.career-video{
-    width:300px ;
-    height: 300px ;
-    display:block;
-}
-*/
 .remove-property-button{
     margin-left:50px
 }
-/*
-.examen-container{
-    margin:10px;
-}
-
-.field-name{
-    width:20em;
-}
-*/
 .description{
     width:50%;
     margin-left: auto;

@@ -129,8 +129,11 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
           
         }
       }
+      var options = {
+        exceptions:["references","Path","Url"]
+      }
       this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+        this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req, options).subscribe(
           data => { 
             var exam:Exam = data["result"]
             _resolve()

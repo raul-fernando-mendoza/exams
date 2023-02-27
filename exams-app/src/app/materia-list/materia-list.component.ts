@@ -190,8 +190,11 @@ export class MateriaListComponent implements OnInit , OnDestroy{
           materia_name:materia_name + "_copy"
         }
       }
+      var options = {
+        exceptions:["Reference","references","laboratory","Path","Url"]
+      }
       this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisationService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+        this.examImprovisationService.firestoreApiInterface("dupDocument", token, req, options).subscribe(
           data => { 
             var exam:Exam = data["result"]
             _resolve()

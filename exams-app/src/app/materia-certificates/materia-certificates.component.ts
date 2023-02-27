@@ -147,10 +147,12 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
             isLeaf:false,
             parent:row
           }
-          children.push(n)
           return db.collection("materias").doc(materiaEnrollment.materia_id).get().then( doc =>{
-            var materia:Materia = doc.data() as Materia
-            n.materia = materia                        
+            if (doc.exists == true){
+              var materia:Materia = doc.data() as Materia
+              n.materia = materia  
+              children.push(n)  
+            }
           },
           reason =>{
             console.error("ERROR error reading materias:"+reason)
@@ -158,7 +160,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           }) 
         })
         Promise.all(resultMap).then( result =>{
-          children.sort( (a,b) => { return a.materia.materia_name>b.materia.materia_name ? 1:-1})
+          children.sort( (a,b) => { return a.materia?.materia_name>b.materia?.materia_name ? 1:-1})
           children.map( value => row.children.push(value))
           row.opened = true
           resolve()
@@ -346,6 +348,11 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         this.update()
 
 
+      },
+      reason =>{
+        this.submitting = false
+        alert("error loading rows")
+        
       })
     }
     else if( this.submitting == false && row.opened == true ){

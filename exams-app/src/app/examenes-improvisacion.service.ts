@@ -24,7 +24,7 @@ export class ExamenesImprovisacionService {
   }
     
   
-  public firestoreApiInterface(action, token, data): Observable<Object> {
+  public firestoreApiInterface(action, token, data, options = null): Observable<Object> {
 
     var url = environment.chenequeURL
 
@@ -33,7 +33,8 @@ export class ExamenesImprovisacionService {
       "database":"notused",
       "action":action,
       "token":token,
-      "data":data
+      "data":data,
+      "options":options
     }
 
     console.log( JSON.stringify(request_data, null, 2))
