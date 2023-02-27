@@ -14,17 +14,27 @@ Reporte Examen
     <mat-expansion-panel class="parameter"  *ngFor="let p of examGrade.parameterGrades">
       <mat-expansion-panel-header>
         <mat-panel-title>
-         {{ p.label }} {{ p.score }}
+         {{ p.label }} {{ formatDecimal( p.score ) }}
         </mat-panel-title>
         <mat-panel-description>
-          {{ p.evaluator_comment }}
+          {{ p.evaluator_comment }}        
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-expansion-panel-content>
+        <mat-grid-list class="comment-sounds" *ngIf="p.commentSoundUrl" cols="2" rowHeight="2em">
+          <mat-grid-tile>comentarios del evaluador:</mat-grid-tile>
+          <mat-grid-tile>           
+            <audio *ngIf="p.commentSoundUrl" controls>
+              <source  [src]="p.commentSoundUrl" type="audio/mp3">
+              Your browser does not support the audio tag.
+            </audio>
+          </mat-grid-tile>
+        </mat-grid-list>
+        <mat-divider></mat-divider>
         <table class="criteria" *ngFor="let c of p.criteriaGrades">
             <th>{{ c.label }}</th>
             <tr class="aspect" *ngFor="let a of c.aspectGrades">
-                <td class="aspect_label">{{ a.label }}</td><td class="aspect_score" >{{ a.score * 10}}</td>
+                <td class="aspect_label">{{ a.label }}</td><td class="aspect_score" >{{ formatDecimal( a.score * 10 ) }}</td>
             </tr>
         </table>
       </mat-expansion-panel-content>

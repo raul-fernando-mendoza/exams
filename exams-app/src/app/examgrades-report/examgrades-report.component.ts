@@ -78,6 +78,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
               score:doc.data().score,
               applicationDate:doc.data().applicationDate.toDate(),
               evaluator_comment:doc.data().evaluator_comment,
+              commentSoundUrl:doc.data().commentSoundUrl,
               criteriaGrades:[]
             }
            
@@ -212,6 +213,9 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   formatDate(d){
     return this.examenesImprovisacionService.printDate(d)
+  }
+  formatDecimal(value){
+    return value.toFixed(2)
   }
 
 }

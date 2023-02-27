@@ -61,6 +61,7 @@ export class SoundfileEditComponent implements OnInit {
         const audioUrl = URL.createObjectURL(this.audioBlob);
         const audio = new Audio(audioUrl);
         audio.play() 
+        this.saveSound()
       }); 
       
       this.onTimerStart()
@@ -91,7 +92,7 @@ export class SoundfileEditComponent implements OnInit {
 
   }
 
-  saveSound(id){
+  saveSound(){
     if( this.audioBlob != null ){
      
 

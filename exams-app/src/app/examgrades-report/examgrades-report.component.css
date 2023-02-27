@@ -4,8 +4,13 @@
     display:block;
 }
 
+.comment-sounds{
+    margin:5px;
+}
+
 .criteria{
     width:80%;
+    margin-top: 5px;
 }
 .aspect{
     border:solid;
