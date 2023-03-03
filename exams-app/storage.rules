@@ -24,6 +24,16 @@ service firebase.storage {
       }     
       allow read, write: if isLaboratoryGradeStudent()  
     }
+    match /organizations/{organization_id}/examGrades/{examGradeId}/parameterGrades/{parameterGradeId} {
+      function isParameterGradeEvaluator() {
+        return request.auth.uid == firestore.get(/databases/(default)/documents/examGrades/$(examGradeId)/parameterGrades/$(parameterGradeId)).data.evaluator_uid
+      }  
+      function isParameterGradeStudent() {
+        return request.auth.uid == firestore.get(/databases/(default)/documents/examGrades/$(examGradeId)).data.student_uid
+      }        
+      allow read, write: if isParameterGradeEvaluator()  
+      allow read: if isParameterGradeStudent() 
+    }      
   }
   
 }
