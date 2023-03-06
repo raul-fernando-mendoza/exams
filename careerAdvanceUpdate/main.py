@@ -7,7 +7,7 @@ import firebase_admin
 firebase_admin.initialize_app()
 db = firestore.client()
 
-from careerAdvance import careerAdvanceUpdate,careerAdvanceStudentUpdate
+from careerAdvance import careerAdvanceUpdate,careerAdvanceStudentUpdate 
 
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.ERROR)
