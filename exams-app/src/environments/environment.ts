@@ -24,6 +24,7 @@ export var environment = {
   
   },
   chenequeURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/chenequeRequest",
+  examServicesURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/examServices",
   authURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/authRequest",
   certificatesDeleteURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
   certificatesCreateURL:"https://us-central1-thoth-dev-346022.cloudfunctions.net/createCertificateMateriaEnrollmentPost",

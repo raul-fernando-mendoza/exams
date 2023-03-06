@@ -46,7 +46,7 @@
 <div *ngIf="submitting==false;  else spinnerBlock">
   <mat-card *ngFor="let c of careers">
     <mat-card-title-group>
-        <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
+        <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu" >

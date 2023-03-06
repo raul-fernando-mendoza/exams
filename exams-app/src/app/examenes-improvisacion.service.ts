@@ -43,6 +43,25 @@ export class ExamenesImprovisacionService {
 
     return this.http.post(url, request_data, {headers: myheaders})
   }
+  public examServiceApiInterface(action, token, data, options = null): Observable<Object> {
+
+    var url = environment.examServicesURL
+
+    var request_data = {
+      "service":"examServices",
+      "database":"notused",
+      "action":action,
+      "token":token,
+      "data":data,
+      "options":options
+    }
+
+    console.log( JSON.stringify(request_data, null, 2))
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+    return this.http.post(url, request_data, {headers: myheaders})
+  }
 
 
   public authApiInterface(action, token, data): Promise<Object> {

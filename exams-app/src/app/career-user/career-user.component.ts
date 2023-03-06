@@ -25,6 +25,8 @@ export class CareerUserComponent implements OnInit {
 
   careerUser = null
 
+  submitting = false
+
   constructor(
     private route:ActivatedRoute,
     private userPreferences:UserPreferencesService,
@@ -46,11 +48,15 @@ export class CareerUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.update()
+    
+  }
+
+  update(){
     this.examImprovisationService.getUser(this.useruid).then( user =>{
       this.user_displayName = user.displayName
       this.loadCareers()
     })    
-    
   }
 
   loadCareers(){
@@ -185,4 +191,30 @@ export class CareerUserComponent implements OnInit {
   to_json( o ){
     return JSON.stringify( o )
   }
+
+  onCareerAdvanceUpdate(){
+    var data = {
+      organizationId:this.organization_id,
+      careerId:this.careerid, 
+      uid:this.useruid   
+    }
+    this.submitting = true
+    var thiz = this
+    this.examImprovisationService.examServiceApiInterface("careerAdvanceStudentUpdate","", data).subscribe( {
+      next(response) { 
+        alert(response["result"])
+        thiz.submitting = false
+        thiz.update()
+      },
+      error(err) { 
+        alert('Error: ' + err.error.error); 
+        thiz.submitting = false;
+      },
+      complete() { 
+        console.log('Completado'); 
+        thiz.submitting = false;        
+      }
+    })
+  }
+
 }

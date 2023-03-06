@@ -1,4 +1,5 @@
-<h2>Avance de carrera</h2>
+<h2>Avance de carrera<button *ngIf="isAdmin && submitting==false" mat-button color="primary" (click)="onCareerAdvanceUpdate()">Actualizar avance</button>
+    <div *ngIf="submitting==false;  else spinnerBlock"></div></h2>
 <div *ngIf="careerUser != null">
     <mat-toolbar>
         <mat-toolbar-row>    
@@ -52,3 +53,8 @@
     </mat-card>
 
 </div>
+
+<ng-template #spinnerBlock>
+    Cargando información.
+    <mat-spinner></mat-spinner>
+  </ng-template>

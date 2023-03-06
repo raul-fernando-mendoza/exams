@@ -38,6 +38,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   userUid = null
 
   hasEnrollments = false
+  submitting = false
 
 
   c = this.fb.group({
@@ -335,6 +336,9 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           return db.collection("materias").doc( materia.id).get().then( doc =>{
             const materiaDetail:Materia = doc.data() as Materia
             fg.controls.materia_name.setValue( materiaDetail.materia_name )
+          },
+          reason=>{
+            console.log("materia not found:" + materia.id + "-" + reason)
           })
         })
         Promise.all( map ).then( ()=>{
@@ -465,6 +469,29 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }  
   fileDeleted(e:FileLoadedEvent){
     this.examenesImprovisacionService.fileDeleted('careers', this.career.id, e)
+  }
+
+  onEnrollmentsUpdate(){
+    var data = {
+      organizationId:this.organization_id,
+      careerId:this.id     
+    }
+    this.submitting = true
+    var thiz = this
+    this.examenesImprovisacionService.examServiceApiInterface("careerAdvanceUpdate","", data).subscribe( {
+      next(response) { 
+        alert(response["result"]); 
+        thiz.submitting = false;
+      },
+      error(err) { 
+        alert('Error: ' + err.error.error); 
+        thiz.submitting = false;
+      },
+      complete() { 
+        console.log('Completado'); 
+        thiz.submitting = false;        
+      }
+    })
   }
 }
 

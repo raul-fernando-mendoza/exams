@@ -57,8 +57,9 @@ Carrera
         <app-career-user *ngIf="!isAdmin && hasEnrollments" [useruid]="userUid" [careerid]="career.id"></app-career-user>
         
         <div *ngIf="isAdmin || !hasEnrollments">
-            <h1 *ngIf="!isAdmin">Programa</h1>
-            <h1 *ngIf="isAdmin">Ciclos <button  (click)="onCreateLevel(c.controls.id.value )"><mat-icon>add</mat-icon></button> </h1>
+            <h1>Programa<button *ngIf="isAdmin && submitting==false" mat-button color="primary" (click)="onEnrollmentsUpdate()">Actualizar avance a todos los enrollados</button></h1>
+            <div *ngIf="submitting==false;  else spinnerBlock"></div>
+            <h2 *ngIf="isAdmin">Ciclos <button  (click)="onCreateLevel(c.controls.id.value )"><mat-icon>add</mat-icon></button> </h2>
             <mat-accordion class="example-headers-align" multi>
                 <mat-expansion-panel [formGroup]="l" *ngFor='let l of getFormArrayControls(c,"levels"); let k=index'>
                     <mat-expansion-panel-header>
@@ -132,3 +133,7 @@ Carrera
         </div>    
     </form>
 </div>
+<ng-template #spinnerBlock>
+    Processando.
+    <mat-spinner></mat-spinner>
+</ng-template>
