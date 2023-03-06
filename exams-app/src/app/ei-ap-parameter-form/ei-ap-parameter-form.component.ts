@@ -84,15 +84,14 @@ export class EiApParameterFormComponent implements OnInit {
   ngOnInit(): void {
 
     const examGradeQry = db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
-      let e = doc.data()
+      let e = doc.data() as ExamGrade
       this.examGrade =  this.fb.group({
         id: [e.id],
         organization_id: [this.organization_id],
         exam_id:[e.exam_id], 
-        exam_label:[e.exam_label],
-    
-        completed: [e.completed],
-        applicationDate:[this.dateFormat.formatDate(e.applicationDate.toDate())],
+     
+        isCompleted: [e.isCompleted],
+        applicationDate:[this.examImprovisacionService.printDate(e.applicationDate)],
     
         student_uid:[e.student_uid, Validators.required],
         student_name:[null],
@@ -131,7 +130,7 @@ export class EiApParameterFormComponent implements OnInit {
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
       db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).get().then( doc =>{
-        let p = doc.data()
+        let p = doc.data() as ParameterGrade
         var g = this.fb.group({
           id:[p.id],
           organization_id:[this.organization_id],
@@ -143,7 +142,8 @@ export class EiApParameterFormComponent implements OnInit {
           evaluator_uid:[p.evaluator_uid],
           evaluator_name:[null],
           evaluator_comment:[p.evaluator_comment],
-          completed:[p.completed],
+          isCompleted:[p.isCompleted],
+          commentSoundUrl:[p.commentSoundUrl],
           criteriaGrades: new UntypedFormArray([])
         })
 

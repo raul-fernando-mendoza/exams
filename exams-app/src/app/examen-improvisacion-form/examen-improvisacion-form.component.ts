@@ -384,7 +384,7 @@ export class ExamenImprovisacionFormComponent {
     }
     
     db.collection("examGrades").doc(examGrade["id"]).set(examGrade).then(()=>{
-      this.submitting = false
+
       console.log("adding parameters")
       
       let parameterGradesFA = this.examGradeFG.controls.parameterGradesFA as FormArray
@@ -396,6 +396,7 @@ export class ExamenImprovisacionFormComponent {
       Promise.all(pa).then( () =>{
         console.log("End Saving All")
         alert("Examen Creado!")
+        this.submitting = false
         this.navigationService.back()
 
       }) 

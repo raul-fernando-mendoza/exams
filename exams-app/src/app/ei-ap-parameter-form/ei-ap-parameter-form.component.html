@@ -18,7 +18,21 @@
         <div>Evaluador: {{p.controls.evaluator_name.value}}</div>
         <div>Parametro:{{p.controls.label.value}}</div>
         <div>Descripcion:{{p.controls.description.value}}</div>
-        <span *ngIf="p.controls.completed.value == true" > <b>score: {{p.controls.score.value.value}} </b></span>
+        <div class="comment" *ngIf="p.controls.isCompleted.value == true" > 
+            <b>score: {{p.controls.score.value.value}} </b>
+            <div  *ngIf="p.controls.evaluator_comment.value" >
+                comentario: {{p.controls.evaluator_comment.value}}     
+            </div>            
+            <mat-grid-list class="comment-sounds" *ngIf="p.controls.commentSoundUrl.value" cols="2" rowHeight="2em">
+                <mat-grid-tile>comentarios del evaluador:</mat-grid-tile>
+                <mat-grid-tile>           
+                  <audio *ngIf="p.controls.commentSoundUrl.value" controls>
+                    <source  [src]="p.controls.commentSoundUrl.value" type="audio/mp3">
+                    Your browser does not support the audio tag.
+                  </audio>
+                </mat-grid-tile>
+            </mat-grid-list>              
+        </div>
 
 
         <div [formGroup]="c" *ngFor="let c of getFormGroupArray(p,'criteriaGrades'); let j=index" >
@@ -71,8 +85,6 @@
                 </div> 
             </div>
         </div>
-        <div class="comment" *ngIf="p.controls.completed.value == true" >score: {{p.controls.evaluator_comment.value}} </div>
-
         <button mat-raised-button *ngIf="!isDisabled" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
     </div>
 
