@@ -17,7 +17,7 @@ log.setLevel(logging.ERROR)
 
 #this function will be called manually
 #will update the advance in that carrer for students
-def examServices(request):
+def examservices(request):
     log.debug("**** create examServices receive:" + str(request))
     log.debug("**** create examServices type:" + str(type(request)))
     log.debug("**** create examServices method:" + str(request.method))
