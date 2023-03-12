@@ -458,6 +458,9 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         })
         criterias.sort( (a,b) => a.label > b.label ? 1 : -1)
         resolve(criterias)
+      },
+      reason =>{
+        console.log("ERROR getCriteria" + reason)
       })
     })
 
@@ -473,6 +476,10 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         })
         exams.sort( (a,b) => a.label > b.label ? 1 : -1 )
         resolve( exams )
+      },
+      reason =>{
+        console.log("ERROR getExams:" + reason)
+        reject( reason )
       })
     })
   }  
@@ -486,6 +493,10 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         })
         parameters.sort( (a,b) => a.label > b.label ? 1 : -1 )
         resolve( parameters )
+      },
+      reason =>{
+        console.log("Error getParameters:" + reason )
+        reject( reason )
       })
     })
   }   
@@ -499,6 +510,9 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         })
         aspects.sort( (a,b) => a.label > b.label ? 1 : -1 )
         resolve( aspects )
+      },
+      reason =>{
+        console.log("ERROR getAspect:" + reason)
       })
     })
   }  
@@ -509,8 +523,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         resolve( exam )
       },
       reason =>{
-        console.log("ERROR:" + reason)
-        reject(null)
+        console.log("ERROR getExam:" + reason)
+        reject(reason)
       })
     })
   } 
@@ -522,8 +536,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         resolve( examGrade )
       },
       reason =>{
-        console.log("ERROR:" + reason)
-        reject(null)
+        console.log("ERROR getExamGrade:" + reason)
+        reject(reason)
       })
     })
   }  
@@ -536,6 +550,10 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
           parameterGrades.push( parameterGrade )
         })
         resolve( parameterGrades )
+      },
+      reason =>{
+        console.log("error getParameterGrades:" + reason)
+        reject( reason )
       })
     })
   }  
@@ -546,8 +564,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         resolve( materia )
       },
       reason =>{
-        console.log("ERROR:" + reason)
-        reject(null)
+        console.log("ERROR getMateria:" + reason)
+        reject(reason)
       })
     })
   }

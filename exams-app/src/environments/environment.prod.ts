@@ -26,7 +26,7 @@ export const environment = {
   
   },
   chenequeURL:"https://us-central1-thoth-qa.cloudfunctions.net/chenequeRequest",
-  examServicesURL: "https://us-central1-thoth-qa.cloudfunctions.net/examServices",
+  examServicesURL: "https://examservices-534zkr6qdq-uc.a.run.app",
   authURL:"https://us-central1-thoth-qa.cloudfunctions.net/authRequest",
   certificatesDeleteURL:"https://us-central1-thoth-qa.cloudfunctions.net/deleteCertificateMateriaEnrollmentPost",
   certificatesCreateURL:"https://us-central1-thoth-qa.cloudfunctions.net/createCertificateMateriaEnrollmentPost",

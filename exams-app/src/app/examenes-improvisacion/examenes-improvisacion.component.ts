@@ -213,51 +213,45 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
         }) 
       )  
       transaction.push(
-        new Promise<void>( (resolve, reject) =>{
+        new Promise<void>( (resolve_local, reject_local) =>{
           this.examImprovisacionService.getExamGrade(examGrade_id).then( examGrade =>{
             var localTransactions = []
             obj.examGrade = examGrade
             localTransactions.push(
               this.examImprovisacionService.getExam( examGrade.materia_id, examGrade.exam_id).then( exam =>{
                 obj.exam = exam
-                resolve()
               },
               reason =>{
                 console.log("ERROR reading exam:" + reason)
-                resolve()
               })
             )
             localTransactions.push(
               this.examImprovisacionService.getMateria( examGrade.materia_id).then( materia =>{
                 obj.materia = materia
-                resolve()
               },
               reason =>{
                 console.log("ERROR materia cannot be read:" + reason)
-                resolve()
               })
             )
             localTransactions.push(
               this.getUser(examGrade.student_uid).then(student =>{
                 obj.student = student
-                resolve()
               },
               reason =>{
                 console.log("ERROR student cannot be read:" + reason)
-                resolve()
               }) 
             )   
             Promise.all( localTransactions ).then( () =>{
-              resolve()
+              resolve_local()
             },
             reason=>{
               console.log("ERROR localtransaction:" + reason)
-              resolve()
+              reject_local()
             })         
           },
           reason =>{
-            console.log("ERROR loading examgrade:" + reason)
-            resolve() //will ignore the fact we can not read some records
+            console.log("ERROR loading addParameterGrade:" + reason)
+            resolve(null) //will ignore the fact we can not read some records
           })
   
         })
