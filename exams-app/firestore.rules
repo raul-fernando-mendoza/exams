@@ -135,7 +135,24 @@ service cloud.firestore {
         allow read, write: if true 
 
       }     
-    }      
+    }   
+    match /revision/{revisionId} {
+      function isStudent(request) {
+        return request.auth.uid == get(/databases/$(database)/documents/revision/$(revisionId)).data.student_uid
+      }
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/revision/$(revisionId)).data.organization_id) in request.auth.token
+      }    
+      allow create: if ('role-admin-' + request.resource.data.organization_id) in request.auth.token  
+      allow read, write: if ('role-admin-' + resource.data.organization_id) in request.auth.token 
+      allow create: if( request.auth.uid == request.resource.data.student_uid )
+      allow read, write: if ( request.auth.uid == resource.data.student_uid )
+      match /{document=**} {    
+        allow read, write: if isAdmin(request) 
+        allow read, write: if isStudent(request) 
+
+      } 
+    }         
   }
  
 }

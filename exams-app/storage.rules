@@ -33,7 +33,13 @@ service firebase.storage {
       }        
       allow read, write: if isParameterGradeEvaluator()  
       allow read: if isParameterGradeStudent() 
-    }      
+    } 
+    match /organizations/{organization_id}/revision/{revisionId} {  
+      allow read, write: if request.auth.uid != null
+      match /{document=**} { 
+      	allow read, write: if request.auth.uid != null
+      }      
+    }          
   }
   
 }
