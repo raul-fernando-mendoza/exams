@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { db, storage, environment } from 'src/environments/environment';
-import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, User } from './exams/exams.module';
+import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, Revision, User } from './exams/exams.module';
 import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
+import { UserLoginService } from './user-login.service';
+import { UserPreferencesService } from './user-preferences.service';
 
 export interface FileLoaded{
   path:string
@@ -19,7 +21,11 @@ export class ExamenesImprovisacionService {
   
 
   
-  constructor(private http: HttpClient) { 
+  constructor(
+     private http: HttpClient
+    ) { 
+
+    
 
   }
     
@@ -358,7 +364,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     return this.http.post(url, request_data, {headers: myheaders})
   }  
 
-  fileLoaded(db_collection, id, e:FileLoadedEvent):Promise<FileLoaded>{
+  fileLoaded(db_collection:string, id:string, e:FileLoadedEvent):Promise<FileLoaded>{
     return new Promise<FileLoaded>( (resolve, reject) =>{
       db.collection(db_collection).doc(id).get().then( doc =>{
         var promises = []
@@ -566,6 +572,42 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       reason =>{
         console.log("ERROR getMateria:" + reason)
         reject(reason)
+      })
+    })
+  }
+
+  createRevision(revision:Revision):Promise<void>{    
+    return db.collection("revision" ).doc(revision.id).set(
+      revision
+    ).then( ()=>{
+      console.log("revision added")
+    },
+    reason =>{
+      alert("ERROR: adding revision" + reason)
+    })
+  }  
+  updateRevision(revision:Revision):Promise<void>{
+    
+    return db.collection("revision" ).doc(revision.id).update(
+      revision
+    ).then( ()=>{
+      console.log("revision updated")
+    },
+    reason =>{
+      alert("ERROR: updateRevision revision" + reason)
+    })
+  }  
+  getRevision(id:string):Promise<Revision>{
+    
+    return new Promise<Revision>((resolve,reject) =>{
+      db.collection("revision" ).doc(id).get().then( doc => {
+        if( doc.exists ){
+          var revision = doc.data() as Revision
+          resolve( revision)
+        }
+        else{
+          reject( "revision:" + id + "not exist")
+        }
       })
     })
   }

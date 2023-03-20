@@ -42,6 +42,9 @@ import { LaboratoryEditComponent } from './laboratory-edit/laboratory-edit.compo
 import { LaboratoryGradeEditComponent } from './laboratory-grade-edit/laboratory-grade-edit.component';
 import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory-grade-list.component';
 import { MateriaEnrollmentsListComponent } from './materia-enrollments-list/materia-enrollments-list.component';
+import { RevisionListComponent } from './revision-list/revision-list.component';
+import { RevisionEditComponent } from './revision-edit/revision-edit.component';
+
 
 const routes: Routes = [
   
@@ -89,6 +92,8 @@ const routes: Routes = [
   { path: 'laboratory-grade-edit', component:LaboratoryGradeEditComponent },
   { path: 'laboratory-grade-list', component:LaboratoryGradeListComponent },
   { path: 'user-enrollments', component:MateriaEnrollmentsListComponent},
+  { path: 'revision-list', component:RevisionListComponent},
+  { path: 'revision-edit', component:RevisionEditComponent},
   { path: '**', component: WelcomeComponent },  
   
 ];

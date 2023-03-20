@@ -1,0 +1,9 @@
+<div #status></div>
+<input matInput disabled #filename > 
+<button mat-icon-button  matSuffix (click)="file.click()" >
+<mat-icon>attach_file</mat-icon> 
+</button>
+<button class="remove-property-button" mat-icon-button matSuffix  (click)="removePropertyValue()">
+<mat-icon>delete</mat-icon>
+</button>      
+<input hidden (change)="selectFile($event)" name="file" #file type="file" >

@@ -2,8 +2,10 @@
 
 <mat-slide-toggle [(ngModel)]="isReleased" (change)="onReleased()">Released: {{isReleased}}</mat-slide-toggle>
 <app-date-selector [value]="selectedDay" (change)="onDateSelect($event)"></app-date-selector>
-<app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
-
+<mat-form-field appearance="fill">
+        <mat-label>Estudiante</mat-label>
+        <app-user-selector (userselected)="onUserSelected($event)"></app-user-selector>
+</mat-form-field>
 <mat-table mat-table [dataSource]="laboratoryGrades">
         <ng-container matColumnDef="laboratory_name">
                 <mat-header-cell *matHeaderCellDef>Leccion interactiva</mat-header-cell>

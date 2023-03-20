@@ -91,6 +91,10 @@ import { ExamGradesSearchComponent } from './exam-grades-search/exam-grades-sear
 import { ExamGradesListComponent } from './exam-grades-list/exam-grades-list.component';
 import { YtPlayerAngularModule } from 'yt-player-angular';
 import { SoundfileEditComponent } from './soundfile-edit/soundfile-edit.component';
+import { RevisionListComponent } from './revision-list/revision-list.component';
+import { RevisionEditComponent } from './revision-edit/revision-edit.component';
+import { FileControlComponent } from './file-control/file-control.component';
+import { RevisionCreateDialog } from './revision-create-dialog/revision-create-component';
 
 @NgModule({
     declarations: [
@@ -146,7 +150,11 @@ import { SoundfileEditComponent } from './soundfile-edit/soundfile-edit.componen
         MateriaLaboratoryListComponent,
         MateriaExamsListComponent,
         ExamGradesListComponent,
-        SoundfileEditComponent
+        SoundfileEditComponent,
+        RevisionListComponent,
+        RevisionEditComponent,
+        FileControlComponent,
+        RevisionCreateDialog
     ],
     imports: [
         BrowserModule,

@@ -1,0 +1,25 @@
+<p>Revisión</p>
+
+<div *ngIf="revisionFG" [formGroup]="revisionFG">
+    <p>
+        <mat-form-field appearance="fill">
+            <mat-label>Titulo</mat-label>
+            <input matInput formControlName="label" required>
+        </mat-form-field>
+    <p>
+    <mat-form-field appearance="fill">
+        <mat-label>Video</mat-label>
+        <app-file-control [basepath]="getBasePath()" formControlName="videoPath" (onLoad)="fileLoaded($event)" placeholder="seleccione video" required></app-file-control> 
+    </mat-form-field>   
+    </p>
+    <p>
+    <mat-form-field *ngIf="isAdmin" appearance="fill">
+        <mat-label>Estudiante</mat-label>
+        <app-user-selector formControlName="userUid" (userselected)="onUserSelected($event)" required></app-user-selector>
+    </mat-form-field>
+    </p>
+    <button mat-button mat-dialog-close>Cancelar</button>     
+    <button mat-button [disabled]="!revisionFG.valid" (click)="onSubmit()">Submit</button>
+    <br/>
+</div>
+

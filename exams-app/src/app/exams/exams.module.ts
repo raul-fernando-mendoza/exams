@@ -496,3 +496,17 @@ export interface Reference{
   filePath:string
 }
 
+export enum RevisionStatus { requested , completed }
+export const RevisionStatusNames=["pendiente" , "revisado"]  
+export interface Revision{
+  id:string
+  organization_id?:string
+  label?:string
+  student_uid?:string
+  date?:Date
+  dateId?:number
+  status?:RevisionStatus
+  videoUrl?:string
+  videoPath?:string
+}
+
