@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import { UserPreferencesService } from '../user-preferences.service';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { FileLoadedEvent } from '../file-loader/file-loader.component';
-import { Revision, RevisionStatus } from '../exams/exams.module';
+import { Revision, RevisionStatus, VideoMarker } from '../exams/exams.module';
 import { db , storage} from 'src/environments/environment';
 import { FormBuilder } from '@angular/forms';
 
@@ -25,14 +25,17 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
   userUid=null
 
   revision:Revision=null
+  videoMarker:VideoMarker
 
-  collection = "revision"
+  collection = "Revision"
   unsubscribe 
 
   revisionFG = this.fb.group({
     videoPath:[null],
     userUid:[null]
   })  
+
+
 
   constructor(
      private route: ActivatedRoute
@@ -67,8 +70,13 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
     this.unsubscribe = db.collection(this.collection).doc(this.parameterId).onSnapshot( doc =>{
       this.revision= doc.data() as Revision
       var controls = this.revisionFG.controls
-      controls.videoPath.setValue(this.revision.videoPath)
+      //controls.videoPath.setValue(this.revision.videoPath)
       controls.userUid.setValue(this.revision.student_uid)
+      db.collection(this.collection + "/"+ this.revision.id + "/VideoMarker" ).get().then( set=>{
+        set.docs.map( doc =>{
+          this.videoMarker = doc.data() as VideoMarker
+        })
+      })
     },
     reason =>{
       alert("ERROR reading revision:" + reason)
@@ -79,10 +87,10 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
   getBasePath(){
     return "organizations/" + this.organizationId + "/"+ this.collection + "/" + this.revision.id 
   } 
-
+/*
   fileLoaded(path){
-    this.revision.videoPath = null
-    this.revision.videoUrl = null
+    //this.revision.videoPath = null
+    //this.revision.videoUrl = null
     var videoPath = this.revisionFG.controls.videoPath.value
     let storageRef = storage.ref( videoPath )
     storageRef.getDownloadURL().then( videoUrl =>{
@@ -95,10 +103,11 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
     })
 
   }  
+  
   fileDeleted(e){
     this.revision.videoPath= null
   }  
-
+  */
   onUserSelected(value){
     console.log( value )
   }

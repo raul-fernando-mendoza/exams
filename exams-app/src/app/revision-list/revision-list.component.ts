@@ -25,7 +25,7 @@ interface RevisionItem{
 export class RevisionListComponent implements OnInit, OnDestroy {
   @ViewChild(MatTable) matTable:MatTable<RevisionItem>
 
-  collection="revision"
+  collection="Revision"
   displayedColumns=["date","label", "student","status"]
   organization_id = null
   isAdmin=false
@@ -117,7 +117,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(RevisionCreateDialog, {
       height: '400px',
       width: '250px',
-      data: null
+      data: "" 
     });
   
     dialogRef.afterClosed().subscribe(data => {

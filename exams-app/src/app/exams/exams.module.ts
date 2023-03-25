@@ -506,7 +506,29 @@ export interface Revision{
   date?:Date
   dateId?:number
   status?:RevisionStatus
-  videoUrl?:string
-  videoPath?:string
 }
 
+export interface MarkerPoint{
+  x:number
+  y:number
+}
+
+export interface MarkerPath{
+  id:string
+  points:MarkerPoint[]
+}
+
+
+export interface Marker{
+  id:string
+  loopDuration?:number
+  startTime?:number //seconds float
+  commentPath?:string
+  commentUrl?:string
+}
+
+export interface VideoMarker{
+  id:string
+  videoUrl?:string
+  videoPath?:string  
+}
