@@ -179,7 +179,9 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
           let enrollment:MateriaEnrollment = doc.data() as MateriaEnrollment
           return db.collection('materias').doc(enrollment.materia_id).get().then( materiaDoc =>{
             var materia = materiaDoc.data() as Materia
-            materias.push(materia)
+            if (materia.isDeleted == false){
+              materias.push(materia)
+            }
           }) 
         })
         Promise.all(allPromeses).then(() =>{

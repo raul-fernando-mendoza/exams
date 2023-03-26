@@ -150,8 +150,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           return db.collection("materias").doc(materiaEnrollment.materia_id).get().then( doc =>{
             if (doc.exists == true){
               var materia:Materia = doc.data() as Materia
-              n.materia = materia  
-              children.push(n)  
+              n.materia = materia 
+              if(materia.isDeleted == false){
+                children.push(n)  
+              }
             }
           },
           reason =>{
