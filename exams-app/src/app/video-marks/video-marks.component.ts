@@ -40,10 +40,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @ViewChild(BLACKBOARD) canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('target') target: ElementRef;
 
-  @Input() parentCollection:string = "drawing/123"
-  @Input() id:string="123"
+  @Input() parentCollection:string 
+  @Input() id:string
 
-  videoMarker:VideoMarker=null
+  videoMarker:VideoMarker
 
   public ctx: CanvasRenderingContext2D;
   elem:HTMLCanvasElement
@@ -110,6 +110,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   isPlayingAllMarkers = false
 
   sourceAudioBuffer = null
+
+  colors = ['black','red','blue','green']
+  selectedColor:string = 'red'
   
   constructor(
     private userPreferencesService: UserPreferencesService
@@ -134,10 +137,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     if( !this.isIOS() ){
       this.isUnmuted = true
     }
-    this.examenesImprovisacionService.getObject(this.parentCollection + "/VideoMarker",this.id).then( (obj)=>{
-      this.videoMarker = obj as VideoMarker
-      this.player.src({ type: 'video/mp4', src: this.videoMarker.videoUrl });
-    })
+
 
     
   }
@@ -231,7 +231,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 6;
-    this.ctx.strokeStyle = "red";    
+    this.ctx.strokeStyle = this.selectedColor;    
 
     
     
@@ -290,8 +290,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       })
     });
 
+    db.collection(this.parentCollection + "/VideoMarker").doc(this.id).get().then( (doc)=>{
+      this.videoMarker = doc.data() as VideoMarker
+      this.player.src({ type: 'video/mp4', src: this.videoMarker.videoUrl });
+      this.loadMarkers()
+    })
     
-    this.loadMarkers()
      
   }  
 
@@ -354,36 +358,38 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   
   paint(e) {
 
+    if( this.isMarkerEdited ){
+      if (e) {
+        e.preventDefault();
+        this.setPointFromEvent(this.point, e);
+      }
 
-    if (e) {
-      e.preventDefault();
-      this.setPointFromEvent(this.point, e);
-    }
+      // Saving all the points in an array
+      this.ppts.push({
+        x: this.point.x,
+        y: this.point.y,
+        color:this.selectedColor
+      });
 
-    // Saving all the points in an array
-    this.ppts.push({
-      x: this.point.x,
-      y: this.point.y
-    });
+      // For the last 2 points
+      if ( this.ppts.length > 2){
+        let i = this.ppts.length - 2
+        this.ctx.beginPath();
+        this.ctx.lineJoin = this.ctx.lineCap = 'round';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = this.selectedColor;        
+        this.ctx.moveTo(this.ppts[i].x, this.ppts[i].y)
 
-    // For the last 2 points
-    if ( this.ppts.length > 2){
-      let i = this.ppts.length - 2
-      this.ctx.beginPath();
-      this.ctx.lineJoin = this.ctx.lineCap = 'round';
-      this.ctx.lineWidth = 4;
-      this.ctx.strokeStyle = "red";        
-      this.ctx.moveTo(this.ppts[i].x, this.ppts[i].y)
-
-      this.ctx.quadraticCurveTo(
-        this.ppts[i].x,
-        this.ppts[i].y,
-        this.ppts[i + 1].x,
-        this.ppts[i + 1].y
-      );
-      this.ctx.stroke()
-      this.ctx.closePath()
-      
+        this.ctx.quadraticCurveTo(
+          this.ppts[i].x,
+          this.ppts[i].y,
+          this.ppts[i + 1].x,
+          this.ppts[i + 1].y
+        );
+        this.ctx.stroke()
+        this.ctx.closePath()
+        
+      }
     }
   }; 
 
@@ -392,10 +398,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 4;
-    this.ctx.strokeStyle = "red";        
+    this.ctx.strokeStyle = ppts[0].color;        
     this.ctx.moveTo(ppts[0].x, ppts[0].y)
     for( let i=0; i<ppts.length-1; i++){
-
+      this.ctx.strokeStyle = ppts[i].color; 
       this.ctx.quadraticCurveTo(
         ppts[i].x,
         ppts[i].y,
@@ -496,7 +502,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }  
 
   loadMarkers(){
-      var unsubscribe = db.collection(this.parentCollection + "/Marker").onSnapshot( markerSet =>{
+      var unsubscribe = db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker").onSnapshot( markerSet =>{
         this.markerItems.length = 0
         
 
@@ -539,7 +545,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   loadPaths( path:string, markerItem:MarkerItem):Promise<void>{
     return new Promise<void>((resolve, reject)=>{
       
-      var unsubscribe = db.collection(this.parentCollection + "/Marker/" + markerItem.marker.id + "/MarkerPath").onSnapshot( set =>{
+      var unsubscribe = db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker/" + markerItem.marker.id + "/MarkerPath").onSnapshot( set =>{
         markerItem.markerPaths.length = 0
         set.docs.map( doc=>{
           var markerPath = doc.data() as MarkerPath 
@@ -680,7 +686,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   //save an audio and return the path
   saveSound(id, audioBlob):Promise<string>{
     return new Promise<string>((resolve,reject)=>{
-      const bucketName = "organizations/" + this.organization_id + "/" + this.parentCollection + "/breakpoint_" + id + ".wav"
+      const bucketName = "organizations/" + this.organization_id + "/" + this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker/" + id + "/breakpoint_" + id + ".wav"
     
       var storageRef = storage.ref( bucketName )
 
@@ -776,7 +782,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     return new Promise<void>((resolve, reject)=>{
       let marker:Marker = markerItem.marker
       let transactions = []
-      db.collection(this.parentCollection + "/Marker").doc(marker.id).set(marker).then( () =>{
+      db.collection(this.parentCollection + "/VideoMarker/"+ this.videoMarker.id + "/Marker").doc(marker.id).set(marker).then( () =>{
           this.paths
           console.log("marker saved")
           this.saveMarkerPaths( marker.id, markerItem.markerPaths).then(()=>{
@@ -793,7 +799,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   saveMarkerPaths( markerId:string, paths:MarkerPath[] ):Promise<void>{
     return new Promise<null>((resolve, reject)=>{
       let transactions = paths.map( path =>{
-        return db.collection( this.parentCollection + "/Marker/" + markerId + "/MarkerPath").doc( path.id ).set( path ).then( ()=>{
+        return db.collection( this.parentCollection + "/VideoMarker/" + this.videoMarker.id +  "/Marker/" + markerId + "/MarkerPath").doc( path.id ).set( path ).then( ()=>{
           console.log("saved path:"+ path.id)
         },
         reason=>{
@@ -813,9 +819,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }
 
 
-  onDelete( id ){
+  onDelete( markerItem:MarkerItem ){
     
-    var storageRef = storage.ref( this.videoMarker.videoPath )
+    var storageRef = storage.ref( markerItem.marker.commentPath )
     storageRef.delete().then( () =>{
       console.log("file deleted")
     })
@@ -823,7 +829,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       console.log("there has been an error:" + reason)
     })
 
-    db.collection(this.parentCollection + "/Marker" ).doc( id ).delete().then( data =>{
+    db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker").doc( markerItem.marker.id ).delete().then( data =>{
       console.log("deleted")
     })
     .catch( reason =>{
@@ -1006,6 +1012,11 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     else{  
       this.lastMarkerIdx = null
     }
+  }
+
+  onRestartVideo(){
+    this.player.currentTime( 0 )
+    this.lastMarkerIdx = null
   }
 
   displayTime( value:number ){

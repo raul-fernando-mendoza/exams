@@ -22,8 +22,8 @@
 <div *ngIf="isUnmuted">
   <mat-card>
     <mat-card-content>
-      <button mat-raised-button *ngIf="isMarkerEdited==false" (click)="onPlayVideo()"><span *ngIf="isPlaying==false">Play</span><span *ngIf="isPlaying==true">Stop</span></button>
-
+      <button mat-raised-button *ngIf="isMarkerEdited==false" (click)="onPlayVideo()"><mat-icon *ngIf="isPlaying==false">play_arrow</mat-icon><mat-icon *ngIf="isPlaying==true">stop_circle</mat-icon></button>
+      <button mat-raised-button *ngIf="isMarkerEdited==false" (click)="onRestartVideo()"><mat-icon>first_page</mat-icon></button>
       <button mat-raised-button (click)="backward()">&lt;</button> 
 
       <mat-slider min="0" max="100" discrete  (valueChange)="onSlide($event)" [value]="percentage">
@@ -33,7 +33,7 @@
       <button mat-raised-button (click)="forward()">&gt;</button> 
 
       {{ displayTime(currentTime) }} of {{ displayTime(videoDuration) }}
-      <button (click)="onMute()">mute</button>  
+      <button mat-button (click)="onMute()"><mat-icon>volume_off</mat-icon></button>  
 
       <mat-form-field appearance="fill">
         <mat-label>Speed</mat-label>
@@ -58,7 +58,16 @@
         {{ displayTime(startMarker) }} - {{ displayTime(startMarker + loopDuration) }}
         <button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false"><mat-icon>keyboard_voice</mat-icon></button>
 
+        <mat-form-field class="color" appearance="fill">
+          <mat-label>Favorite food</mat-label>
+          <mat-select [(ngModel)]="selectedColor" name="color">
+            <mat-option  *ngFor="let color of colors" [value]="color">
+              <span [ngClass]="color">{{color}}</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>        
         <button mat-raised-button (click)="onUndo()" *ngIf="isAdmin"><mat-icon>undo</mat-icon></button>
+
       </mat-card-content>
       <mat-card-actions>
         <button mat-button color="primary" (click)="onSave()">Guardar</button>
@@ -69,11 +78,11 @@
   </div>
   <div id="commentStatus"></div> 
 
-  <mat-divider></mat-divider>
-  <div>
+  <mat-divider ></mat-divider>
+  <div *ngIf="isMarkerEdited == false">
     <div *ngFor="let markerItem of markerItems; index as i;" [ngClass]="isMarkerActive && this.lastMarkerIdx == i ? 'selected-observation' : ''">
       <button mat-stroked-button (click)="playMarker(i, true)"><span >Observacion en: {{i+1}}-{{ displayTime(markerItem.marker.startTime) }}</span></button>
-      <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(markerItem.marker.id)">Delete</button>
+      <button mat-raised-button *ngIf="isAdmin" (click)="onDelete(markerItem)">Delete</button>
     </div>
   </div>
 </div>

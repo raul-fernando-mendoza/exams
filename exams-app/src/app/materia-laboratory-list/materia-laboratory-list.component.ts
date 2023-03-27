@@ -45,7 +45,10 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe()
+    if( this.unsubscribe ){
+      this.unsubscribe()
+    }
+    
   }
 
   ngOnInit(): void {

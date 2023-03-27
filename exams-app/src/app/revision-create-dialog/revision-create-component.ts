@@ -18,8 +18,9 @@ import { DateFormatService } from '../date-format.service';
 export class RevisionCreateDialog { 
 
   organizationId=null
-  collection = "revision"
+  collection = ""
   id=uuid.v4()
+  markerId=uuid.v4()
   isAdmin=false
   userUid=null  
 
@@ -53,12 +54,8 @@ export class RevisionCreateDialog {
   }
   getBasePath(){
     let path = ""
-    if( this.collection.length == 0){
-      path = "organizations/" + this.organizationId + "/revision/" + this.id 
-    }
-    else{
-      path = "organizations/" + this.organizationId + "/" + this.collection.toLowerCase() + "/revision/" + this.id 
-    }
+    path = "organizations/" + this.organizationId + "/Revision/" + this.id + "/VideoMarker/" + this.markerId
+
     return path
   }    
   fileLoaded(path){
@@ -86,13 +83,14 @@ export class RevisionCreateDialog {
         status:RevisionStatus.requested,
      
       }
-      this.examImprovisacionService.saveObject( this.collection + "/Revision", revision ).then(()=>{
+      this.examImprovisacionService.saveObject( "Revision", revision ).then(()=>{
         var videoMarker:VideoMarker= {
-          id:uuid.v4(),
+          id:this.markerId,
           videoUrl:url,
-          videoPath:videoPath             
+          videoPath:videoPath,
+          isDeleted:false           
         }
-        this.examImprovisacionService.saveObject( this.collection + "/Revision/" + revision.id + "/VideoMarker", videoMarker ).then( ()=>{
+        this.examImprovisacionService.saveObject( "Revision/" + revision.id + "/VideoMarker", videoMarker ).then( ()=>{
           this.dialogRef.close(this.id)
         })
       })

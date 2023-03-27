@@ -59,3 +59,18 @@ button{
 .selected-observation{
     background-color: burlywood;
 }
+.color{
+    width:10em;
+}
+.red{
+    color:red
+}
+.green{
+    color:green
+}
+.blue{
+    color:blue
+}
+.black{
+    color:black
+}

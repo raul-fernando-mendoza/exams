@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder,Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
@@ -7,12 +7,13 @@ import { NavigationService } from '../navigation.service';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
-import { getLaboratoryStatusName, Laboratory, LaboratoryGrade, LaboratoryGradeStatus, LaboratoryGradeStudentData } from '../exams/exams.module';
+import { getLaboratoryStatusName, Laboratory, LaboratoryGrade, LaboratoryGradeStatus, LaboratoryGradeStudentData, Marker, VideoMarker } from '../exams/exams.module';
 import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observer } from 'rxjs';
 import { FileLoadObserver } from '../load-observers/load-observers.module';
 import { FileLoadedEvent } from '../file-loader/file-loader.component';
+import * as uuid from 'uuid';
 
 
 @Component({
@@ -23,6 +24,7 @@ import { FileLoadedEvent } from '../file-loader/file-loader.component';
 export class LaboratoryGradeEditComponent implements OnInit {
 
   public LaboratoryGradeStatus = LaboratoryGradeStatus
+  
   organizationId = null
   isAdmin = false
   isLoggedIn = false
@@ -30,13 +32,21 @@ export class LaboratoryGradeEditComponent implements OnInit {
   laboratoryGradeId = null
   laboratoryGrade:LaboratoryGrade = null
   laboratory:Laboratory = null
+  videoMarker = null
   unsubscribe = null
-  unsubscribeStudentData = null
-
+  unsubscribeVideoMarker = null
+ 
   videoUrl:[null]
   videoPath:[null]  
 
   path = "laboratoryGrades" 
+
+  newVideoMakerId= uuid.v4()
+
+  videoMarkerFG = this.fb.group({
+    videoPath:["", Validators.required],
+    videoUrl:["",Validators.required]
+  })
 
   constructor(
     private fb: FormBuilder
@@ -64,26 +74,18 @@ export class LaboratoryGradeEditComponent implements OnInit {
     this.unsubscribe = db.collection("laboratoryGrades").doc(this.laboratoryGradeId).onSnapshot( doc =>{
       this.laboratoryGrade  = doc.data() as LaboratoryGrade
       this.loadLaboratory( this.laboratoryGrade.materia_id, this.laboratoryGrade.laboratory_id )
-      if( this.unsubscribeStudentData ){ 
-        this.unsubscribeStudentData() 
+      if( this.unsubscribeVideoMarker ){ 
+        this.unsubscribeVideoMarker() 
       }
-      this.unsubscribeStudentData = db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/studentData" ).doc("practiceData").onSnapshot( snapshot =>{
-        var laboratoryGradeStudentData:LaboratoryGradeStudentData = snapshot.data() as LaboratoryGradeStudentData
-        if( laboratoryGradeStudentData == null ){
-          this.laboratoryGrade.studentData = {
-            videoPath:null,
-            videoUrl:null 
-          }
-        }
-        else{
-          this.laboratoryGrade.studentData = laboratoryGradeStudentData
-        }
+      this.unsubscribeVideoMarker = db.collection("laboratoryGrades/" + this.laboratoryGradeId + "/VideoMarker" ).where("isDeleted","==",false).onSnapshot( set =>{
+        set.docs.map( doc =>{
+          this.videoMarker = doc.data() as VideoMarker
+        })          
+      },
+      reason =>{
+        alert("ERROR reading video Marker:" + reason)
       })
     })
-
-
-    
-
   }
   loadLaboratory(materia_id:string, laboratory_id:string){
 
@@ -100,8 +102,8 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.unsubscribe()
-    if( this.unsubscribeStudentData ){
-      this.unsubscribeStudentData()
+    if( this.unsubscribeVideoMarker ){
+      this.unsubscribeVideoMarker()
     }
   }
 
@@ -114,6 +116,32 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
 
   onCompleted(){
+
+    if( this.videoMarker ){
+      db.collection( this.getCollection() + "/VideoMarker").doc(this.videoMarker.id).update({isDeleted:true}).then( ()=>{
+        console.log("Old videoMarker updated")
+      },
+      reason=>{
+        alert("Error creating videoMarker:" + reason)
+      })
+    } 
+    
+    let videoPath = this.videoMarkerFG.controls.videoPath.value
+    let videoUrl = this.videoMarkerFG.controls.videoUrl.value
+    let videoMarker:VideoMarker={
+      id:this.newVideoMakerId,
+      videoPath:videoPath,
+      videoUrl:videoUrl,
+      isDeleted:false
+    }
+    db.collection( this.getCollection() + "/VideoMarker").doc(videoMarker.id).set(videoMarker).then( ()=>{
+      console.log("Video Marker completed")
+    },
+    reason=>{
+      alert("Error creating videoMarker:" + reason)
+    })
+
+
     const data = {
       status:LaboratoryGradeStatus.requestGrade,
       requestedDay:this.dateFormatService.getDayId(new Date()),
@@ -144,44 +172,60 @@ export class LaboratoryGradeEditComponent implements OnInit {
   getLaboratoryGradeStatusName(laboratoryGradeStatus:LaboratoryGradeStatus){
     return getLaboratoryStatusName(laboratoryGradeStatus)
   }
+  getBasePath(){
+    return "organizations/" + this.organizationId + "/laboratoryGrades/" + this.laboratoryGradeId + "/VideoMarker/" + "practiceData"
+  }
+  getCollection(){
+    return "/laboratoryGrades/" + this.laboratoryGradeId
+  }  
 
-  fileLoaded(e:FileLoadedEvent){
+  removePreviousVideo(videoPath:string):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      db.collection(this.getCollection() + "/VideoMarker").doc("practiceData").get().then(doc=>{
+        if( doc.exists ){
+          let previousVideoMarker=doc.data() as VideoMarker
+          if( previousVideoMarker.videoPath != videoPath ){
+            var storageOldRef = storage.ref( previousVideoMarker.videoPath ).delete().then( () =>{
+              console.log("previous path was removed")
+            })
+          }
+          //now remove all previous sounds
+          db.collection( this.getCollection() + "/VideoMarker/practiceData/Marker").get().then( set =>{
+            let transactions = set.docs.map( doc =>{
+              let marker = doc.data() as Marker
+              return storage.ref( marker.commentPath ).delete().then( () =>{
+                console.log("previous commentPath was removed")
+              })
+            })
+            Promise.all( transactions ).then(
+              ()=>{
+                resolve()
+              },
+              reason=>{
+                reject( reason )
+              }
+            )
+          })            
+        }
+        else{
+          resolve()
+        }
+      })
+    })
+  }
 
-    this.examenesImprovisacionService.fileLoaded('laboratoryGrades/'+ this.laboratoryGradeId + "/studentData" , "practiceData", e)
+  fileLoaded(videoPath:string){
+    let storageRef = storage.ref( videoPath )
+    storageRef.getDownloadURL().then( url =>{
+      this.videoMarkerFG.controls.videoUrl.setValue( url )
+    })    
 
   }  
   fileDeleted(e:FileLoadedEvent){
-    this.examenesImprovisacionService.fileDeleted('laboratoryGrades/' + this.laboratoryGradeId + "/studentData", "practiceData", e)
+    this.examenesImprovisacionService.fileDeleted('laboratoryGrades/' + this.laboratoryGradeId + "/VideoMarker", "practiceData", e)
   }
-  getBasePath(){
-    return "organizations/" + this.organizationId + "/laboratoryGrades/" + this.laboratoryGradeId + "/studentData/" + "practiceData"
-  }
+
   getVideoId(url){
     return this.examenesImprovisacionService.getVideoId(url)
   }
-/*
-  createLaboratoryGrade( ){
-    const id = uuid.v4()
-    if( l.laboratoryGrade == null){
-      var lgNew:LaboratoryGrade = {
-        student_uid:this.userUid,
-        materia_id:this.materiaid,
-        organization_id:this.organization_id,
-        laboratory_id:l.laboratory.id, 
-        status:LaboratoryGradeStatus.initial
-      }
-      this.createLaboratoryGrade( lgNew )
-    }
-
-    laboratoryGrade.id = id
-
-    laboratoryGrade.createdDay = this.dateFormatService.getDayId(new Date())
-    laboratoryGrade.createdMonth = this.dateFormatService.getMonthId(new Date())
-    laboratoryGrade.createdYear = this.dateFormatService.getYearId(new Date())
-
-    db.collection("laboratoryGrades").doc(id).set(laboratoryGrade).then(data =>{
-      this.openLaboratoryGrade( id )
-    })
-  }
-*/
 }

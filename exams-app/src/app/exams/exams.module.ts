@@ -386,7 +386,6 @@ export interface LaboratoryGrade{
   requestedMonth?:number
   requestedYear?:number
 
-  studentData?:LaboratoryGradeStudentData
 }
 export interface LaboratoryGradeStudentData{
   videoPath?:string
@@ -511,6 +510,7 @@ export interface Revision{
 export interface MarkerPoint{
   x:number
   y:number
+  color:string
 }
 
 export interface MarkerPath{
@@ -531,4 +531,5 @@ export interface VideoMarker{
   id:string
   videoUrl?:string
   videoPath?:string  
+  isDeleted:boolean
 }

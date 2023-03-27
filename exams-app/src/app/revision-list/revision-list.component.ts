@@ -140,7 +140,12 @@ export class RevisionListComponent implements OnInit, OnDestroy {
 
   onRowClick(row){
     console.log(row.revision.id)
-    this.router.navigate(['revision-edit',{ revisionId:row.revision.id }])
+    if( this.isAdmin || row.revision.status == RevisionStatus.completed){
+      this.router.navigate(['revision-edit',{ revisionId:row.revision.id }])
+    }
+    else{
+      alert( "su video no ha sido revisado")
+    }
   }
 
   onShowAll(event){
