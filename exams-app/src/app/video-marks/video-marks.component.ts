@@ -9,12 +9,24 @@ import videojs from 'video.js';
 import * as uuid from 'uuid';
 import { MatDialog } from '@angular/material/dialog';
 import { TitleStrategy } from '@angular/router';
+import { VideoMarker, Marker, MarkerPath, MarkerPoint } from '../exams/exams.module';
+import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+
+interface MarkerItem{
+  marker:Marker
+  audioData:AudioBuffer
+  markerPaths:MarkerPath[]
+
+}
+
 
 
 
 const BLACKBOARD = 'blackboard'
 const NEXT = 'next'
 const PREV = 'prev'
+
+
 @Component({
   selector: 'app-video-marks',
   templateUrl: './video-marks.component.html',
@@ -28,12 +40,15 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @ViewChild(BLACKBOARD) canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('target') target: ElementRef;
 
-  @Input() source:string = "https://firebasestorage.googleapis.com/v0/b/thoth-dev-346022.appspot.com/o/organizations%2Fraxacademy%2Fsounds%2Fclaudia.mp4?alt=media&token=dfa60d5a-4501-486b-bde2-829c2d2675d5"
-  @Input() path:string = "drawing"
-  @Input() drawing_id = "123"
+  @Input() parentCollection:string 
+  @Input() id:string
+
+  videoMarker:VideoMarker
+
   public ctx: CanvasRenderingContext2D;
   elem:HTMLCanvasElement
-  ppts = [];  
+  ppts:MarkerPoint[]=[] 
+  paths:MarkerPoint[][] = [] 
 
   isTouch:boolean
 
@@ -51,16 +66,17 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   isPlaying = false
 
-  paths = []
+ 
 
 
   //the purpose is to know if a marker should be started.
   lastMarkerIdx:number = null // indicate the last marker played
   lastScrolledTime:number = 0 // indicate the last time to which the user scrolled
+  
+  markerItems:MarkerItem[] = []
 
-  markers = [] 
+  unsubscribes = []
 
-  unsubscribe = null
 
   organization_id = null
 
@@ -94,12 +110,16 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   isPlayingAllMarkers = false
 
   sourceAudioBuffer = null
+
+  colors = ['black','red','blue','green']
+  selectedColor:string = 'red'
   
   constructor(
     private userPreferencesService: UserPreferencesService
     ,private userLoginService: UserLoginService
     , private http: HttpClient
     , public dialog: MatDialog
+    , private examenesImprovisacionService:ExamenesImprovisacionService
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -118,10 +138,13 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       this.isUnmuted = true
     }
 
-    this.loadBreakPoints()
+
+    
   }
   ngOnDestroy(): void {
-    this.unsubscribe()
+    this.unsubscribes.forEach( unsubscribe =>{
+      unsubscribe()
+    })
   }
 
   
@@ -129,19 +152,48 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   onCurrentTime(currentTime:number){
     if( this.isMarkerActive == false && this.isPlayingAllMarkers == true && this.isPlayingLoop == false){ // we can only start a new marker if no other marker is been played and we are in a playing state
       //find the next marker that has a time larger than the previous played and larger than the lastScrolledTime
-      for( let i = this.lastMarkerIdx != null ? this.lastMarkerIdx + 1 : 0; i< this.markers.length ; i++){
-        let breakPoint = this.markers[i]
-        if( breakPoint.startTime <= currentTime && 
-          breakPoint.startTime >= this.lastScrolledTime &&
+      for( let i = this.lastMarkerIdx != null ? this.lastMarkerIdx + 1 : 0; i< this.markerItems.length ; i++){
+        let markerItem = this.markerItems[i]
+        if( markerItem.marker.startTime <= currentTime && 
+          markerItem.marker.startTime >= this.lastScrolledTime &&
           currentTime >= this.lastScrolledTime 
             ){   
-            this.playMarker( i , false)
+            this.playMarker( i , false).then(()=>{
+              this.clear()
+              this.playVideo()
+            })
           break;
         }
       }
     }  
   }
 
+  getAudioBuffer(url):Promise<AudioBuffer>{
+    var thiz=this
+    return new Promise<AudioBuffer>((resolve, reject)=>{
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = e => {
+        console.log(xhr.response);
+        var audioBlob:Blob = xhr.response
+        audioBlob.arrayBuffer()
+        .then(arrayBuffer => thiz.context.decodeAudioData(arrayBuffer,
+          audioBuffer => {
+            resolve(audioBuffer);
+            },
+            error =>{
+              console.error(error)
+              reject(error)
+            }
+        ))
+      }
+      xhr.onerror = e =>{
+        console.log( "error:" + e)
+      }
+      xhr.open('GET', url);
+      xhr.send();   
+    })
+  }
 
   ngAfterViewInit(): void {
 
@@ -170,13 +222,16 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       xhr.open('GET', url);
       xhr.send();   
 
+    },
+    reason=>{
+      alert("ERROR:" + reason)
     })
 
     this.ctx = this.canvas.nativeElement.getContext('2d');  
 
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 6;
-    this.ctx.strokeStyle = "red";    
+    this.ctx.strokeStyle = this.selectedColor;    
 
     
     
@@ -195,10 +250,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       controls: false,
       width:640,
       height:480,
+      /*
       sources: [{
-          src: this.source,
+          src: this.videoMarker.videoUrl,
           type: "video/mp4",
       }],
+      */
       controlBar: {
         resizeManager: false
       }      
@@ -232,12 +289,19 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         }
       })
     });
+
+    db.collection(this.parentCollection + "/VideoMarker").doc(this.id).get().then( (doc)=>{
+      this.videoMarker = doc.data() as VideoMarker
+      this.player.src({ type: 'video/mp4', src: this.videoMarker.videoUrl });
+      this.loadMarkers()
+    })
+    
      
   }  
 
 
   unmute(){    
-    this.playSound(this.yodelBuffer, true)
+    this.playSound(this.yodelBuffer)
     this.isUnmuted = true;
   } 
 
@@ -294,36 +358,38 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   
   paint(e) {
 
+    if( this.isMarkerEdited ){
+      if (e) {
+        e.preventDefault();
+        this.setPointFromEvent(this.point, e);
+      }
 
-    if (e) {
-      e.preventDefault();
-      this.setPointFromEvent(this.point, e);
-    }
+      // Saving all the points in an array
+      this.ppts.push({
+        x: this.point.x,
+        y: this.point.y,
+        color:this.selectedColor
+      });
 
-    // Saving all the points in an array
-    this.ppts.push({
-      x: this.point.x,
-      y: this.point.y
-    });
+      // For the last 2 points
+      if ( this.ppts.length > 2){
+        let i = this.ppts.length - 2
+        this.ctx.beginPath();
+        this.ctx.lineJoin = this.ctx.lineCap = 'round';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeStyle = this.selectedColor;        
+        this.ctx.moveTo(this.ppts[i].x, this.ppts[i].y)
 
-    // For the last 2 points
-    if ( this.ppts.length > 2){
-      let i = this.ppts.length - 2
-      this.ctx.beginPath();
-      this.ctx.lineJoin = this.ctx.lineCap = 'round';
-      this.ctx.lineWidth = 4;
-      this.ctx.strokeStyle = "red";        
-      this.ctx.moveTo(this.ppts[i].x, this.ppts[i].y)
-
-      this.ctx.quadraticCurveTo(
-        this.ppts[i].x,
-        this.ppts[i].y,
-        this.ppts[i + 1].x,
-        this.ppts[i + 1].y
-      );
-      this.ctx.stroke()
-      this.ctx.closePath()
-      
+        this.ctx.quadraticCurveTo(
+          this.ppts[i].x,
+          this.ppts[i].y,
+          this.ppts[i + 1].x,
+          this.ppts[i + 1].y
+        );
+        this.ctx.stroke()
+        this.ctx.closePath()
+        
+      }
     }
   }; 
 
@@ -332,10 +398,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.lineWidth = 4;
-    this.ctx.strokeStyle = "red";        
+    this.ctx.strokeStyle = ppts[0].color;        
     this.ctx.moveTo(ppts[0].x, ppts[0].y)
     for( let i=0; i<ppts.length-1; i++){
-
+      this.ctx.strokeStyle = ppts[i].color; 
       this.ctx.quadraticCurveTo(
         ppts[i].x,
         ppts[i].y,
@@ -435,93 +501,145 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.player.play();    
   }  
 
-  save(){
+  loadMarkers(){
+      var unsubscribe = db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker").onSnapshot( markerSet =>{
+        this.markerItems.length = 0
+        
 
-    var id = uuid.v4()
+        var transactions = []
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc(id).set({"id":id, "startTime":this.startMarker,"loopDuration":this.loopDuration}).then( () =>{
-      this.saveSound(id)          
-      db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").get().then( pathSet =>{
-        var mapDelete = pathSet.docs.map( pathDoc =>{
-          console.log( pathDoc.id )
-          return db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").doc(pathDoc.id).delete()
-        })
-        Promise.all( mapDelete ).then( () =>{
-          var promiseArray:Promise<void>[] = []
-          for(let i = 0; i < this.paths.length; i++){
-            let path = this.paths[i]
-              var p = db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + id + "/paths").doc("path_" + i).set({"path":path})
-              promiseArray.push(p)
+        markerSet.docs.map( breakPointDoc =>{
+          const marker = breakPointDoc.data() as Marker
+          var markerItem:MarkerItem={
+            marker: marker,
+            audioData: null,
+            markerPaths: []
           }
-          Promise.all( promiseArray ).then( ()=>{
-            this.resetMarker()
+          this.markerItems.push(markerItem)
+
+          let transactionAudio = this.getAudioBuffer( marker.commentUrl ).then( audioData =>{
+            markerItem.audioData = audioData
           })
+          transactions.push( transactionAudio )
+
+
+          let transactionPaths= this.loadPaths( this.parentCollection, markerItem ).then( ()=>{
+            console.log("setup onSnapshot")
+          })
+          transactions.push( transactionPaths )
           
         })
-      })
-
-    },
-    error=>{
-      console.log("error reading breakpoints:" + error)
-    })
-  }
-  loadBreakPoints(){
-
-    db.collection(this.path).doc( this.drawing_id ).get().then( doc =>{
-      let data = doc.data()
-      console.log("document loaded " + data)
-    })
-    this.unsubscribe = db.collection(this.path + "/" + this.drawing_id + "/breakPoints").onSnapshot( breakPointSet =>{
-      this.markers.length = 0
-      this.sounds.length = 0
-      breakPointSet.docs.map( breakPointDoc =>{
-        const breakPoint = breakPointDoc.data() 
-        this.markers.push(breakPoint)
-        this.loadSound( breakPoint["id"], breakPoint["commentUrl"])
-      })
-      this.markers.sort( 
-        (a,b) => { 
-          return  a.startTime - b.startTime 
+        Promise.all( transactions ).then( ()=>{
+          this.markerItems.sort( 
+            (a,b) => { 
+              return  a.marker.startTime - b.marker.startTime 
+            })
         })
-     },
-     error =>{
-        console.log("ERROR breakpoints:" + error)
-     })
+      },
+      (reason)=>{
+        alert("Error:" + reason)
+      })
+      this.unsubscribes.push( unsubscribe )
   }
 
-  playMarker(index, stop=false){
-    console.log("starting marker:" + index)
-    // now plays the sound
-    this.isMarkerActive = true
-    this.lastMarkerIdx = index
-
-    
-    this.startMarker = this.markers[index]["startTime"]  
-    this.loopDuration = this.markers[index]["loopDuration"]
-
-    this.clear()
-    this.player.currentTime(this.startMarker);
-    this.player.volume(0.3)
-    if( this.loopDuration > 0){
-      this.player.play()
-    }
-    else{
-      this.player.pause()
-    }
- 
-
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints/" + this.markers[index]["id"] + "/paths").get().then(pathSet =>{
-      this.paths.length = 0
-      pathSet.docs.map( doc =>{
-        const ppts = doc.data()
-        this.paths.push( ppts.path )
-        this.paintPath( ppts.path )
+  loadPaths( path:string, markerItem:MarkerItem):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      
+      var unsubscribe = db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker/" + markerItem.marker.id + "/MarkerPath").onSnapshot( set =>{
+        markerItem.markerPaths.length = 0
+        set.docs.map( doc=>{
+          var markerPath = doc.data() as MarkerPath 
+          markerItem.markerPaths.push( markerPath )
+        })
+        resolve()
+      },
+      reason =>{
+        alert("ERROR loadPaths:" + reason)
+        reject( reason )
       })
-      console.log("marker start sound:" + index)
-      this.playSound( this.sounds[this.markers[index]["id"]], stop )
-       
+      this.unsubscribes.push( unsubscribe )
     })
-    
+  }
+
+  stopVideo():Promise<void>{
+    var thiz=this
+    return new Promise<void>((resolve, reject)=>{
+      this.player.pause()
+      var interval = setInterval( () => { 
+        if(thiz.isPlaying == false)
+          {
+            clearInterval(interval)
+            resolve()
+          }
+       }, 100)    
+  
+    })
+  }
+  startVideo():Promise<void>{
+    var thiz=this
+    return new Promise<void>((resolve, reject)=>{
+      this.player.play()
+      var interval = setInterval( () => { 
+        if(thiz.isPlaying == true)
+          {
+            clearInterval(interval)
+            resolve()
+          }
+       }, 100)    
+  
+    })
+  }  
+
+  playMarker(index, stop=false):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      console.log("starting marker:" + index)
+      // now plays the sound
+      this.isMarkerActive = true
+      this.lastMarkerIdx = index
+      
+      this.startMarker = this.markerItems[index].marker.startTime  
+      this.loopDuration = this.markerItems[index].marker.loopDuration
+      if( this.loopDuration > 0){
+        this.isPlayingLoop= true
+      }
+
+      this.clear()
+      this.player.currentTime(this.startMarker);
+      this.player.volume(0.3)
+      
+      if( this.loopDuration > 0){
+        this.player.play()
+      }
+      else{
+        this.player.pause()
+      }
+      
+  
+      var markerPaths=this.markerItems[index].markerPaths 
+      this.clear()
+      markerPaths.forEach(
+        markerPath=>{
+          this.paintPath( markerPath.points )
+        }
+      )
+
+      var audioBuffer = this.markerItems[index].audioData
+      console.log("marker start sound:" + index)
+      this.playSound( audioBuffer ).then( ()=>{
+        this.isPlayingLoop=false
+        
+        if( stop ){
+          this.stopVideo().then( ()=>{
+            this.isMarkerActive=false
+            resolve()
+          })
+        }
+        else{
+          this.isMarkerActive=false
+          resolve()
+        }
+      })
+    })        
   }
 
 
@@ -564,28 +682,146 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     this.save()
     this.isMarkerEdited = false
   }
-
-  saveSound(id){
-    if( this.audioBlob != null ){
-      const path = this.path + "/" + this.drawing_id + "/breakPoints" 
-      const property = "comment"
-
-      const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + id + ".wav"
-
+  
+  //save an audio and return the path
+  saveSound(id, audioBlob):Promise<string>{
+    return new Promise<string>((resolve,reject)=>{
+      const bucketName = "organizations/" + this.organization_id + "/" + this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker/" + id + "/breakpoint_" + id + ".wav"
     
       var storageRef = storage.ref( bucketName )
 
-      var uploadTask = storageRef.put(this.audioBlob, { contentType: 'audio/wav'})
-      var element = document.getElementById("commentStatus")
-      var fileLoadObserver = new FileLoadObserver(storageRef, path, id, property, element );
-      uploadTask.on("state_change", fileLoadObserver)
-    }       
+      var uploadTask = storageRef.put(audioBlob, { contentType: 'audio/wav'})
+      uploadTask.on("state_change", {
+        'next':(snapshot =>{
+          console.log(snapshot.bytesTransferred + " of " + snapshot.totalBytes); // progress of upload
+        }),
+        'error':(cause =>{
+          console.log("error:" + cause)
+          reject(cause)
+        }),
+        'complete':( () =>{
+          resolve(bucketName)
+        })
+      })
+    })
   }
 
-  onDelete( id ){
+  save():Promise<void>{
+    return new Promise<null>((resolve, reject)=>{
+      let _resolve = resolve
+      let _reject=reject
 
-    const bucketName = "organizations/" + this.organization_id + "/laboratoryGrades/" + this.drawing_id + "/breakpoint_" + id + ".wav"
-    var storageRef = storage.ref( bucketName )
+      let markerPaths:MarkerPath[] = []
+      this.paths.map( path =>{
+        var markerPath:MarkerPath={
+          id:uuid.v4(),
+          points:path
+        }
+        markerPaths.push( markerPath )
+      })
+
+      var id = uuid.v4()
+      var marker:Marker = {
+        id:id, 
+        startTime:this.startMarker,
+        loopDuration:this.loopDuration,
+      }
+
+
+
+
+      if( this.audioBlob ){          
+        var transactionSaveSound = this.saveSound(id, this.audioBlob).then( fullpath =>{
+          marker.commentPath = fullpath
+          let storageRef  = storage.ref( marker.commentPath )
+          storageRef.getDownloadURL().then( url =>{
+            marker.commentUrl = url
+
+            var markerItem:MarkerItem = {
+              marker:marker,
+              audioData:this.audioBlob,
+              markerPaths:markerPaths
+            }
+            this.markerItems.push(
+              markerItem
+            )       
+            return this.saveMarkerItem( markerItem ).then( ()=>{
+                console.log("marker saved")
+                _resolve(null)     
+              },              
+              error=>{
+                alert("error writing Marker:" + error)
+                _reject(error)
+            })     
+          })          
+        })
+      } 
+      else{
+        var markerItem:MarkerItem = {
+          marker:marker,
+          audioData:null,
+          markerPaths:markerPaths
+        }
+        this.markerItems.push(
+          markerItem
+        )       
+        return this.saveMarkerItem( markerItem ).then( ()=>{
+            console.log("marker saved")
+            _resolve(null)     
+          },              
+          error=>{
+            alert("error writing Marker:" + error)
+            _reject(error)
+        })     
+   
+      } 
+    })
+  }
+
+  saveMarkerItem( markerItem:MarkerItem ):Promise<void>{
+    return new Promise<void>((resolve, reject)=>{
+      let marker:Marker = markerItem.marker
+      let transactions = []
+      db.collection(this.parentCollection + "/VideoMarker/"+ this.videoMarker.id + "/Marker").doc(marker.id).set(marker).then( () =>{
+          this.paths
+          console.log("marker saved")
+          this.saveMarkerPaths( marker.id, markerItem.markerPaths).then(()=>{
+            console.log("completed saving paths")
+            resolve()
+          })
+      },
+      reason=>{
+        alert("error writing Marker:" + reason)
+        reject(reason)
+      })
+    })
+  }
+  saveMarkerPaths( markerId:string, paths:MarkerPath[] ):Promise<void>{
+    return new Promise<null>((resolve, reject)=>{
+      let transactions = paths.map( path =>{
+        return db.collection( this.parentCollection + "/VideoMarker/" + this.videoMarker.id +  "/Marker/" + markerId + "/MarkerPath").doc( path.id ).set( path ).then( ()=>{
+          console.log("saved path:"+ path.id)
+        },
+        reason=>{
+          alert("Error Saving MarkerPath"+ reason)
+          reject( reason )
+        })
+      })
+      Promise.all( transactions ).then( ()=>{
+        console.log("finish save markerPath");
+        resolve(null)
+      },
+      reason=>{
+        console.log("error no finised")
+        reject(reason)
+      })
+    })
+  }
+
+
+  onDelete( markerItem:MarkerItem ){
+    
+    var storageRef = storage.ref( markerItem.marker.commentPath )
     storageRef.delete().then( () =>{
       console.log("file deleted")
     })
@@ -593,7 +829,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       console.log("there has been an error:" + reason)
     })
 
-    db.collection(this.path + "/" + this.drawing_id + "/breakPoints").doc( id ).delete().then( data =>{
+    db.collection(this.parentCollection + "/VideoMarker/" + this.videoMarker.id + "/Marker").doc( markerItem.marker.id ).delete().then( data =>{
       console.log("deleted")
     })
     .catch( reason =>{
@@ -604,17 +840,25 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }
 
 
-  playSound(audioBuffer, stop) {
-    console.log("marker play sound:")
-    var thiz = this
-    if( this.sourceAudioBuffer != null){
-      this.sourceAudioBuffer.stop()
-    }
-
-    this.sourceAudioBuffer = this.context.createBufferSource();
-    this.sourceAudioBuffer.buffer = audioBuffer;
-    this.sourceAudioBuffer.connect(this.context.destination);
-    this.sourceAudioBuffer.addEventListener("ended", (e) =>{
+  playSound(audioBuffer):Promise<void> {
+    return new Promise<null>((resolve,reject) => {
+      console.log("marker play sound:")
+      var thiz = this
+      if( this.sourceAudioBuffer != null){
+        this.sourceAudioBuffer.stop()
+      }
+  
+      this.sourceAudioBuffer = this.context.createBufferSource();
+      this.sourceAudioBuffer.buffer = audioBuffer;
+      this.sourceAudioBuffer.connect(this.context.destination);
+      this.sourceAudioBuffer.addEventListener("ended", (e) =>{
+        resolve(null)
+      })
+      this.sourceAudioBuffer.start();
+  
+    })
+  }
+/*    
       if( stop == true){
         console.log("marker stop sound:")
         if( this.isPlaying == true){
@@ -641,10 +885,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         this.resumePlay()
       }
     })    
-    this.sourceAudioBuffer.start();
+    
 
   };
-
+*/
 
   loadSound( id, url ){
     var thiz = this
@@ -687,20 +931,26 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
   } 
 
-  playVideo(){
-      if( this.isPlaying ){
+  onPlayVideo(){
+    if( this.isPlaying == true ){
+      if( this.sourceAudioBuffer != null){
+        this.sourceAudioBuffer.stop()
+      }
+      this.isPlayingAllMarkers = false
+      this.isPlayingLoop = false
+      this.stopVideo()
+    }
+    else{
+      this.clear()
+      this.isPlayingLoop = false
+      this.isPlayingAllMarkers = true
+      this.playVideo()
+    }
+  }
 
-        if( this.sourceAudioBuffer != null){
-          this.sourceAudioBuffer.stop()
-        }
-        this.player.pause()        
-        this.isPlayingAllMarkers = false
-      }
-      else{
-        this.clear()
-        this.player.play()
-        this.isPlayingAllMarkers = true
-      }
+
+  playVideo(){
+    this.player.play()
   } 
   onStartEditMarker(){
       this.player.pause()
@@ -764,6 +1014,11 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     }
   }
 
+  onRestartVideo(){
+    this.player.currentTime( 0 )
+    this.lastMarkerIdx = null
+  }
+
   displayTime( value:number ){
     if( value != null){
       return value.toFixed(2)
@@ -773,20 +1028,15 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   playLoop(){
     if( this.isPlayingLoop ) {
-      this.player.pause()
-      var thiz = this
-      var interval = setInterval( () => { 
-        if(thiz.isPlaying == false)
-          {
-            thiz.isPlayingLoop = false; 
-            clearInterval(interval)
-          }
-       }, 100)
+      this.stopVideo().then( () =>{
+        this.isPlayingLoop = false
+      })
     }
     else{
-      this.isPlayingLoop = true
       this.player.currentTime( this.startMarker )      
-      this.player.play()
+      this.startVideo().then( ()=>{
+        this.isPlayingLoop = true
+      })
     }
   }
 
@@ -853,7 +1103,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   }
 
   onPreviousMarker(){
-    if( this.markers.length > 0){
+    if( this.markerItems.length > 0){
       if( this.lastMarkerIdx == null ){
         this.playMarker(0, true)
       }
@@ -865,11 +1115,11 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   }
   onNextMarker(){
-    if( this.markers.length > 0){
+    if( this.markerItems.length > 0){
       if( this.lastMarkerIdx == null ){
         this.playMarker(0, true)
       }
-      else if( this.lastMarkerIdx != null && this.lastMarkerIdx + 1 < this.markers.length){
+      else if( this.lastMarkerIdx != null && this.lastMarkerIdx + 1 < this.markerItems.length){
         this.playMarker(this.lastMarkerIdx + 1, true)
       }
     } 

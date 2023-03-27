@@ -25,7 +25,7 @@
         </mat-step>
         <mat-step *ngIf="(laboratoryGrade.status == LaboratoryGradeStatus.requestGrade && isAdmin ) || laboratoryGrade.status == LaboratoryGradeStatus.rework || laboratoryGrade.status == LaboratoryGradeStatus.accepted" label="Revisiones">
                 <div >
-                    <app-video-marks  *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" source="{{laboratoryGrade.studentData.videoUrl}}" path="{{path}}" drawing_id="{{laboratoryGrade.id}}"></app-video-marks>
+                    <app-video-marks *ngIf="videoMarker" parentCollection="{{getCollection()}}" id="{{this.videoMarker.id}}"></app-video-marks>
             
                     <div *ngIf="isAdmin">
                         <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="onReleased()">Liberar Revision</button>
@@ -33,17 +33,36 @@
                     </div>
                 </div>              
                 <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button *ngIf="laboratoryGrade.status != LaboratoryGradeStatus.accepted" mat-button matStepperNext>Next</button>
           </mat-step>        
-          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial || laboratoryGrade.status == LaboratoryGradeStatus.rework" label="Sube tu video">
-              <div *ngIf="laboratoryGrade.studentData" class="studentData">
-                <h1>Sube tu video</h1>
-                <video *ngIf="laboratoryGrade.studentData && laboratoryGrade.studentData.videoUrl" controls>
-                    <source src="{{laboratoryGrade.studentData.videoUrl}}" type='video/mp4'/>
+          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.initial" label="Sube tu video">
+              <div class="studentData">
+                <form [formGroup]="videoMarkerFG">
+                <mat-form-field appearance="fill">
+                    <mat-label>Video</mat-label>
+                    <app-file-control [basepath]="getBasePath()" formControlName="videoPath" (onLoad)="fileLoaded($event)" placeholder="seleccione video"></app-file-control> 
+                </mat-form-field> 
+                </form>  
+                <video *ngIf="videoMarker && videoMarker.videoUrl" controls>
+                    <source src="{{videoMarker.videoUrl}}" type='video/mp4'/>
                 </video>     
-                <app-file-loader label="tu video" [basepath]="getBasePath()" property="video" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
-                <button mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
+                <button [disabled]="!videoMarkerFG.valid" mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
               </div> 
           </mat-step>
+          <mat-step *ngIf="laboratoryGrade.status == LaboratoryGradeStatus.rework" label="Sube un nuevo video">
+            <div class="studentData">
+              <form [formGroup]="videoMarkerFG">
+              <mat-form-field appearance="fill">
+                  <mat-label>Video</mat-label>
+                  <app-file-control [basepath]="getBasePath()" formControlName="videoPath" (onLoad)="fileLoaded($event)" placeholder="seleccione video"></app-file-control> 
+              </mat-form-field> 
+              </form>  
+              <video *ngIf="videoMarkerFG.controls.videoUrl.value" controls>
+                  <source src="{{videoMarkerFG.controls.videoUrl.value}}" type='video/mp4'/>
+              </video>     
+              <button [disabled]="!videoMarkerFG.valid" mat-raised-button color="primary" (click)="onCompleted()">Enviar a Revision</button>
+            </div> 
+        </mat-step>
+
       </mat-stepper>
 </div>  

@@ -1,24 +1,9 @@
 <p>Revisión</p>
 
 <div *ngIf="revision" [formGroup]="revisionFG">
-    <p>
-    <mat-form-field *ngIf="isAdmin" appearance="fill">
-        <mat-label>Video</mat-label>
-        <app-file-control [basepath]="getBasePath()" formControlName="videoPath" (onLoad)="fileLoaded($event)" placeholder="seleccione video" required></app-file-control> 
-    </mat-form-field>   
-    </p>
-    <p>
-    <mat-form-field *ngIf="isAdmin" appearance="fill">
-        <mat-label>Estudiante</mat-label>
-        <app-user-selector formControlName="userUid" (userselected)="onUserSelected($event)"></app-user-selector>
-    </mat-form-field>
-    </p>
-   
-    <br/>
-
-    <app-video-marks *ngIf="revision.videoUrl != null" source="{{revision.videoUrl}}" path="{{collection}}" drawing_id="{{revision.id}}"></app-video-marks>
     
-    <button *ngIf="isAdmin" mat-button (click)="onSubmit()">Publicar</button>
+    <app-video-marks *ngIf="videoMarker != null" parentCollection="{{collection}}/{{revision.id}}" id="{{videoMarker.id}}"></app-video-marks>
+    <button mat-button color="primary" *ngIf="isAdmin" mat-button (click)="onSubmit()">Publicar</button>
 </div>    
     
 

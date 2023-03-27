@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { db, storage, environment } from 'src/environments/environment';
-import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, Revision, User } from './exams/exams.module';
+import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, Revision, User, VideoMarker } from './exams/exams.module';
 import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
 import { UserLoginService } from './user-login.service';
@@ -579,7 +579,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }
 
   createRevision(revision:Revision):Promise<void>{    
-    return db.collection("revision" ).doc(revision.id).set(
+    return db.collection("Revision" ).doc(revision.id).set(
       revision
     ).then( ()=>{
       console.log("revision added")
@@ -590,7 +590,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }  
   updateRevision(revision:Revision):Promise<void>{
     
-    return db.collection("revision" ).doc(revision.id).update(
+    return db.collection("Revision" ).doc(revision.id).update(
       revision
     ).then( ()=>{
       console.log("revision updated")
@@ -602,7 +602,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   getRevision(id:string):Promise<Revision>{
     
     return new Promise<Revision>((resolve,reject) =>{
-      db.collection("revision" ).doc(id).get().then( doc => {
+      db.collection("Revision" ).doc(id).get().then( doc => {
         if( doc.exists ){
           var revision = doc.data() as Revision
           resolve( revision)
@@ -613,5 +613,29 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }
+  saveObject(collection:string, obj:{id:string}):Promise<void>{
+    return db.collection(collection ).doc(obj.id).set(
+      obj
+    ).then( ()=>{
+      console.log(collection, " added ", obj.id)
+    },
+    reason =>{
+      alert("ERROR: adding " + collection + reason)
+    })
+  }
+  getObject(collection:string, id:string):Promise<any>{
+    
+    return new Promise<Revision>((resolve,reject) =>{
+      db.collection(collection ).doc(id).get().then( doc => {
+        if( doc.exists ){
+          var obj:any = doc.data() 
+          resolve( obj )
+        }
+        else{
+          reject( "revision:" + id + "not exist")
+        }
+      })
+    })
+  }  
   
 }

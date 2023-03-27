@@ -18,7 +18,7 @@ service firebase.storage {
     }
     
  
-    match /organizations/{organization_id}/laboratoryGrades/{laboratoryGradeId}/studentData/practiceData/{fileId} {
+    match /organizations/{organization_id}/laboratoryGrades/{laboratoryGradeId}/VideoMarker/practiceData/{fileId} {
       function isLaboratoryGradeStudent() {
         return request.auth.uid == firestore.get(/databases/(default)/documents/laboratoryGrades/$(laboratoryGradeId)).data.student_uid
       }     
@@ -33,7 +33,13 @@ service firebase.storage {
       }        
       allow read, write: if isParameterGradeEvaluator()  
       allow read: if isParameterGradeStudent() 
-    }      
+    } 
+    match /organizations/{organization_id}/Revision/{revisionId} {  
+      allow read, write: if request.auth.uid != null
+      match /{document=**} { 
+      	allow read, write: if request.auth.uid != null
+      }      
+    }          
   }
   
 }

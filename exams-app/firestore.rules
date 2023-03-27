@@ -92,7 +92,7 @@ service cloud.firestore {
       allow read: if request.auth.uid == resource.data.evaluator_uid 
       allow read: if request.auth.uid == resource.data.student_uid 
 
-			match /studentData/{data} {    
+			match /{path=**}/VideoMarker/{videoMarkerId} {    
         allow read, write: if isLaboratoryAdmin(request)   
         allow read, update: if isLaboratoryGradeEvaluator() 
         allow read, write: if isLaboratoryGradeStudent()
@@ -135,7 +135,24 @@ service cloud.firestore {
         allow read, write: if true 
 
       }     
-    }      
+    }   
+    match /Revision/{revisionId} {
+      function isStudent(request) {
+        return request.auth.uid == get(/databases/$(database)/documents/Revision/$(revisionId)).data.student_uid
+      }
+      function isAdmin(request) {
+      	return ('role-admin-' + get(/databases/$(database)/documents/Revision/$(revisionId)).data.organization_id) in request.auth.token
+      }    
+      allow create: if ('role-admin-' + request.resource.data.organization_id) in request.auth.token  
+      allow read, write: if ('role-admin-' + resource.data.organization_id) in request.auth.token 
+      allow create: if( request.auth.uid == request.resource.data.student_uid )
+      allow read, write: if ( request.auth.uid == resource.data.student_uid )
+      match /{document=**} {    
+        allow read, write: if isAdmin(request) 
+        allow read, write: if isStudent(request) 
+
+      } 
+    }         
   }
  
 }

@@ -6,13 +6,10 @@ import { FormBuilder } from '@angular/forms';
 import { UserLoginService } from '../user-login.service';
 import { db , storage} from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { Revision, RevisionStatus } from '../exams/exams.module';
+import { Revision, RevisionStatus, VideoMarker } from '../exams/exams.module';
 import { DateFormatService } from '../date-format.service';
 
-export interface RevisionCreate {
-  videoPath:string
-  userUid:string
-}
+
 
 @Component({
     selector: 'revision-create-dlg',
@@ -21,8 +18,9 @@ export interface RevisionCreate {
 export class RevisionCreateDialog { 
 
   organizationId=null
-  collection = "revision"
+  collection = ""
   id=uuid.v4()
+  markerId=uuid.v4()
   isAdmin=false
   userUid=null  
 
@@ -39,7 +37,7 @@ export class RevisionCreateDialog {
     ,private fb:FormBuilder
     ,private examImprovisacionService: ExamenesImprovisacionService
     ,private df:DateFormatService
-    ,@Inject(MAT_DIALOG_DATA) public data:RevisionCreate)
+    ,@Inject(MAT_DIALOG_DATA) public data:string) 
   {
     this.organizationId = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organizationId) ){
@@ -50,11 +48,15 @@ export class RevisionCreateDialog {
     }
     if( !this.isAdmin ){
       this.revisionFG.controls.userUid.setValue(this.userUid)
-    }    
+    }  
+    this.collection = data  
 
   }
   getBasePath(){
-    return "organizations/" + this.organizationId + "/"+ this.collection + "/" + this.id 
+    let path = ""
+    path = "organizations/" + this.organizationId + "/Revision/" + this.id + "/VideoMarker/" + this.markerId
+
+    return path
   }    
   fileLoaded(path){
     console.log( path )
@@ -79,13 +81,21 @@ export class RevisionCreateDialog {
         date:new Date(),
         dateId:this.df.getDayId(new Date()),
         status:RevisionStatus.requested,
-        videoUrl:url,
-        videoPath:videoPath        
+     
       }
-      this.examImprovisacionService.createRevision( revision ).then(()=>{
-        this.dialogRef.close(this.id)
+      this.examImprovisacionService.saveObject( "Revision", revision ).then(()=>{
+        var videoMarker:VideoMarker= {
+          id:this.markerId,
+          videoUrl:url,
+          videoPath:videoPath,
+          isDeleted:false           
+        }
+        this.examImprovisacionService.saveObject( "Revision/" + revision.id + "/VideoMarker", videoMarker ).then( ()=>{
+          this.dialogRef.close(this.id)
+        })
       })
-    })
+    },
+    reason => alert("ERROR: the url is not available:" +  reason))
   }      
 
 }
