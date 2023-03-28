@@ -37,7 +37,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Speed</mat-label>
-        <mat-select  matNativeControl (selectionChange)="onSpeedChange($event)">
+        <mat-select  matNativeControl [(ngModel)]="playbackRate" (selectionChange)="onSpeedChange($event)">
           <mat-option value="1">1x</mat-option>
           <mat-option value="0.5">0.5x</mat-option>
           <mat-option value="0.1">0.1x</mat-option>
@@ -57,7 +57,7 @@
         <button *ngIf="loopDuration>0" mat-raised-button (click)="playLoop()"><span *ngIf="isPlaying==true">stop loop</span><span *ngIf="isPlaying==false">play loop</span></button>
         {{ displayTime(startMarker) }} - {{ displayTime(startMarker + loopDuration) }}
         <button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false"><mat-icon>keyboard_voice</mat-icon></button>
-        <button mat-raised-button (click)="onReplay()" *ngIf="isAdmin && isRecording==false"><mat-icon>hearing</mat-icon></button>
+        <button mat-raised-button (click)="onReplay()" *ngIf="isAdmin && isRecording==false"><mat-icon>hearing</mat-icon>1</button>
 
         <mat-form-field class="color" appearance="fill">
           <mat-label>Favorite food</mat-label>

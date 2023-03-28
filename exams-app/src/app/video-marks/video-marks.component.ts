@@ -113,6 +113,8 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
   colors = ['black','red','blue','green']
   selectedColor:string = 'red'
+
+  playbackRate = 1.0
   
   constructor(
     private userPreferencesService: UserPreferencesService
@@ -599,6 +601,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       
       this.startMarker = this.markerItems[index].marker.startTime  
       this.loopDuration = this.markerItems[index].marker.loopDuration
+      
       if( this.loopDuration > 0){
         this.isPlayingLoop= true
       }
@@ -606,9 +609,12 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       this.clear()
       this.player.currentTime(this.startMarker);
       this.player.volume(0.3)
+
+      var previousPlayBackRate = this.playbackRate
       
       if( this.loopDuration > 0){
         this.player.play()
+        this.player.playbackRate(this.markerItems[index].marker.playbackRate )
       }
       else{
         this.player.pause()
@@ -625,8 +631,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
 
       var audioBuffer = this.markerItems[index].audioData
       console.log("marker start sound:" + index)
+     
       this.playSound( audioBuffer ).then( ()=>{
         this.isPlayingLoop=false
+        this.player.playbackRate(previousPlayBackRate)
         
         if( stop ){
           this.stopVideo().then( ()=>{
@@ -725,6 +733,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         id:id, 
         startTime:this.startMarker,
         loopDuration:this.loopDuration,
+        playbackRate:this.player.playbackRate()
       }
 
 
@@ -938,7 +947,9 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       }
       this.isPlayingAllMarkers = false
       this.isPlayingLoop = false
-      this.stopVideo()
+      this.stopVideo().then( ()=>{
+        
+      })
     }
     else{
       this.clear()
@@ -1125,9 +1136,15 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     } 
   }
   onReplay(){
-    const audioUrl = URL.createObjectURL(this.audioBlob);
-    const audio = new Audio(audioUrl);
-    audio.play()     
+    var transactionSaveSound = this.saveSound( uuid.v4(), this.audioBlob).then( fullpath =>{
+      
+      let storageRef  = storage.ref( fullpath )
+      storageRef.getDownloadURL().then( url =>{
+        let transactionAudio = this.getAudioBuffer( url ).then( audioData =>{
+          this.playSound( audioData )
+        })    
+      })    
+    })
   }
 }
 

@@ -527,6 +527,7 @@ export interface Marker{
   startTime?:number //seconds float
   commentPath?:string
   commentUrl?:string
+  playbackRate?:number
 }
 
 export interface VideoMarker{
