@@ -35,7 +35,6 @@ export class NavigationComponent {
   ngOnInit() {
       this.userPreferencesService.onOrganizationChangeEvent().subscribe( organization =>{
         this.organization = organization
-        this.router.navigate(['/home'])
       })
       this.organization = this.userPreferencesService.getCurrentOrganization()
   }

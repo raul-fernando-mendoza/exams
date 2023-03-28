@@ -17,7 +17,7 @@
       <mat-icon aria-label="Side nav toggle icon">navigate_before</mat-icon>
     </button>
     </mat-toolbar>
-    <mat-nav-list *ngIf="organization ">
+    <mat-nav-list *ngIf="isLoggedIn()">
       <a mat-list-item routerLink="/home">home</a>
       <a mat-list-item routerLink="/materia-list">Habilidades</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Lecciones interactiva</a>
@@ -53,7 +53,7 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
      
-      <span *ngIf="organization" (click)="home()" class="organization-name">{{organization.organization_name}}</span>
+      <span *ngIf="(isHandset$ | async) === false" (click)="home()" class="organization-name">{{organization.organization_name}}</span>
 
       
       <span class="example-spacer"></span>

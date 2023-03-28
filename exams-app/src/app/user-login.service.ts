@@ -4,6 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import firebase from 'firebase/app';
 import "firebase/auth";
 import { Router } from '@angular/router';
+import { User } from './exams/exams.module';
 
 
 @Injectable({
@@ -156,53 +157,66 @@ export class UserLoginService {
   
 
 
-  signInWithPopup(){
-    this.reset()
-   
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+  signInWithPopup():Promise<User>{
+    return new Promise<User>((resolve, reject)=>{
 
-    firebase.auth().signInWithPopup(provider).then(userCredentials => {
-      this.login(userCredentials)
-    })
-    .catch( error =>{
-      alert("Error in loging with popup:" + error)
-    })
-     
+    
+      this.reset()
+    
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+
+      firebase.auth().signInWithPopup(provider).then(userCredentials => {
+        this.login(userCredentials).then( user =>{
+          resolve(user)
+        },
+        reason =>{
+          reject(reason)
+        })
+      })
+      .catch( error =>{
+        alert("Error in loging with popup:" + error)
+      })
+    })  
   }
 
-  login( userCredentials: firebase.auth.UserCredential){
-    let user = userCredentials.user;
-    
-    this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
-    localStorage.setItem('user', JSON.stringify( this.user ) )
+  login( userCredentials: firebase.auth.UserCredential):Promise<User>{
+    return new Promise<User>((resolve, reject)=>{
+      
+      let user = userCredentials.user;
+      
+      this.user = { "email":user.email, "displayName":user.displayName, "emailVerified":user.emailVerified, "uid":user.uid}
+      localStorage.setItem('user', JSON.stringify( this.user ) )
 
-    console.log("user.email" + this.user.email)
-    console.log("user.uid:" + this.user.uid)
-    
+      console.log("user.email" + this.user.email)
+      console.log("user.uid:" + this.user.uid)
+      
 
-    //now get the id token
-    firebase.auth().currentUser.getIdToken(true).then(idToken => {
-      //id token retrieved
-      console.log("idToken:" + idToken)
-      this.user_idtoken = idToken
-      localStorage.setItem('user_idtoken',this.user_idtoken)
-      //now get the roles
-      firebase.auth().currentUser.getIdTokenResult()
-      .then((idTokenResult) => {
-        console.log(idTokenResult.claims)
-        this.user_claims = idTokenResult.claims
-        
-        localStorage.setItem("user_claims", JSON.stringify(this.user_claims) ) 
-        this.LoginEvent(this.user)
-      })
-      .catch((error) => {
-       alert("error retriving claims"+ error);
-      });         
-    }).catch(function(error) {
-      alert("the id token could not be retrieved")
-    });
-
+      //now get the id token
+      firebase.auth().currentUser.getIdToken(true).then(idToken => {
+        //id token retrieved
+        console.log("idToken:" + idToken)
+        this.user_idtoken = idToken
+        localStorage.setItem('user_idtoken',this.user_idtoken)
+        //now get the roles
+        firebase.auth().currentUser.getIdTokenResult()
+        .then((idTokenResult) => {
+          console.log(idTokenResult.claims)
+          this.user_claims = idTokenResult.claims
+          
+          localStorage.setItem("user_claims", JSON.stringify(this.user_claims) )
+          this.LoginEvent(this.user) 
+          resolve(this.user)          
+        })
+        .catch((error) => {
+          alert("error retriving claims"+ error);
+          reject(error)
+        });         
+      }).catch(function(error) {
+        alert("the id token could not be retrieved")
+        reject( error)
+      });
+    })  
   }
 
   sendEmailLink(){

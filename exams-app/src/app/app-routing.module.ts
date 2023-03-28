@@ -44,6 +44,7 @@ import { LaboratoryGradeListComponent } from './laboratory-grade-list/laboratory
 import { MateriaEnrollmentsListComponent } from './materia-enrollments-list/materia-enrollments-list.component';
 import { RevisionListComponent } from './revision-list/revision-list.component';
 import { RevisionEditComponent } from './revision-edit/revision-edit.component';
+import { AuthguardService } from './authguard.service';
 
 
 const routes: Routes = [
@@ -93,7 +94,7 @@ const routes: Routes = [
   { path: 'laboratory-grade-list', component:LaboratoryGradeListComponent },
   { path: 'user-enrollments', component:MateriaEnrollmentsListComponent},
   { path: 'revision-list', component:RevisionListComponent},
-  { path: 'revision-edit', component:RevisionEditComponent},
+  { path: 'revision-edit', component:RevisionEditComponent, canActivate: [AuthguardService]},
   { path: '**', component: WelcomeComponent },  
   
 ];

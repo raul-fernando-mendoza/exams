@@ -30,6 +30,9 @@ export class LoginFormComponent {
 
   token: string|undefined;
 
+  intendedPath
+
+
   constructor(
     private breakpointObserver: BreakpointObserver,
     private fb: UntypedFormBuilder, private route: ActivatedRoute, 
@@ -37,21 +40,34 @@ export class LoginFormComponent {
     private userLoginService:UserLoginService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
       this.token = undefined;
+      if( this.route.snapshot.paramMap.get('intendedPath') ){
+        this.intendedPath = this.route.snapshot.paramMap.get('intendedPath')
+      }
   }
 
   ngOnInit() {
 
   }
-  
+  navigateIntended(){
+    var intendedParameters = {}
+    for (const property in this.route.snapshot.paramMap.keys) {
+      let propertyName = this.route.snapshot.paramMap.keys[property]
+      intendedParameters[propertyName]=this.route.snapshot.paramMap.get(propertyName) 
+    }
+    this.router.navigate([this.intendedPath, intendedParameters]);    
+  }
   onLoginWithEmail(){
-
     if( this.loginForm.valid ){
-
         var user = this.loginForm.controls.username.value
         var password = this.loginForm.controls.password.value
 
         this.userLoginService.loginWithEmail(user, password).then( () =>{
-          this.router.navigate(['/']);
+          if( this.intendedPath ){
+            this.navigateIntended()
+          }
+          else{
+            this.router.navigate(['/']);
+          }
         },
         reason => {
           alert("ERROR: " + reason)
@@ -68,7 +84,6 @@ export class LoginFormComponent {
 
   register(){
     if( this.loginForm.valid ){
-
       var userName = this.loginForm.controls.username.value
       var password = this.loginForm.controls.password.value
       this.userLoginService.register(userName, password).then( user =>{
@@ -97,6 +112,13 @@ export class LoginFormComponent {
   }
   signInWithPopup() {
     //alert("going to call login with Login popup")
-    this.userLoginService.signInWithPopup()
+    this.userLoginService.signInWithPopup().then( (User) =>{
+      if( this.intendedPath ){
+        this.navigateIntended()
+      }
+      else{
+        this.router.navigate(['/']);
+      }
+    })
   }    
 }
