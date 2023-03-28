@@ -360,7 +360,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   
   paint(e) {
 
-    if( this.isMarkerEdited ){
+  
       if (e) {
         e.preventDefault();
         this.setPointFromEvent(this.point, e);
@@ -392,7 +392,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
         this.ctx.closePath()
         
       }
-    }
+  
   }; 
 
   paintPath( ppts ){
@@ -442,7 +442,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('mousemove', ['$event'])
   onMousemove(e: MouseEvent) {
     //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
-    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN ) {
+    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isMarkerEdited ) {
       e.preventDefault();
       this.paint(e);
     }
@@ -450,7 +450,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('touchmove', ['$event'])
   touchmove(e: MouseEvent) {
     //console.log("mousemove:'" + e.target["id"] + "' " + this.MOUSE_DOWN + " " + e.offsetX + "," + e.offsetY + " " + e.x + "," + e.y)
-    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN ) {
+    if(BLACKBOARD == e.target["id"] && this.MOUSE_DOWN && this.isMarkerEdited) {
       e.preventDefault();
       this.paint(e);
     }
@@ -458,7 +458,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('mousedown', ['$event'])
   onMousedown(e) {
     console.log("mouse down:" + e.target["id"] + " " +  e)
-    if ( BLACKBOARD == e.target["id"] ){
+    if ( BLACKBOARD == e.target["id"] && this.isMarkerEdited){
       this.MOUSE_DOWN = true;
       this.ppts.length = 0
     }  
@@ -473,7 +473,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
   @HostListener('touchstart', ['$event'])
   touchstart(e) {
     console.log("touch down:" + e.target["id"] + " " +  e)
-    if ( BLACKBOARD == e.target["id"] ){
+    if ( BLACKBOARD == e.target["id"] && this.isMarkerEdited){
       this.MOUSE_DOWN = true;
       this.ppts.length = 0
     } 
