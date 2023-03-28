@@ -81,7 +81,7 @@ export class RevisionCreateDialog {
         date:new Date(),
         dateId:this.df.getDayId(new Date()),
         status:RevisionStatus.requested,
-     
+        isDeleted:false     
       }
       this.examImprovisacionService.saveObject( "Revision", revision ).then(()=>{
         var videoMarker:VideoMarker= {

@@ -506,6 +506,7 @@ export interface Revision{
   date?:Date
   dateId?:number
   status?:RevisionStatus
+  isDeleted?:boolean
 }
 
 export interface MarkerPoint{

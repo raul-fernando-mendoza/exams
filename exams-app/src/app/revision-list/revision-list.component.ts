@@ -26,7 +26,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
   @ViewChild(MatTable) matTable:MatTable<RevisionItem>
 
   collection="Revision"
-  displayedColumns=["date","label", "student","status"]
+  displayedColumns=["date","label", "student","status",'actions']
   organization_id = null
   isAdmin=false
   userUid=null
@@ -87,6 +87,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
     else{
       qry=qry.where("student_uid","==",this.userUid)
     }
+    qry=qry.where("isDeleted","==",false)
     qry.orderBy( "date","desc")
 
     this.submitting = true
@@ -163,5 +164,18 @@ export class RevisionListComponent implements OnInit, OnDestroy {
   }
   getStatusName( idx ){
     return RevisionStatusNames[idx]
+  }
+
+  onDelete(revision:Revision){
+    if( !confirm("Esta seguro de querer borrar la revison:" + revision.label) ){
+      return
+    }     
+    db.collection("Revision").doc(revision.id).update( {isDeleted:false} ).then( ()=>{
+      console.log("the revision was deleted")
+      this.router.navigate(["revision-list"])
+    },
+    reason=>{
+      alert("ERROR:" + reason)
+    })
   }
 }
