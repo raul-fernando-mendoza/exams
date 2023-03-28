@@ -57,6 +57,7 @@
         <button *ngIf="loopDuration>0" mat-raised-button (click)="playLoop()"><span *ngIf="isPlaying==true">stop loop</span><span *ngIf="isPlaying==false">play loop</span></button>
         {{ displayTime(startMarker) }} - {{ displayTime(startMarker + loopDuration) }}
         <button mat-raised-button (click)="onStartRecording()" *ngIf="isAdmin && isRecording==false"><mat-icon>keyboard_voice</mat-icon></button>
+        <button mat-raised-button (click)="onReplay()" *ngIf="isAdmin && isRecording==false"><mat-icon>hearing</mat-icon></button>
 
         <mat-form-field class="color" appearance="fill">
           <mat-label>Favorite food</mat-label>

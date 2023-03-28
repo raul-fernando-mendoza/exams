@@ -1124,5 +1124,10 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
       }
     } 
   }
+  onReplay(){
+    const audioUrl = URL.createObjectURL(this.audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play()     
+  }
 }
 
