@@ -41,6 +41,8 @@ export class RevisionListComponent implements OnInit, OnDestroy {
     student_uid:[null]
   })
 
+  submitting = false
+
   constructor(private router: Router
     ,private userLoginService:UserLoginService
     ,private userPreferencesService: UserPreferencesService
@@ -87,7 +89,9 @@ export class RevisionListComponent implements OnInit, OnDestroy {
     }
     qry.orderBy( "date","desc")
 
+    this.submitting = true
     this.unsubscribe =  qry.onSnapshot( set =>{
+      this.submitting = false
       this.dataSource.length=0
       var transactions = []
       set.docs.map( doc =>{
@@ -108,6 +112,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
       
     },
     reason =>{
+      this.submitting = false
       console.log("ERROR:" + reason)
     })
   }
