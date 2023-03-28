@@ -41,14 +41,17 @@ Editar Examen
 
       <mat-form-field class="example-full-width">
         <mat-label>Titulo</mat-label>
-        <input matInput placeholder="" value="" formControlName="title">
+        <input matInput placeholder="" value="" formControlName="title" required>
       </mat-form-field>       
 
       <mat-form-field class="example-full-width">
         <mat-label>Expresion</mat-label>
         <input matInput placeholder="" value="" formControlName="expression">
       </mat-form-field> 
-      
+      <mat-form-field class="example-full-width">
+        <mat-label>Nivel</mat-label>
+        <input matInput placeholder="" value="" formControlName="level">
+      </mat-form-field>       
       
       <div formArrayName="parameterGradesFA">
         <div *ngFor="let p of parameterGradesFA.controls; let i=index">

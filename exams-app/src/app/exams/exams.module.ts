@@ -324,6 +324,7 @@ export interface ExamGrade{
 
   title?:string 
   expression?:string 
+  level?:string
 
   score?:number 
 

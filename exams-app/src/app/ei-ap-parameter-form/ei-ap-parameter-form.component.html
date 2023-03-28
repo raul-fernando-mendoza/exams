@@ -3,7 +3,7 @@
         <div>Aplicación de examen</div>
         <div class="examId">id:{{ examGrade.controls.id.value }}</div>
     </div>
-    <div>Estudiante: <b>{{ examGrade.controls.student_name.value  }}</b></div>
+    <div>Estudiante:<b>{{ examGrade.controls.student_name.value  }}</b></div>
     <div>Habilidad: {{  examGrade.controls.materia_name.value }}</div>
     <div *ngIf="!isAdmin">Titulo: <b>{{  examGrade.controls.title.value }}</b></div>
     <mat-form-field *ngIf="isAdmin" appearance="standard" (change)="updateHeader($event)">
@@ -12,6 +12,7 @@
     </mat-form-field>   
 
     <div *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</div>
+    <div *ngIf="examGrade.controls.level.value">Nivel: {{examGrade.controls.level.value}}</div>
     <div>Fecha de Applicación: {{examGrade.controls.applicationDate.value}}</div> 
 
     <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index" >

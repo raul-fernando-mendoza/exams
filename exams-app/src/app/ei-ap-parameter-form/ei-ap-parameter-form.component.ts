@@ -102,6 +102,7 @@ export class EiApParameterFormComponent implements OnInit {
     
         title: [{value:e.title,disabled:!this.isAdmin}],
         expression: [e.expression],
+        level:[e.level],
         score:[e.score],
         isApproved:[e.isApproved],
         

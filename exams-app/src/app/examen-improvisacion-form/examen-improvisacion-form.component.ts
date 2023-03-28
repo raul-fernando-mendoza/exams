@@ -62,6 +62,7 @@ export class ExamenImprovisacionFormComponent {
 
     title:[null, Validators.required], 
     expression:[null], 
+    level:[null],
     parameterGradesFA: this.fb.array([],AllChildValid)
   });
 
@@ -367,6 +368,7 @@ export class ExamenImprovisacionFormComponent {
       student_uid:this.examGradeFG.controls.student_uid.value, 
       title:this.examGradeFG.controls.title.value,
       expression:this.examGradeFG.controls.expression.value,
+      level:this.examGradeFG.controls.level.value,
       score:null, 
       isDeleted:false, 
       isReleased:false, 
