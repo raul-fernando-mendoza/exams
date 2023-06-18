@@ -8,6 +8,7 @@ import uuid
 from datetime import date
 import json
 import math
+from google.api_core.datetime_helpers import DatetimeWithNanoseconds
 
 PROJECT = "thoth-qa"
 DATASET = "thoth"
@@ -40,7 +41,14 @@ def getSubcollectionData( doc, collectionName ):
         data = subDoc.to_dict()
         for prop in data:
             if (type(data[prop]) is float or  type(data[prop]) is int ) and math.isnan( data[prop] ):
-                data[prop] = None        
+                data[prop] = None 
+            if (type(data[prop]) is float) and data[prop].is_integer():
+                data[prop] = int(data[prop]) 
+            if (type(data[prop]) is date):
+                data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
+            if isinstance(data[prop],DatetimeWithNanoseconds):
+                data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
+
         subCollections = subDoc.reference.collections()
         for subCollection in subCollections:
             subCollectionName = subCollection.id
@@ -54,6 +62,14 @@ def getJsonObject( doc ):
     for prop in data:
         if (type(data[prop]) is float or  type(data[prop]) is int ) and math.isnan( data[prop] ):
             data[prop] = None
+        if (type(data[prop]) is float) and data[prop].is_integer():
+            data[prop] = int(data[prop]) 
+        if (type(data[prop]) is date):
+            data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(data[prop],DatetimeWithNanoseconds):
+            data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
+
+
 
     subCollections = doc.reference.collections()
     for subCollection in subCollections:
@@ -122,15 +138,17 @@ def updateRow(tableName:str, id:str):
         query_job = client.query(dml_statement)  # API request
         query_job.result()  # Waits for statement to finish
         return True
-    except:
+    except Exception as e:
+        log.error('ERROR: {}'.format(e.message))
         return False    
 
-collections=["examGrades"]
+#collections=["examGrades","drawings","Revision"]
+collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
 
 for c in collections:
     log.debug("collection:",c) 
 
-    tableName = c.lower()
+    tableName = c #.lower()
     
     tblExist = if_tbl_exists(client, tableName)
     if tblExist == False:
@@ -144,7 +162,9 @@ for c in collections:
         if existingObj:
             valueOldStr = json.dumps( existingObj , sort_keys=True)
             if valueNewStr != valueOldStr:
-                updateRow(tableName, data["id"] )
+                if updateRow(tableName, data["id"] ) == False:
+                    log.error("ERROR updating:" + data["id"])
+                    exit(1)
                 if insertRow(tableName, data["id"],valueNewStr) == False:
                     log.error("ERROR inserting:" + data["id"])
                     exit(1)

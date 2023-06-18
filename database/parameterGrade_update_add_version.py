@@ -23,11 +23,8 @@ for eGradeDoc in eGradeRef:
     #    "created_on":int(creDate.strftime("%Y%m%d")),
     #    "updated_on":int(updDate.strftime("%Y%m%d"))
     #}
-    
-    eUpdate = {
-        "applicationDay":firestore.DELETE_FIELD,
-    }
-    eGradeDoc.reference.update(eUpdate)
+
+    #eGradeDoc.reference.update(eUpdate)
 
     pGradeRef = db.collection("examGrades/" + e["id"] + "/parameterGrades").get()
     for pGradeDoc in pGradeRef:
@@ -36,9 +33,6 @@ for eGradeDoc in eGradeRef:
 
         print( "-" + p["id"] + " " + p["label"])
         json = {
-            #"applicationDate":int(appParamDate.strftime("%Y%m%d")),
-            "applicationDay":firestore.DELETE_FIELD,
-            "parameterGradeVersion":firestore.DELETE_FIELD,
             "version":0,
             "isCurrentVersion":True
         }
