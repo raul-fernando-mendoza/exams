@@ -309,19 +309,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     })
     
   }  
-  formatTimeStamp(t):string{
-    const date = t.toDate()    
-    return date.toISOString().split('T')[0] 
-  }
-  printDate(t):string{   
-    if( t.toDate ){
-      const date = t.toDate()    
-      return date.toISOString().split('T')[0] 
-    }
-    else{
-      return t.toISOString().split('T')[0] 
-    }
-  }  
+
 
   public stripeCreatePaymentIntent(product_id, metadata): Observable<Object> {
 

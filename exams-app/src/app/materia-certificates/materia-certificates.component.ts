@@ -14,6 +14,7 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import * as uuid from 'uuid';
 import { Router, RouterLinkWithHref } from '@angular/router';
 import { NONE_TYPE } from '@angular/compiler';
+import { DateFormatService } from '../date-format.service';
 
 @Component({
   selector: 'app-materia-certificates',
@@ -48,6 +49,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesServide: UserPreferencesService
     , private router: Router
+    , private dateFormatService:DateFormatService
   ){
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
   }
@@ -457,7 +459,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         exam_id:row.exam.id,
         materia_id:row.materia.id, 
         isCompleted: true,
-        applicationDate: today,
+        applicationDate:today,
+        applicationDay:this.dateFormatService.getDayId(today),
         student_uid:row.user.uid, 
         title:"acreditado por:" + this.userLoginService.getDisplayName(),
         expression:"ninguna",
@@ -467,7 +470,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         isApproved:true,
         isWaiver:true,
         created_on:new Date(),
-        updated_on:new Date()   
+        updated_on:new Date()
       }
       db.collection("examGrades").doc(id ).set( examGrade ).then( ()=>{
         row.examGrade = examGrade    
@@ -504,8 +507,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     }
   }
 
-  printDate(date){
-      return this.examImprovisacionService.printDate(date)
+  printDate(date:any){
+      return this.dateFormatService.formatDate(date.toDate())
   }
 
   onCertificateRemove(row:NodeTableRow){
@@ -583,8 +586,14 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     })      
   }
   onCareerClick(row:NodeTableRow){
-    
     this.router.navigate(["career-user",{ career_id:row.career.id , user_uid:row.user.uid}])
+  }
+
+  onExamGrade( row:NodeTableRow ){
+    console.log( row.materia.id, row.exam.id, row.examGrade.id )
+    //report;materia_id=d3af3ad2-50f6-47ea-adcb-1bc84e940b27;exam_id=ea574882-1b9b-45dc-b1b4-12637379db07;examGrade_id=09bb0018-0ba4-4515-b4e7-e72f4af21f8e
+    this.router.navigate(['report',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+
   }
 }
 

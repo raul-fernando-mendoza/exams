@@ -35,12 +35,12 @@
 
       <ng-container matColumnDef="estudiante">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-        <td mat-cell *matCellDef="let row">{{ getDisplayNameForUser(row.student) }}</td>
+        <td mat-cell *matCellDef="let row">{{ row.studentDisplayName }}</td>
       </ng-container>
 
       <ng-container matColumnDef="evaluador">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>evaluador</th>
-        <td mat-cell *matCellDef="let row">{{ getDisplayNameForUser(row.approver) }}</td>
+        <td mat-cell *matCellDef="let row">{{ row.approverDisplayName }}</td>
       </ng-container>   
 
       <ng-container matColumnDef="parametro">

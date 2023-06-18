@@ -25,8 +25,8 @@ export interface ExamenesImprovisacionItem {
   examGrade:ExamGrade
   parameterGrade:ParameterGrade
   materia:Materia
-  student:User
-  approver:User
+  studentDisplayName:string
+  approverDisplayName:string
   isCompleted:boolean
 }
 
@@ -103,8 +103,8 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
         case 'title': return compare(a.examGrade.title, b.examGrade.title, isAsc);
         case 'materia': return compare(a.exam.label, b.exam.label, isAsc);
         case 'fechaApplicacion': return compareDate(a,b, isAsc);
-        case 'estudiante': return compare(a.student.displayName, b.student.displayName, isAsc);
-        case 'evaluador': return compare(a.approver.displayName, b.approver.displayName, isAsc);
+        case 'estudiante': return compare(a.studentDisplayName, b.studentDisplayName, isAsc);
+        case 'evaluador': return compare(a.approverDisplayName, b.approverDisplayName, isAsc);
         case 'parametro': return compare(a.parameterGrade.label, b.parameterGrade.label, isAsc);
         
         case 'completed': return compareCompleted(a.examGrade, b.examGrade, isAsc);        

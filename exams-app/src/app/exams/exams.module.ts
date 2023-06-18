@@ -299,6 +299,9 @@ export interface ParameterGrade{
   commentSoundPath?:string
   commentSoundUrl?:string
 
+  version?:number
+  isCurrentVersion?:boolean
+
   criteriaGrades?: CriteriaGrade[] 
 }
 

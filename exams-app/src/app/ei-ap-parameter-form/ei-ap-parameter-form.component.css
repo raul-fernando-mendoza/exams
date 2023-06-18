@@ -52,4 +52,6 @@ html { translate:"no" }
 .examId{
     margin-left: auto;
     font-size: x-small; 
+    margin-right: 10px;
+    color:white;
 }  

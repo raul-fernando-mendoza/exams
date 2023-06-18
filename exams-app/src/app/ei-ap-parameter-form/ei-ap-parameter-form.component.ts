@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormControl } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { UserLoginService } from '../user-login.service';
 import {  AspectGrade,  AspectGradeRequest,  AspectRequest,  copyObj,  CriteriaGrade, ExamGrade, ExamGradeRequest, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
@@ -34,24 +34,43 @@ export interface DescriptionDlgData {
 export class EiApParameterFormComponent implements OnInit {
 
   constructor(private fb: UntypedFormBuilder
-    , private route: ActivatedRoute
+    , private activatedRoute: ActivatedRoute
     , private examImprovisacionService: ExamenesImprovisacionService
+    , private userPreferencesService: UserPreferencesService
     , public dialog: MatDialog
     , private userLoginService:UserLoginService
-    , private dateFormat:DateFormatService
     , private navigation: NavigationService
-    , private userPreferencesService:UserPreferencesService ) { 
-      this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
-      this.parameterGrade_id = this.route.snapshot.paramMap.get('parameterGrade_id')
+    , private router:Router
+    ,private  dateFormatService:DateFormatService) { 
+
       this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
       this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
-      this.collection = "examGrades/" + this.examGrade_id + "/parameterGrades"  
+      /*
+      this.examGrade_id = this.activatedRoute.snapshot.paramMap.get('examGrade_id')
+      this.parameterGrade_id =this.activatedRoute.snapshot.paramMap.get('parameterGrade_id')
+      this.collection = "examGrades/" + this.examGrade_id + "/parameterGrades" 
+      */
+            
+      var thiz = this
+      this.activatedRoute.paramMap.subscribe( {
+        next(paramMap){
+          thiz.examGrade_id = paramMap.get('examGrade_id')
+          thiz.parameterGrade_id = paramMap.get('parameterGrade_id')
+          thiz.collection = "examGrades/" + thiz.examGrade_id + "/parameterGrades" 
+
+          thiz.update()
+        }
+      })
+      
     }
   
   examGrade_id = null
   parameterGrade_id = null  
 
-  examGrade=null
+  examGradeFG=null
+
+  examGrade:ExamGrade = null
+  parameterGrade:ParameterGrade=null
   
   submitting = false
 
@@ -82,29 +101,35 @@ export class EiApParameterFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //this.update()
+  }  
 
-    const examGradeQry = db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
-      let e = doc.data() as ExamGrade
-      this.examGrade =  this.fb.group({
-        id: [e.id],
+  update(){
+    db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
+      this.examGrade = doc.data() as ExamGrade
+
+      let dateStr = this.dateFormatService.formatDate( ((this.examGrade.applicationDate) as any).toDate() )
+
+      this.examGradeFG =  this.fb.group({
+        id: [this.examGrade.id],
         organization_id: [this.organization_id],
-        exam_id:[e.exam_id], 
+        exam_id:[this.examGrade.exam_id], 
      
-        isCompleted: [e.isCompleted],
-        applicationDate:[this.examImprovisacionService.printDate(e.applicationDate)],
+        isCompleted: [this.examGrade.isCompleted],
+        applicationDate:[dateStr],
     
-        student_uid:[e.student_uid, Validators.required],
+        student_uid:[this.examGrade.student_uid, Validators.required],
         student_name:[null],
 
-        materia_id:[e.materia_id, Validators.required],
+        materia_id:[this.examGrade.materia_id, Validators.required],
         materia_name:[null],        
     
     
-        title: [{value:e.title,disabled:!this.isAdmin}],
-        expression: [e.expression],
-        level:[e.level],
-        score:[e.score],
-        isApproved:[e.isApproved],
+        title: [{value:this.examGrade.title,disabled:!this.isAdmin}],
+        expression: [this.examGrade.expression],
+        level:[this.examGrade.level],
+        score:[this.examGrade.score],
+        isApproved:[this.examGrade.isApproved],
         
         parameterGrades: new UntypedFormArray([])        
       })
@@ -116,40 +141,51 @@ export class EiApParameterFormComponent implements OnInit {
       this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
         const user = response["result"]
         let student_name = (user["displayName"] != null && user["displayName"] != '') ? user["displayName"] : user["email"]
-        this.examGrade.controls.student_name.setValue(student_name)
+        this.examGradeFG.controls.student_name.setValue(student_name)
       })
  
       db.collection("materias").doc(doc.data().materia_id).get().then( doc => {
-        this.examGrade.controls.materia_name.setValue(  doc.data().materia_name )
+        this.examGradeFG.controls.materia_name.setValue(  doc.data().materia_name )
       })
-      this.addParameterGrades(doc.data().id, this.examGrade.controls.parameterGrades )
+      this.addParameterGrades(doc.data().id, this.examGradeFG.controls.parameterGrades )
+    },
+    reason=>{
+      alert("ERROR reading exam parameter:" + reason.toString())
     })
-  }  
 
+  }
   addParameterGrades( examGrade_id:string, parameterGrades:UntypedFormArray):Promise<void>{
     var _resolve
     return new Promise<void>((resolve, reject) =>{
       _resolve = resolve
       db.collection(`examGrades/${examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).get().then( doc =>{
-        let p = doc.data() as ParameterGrade
+        this.parameterGrade = doc.data() as ParameterGrade
+
+        if(this.parameterGrade.isCompleted == true){
+          this.isDisabled = true
+        }
+        else{
+          this.isDisabled = false
+        }
+
         var g = this.fb.group({
-          id:[p.id],
+          id:[this.parameterGrade.id],
           organization_id:[this.organization_id],
-          idx:[p.idx],
-          label:[p.label],
-          description:[p.description],
-          scoreType:[p.scoreType],
-          score:[{value:p.score, disable: !this.isAdmin}],
-          evaluator_uid:[p.evaluator_uid],
+          idx:[this.parameterGrade.idx],
+          label:[this.parameterGrade.label],
+          description:[this.parameterGrade.description],
+          scoreType:[this.parameterGrade.scoreType],
+          score:[{value:this.parameterGrade.score, disable: !this.isAdmin}],
+          evaluator_uid:[this.parameterGrade.evaluator_uid],
           evaluator_name:[null],
-          evaluator_comment:[p.evaluator_comment],
-          isCompleted:[p.isCompleted],
-          commentSoundUrl:[p.commentSoundUrl],
+          evaluator_comment:[this.parameterGrade.evaluator_comment],
+          isCompleted:[this.parameterGrade.isCompleted],
+          commentSoundUrl:[this.parameterGrade.commentSoundUrl],
           criteriaGrades: new UntypedFormArray([])
         })
 
         var userReq = {
-          "uid":p.evaluator_uid
+          "uid":this.parameterGrade.evaluator_uid
         }      
       
         this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
@@ -159,7 +195,7 @@ export class EiApParameterFormComponent implements OnInit {
         })
 
         parameterGrades.push(g)
-        this.addCriteriaGrades(examGrade_id, p.id, g.controls.criteriaGrades as UntypedFormArray).then( () =>{
+        this.addCriteriaGrades(examGrade_id, this.parameterGrade.id, g.controls.criteriaGrades as UntypedFormArray).then( () =>{
           parameterGrades.controls.sort( (a, b)=>{
             if( a.get("idx").value > b.get("idx").value )
               return 1
@@ -295,7 +331,7 @@ export class EiApParameterFormComponent implements OnInit {
     var totalPoints:number= 0;
     var earnedPoints:number = 0;
     var finalScore:number = 0;
-    let parameterGrades_array:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
+    let parameterGrades_array:UntypedFormArray = this.examGradeFG.controls.parameterGrades as UntypedFormArray
     let parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
     let criteriaGrades_array = parameterGrade.controls.criteriaGrades as UntypedFormArray
     for( var i =0; i<criteriaGrades_array.controls.length; i++){
@@ -312,14 +348,14 @@ export class EiApParameterFormComponent implements OnInit {
     finalScore = Number( ((earnedPoints / totalPoints) * 10 ).toFixed(2) )
     parameterGrade.controls.score.setValue( finalScore ) 
     if( finalScore > 7 ){
-      this.examGrade.controls.isApproved.setValue( true )
+      this.examGradeFG.controls.isApproved.setValue( true )
     }  
   }
 
 
   openCommentDialog(){
     console.log("openCommentDialog")
-    var parameterGrades_array:UntypedFormArray = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrades_array:UntypedFormArray = this.examGradeFG.controls.parameterGrades as UntypedFormArray
     var parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
 
     var calificacion = parameterGrade.controls.score.value
@@ -341,10 +377,10 @@ export class EiApParameterFormComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       if( result != undefined ){
-        var parameterGrades_array = this.examGrade.controls.parameterGrades as UntypedFormArray
+        var parameterGrades_array = this.examGradeFG.controls.parameterGrades as UntypedFormArray
         var parameterGrade:UntypedFormGroup = parameterGrades_array.controls[0] as UntypedFormGroup
         parameterGrade.controls.evaluator_comment.setValue(result) 
-        this.updateComment( this.examGrade, parameterGrade) 
+        this.updateComment( this.examGradeFG, parameterGrade) 
       }
       else{
         this.close()
@@ -420,7 +456,7 @@ export class EiApParameterFormComponent implements OnInit {
 
   close(): void{
     console.log("close")
-    var parameterGrade_arr = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrade_arr = this.examGradeFG.controls.parameterGrades as UntypedFormArray
     var parameterGrade = parameterGrade_arr.controls[0] as UntypedFormGroup
     let values = {
           score: parameterGrade.controls.score.value,
@@ -430,7 +466,12 @@ export class EiApParameterFormComponent implements OnInit {
     db.collection(`examGrades/${this.examGrade_id}/parameterGrades`).doc(this.parameterGrade_id).update(values).then( 
       doc =>{
         console.debug("end update score:" + doc)
-        this.navigation.back()
+        if(this.isAdmin) {
+          this.router.navigate(["grades"])
+        }
+        else{
+          this.router.navigate(["ExamenesImprovisacion"])
+        }
       },
       reason =>{
         console.log("ERROR: updating score:" + reason )
@@ -452,7 +493,7 @@ export class EiApParameterFormComponent implements OnInit {
   }  
 
   getformValue(){
-    return JSON.stringify(this.examGrade)
+    return JSON.stringify(this.examGradeFG)
   }  
 
 
@@ -464,10 +505,10 @@ export class EiApParameterFormComponent implements OnInit {
   updateHeader(){
     
     console.log("close")
-    var parameterGrade_arr = this.examGrade.controls.parameterGrades as UntypedFormArray
+    var parameterGrade_arr = this.examGradeFG.controls.parameterGrades as UntypedFormArray
     var parameterGrade = parameterGrade_arr.controls[0] as UntypedFormGroup
     let values = {
-        title: this.examGrade.controls.title.value
+        title: this.examGradeFG.controls.title.value
     }
     
 
@@ -484,11 +525,11 @@ export class EiApParameterFormComponent implements OnInit {
 
 updateExamGrade():Promise<void>{
 
-  let examGrade_id = this.examGrade.controls.id.value
+  let examGrade_id = this.examGradeFG.controls.id.value
   var parameter_resolve = null
   return new Promise<void>((resolve, reject) =>{  
     parameter_resolve = resolve
-    let parameterGrades = this.examGrade.controls.parameterGrades as UntypedFormArray
+    let parameterGrades = this.examGradeFG.controls.parameterGrades as UntypedFormArray
     let pa = parameterGrades.controls.map(e =>{       
       let p = e as UntypedFormGroup
       return this.updateParameterGrade(examGrade_id, p)
@@ -555,6 +596,79 @@ updateExamGrade():Promise<void>{
       })       
     })         
   }
+  onEditParameterGrade(){
+    this.submitting = true
+    this.newVersionExamGrade( this.examGrade.id, this.parameterGrade.id, this.parameterGrade.version ).then( 
+      parameterGrade =>{
+        this.submitting = false
+        this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:this.examGrade.id,parameterGrade_id:parameterGrade.id}]);
+      },
+      reason=>{
+        this.submitting = false
+        alert("ERROR creating new version of exam" + reason.toString())
+      }
+    )
+  }  
+
+  newVersionExamGrade(examGrade_id, parameterGrade_id, version):Promise<ParameterGrade>{
+    var _resolve
+    var _reject
+    return new Promise<null>((resolve, reject)=>{
+      _resolve = resolve
+      _reject = reject
+
+      if( examGrade_id == null || parameterGrade_id == null){
+        reject(null)
+      }
+      var req = {
+        examGrades:{
+          id:examGrade_id,
+          parameterGrades:
+            {
+              id:parameterGrade_id,
+              version: version + 1,
+              isCurrentVersion: true,
+              isCompleted:false
+            }          
+        }
+      }
+      var options = {
+        exceptions:["references","Path","Url"]
+      }
+      this.userLoginService.getUserIdToken().then( token => {
+        this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req, options).subscribe(
+          {
+            next(data){ 
+              var parameterGrade:ParameterGrade = data["result"] as ParameterGrade
+              //now update the old version as not current
+
+              db.collection("examGrades/" + examGrade_id + "/parameterGrades").doc(parameterGrade_id).update({"isCurrentVersion": false}).then(
+                ()=>{
+                  console.log("parameter grade old version has been udpated")
+                  _resolve(parameterGrade)
+                },
+                reason=>{
+                  alert("Error updating old version:" + reason)
+                }
+              ) 
+            },   
+            error(reason){  
+              alert( "ERROR: duplicando examen:" + JSON.stringify(reason))
+              _reject()
+            },
+            complete(){
+              console.log("never called")
+            }
+          }
+        )
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      }) 
+    }) 
+        
+  }  
+
 }
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({

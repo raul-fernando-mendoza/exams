@@ -215,7 +215,7 @@ export class ExamenImprovisacionFormComponent {
       label: [p.label],
       description: [p.description],
       scoreType: [p.scoreType],
-      score: [null],
+      score: [1],
       evaluator_uid:[null, Validators.required],
       isSelected:[true],
       criteriaGradeFA: this.fb.array([])         
@@ -272,7 +272,7 @@ export class ExamenImprovisacionFormComponent {
       idx:[criteria.idx],
       label:[criteria.label],
       description:[criteria.description],
-      score:[null],
+      score:[1],
       isSelected:[ criteria.initiallySelected ],
       aspectGradesFA: new FormArray([])
     })
@@ -297,7 +297,7 @@ export class ExamenImprovisacionFormComponent {
       label:[a.label],
       description:[a.description],
       isGraded:[false],
-      score:[1.0],
+      score:[1],
       hasMedal:[false]
     })
     aspectFA.controls.push(g)
@@ -362,18 +362,20 @@ export class ExamenImprovisacionFormComponent {
       materia_id:this.examGradeFG.controls.materia_id.value, 
       isCompleted: false, 
       applicationDate: applicationDate,
-      applicationDay:this.dateFormatService.getDayId(applicationDate),
+      applicationDay: this.dateFormatService.getDayId(applicationDate),
       applicationMonth:this.dateFormatService.getMonthId(applicationDate),
       applicationYear: this.dateFormatService.getYearId(applicationDate),    
       student_uid:this.examGradeFG.controls.student_uid.value, 
       title:this.examGradeFG.controls.title.value,
       expression:this.examGradeFG.controls.expression.value,
       level:this.examGradeFG.controls.level.value,
-      score:null, 
+      score:1, 
       isDeleted:false, 
       isReleased:false, 
       isApproved:false ,
-      evaluators:[]
+      evaluators:[],
+      created_on:new Date(),
+      updated_on:new Date()      
     }
     this.submitting = true
 
@@ -381,8 +383,10 @@ export class ExamenImprovisacionFormComponent {
    
     for( let i=0; i<parametersFA.controls.length; i++){
       const parameterFG = parametersFA.controls[i] as FormGroup
-      const evaluator_uid = parameterFG.controls["evaluator_uid"].value
-      examGrade.evaluators.push( evaluator_uid )
+      if( parameterFG.controls["isSelected"].value ){
+        const evaluator_uid = parameterFG.controls["evaluator_uid"].value
+        examGrade.evaluators.push( evaluator_uid )
+      }
     }
     
     db.collection("examGrades").doc(examGrade["id"]).set(examGrade).then(()=>{
@@ -417,7 +421,7 @@ export class ExamenImprovisacionFormComponent {
   
   saveParameterGrade(examGrade:ExamGrade, pFG:FormGroup):Promise<void>{
 
-    let applicationDate = examGrade.applicationDate
+    let applicationDate = this.examGradeFG.controls.applicationDate.value
 
     let parameterGrade:ParameterGrade = {
       id:uuid.v4(), 
@@ -434,7 +438,9 @@ export class ExamenImprovisacionFormComponent {
       applicationYear:this.dateFormatService.getYearId( applicationDate ),
     
       isCompleted:false, 
-      evaluator_comment:null     
+      evaluator_comment:null,
+      isCurrentVersion:true,
+      version:0   
     }
 
     var parameter_resolve = null
@@ -471,7 +477,7 @@ export class ExamenImprovisacionFormComponent {
       idx:criteriaGradeFG.controls.idx.value,
       label:criteriaGradeFG.controls.label.value,
       description:criteriaGradeFG.controls.description.value,
-      score:null,
+      score:1,
       isSelected:true     
     }
     return new Promise<void>((resolve, reject) =>{
@@ -504,7 +510,7 @@ export class ExamenImprovisacionFormComponent {
       label:aspectGradeFG.controls.label.value,
       description:aspectGradeFG.controls.description.value,
       isGraded:false,
-      score:null,
+      score:1,
       hasMedal:false
     }
     return new Promise<void>((resolve, reject) =>{

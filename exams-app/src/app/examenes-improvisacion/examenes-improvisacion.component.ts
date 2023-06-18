@@ -41,7 +41,6 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   student_email = null
   isShowAll = true
   periodicRefresh = false
-  applicationDates = []
   selectedDay = null
   releasedOnly = null
 
@@ -137,44 +136,43 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   }
 
   updateList(){
+    this.examenes.length = 0
+    this.submitting = true
+
+    var userUid= this.userLoginService.getUserUid()
 
 
-    
-    var qry
 
-    qry = db.collectionGroup('parameterGrades')
+    var qry = db.collection('examGrades')
       .where("organization_id", "==", this.organization_id)
-      .where("evaluator_uid", "==", this.userLoginService.getUserUid())       
+      .where( "evaluators", "array-contains",userUid)
+      .where("isCompleted", '==', false)  
+      
 
-      //if( !this.isShowAll ){
-        qry = qry.where("isCompleted", '==', false)  
-      //}
+    if( this.selectedDay ){
+      qry = qry.where("applicationDay", "==", this.dateFormatService.getDayId(this.selectedDay) )
+    }
 
-      if( this.selectedDay ){
-        qry = qry.where("applicationDay", "==", this.dateFormatService.getDayId(this.selectedDay) )
-      }
 
-      if( this.unsubscribe ){
-        this.unsubscribe()
-      }
+    this.submitting = true
 
-      this.submitting = true
-      this.unsubscribe = qry.onSnapshot( set => {
-        this.examenes.length = 0
-        
-        console.log("exams found:" + set.docs.length)
-              
-        var map = set.docs.map( doc =>{
-          const parameterGrade:ParameterGrade = doc.data()
-          var examGrade_id = doc.ref.path.split("/")[1]
-          return this.addParameterGrade(examGrade_id, parameterGrade)
-        })
-        Promise.all(map).then(()=>{
-          this.submitting = false
-          this.examenes.sort( (a,b) =>{
+    if( this.unsubscribe ){
+      this.unsubscribe()
+    }
+    this.unsubscribe = qry.onSnapshot( set => {
+
+      this.examenes.length = 0;
+
+      var map = set.docs.map( doc =>{        
+        const examGrade:ExamGrade = doc.data()
+        return this.addDbParameterGrade( examGrade )
+      })
+      Promise.all(map).then(()=>{
+        this.submitting = false
+        this.examenes.sort( (a,b) =>{
           var ap = a as ExamenesImprovisacionItem
           var bp = b as ExamenesImprovisacionItem
-          if( ap.examGrade.applicationDay == bp.examGrade.applicationDay ){
+          if( ap.examGrade.applicationDate == bp.examGrade.applicationDate ){
             return a.examGrade.title > b.examGrade.title ? 1 : -1
           }
           else{
@@ -182,80 +180,82 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
           }
         })
         this.updateTable()
-      },
-      reason =>{
-        console.log("error on filter snapshot:" + reason)
-      })
+      })       
     },
     reason =>{
-      console.error("Error: reading exam list" + reason)
-      alert("ERROR reading examGrades:" + reason)
-      this.submitting = false
+      alert("ERROR reading list of exams to approve:" + reason)
     })
+  }
+  addDbParameterGrade(examGrade:ExamGrade):Promise<void>{  
+    return new Promise<void>((resolve, reject) =>{
+      db.collection('examGrades/' + examGrade.id + "/parameterGrades")
+        .where("evaluator_uid", "==", this.userLoginService.getUserUid())
+        .where("version","==", 0)      
+        .where("isCompleted", '==', false) 
+        .get().then( set =>{
+          console.log("exams found:" + set.docs.length)
+                  
+          var map = set.docs.map( doc =>{
+            const parameterGrade:ParameterGrade = doc.data() as ParameterGrade
+            var examGrade_id = parameterGrade.id
+            if( parameterGrade.evaluator_uid == this.userLoginService.getUserUid() ){
+              return this.addParameterGrade(examGrade, parameterGrade)
+            }          
+          })
+          Promise.all( map ).then( ()=>{
+            resolve()
+          },
+          reason =>{
+            reject()
+          })
+        },
+        reason =>{
+          console.error("Error: reading exam list" + reason)
+          alert("ERROR reading parameterGrades:" + reason)
+          this.submitting = false
+        }
+      )  
+    }) 
   } 
-  addParameterGrade(examGrade_id:string,parameterGrade:ParameterGrade):Promise<void>{
+  addParameterGrade(examGrade:ExamGrade,parameterGrade:ParameterGrade):Promise<void>{
     return new Promise<void>((resolve, reject) =>{
       var transaction:Promise<void>[] = []
 
       var obj:ExamenesImprovisacionItem = {
         exam:null,
-        examGrade:null,
+        examGrade:examGrade,
         parameterGrade: parameterGrade, 
         materia: null,
-        student: null,
-        approver:null,
+        studentDisplayName: null,
+        approverDisplayName:null,
         isCompleted:parameterGrade.isCompleted
       }
-  
+
+      obj.approverDisplayName = this.userLoginService.getDisplayName()
       transaction.push(
-        this.getUser(parameterGrade.evaluator_uid).then(user =>{
-          obj.approver = user
-        }) 
-      )  
-      transaction.push(
-        new Promise<void>( (resolve_local, reject_local) =>{
-          this.examImprovisacionService.getExamGrade(examGrade_id).then( examGrade =>{
-            var localTransactions = []
-            obj.examGrade = examGrade
-            localTransactions.push(
-              this.examImprovisacionService.getExam( examGrade.materia_id, examGrade.exam_id).then( exam =>{
-                obj.exam = exam
-              },
-              reason =>{
-                console.log("ERROR reading exam:" + reason)
-              })
-            )
-            localTransactions.push(
-              this.examImprovisacionService.getMateria( examGrade.materia_id).then( materia =>{
-                obj.materia = materia
-              },
-              reason =>{
-                console.log("ERROR materia cannot be read:" + reason)
-              })
-            )
-            localTransactions.push(
-              this.getUser(examGrade.student_uid).then(student =>{
-                obj.student = student
-              },
-              reason =>{
-                console.log("ERROR student cannot be read:" + reason)
-              }) 
-            )   
-            Promise.all( localTransactions ).then( () =>{
-              resolve_local()
-            },
-            reason=>{
-              console.log("ERROR localtransaction:" + reason)
-              reject_local()
-            })         
-          },
-          reason =>{
-            console.log("ERROR loading addParameterGrade:" + reason)
-            resolve(null) //will ignore the fact we can not read some records
-          })
-  
+        this.examImprovisacionService.getExam( examGrade.materia_id, examGrade.exam_id).then( exam =>{
+          obj.exam = exam
+        },
+        reason =>{
+          console.log("ERROR reading exam:" + reason)
         })
       )
+      transaction.push(
+        this.examImprovisacionService.getMateria( examGrade.materia_id).then( materia =>{
+          obj.materia = materia
+        },
+        reason =>{
+          console.log("ERROR materia cannot be read:" + reason)
+        })
+      )
+      transaction.push(
+        this.getUser(examGrade.student_uid).then(student =>{
+          obj.studentDisplayName = this.getDisplayNameForUser(student)
+        },
+        reason =>{
+          console.log("ERROR student cannot be read:" + reason)
+        }) 
+      )   
       Promise.all(transaction).then(()=>{
         if( obj.examGrade && obj.examGrade.isDeleted == false ){
               this.examenes.push(obj)
@@ -337,8 +337,8 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
 
   }
   
-  printApplicationDate(t){
-    return this.examImprovisacionService.formatTimeStamp(t)
+  printApplicationDate(t:any){
+    return this.dateFormatService.formatDate(t.toDate())
   }
   getDisplayNameForUser(user){
     return this.userLoginService.getDisplayNameForUser(user)

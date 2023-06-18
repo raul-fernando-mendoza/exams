@@ -1,21 +1,25 @@
-<div *ngIf="examGrade" [formGroup]="examGrade">
+<div *ngIf="examGradeFG" [formGroup]="examGradeFG">
+    <div class="bar">
+        <div class="spacer"></div>
+        <div *ngIf="isAdmin && parameterGrade && parameterGrade.isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
+    </div>
     <div class="flex-container">
         <div>Aplicación de examen</div>
-        <div class="examId">id:{{ examGrade.controls.id.value }}</div>
+        <div *ngIf="examGradeFG && parameterGrade" class="examId">id:{{ examGradeFG.controls.id.value }} : {{ parameterGrade.id }}:{{ parameterGrade.version }}</div>
     </div>
-    <div>Estudiante:<b>{{ examGrade.controls.student_name.value  }}</b></div>
-    <div>Habilidad: {{  examGrade.controls.materia_name.value }}</div>
-    <div *ngIf="!isAdmin">Titulo: <b>{{  examGrade.controls.title.value }}</b></div>
+    <div>Estudiante:<b>{{ examGradeFG.controls.student_name.value  }}</b></div>
+    <div>Habilidad: {{  examGradeFG.controls.materia_name.value }}</div>
+    <div *ngIf="!isAdmin">Titulo: <b>{{  examGradeFG.controls.title.value }}</b></div>
     <mat-form-field *ngIf="isAdmin" appearance="standard" (change)="updateHeader($event)">
         <mat-label>Titulo</mat-label>
         <input matInput type="text"  formControlName="title">
     </mat-form-field>   
 
-    <div *ngIf="examGrade.controls.expression.value">Expresion: {{examGrade.controls.expression.value}}</div>
-    <div *ngIf="examGrade.controls.level.value">Nivel: {{examGrade.controls.level.value}}</div>
-    <div>Fecha de Applicación: {{examGrade.controls.applicationDate.value}}</div> 
+    <div *ngIf="examGradeFG.controls.expression.value">Expresion: {{examGradeFG.controls.expression.value}}</div>
+    <div *ngIf="examGradeFG.controls.level.value">Nivel: {{examGradeFG.controls.level.value}}</div>
+    <div>Fecha de Applicación: {{examGradeFG.controls.applicationDate.value}}</div> 
 
-    <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGrade,'parameterGrades'); let i=index" >
+    <div [formGroup]="p" *ngFor="let p of getFormGroupArray(examGradeFG,'parameterGrades'); let i=index" >
         <div>Evaluador: {{p.controls.evaluator_name.value}}</div>
         <div>Parametro:{{p.controls.label.value}}</div>
         <div>Descripcion:{{p.controls.description.value}}</div>
@@ -47,14 +51,14 @@
                     
                     <div *ngIf="p.controls.scoreType.value == 'starts'">
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
-                        <app-star-slider [enabled]="!isDisabled" formControlName="score" (valueChange)="onChangeStarts(examGrade,p,c,a)"></app-star-slider>
+                        <app-star-slider [enabled]="!isDisabled" formControlName="score" (valueChange)="onChangeStarts(examGradeFG,p,c,a)"></app-star-slider>
                     </div>
                     <div  *ngIf="p.controls.scoreType.value != 'starts'" class="padded" >
                         <div class="question" (click)="showText(a.controls.description.value)">{{ a.controls.label.value }} </div>
 
                         <div>
                         
-                        <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(examGrade,p,c,a)">
+                        <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect(examGradeFG,p,c,a)">
                             <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
                             <mat-icon>not_interested</mat-icon>
                             </mat-button-toggle>
@@ -78,7 +82,7 @@
                         
                         <mat-form-field  appearance="legacy" >
                             <mat-label>Faltante</mat-label>
-                            <textarea  matInput maxlength="700" rows="3" placeholder="Elementos faltantes"  formControlName="missingElements" (change)="onChangeAspect(examGrade,p,c,a)">
+                            <textarea  matInput maxlength="700" rows="3" placeholder="Elementos faltantes"  formControlName="missingElements" (change)="onChangeAspect(examGradeFG,p,c,a)">
                             </textarea>
                         </mat-form-field> 
 

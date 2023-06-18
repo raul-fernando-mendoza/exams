@@ -50,8 +50,13 @@ Certificados
         <div *ngIf="row.nodeClass=='MateriaEnrollment'">          
           <button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()">certificado</button>
         </div>    
-        <div *ngIf="row.nodeClass=='Exam'">
-          {{ row.examGrade && row.examGrade.isReleased ? 'completado' : 'faltante' }}
+        <div *ngIf="row.nodeClass=='Exam'; else missing">
+          <div *ngIf="row.examGrade && row.examGrade.isReleased">
+            <button mat-button (click)="onExamGrade(row)">completado</button>
+          </div>
+          <ng-template #missing>
+            Faltante.
+          </ng-template>          
         </div>           
       </td>
     </ng-container>

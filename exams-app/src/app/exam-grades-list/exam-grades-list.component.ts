@@ -69,7 +69,7 @@ export class ExamGradesListComponent implements OnInit {
           grades.get().then( snapshot => {
   
             snapshot.docs.map( doc =>{
-              var examGrade:ExamGrade = doc.data()
+              var examGrade:ExamGrade = doc.data() as ExamGrade
               examListItem.examGrade = examGrade
             })
           },

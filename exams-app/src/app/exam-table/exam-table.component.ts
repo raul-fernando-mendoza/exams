@@ -34,7 +34,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
   released = false
   periodicRefresh = false
-  applicationDates = []
+  
   applicationDate:Date = null
 
   submmiting = false
@@ -49,7 +49,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     , private userLoginService: UserLoginService
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesService:UserPreferencesService
-    , private dateFormatService:DateFormatService
+    , public dateFormatService:DateFormatService
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
@@ -95,7 +95,12 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
       var saved_applicationDate = localStorage.getItem('applicationDate')
       if (saved_applicationDate && saved_applicationDate != 'null'){
-        this.applicationDate = new Date( saved_applicationDate )
+        try{
+          this.applicationDate = new Date( saved_applicationDate )
+        }
+        catch(e){
+          this.applicationDate == null
+        }
       }    
       
       var qry = db.collection("examGrades")
@@ -116,10 +121,13 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
           let examGrade:ExamGrade = doc.data() as ExamGrade
+          var d:any = examGrade.applicationDate
+          console.log( d.toDate() )
+
           let node:NodeTableRow = {
             obj:{
               "id":examGrade.id,
-              "applicationDate":this.examImprovisacionService.printDate(examGrade.applicationDate),
+              "applicationDate":d.toDate(),
               "materia_id":examGrade.materia_id,
               "materia_name":null,
               "student_uid":examGrade.student_uid,
@@ -184,17 +192,15 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     var _resolve = null
     return new Promise<void>((resolve, reject) =>{  
       _resolve = resolve
-      var unsubscribe = db.collection(`examGrades/${examGrade_id}/parameterGrades`)
-      .onSnapshot( set =>{
+      let qry = db.collection("examGrades/" + examGrade_id + "/parameterGrades")
+      .where("isCurrentVersion", "==",true)
+
+
+      var unsubscribe = qry.onSnapshot( set =>{
         parent.length = 0
         let m = set.docs.map( doc =>{
-          let parameterGrade = {
-            id:doc.data().id,
-            label:doc.data().label,
-            score:this.toFixed( doc.data().score,2),
-            isCompleted:doc.data().isCompleted,
-            idx:doc.data().idx
-          }
+          let parameterGrade = doc.data() as ParameterGrade
+
           let node:NodeTableRow = {
             obj:{
               "examGrade_id":examGrade_id,
@@ -310,7 +316,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   }  
 
   onEditParameterGrade(examGrade_id, parameterGrade_id){
-    this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
+      this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   } 
   ngOnDestroy(): void {
     this.snapshots.map( func =>{

@@ -7,6 +7,7 @@ import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
 import { ExamFormService } from '../exam-form.service';
+import { DateFormatService } from '../date-format.service';
 
 //http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
 
@@ -35,7 +36,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute
     ,private examenesImprovisacionService:ExamenesImprovisacionService
     ,private navigationService:NavigationService
-    ,private examFormService:ExamFormService
+    ,private dateFormatService:DateFormatService
   ) {
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.exam_id = this.route.snapshot.paramMap.get('exam_id')
@@ -80,18 +81,14 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
             displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
           }
 
-          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").get().then( set =>{
+          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
+          .where("isCurrentVersion", "==", true).get().then( set =>{
 
             set.docs.map( doc =>{
-              var parameterGrade:ParameterGrade = {
-                id:doc.data().id,
-                label:doc.data().label,
-                score:doc.data().score,
-                applicationDate:doc.data().applicationDate.toDate(),
-                evaluator_comment:doc.data().evaluator_comment,
-                commentSoundUrl:doc.data().commentSoundUrl,
-                criteriaGrades:[]
-              }
+              var parameterGrade:ParameterGrade = doc.data() as ParameterGrade
+             
+              parameterGrade.criteriaGrades=[]
+              
             
               this.examGrade.parameterGrades.push(parameterGrade)
 
@@ -219,8 +216,8 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     })
   }
 
-  formatDate(d){
-    return this.examenesImprovisacionService.printDate(d)
+  formatDate(d:any){
+    return this.dateFormatService.formatDate(d.toDate())
   }
   formatDecimal(value){
     return value.toFixed(1)
