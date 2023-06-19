@@ -65,17 +65,17 @@ service cloud.firestore {
       function isAdmin(request) {
       	return ('role-admin-' + get(/databases/$(database)/documents/examGrades/$(examGrade)).data.organization_id) in request.auth.token
       }
-      allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
-      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
-      allow read: if request.auth.uid == resource.data.evaluator_uid 
+      allow read: if request.auth.uid in resource.data.evaluators
       allow read: if request.auth.uid == resource.data.student_uid 
+			allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
+      allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
 
 			match /{document=**} {    
         allow read, write: if isAdmin(request)   
         allow read, update: if isExamGradeEvaluator() 
         allow read: if isExamGradeStudent()
       }      
-    } 
+    }
     match /laboratoryGrades/{laboratoryGrade} {
       function isLaboratoryGradeEvaluator() {
         return request.auth.uid in get(/databases/$(database)/documents/laboratoryGrades/$(laboratoryGrade)).data.evaluators 

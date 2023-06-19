@@ -37,12 +37,13 @@ def closeExamGrade(db, documentId):
         numScores = 0
         for parameter in parameters_arr:
             p = parameter.to_dict()
-            if p["isCompleted"] == True:
-                total = total + p["score"]
-                numScores += 1
-            else:
-                isCompleted = False
-                break
+            if p["isCurrentVersion"] == True:
+                if p["isCompleted"] == True:
+                    total = total + p["score"]
+                    numScores += 1
+                else:
+                    isCompleted = False
+                    break
         if isCompleted == True: 
             grade = total / numScores
             isApproved = False
@@ -54,6 +55,15 @@ def closeExamGrade(db, documentId):
                 u'isCompleted': True,
                 u'isApproved':isApproved
             })
+            log.debug("*** documentId:" + documentId + " completed")  
+        else:
+            doc_ref.update({
+                u'score':0,
+                u'isCompleted':False,
+                u'isApproved':False,
+                u'isReleased':False
+            })     
+            log.debug("*** documentId:" + documentId + " reopen")        
 
 
     
