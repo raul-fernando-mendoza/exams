@@ -79,6 +79,9 @@ export class MateriaListComponent implements OnInit , OnDestroy{
             materiaEnrollment:null
           }
           this.examImprovisationService.getMateriaEnrollment( this.organization_id, materia.id, this.userUid).then( materiaEnrollement =>{
+            if( materiaEnrollement){
+              this.enrolledOnly = true
+            }
             materiaItem.materiaEnrollment = materiaEnrollement
           })
           this.materiasList.push(materiaItem)          
