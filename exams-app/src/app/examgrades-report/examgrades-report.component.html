@@ -40,7 +40,10 @@ Reporte Examen<button mat-button (click)="onBack()"><mat-icon>arrow_back</mat-ic
         <table class="criteria" *ngFor="let c of p.criteriaGrades">
             <th>{{ c.label }}</th>
             <tr class="aspect" *ngFor="let a of c.aspectGrades">
-                <td class="aspect_label">{{ a.label }}</td><td class="aspect_score" >{{ formatDecimal( a.score * 10 ) }}</td>
+                <td class="aspect_label">
+                  <div></div>{{ a.label }}
+                  <div *ngIf="a.missingElements">{{a.missingElements}}</div>
+                </td><td class="aspect_score" >{{ formatDecimal( a.score * 10 ) }}</td>
             </tr>
         </table>
       </mat-expansion-panel-content>

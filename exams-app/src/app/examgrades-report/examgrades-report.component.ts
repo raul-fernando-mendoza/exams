@@ -202,12 +202,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     return new Promise<void>( (resolve, reject) =>{
       db.collection("examGrades/" + examGrade.id + "/parameterGrades/" + parameterGrade.id + "/criteriaGrades/" + criteriaGrades.id + "/aspectGrades" ).get().then( snapshot =>{
         snapshot.docs.map( doc =>{
-          var aspectGrade:AspectGrade = {
-            id:doc.data().id,
-            idx:doc.data().idx,
-            label:doc.data().label,
-            score:doc.data().score
-          }
+          var aspectGrade:AspectGrade = doc.data() as AspectGrade
           criteriaGrades.aspectGrades.push(aspectGrade)
         })
       })
