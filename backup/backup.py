@@ -9,6 +9,7 @@ from datetime import date
 import json
 import math
 from google.api_core.datetime_helpers import DatetimeWithNanoseconds
+from firebase_admin import auth
 
 PROJECT = "thoth-qa"
 DATASET = "thoth"
@@ -20,7 +21,7 @@ dataset = client.dataset(DATASET)
 firebase_admin.initialize_app()
 
 
-logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
 log = logging.getLogger("backup")
 
 db = firestore.client()
@@ -95,7 +96,7 @@ def getExisting(tablename:str, id:str):
     rows = query_job.result() 
     if rows.total_rows > 0: 
         for row in rows:
-            print(row.value)
+            #print(row.value)
             obj = json.loads( row.value)
             return obj
     return None  
@@ -111,7 +112,7 @@ def create_table(tableName:str):
     ]
     table = bigquery.Table(table_id, schema=schema)
     table = client.create_table(table)
-    print(
+    log.debug(
         "Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id)
     )
 
@@ -128,7 +129,7 @@ def insertRow(tableName:str, id:str, jsonValueStr:str):
         return True
     else: return False   
 
-def updateRow(tableName:str, id:str):
+def archiveOldRow(tableName:str, id:str):
     try:
         today = date.today()
         dml_statement = \
@@ -142,37 +143,79 @@ def updateRow(tableName:str, id:str):
         log.error('ERROR: {}'.format(e.message))
         return False    
 
-#collections=["examGrades","drawings","Revision"]
-collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
-
-for c in collections:
-    log.debug("collection:",c) 
-
-    tableName = c #.lower()
+def getUserList():
+    log.debug("Auth getUserList has been called")
+    userlist = []
     
-    tblExist = if_tbl_exists(client, tableName)
+    for user in auth.list_users().iterate_all():
+        userlist.append( { 
+            "uid":user.uid,
+            "email":user.email,
+            "claims":user.custom_claims,
+            "displayName":user.display_name
+            }
+        )
+    return userlist
+
+collections=[]
+#collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
+
+USER_TABLE = "user"
+
+def backupAll():
+    log.debug("**** Start Backup")
+
+    #save user list
+
+    tblExist = if_tbl_exists(client, USER_TABLE)
     if tblExist == False:
-        create_table(tableName)
-    docRef = db.collection(c).get()
-    for doc in docRef:
-        data = getJsonObject(doc)
-        #logging.debug( json.dumps(data,  indent=4, sort_keys=True) )
-        valueNewStr = json.dumps(data, sort_keys=True)
-        existingObj = getExisting( tableName, data["id"] )        
-        if existingObj:
-            valueOldStr = json.dumps( existingObj , sort_keys=True)
+        create_table(USER_TABLE)
+    for user in getUserList():
+        valueNewStr = json.dumps(user, sort_keys=True)
+        existingUser = getExisting( USER_TABLE, user["uid"] )        
+        if existingUser:
+            valueOldStr = json.dumps( existingUser , sort_keys=True)
             if valueNewStr != valueOldStr:
-                if updateRow(tableName, data["id"] ) == False:
-                    log.error("ERROR updating:" + data["id"])
+                if archiveOldRow(USER_TABLE, user["uid"] ) == False:
+                    log.error("ERROR updating:" + user["uid"])
                     exit(1)
+                if insertRow(USER_TABLE, user["uid"],valueNewStr) == False:
+                    log.error("ERROR inserting:" + user["uid"])
+                    exit(1)
+        else:
+            if insertRow(USER_TABLE, user["uid"],valueNewStr) == False:
+                log.error("ERROR inserting:" + user["uid"])
+                exit(1)        
+
+    #save all tables
+    for c in collections:
+        log.debug("collection:",c) 
+
+        tableName = c #.lower()
+        
+        tblExist = if_tbl_exists(client, tableName)
+        if tblExist == False:
+            create_table(tableName)
+        docRef = db.collection(c).get()
+        for doc in docRef:
+            data = getJsonObject(doc)
+            #logging.debug( json.dumps(data,  indent=4, sort_keys=True) )
+            valueNewStr = json.dumps(data, sort_keys=True)
+            existingObj = getExisting( tableName, data["id"] )        
+            if existingObj:
+                valueOldStr = json.dumps( existingObj , sort_keys=True)
+                if valueNewStr != valueOldStr:
+                    if archiveOldRow(tableName, data["id"] ) == False: 
+                        log.error("ERROR updating:" + data["id"])
+                        exit(1)
+                    if insertRow(tableName, data["id"],valueNewStr) == False:
+                        log.error("ERROR inserting:" + data["id"])
+                        exit(1)
+            else:
                 if insertRow(tableName, data["id"],valueNewStr) == False:
                     log.error("ERROR inserting:" + data["id"])
                     exit(1)
-        else:
-            if insertRow(tableName, data["id"],valueNewStr) == False:
-                log.error("ERROR inserting:" + data["id"])
-                exit(1)
-log.debug("End")
+    log.debug("**** End Backup")
 
 
 

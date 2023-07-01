@@ -1,0 +1,3 @@
+import backup
+
+backup.backupAll()
