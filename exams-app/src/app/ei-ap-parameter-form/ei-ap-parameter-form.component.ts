@@ -598,7 +598,7 @@ updateExamGrade():Promise<void>{
   }
   onEditParameterGrade(){
     this.submitting = true
-    this.newVersionExamGrade( this.examGrade.id, this.parameterGrade.id, this.parameterGrade.version ).then( 
+    this.newVersionExamGrade( this.examGrade.id, this.parameterGrade.id, this.parameterGrade.version, this.parameterGrade.parameterGradeOriginal ).then( 
       parameterGrade =>{
         this.submitting = false
         this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:this.examGrade.id,parameterGrade_id:parameterGrade.id}]);
@@ -610,7 +610,7 @@ updateExamGrade():Promise<void>{
     )
   }  
 
-  newVersionExamGrade(examGrade_id, parameterGrade_id, version):Promise<ParameterGrade>{
+  newVersionExamGrade(examGrade_id, parameterGrade_id, version, parameterGradeOriginal):Promise<ParameterGrade>{
     var _resolve
     var _reject
     return new Promise<null>((resolve, reject)=>{
@@ -628,12 +628,13 @@ updateExamGrade():Promise<void>{
               id:parameterGrade_id,
               version: version + 1,
               isCurrentVersion: true,
-              isCompleted:false
+              isCompleted:false,
+              parameterGradeOriginal: parameterGradeOriginal ? parameterGradeOriginal : parameterGrade_id
             }          
         }
       }
       var options = {
-        exceptions:["references","Path","Url"]
+        exceptions:[]
       }
       this.userLoginService.getUserIdToken().then( token => {
         this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req, options).subscribe(

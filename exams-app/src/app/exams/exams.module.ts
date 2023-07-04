@@ -301,6 +301,7 @@ export interface ParameterGrade{
 
   version?:number
   isCurrentVersion?:boolean
+  parameterGradeOriginal?:string
 
   criteriaGrades?: CriteriaGrade[] 
 }
