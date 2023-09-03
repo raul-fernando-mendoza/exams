@@ -1,5 +1,6 @@
 import logging
 from google.cloud import firestore
+import datetime
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.DEBUG)
 
@@ -44,16 +45,21 @@ def closeExamGrade(db, documentId):
                 else:
                     isCompleted = False
                     break
+
+        dateNow = datetime.datetime.now()
+
         if isCompleted == True: 
             grade = total / numScores
             isApproved = False
             if grade> 7:
                 isApproved = True
 
+
             doc_ref.update({
                 u'score': grade,
                 u'isCompleted': True,
-                u'isApproved':isApproved
+                u'isApproved':isApproved,
+                u'updated_on': dateNow
             })
             log.debug("*** documentId:" + documentId + " completed")  
         else:
@@ -61,7 +67,8 @@ def closeExamGrade(db, documentId):
                 u'score':0,
                 u'isCompleted':False,
                 u'isApproved':False,
-                u'isReleased':False
+                u'isReleased':False,
+                u'updated_on': dateNow
             })     
             log.debug("*** documentId:" + documentId + " reopen")        
 
