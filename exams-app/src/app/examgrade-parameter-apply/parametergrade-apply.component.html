@@ -1,0 +1,40 @@
+<div class="bar">
+    <span class="debug">Parameter</span>
+    <span class="spacer"></span>
+    <span class="debug">id:{{ parameterGrade_id }}</span>
+    <span *ngIf="isAdmin && parameterGrade" class="id">version:{{ parameterGrade.version }} </span>
+</div>  
+
+
+<div *ngIf="parameterGrade">
+    <div class="bar">
+        <div *ngIf="parameterGrade">Titulo: {{ parameterGrade.label }}</div>
+        <div class="spacer"></div>
+        <div *ngIf="isAdmin && parameterGrade && parameterGrade.isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
+    </div> 
+
+    <div *ngFor="let criteriaGrade of criteriaGrades">
+        <criteriagrade-apply collection="{{collection}}/{{parameterGrade_id}}/criteriaGrades" criteriaGrade_id="{{criteriaGrade.id}}" scoreType="{{parameterGrade.scoreType}}" (change)="onCriteriaGradeChange($event)" [disabled]="parameterGrade.isCompleted">
+        </criteriagrade-apply>
+    </div> 
+
+    <button mat-raised-button *ngIf="!parameterGrade.isCompleted" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
+    <div class="comment" *ngIf="parameterGrade.isCompleted == true" > 
+        <b>score: {{ (parameterGrade.score * 10 ).toFixed(1) }} </b>
+        <div  *ngIf="parameterGrade.evaluator_comment" >
+            comentario: {{parameterGrade.evaluator_comment}}     
+        </div>            
+        <mat-grid-list class="comment-sounds" *ngIf="parameterGrade.commentSoundUrl" cols="2" rowHeight="2em">
+            <mat-grid-tile>grabación del evaluador:</mat-grid-tile>
+            <mat-grid-tile>           
+            <audio *ngIf="parameterGrade.commentSoundUrl" controls>
+                <source  [src]="parameterGrade.commentSoundUrl" type="audio/mp3">
+                Your browser does not support the audio tag.
+            </audio>
+            </mat-grid-tile>
+        </mat-grid-list>              
+    </div>
+</div>
+
+
+

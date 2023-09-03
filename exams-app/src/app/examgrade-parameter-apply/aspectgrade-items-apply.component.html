@@ -1,0 +1,39 @@
+<div class="bar">
+    <div class="debug">Aspect Items</div>
+    <div class="spacer"></div>
+    <div class="debug">id:{{ aspectGrade_id }}</div>
+</div>  
+<div *ngIf="aspectGrade && aspectGradeForm" [formGroup]="aspectGradeForm">
+    <div class="question" (click)="showText(aspectGrade.description)">{{ aspectGrade.label }} </div>
+    <div>
+    <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect()">
+        <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
+        <mat-icon>not_interested</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="0.6" aria-label="Text align left">
+        <mat-icon color="warn">report_problem</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="0.72"  aria-label="insuficiente">
+        <mat-icon>build</mat-icon>
+                          
+        </mat-button-toggle>
+        <mat-button-toggle value="0.86"  aria-label="casi bien">
+        <mat-icon color="accent">thumb_up</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="1"  aria-label="muy bien">
+        <mat-icon color="primary">verified</mat-icon>
+        </mat-button-toggle>
+
+    </mat-button-toggle-group>
+    </div>
+
+    
+    <mat-form-field  appearance="legacy" >
+        <mat-label>Faltante</mat-label>
+        <textarea  matInput maxlength="700" rows="3" placeholder="Elementos faltantes"  formControlName="missingElements" (change)="onChangeAspect(examGradeFG,p,c,a)">
+        </textarea>
+    </mat-form-field> 
+
+</div>
+    
+

@@ -95,6 +95,15 @@ import { RevisionListComponent } from './revision-list/revision-list.component';
 import { RevisionEditComponent } from './revision-edit/revision-edit.component';
 import { FileControlComponent } from './file-control/file-control.component';
 import { RevisionCreateDialog } from './revision-create-dialog/revision-create-component';
+import { ExamgradeParameterGradeApplyComponent } from './examgrade-parameter-apply/examGrade-parameterGrade-apply.component';
+import { ParameterGradeApplyComponent } from './examgrade-parameter-apply/parametergrade-apply.component';
+import { CriteriaGradeApplyComponent } from './examgrade-parameter-apply/criteriagrade-apply.component';
+import { CommentApplyDialog } from './examgrade-parameter-apply/comment-apply-dlg';
+import { DescriptionApplyDialog } from './examgrade-parameter-apply/description-apply-dlg';
+import { AspectGradeStarsApplyComponent } from './examgrade-parameter-apply/aspectgrade-stars-apply.component';
+import { ParameterGradeCommentDialog } from './examgrade-parameter-apply/parameterGrade-comment-dlg';
+import { ParameterGradeDescriptionDialog } from './examgrade-parameter-apply/parameterGrade-description-dlg';
+import { AspectGradeItemsApplyComponent } from './examgrade-parameter-apply/aspectgrade-items-apply.component';
 
 @NgModule({
     declarations: [
@@ -154,7 +163,17 @@ import { RevisionCreateDialog } from './revision-create-dialog/revision-create-c
         RevisionListComponent,
         RevisionEditComponent,
         FileControlComponent,
-        RevisionCreateDialog
+        RevisionCreateDialog,
+        ExamgradeParameterGradeApplyComponent,
+        ParameterGradeApplyComponent,
+        CriteriaGradeApplyComponent,
+        AspectGradeStarsApplyComponent,
+        AspectGradeItemsApplyComponent,
+        CommentApplyDialog,
+        DescriptionApplyDialog,
+        ParameterGradeCommentDialog,
+        ParameterGradeDescriptionDialog
+
     ],
     imports: [
         BrowserModule,

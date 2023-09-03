@@ -316,7 +316,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   }  
 
   onEditParameterGrade(examGrade_id, parameterGrade_id){
-      this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
+      this.router.navigate(['/examGrade-parameterGrade-apply',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   } 
   ngOnDestroy(): void {
     this.snapshots.map( func =>{

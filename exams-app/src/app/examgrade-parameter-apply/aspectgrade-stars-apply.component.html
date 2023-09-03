@@ -1,0 +1,11 @@
+<div class="bar">
+    <div class="debug">Aspect Stars</div>
+    <div class="spacer"></div>
+    <div class="debug">id:{{ aspectGrade_id }}</div>
+</div>  
+<div *ngIf="aspectGrade && aspectGradeForm" [formGroup]="aspectGradeForm">
+    <div class="question" (click)="showText(aspectGrade.description)">{{ aspectGrade.label }} </div>
+    <app-star-slider formControlName="score" (valueChange)="onChangeStarts()" [disabled]="disabled"></app-star-slider>
+</div>
+    
+

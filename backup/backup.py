@@ -11,10 +11,10 @@ import math
 from google.api_core.datetime_helpers import DatetimeWithNanoseconds
 from firebase_admin import auth
 
-PROJECT = "thoth-qa"
+PROJECT = "thoth-dev-346022"
 DATASET = "thoth"
 
-client = bigquery.Client(PROJECT)
+client = bigquery.Client()
 dataset = client.dataset(DATASET)
 
 
@@ -157,10 +157,10 @@ def getUserList():
         )
     return userlist
 
-collections=[]
-#collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
-
-USER_TABLE = "user"
+#collections=["examGrades"]
+collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
+SUFFIX = "_snapshot"
+USER_TABLE = "user" + SUFFIX
 
 def backupAll():
     log.debug("**** Start Backup")
@@ -189,13 +189,13 @@ def backupAll():
 
     #save all tables
     for c in collections:
-        log.debug("collection:",c) 
+        log.debug("collection:" + c) 
 
-        tableName = c #.lower()
+        tableName = c + str(SUFFIX)
         
         tblExist = if_tbl_exists(client, tableName)
         if tblExist == False:
-            create_table(tableName)
+            create_table(tableName )
         docRef = db.collection(c).get()
         for doc in docRef:
             data = getJsonObject(doc)

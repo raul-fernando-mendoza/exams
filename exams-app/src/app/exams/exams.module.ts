@@ -273,7 +273,9 @@ export interface CriteriaGrade{
   label?: string 
   description?: string 
   isSelected?:boolean 
-  score?:number 
+  score?:number
+  earnedPoints?:number
+  availablePoints?:number 
   aspectGrades?: AspectGrade[] 
 }
 
@@ -287,6 +289,8 @@ export interface ParameterGrade{
   description?:string 
   scoreType?:ScoreType 
   score?:number 
+  earnedPoints?:number
+  availablePoints?:number   
   evaluator_uid?:string 
   evaluator?:User
   applicationDate?:Date

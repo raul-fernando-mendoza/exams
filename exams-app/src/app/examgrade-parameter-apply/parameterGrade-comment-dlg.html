@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Calificacion Recibida Gracias!</h1>
+<div mat-dialog-content>
+  <p>Tu calificacion es: {{ (data.calificacion * 10).toFixed(1) }}</p>
+  <p>Puedes adicionar un comentario si lo deseas:</p>
+
+  <mat-form-field appearance="outline">
+    <mat-label>comentario opcional</mat-label>
+    <textarea matInput maxlength="200" rows="3"  [(ngModel)]="data.comentario"></textarea>
+  </mat-form-field>
+
+  <app-soundfile-edit [collection]="data.collection" [id]="data.id" [property]="data.property" ></app-soundfile-edit>
+  
+  <div>{{ data.comentario.length }} caracteres de 200</div>
+  <div class="error-message" *ngIf="data.comentario.length > 200">ERROR comentario excede el numero de caracteres permitido</div>
+</div>
+<div mat-dialog-actions *ngIf="data.comentario.length <= 200" >  
+  <button  mat-button [mat-dialog-close]=data.comentario cdkFocusInitial>Ok</button>
+</div>

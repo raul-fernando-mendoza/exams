@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW thoth-qa.thoth.exam_grades
+CREATE OR REPLACE VIEW thoth.examGrades
 AS (
   SELECT
     id,
@@ -22,12 +22,12 @@ AS (
   parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.created_on')) as created_on,
   parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.updated_on')) as updated_on,
   FROM
-    `thoth-qa.thoth.examGrades`
+    `thoth.examGrades_snapshot`
   where valid_to is null
 );
 
 
-CREATE OR REPLACE VIEW thoth-qa.thoth.parameter_grades
+CREATE OR REPLACE VIEW thoth.parameterGrades
 AS (
   SELECT
   JSON_VALUE(parameter.id) id,
@@ -51,8 +51,10 @@ AS (
   JSON_VALUE(parameter.commentSoundUrl) as commentSoundUrl,
 
   CAST( JSON_VALUE(parameter.version) as NUMERIC ) version,
-  CAST( JSON_VALUE(parameter.isCurrentVersion) as BOOL ) isCurrentVersion
+  CAST( JSON_VALUE(parameter.isCurrentVersion) as BOOL ) isCurrentVersion,
+  JSON_VALUE(parameter.parameterGradeOriginal) as parameterGradeOriginal
+  
   FROM
-    `thoth-qa.thoth.examGrades`, UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades , '$')) parameter
+    `thoth.examGrades_snapshot`, UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades , '$')) parameter
   where valid_to is null
 );
