@@ -101,6 +101,18 @@ def getExisting(tablename:str, id:str):
             return obj
     return None  
 
+def getLastValidFromTable(tablename:str):
+    
+    QUERY = (
+        "SELECT MAX(valid_from) as valid_from FROM " + PROJECT + "." + DATASET + "." + tablename)
+    query_job = client.query(QUERY)  
+    rows = query_job.result() 
+    if rows.total_rows > 0: 
+        for row in list(rows):
+            return row.get("valid_from")
+    return None  
+
+
 
 def create_table(tableName:str):
     table_id = bigquery.Table.from_string(PROJECT + "." + DATASET + "." + tableName)
@@ -166,7 +178,8 @@ def backupAll():
     log.debug("**** Start Backup")
 
     #save user list
-
+    """
+    
     tblExist = if_tbl_exists(client, USER_TABLE)
     if tblExist == False:
         create_table(USER_TABLE)
@@ -186,7 +199,7 @@ def backupAll():
             if insertRow(USER_TABLE, user["uid"],valueNewStr) == False:
                 log.error("ERROR inserting:" + user["uid"])
                 exit(1)        
-
+    """
     #save all tables
     for c in collections:
         log.debug("collection:" + c) 
@@ -196,7 +209,16 @@ def backupAll():
         tblExist = if_tbl_exists(client, tableName)
         if tblExist == False:
             create_table(tableName )
-        docRef = db.collection(c).get()
+
+        lastValidFrom = getLastValidFromTable(tableName)
+        
+
+        coll =  db.collection(c)
+        if lastValidFrom:
+            print(lastValidFrom)
+            coll = coll.where("updated_on",">",lastValidFrom)
+        
+        docRef = coll.get()
         for doc in docRef:
             data = getJsonObject(doc)
             #logging.debug( json.dumps(data,  indent=4, sort_keys=True) )
