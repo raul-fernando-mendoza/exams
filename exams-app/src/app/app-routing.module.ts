@@ -5,7 +5,6 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ExamenesImprovisacionComponent } from "./examenes-improvisacion/examenes-improvisacion.component";
 import { ExamenImprovisacionFormComponent } from "./examen-improvisacion-form/examen-improvisacion-form.component"
-import { EiApParameterFormComponent } from "./ei-ap-parameter-form/ei-ap-parameter-form.component"
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTipoEditComponent } from './ei-tipo-edit/ei-tipo-edit.component';
 import { UsersListComponent } from './users-list/users-list.component';
@@ -42,7 +41,6 @@ const routes: Routes = [
   { path: 'NavigationComponent', component: NavigationComponent},
   { path: 'ExamenesImprovisacion_old', component: ExamenesImprovisacionComponent },
   { path: 'ExamenImprovisacionFormComponent', component: ExamenImprovisacionFormComponent },
-  { path: 'ei-ap-parameter-form-component', component: EiApParameterFormComponent },
   { path: 'eiReporte', component: EiApReporteComponent },
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },

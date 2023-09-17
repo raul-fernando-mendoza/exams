@@ -440,8 +440,7 @@ export class ExamenImprovisacionFormComponent {
       isCompleted:false, 
       evaluator_comment:null,
       isCurrentVersion:true,
-      version:0,  
-      parameterGradeOriginal:null 
+      version:0
     }
 
     var parameter_resolve = null

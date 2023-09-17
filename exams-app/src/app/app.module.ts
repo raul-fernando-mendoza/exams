@@ -35,7 +35,6 @@ import { ExamenesImprovisacionComponent } from './examenes-improvisacion/examene
 import { ExamenImprovisacionFormComponent } from './examen-improvisacion-form/examen-improvisacion-form.component'; 
 import { MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { EiApParameterFormComponent, DialogOverviewExampleDialog, DescriptionDialog } from './ei-ap-parameter-form/ei-ap-parameter-form.component';
 import { EiApReporteComponent } from './ei-ap-reporte/ei-ap-reporte.component';
 import { EiTabHolderComponent } from './ei-tab-holder/ei-tab-holder.component';
 import { MatTabsModule} from '@angular/material/tabs';
@@ -113,9 +112,6 @@ import { AspectGradeItemsApplyComponent } from './examgrade-parameter-apply/aspe
         LoginFormComponent,
         ExamenesImprovisacionComponent,
         ExamenImprovisacionFormComponent,
-        EiApParameterFormComponent,
-        DialogOverviewExampleDialog,
-        DescriptionDialog,
         EiApReporteComponent,
         EiTabHolderComponent,
         EiTipoEditComponent,

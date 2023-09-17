@@ -171,7 +171,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   }
   onEditParameterGrade(){
     this.submitting = true
-    this.newVersionExamGrade( this.examGrade_id, this.parameterGrade_id, this.parameterGrade.version, this.parameterGrade.parameterGradeOriginal ).then( 
+    this.newVersionExamGrade( this.examGrade_id, this.parameterGrade_id, this.parameterGrade.version).then( 
       parameterGrade =>{
         this.submitting = false
         this.router.navigate(['/examGrade-parameterGrade-apply',{examGrade_id:this.examGrade_id,parameterGrade_id:parameterGrade.id}]);
@@ -183,7 +183,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     )
   }  
 
-  newVersionExamGrade(examGrade_id, parameterGrade_id, version, parameterGradeOriginal):Promise<ParameterGrade>{
+  newVersionExamGrade(examGrade_id, parameterGrade_id, version):Promise<ParameterGrade>{
     var _resolve
     var _reject
     return new Promise<null>((resolve, reject)=>{
