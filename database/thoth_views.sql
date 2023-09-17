@@ -1,3 +1,18 @@
+CREATE OR REPLACE VIEW thoth.organizations
+AS (
+  SELECT
+    id,
+	JSON_VALUE(value.organization_name) organization_name,
+	cast( JSON_VALUE(value.isDeleted) as BOOLEAN) isDeleted,
+	cast( JSON_VALUE(value.isDefaultOrganization) as BOOLEAN) isDefaultOrganization,
+  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.created_on')) as created_on,
+  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.updated_on')) as updated_on,
+  FROM
+    `thoth.organizations_snapshot`
+  where valid_to is null
+);
+
+
 CREATE OR REPLACE VIEW thoth.examGrades
 AS (
   SELECT
@@ -7,9 +22,9 @@ AS (
   JSON_VALUE(value.materia_id) materia_id,
   cast( JSON_VALUE(value.isCompleted) as BOOLEAN) isCompleted,
   parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.applicationDate')) as applicationDate,
-  JSON_VALUE(value.applicationDay) applicationDay,
-  JSON_VALUE(value.applicationMonth) applicationMonth,
-  JSON_VALUE(value.applicationYear) applicationYear,
+  cast( JSON_VALUE(value.applicationDay) as NUMERIC) applicationDay,
+  cast( JSON_VALUE(value.applicationMonth) as NUMERIC) applicationMonth,
+  cast( JSON_VALUE(value.applicationYear) as NUMERIC) applicationYear,
   JSON_VALUE(value.student_uid) student_uid,
   JSON_VALUE(value.title) as title,
   JSON_VALUE(value.expression) as expression,
@@ -58,3 +73,45 @@ AS (
     `thoth.examGrades_snapshot`, UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades , '$')) parameter
   where valid_to is null
 );
+
+CREATE OR REPLACE VIEW thoth.criteriaGrades
+AS (
+  SELECT 
+  JSON_VALUE(criteria.idx) id,
+  id as exam_grade_id,
+  JSON_VALUE(parameter.id) parameter_grade_id ,
+  CAST( JSON_VALUE(criteria.idx) as NUMERIC ) idx, 
+  JSON_VALUE(criteria.label) label, 
+  JSON_VALUE(criteria.description) description, 
+  CAST( JSON_VALUE(criteria.score) as NUMERIC ) score,   
+  CAST( JSON_VALUE(criteria.isSelected) as BOOL) isSelected 
+    FROM
+    `thoth.examGrades_snapshot`
+  , UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades)) parameter
+  , UNNEST(JSON_EXTRACT_ARRAY(parameter.criteriaGrades )) criteria
+  where valid_to is null --and id like '3d280a4e-3cae-4a99-a362-426f1c27707b%' 
+)
+
+CREATE OR REPLACE VIEW thoth.materias
+AS (
+  SELECT 
+  JSON_VALUE(value.id) id,
+  JSON_VALUE(value.materia_name) materia_name,
+  JSON_VALUE(value.organization_id) organization_id  
+  FROM
+    `thoth.materias_snapshot` materia 
+  where valid_to is null		
+)
+
+CREATE OR REPLACE VIEW thoth.materias_exams
+AS (
+  SELECT 
+  JSON_VALUE(exams.id) id,
+  JSON_VALUE(value.id) materia_id,
+  JSON_VALUE(exams.label) exam_label,  
+  JSON_VALUE(exams.isDeleted) isDeleted
+  FROM
+    `thoth.materias_snapshot` materia
+    , UNNEST(JSON_EXTRACT_ARRAY(value.exams)) exams 
+  where valid_to is null	
+)

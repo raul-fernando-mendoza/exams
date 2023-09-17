@@ -1,9 +1,10 @@
-#deploy function to cloud functions RUN from firestore folder
-gcloud functions deploy chenequeRequest --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
+gcloud functions deploy backupfull  --runtime python39 --trigger-http --allow-unauthenticated --gen2 --timeout 1800s
+
+#use get2 to keep the function running for long time
+gcloud beta functions deploy backupfull  --gen2 --runtime python39 --trigger-http --allow-unauthenticated --timeout 1800s
 
 //show the project app will apply to
 gcloud config list
 gcloud config set project thoth-dev-346022
 gcloud auth list
 gcloud projects list
-

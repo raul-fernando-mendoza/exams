@@ -135,14 +135,19 @@ def insertRow(tableName:str, id:str, jsonValueStr:str):
 
     rows_to_insert = [{u"id": id, u"value": jsonValueStr, u"valid_to":None}]
 
+    log.debug("*** Insert row" + str(tableName) + ":" + str(id) )
+
     errors = client.insert_rows_json(table, rows_to_insert)
 
     if errors == []:
         return True
-    else: return False   
+    else: 
+        log.error('*** ERROR: {}'.format(str(errors)))
+        return False   
 
 def archiveOldRow(tableName:str, id:str):
     try:
+        log.debug("*** archiveOldRow " + str(tableName) + " row:" + str(id) )
         today = date.today()
         dml_statement = \
             "UPDATE " + PROJECT + "." + DATASET + "." + tableName + \
@@ -152,7 +157,7 @@ def archiveOldRow(tableName:str, id:str):
         query_job.result()  # Waits for statement to finish
         return True
     except Exception as e:
-        log.error('ERROR: {}'.format(e.message))
+        log.error('*** ERROR: {}'.format(e.message))
         return False    
 
 def getUserList():
@@ -228,14 +233,14 @@ def backupAll():
                 valueOldStr = json.dumps( existingObj , sort_keys=True)
                 if valueNewStr != valueOldStr:
                     if archiveOldRow(tableName, data["id"] ) == False: 
-                        log.error("ERROR updating:" + data["id"])
+                        log.error("*** ERROR updating:" + data["id"])
                         exit(1)
                     if insertRow(tableName, data["id"],valueNewStr) == False:
-                        log.error("ERROR inserting:" + data["id"])
+                        log.error("*** ERROR inserting:" + data["id"])
                         exit(1)
             else:
                 if insertRow(tableName, data["id"],valueNewStr) == False:
-                    log.error("ERROR inserting:" + data["id"])
+                    log.error("*** ERROR inserting:" + data["id"])
                     exit(1)
     log.debug("**** End Backup")
 

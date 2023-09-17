@@ -20,7 +20,7 @@
 
     <button mat-raised-button *ngIf="!parameterGrade.isCompleted" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
     <div class="comment" *ngIf="parameterGrade.isCompleted == true" > 
-        <b>score: {{ (parameterGrade.score * 10 ).toFixed(1) }} </b>
+        <b>score: {{ (parameterGrade.score ).toFixed(1) }} </b>
         <div  *ngIf="parameterGrade.evaluator_comment" >
             comentario: {{parameterGrade.evaluator_comment}}     
         </div>            

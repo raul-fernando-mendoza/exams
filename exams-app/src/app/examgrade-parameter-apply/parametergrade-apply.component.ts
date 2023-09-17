@@ -107,31 +107,23 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     //recalculate parameter score
     this.parameterGrade.score =  Number((this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints * 10).toFixed(1))
 
-    let values:ParameterGradeApplyChange = {
-      parameterGradeGrade_id: this.parameterGrade_id,
-      change: {
-        score: this.parameterGrade.score,
-        earnedPoints: this.parameterGrade.earnedPoints,
-        availablePoints: this.parameterGrade.availablePoints
-      }
-    }
-    
-    db.collection(this.collection).doc(this.parameterGrade_id).update( values.change  ).then( () =>{
-      console.log("updated parameterGrade")
-    },
-    reason =>{
-      alert("ERROR saving parameter update:" + reason )
-    })
+
     
 
   }
   submit(){
 
-    var change ={
-      isCompleted:true      
+    let values:ParameterGradeApplyChange = {
+      parameterGradeGrade_id: this.parameterGrade_id,
+      change: {
+        score: this.parameterGrade.score,
+        earnedPoints: this.parameterGrade.earnedPoints,
+        availablePoints: this.parameterGrade.availablePoints,
+        isCompleted:true
+      }
     }
-
-    db.collection(this.collection).doc(this.parameterGrade_id).update( change  ).then( () =>{
+    
+    db.collection(this.collection).doc(this.parameterGrade_id).update( values.change  ).then( () =>{
       console.log("updated parameterGrade")
       this.openCommentDialog()
     },
@@ -202,31 +194,29 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
         reject(null)
       }
       var req = {
-        examGrades:{
-          id:examGrade_id,
-          parameterGrades:
-            {
-              id:parameterGrade_id,
-              version: version + 1,
-              isCurrentVersion: true,
-              isCompleted:false,
-              parameterGradeOriginal: parameterGradeOriginal ? parameterGradeOriginal : parameterGrade_id
-            }          
-        }
+        "collectionPath":"examGrades/" + this.examGrade_id + "/parameterGrades",
+        "id":this.parameterGrade_id,
+        "versionKey":"version",
+        "isCurrentVersionKey":"isCurrentVersion",
+        "updateOnKey":"updated_on",
+        "newValues":{
+          "isCompleted":false
+        },          
+        "options":{}                                            
       }
       var options = {
         exceptions:[]
       }
       this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req, options).subscribe(
+        this.examImprovisacionService.firestoreApiInterface("createDocumentNewVersion", token, req, options).subscribe(
           {
             next(data){ 
               var parameterGrade:ParameterGrade = data["result"] as ParameterGrade
-              //now update the old version as not current
+              //now update the examGrade updated_on
 
-              db.collection("examGrades/" + examGrade_id + "/parameterGrades").doc(parameterGrade_id).update({"isCurrentVersion": false}).then(
+              db.collection("examGrades/").doc(examGrade_id).update({"updated_on": new Date()}).then(
                 ()=>{
-                  console.log("parameter grade old version has been udpated")
+                  console.log("examgrade has been updated for updated_on")
                   _resolve(parameterGrade)
                 },
                 reason=>{

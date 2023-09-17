@@ -214,7 +214,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
       .where("materia_id","==", this.materiaid)
       .where("exam_id","==",examId)
       .where("isDeleted","==",false)
-      .where("isReleased","==",true)
+      //.where("isReleased","==",true)
          
 
       qry.get().then( set => {
