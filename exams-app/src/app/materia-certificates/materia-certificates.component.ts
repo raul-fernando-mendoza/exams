@@ -496,7 +496,11 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     setTimeout(observer, 10000);
       
     if( row.examGrade.isWaiver ){
-      db.collection("examGrades").doc(row.examGrade.id ).update({isDeleted:true}).then(()=>{
+      db.collection("examGrades").doc(row.examGrade.id ).update(
+        {
+          isDeleted:true,
+          updated_on:new Date()
+        }).then(()=>{
         this.loadExamsForRow(row.parent).then(()=>{
           this.update()
         })

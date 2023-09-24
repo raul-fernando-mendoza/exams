@@ -5,17 +5,20 @@ from firebase_admin import firestore
 import json
 import logging
 import uuid
-from datetime import date
+from datetime import date, timedelta, datetime
+from dateutil import tz
 import json
 import math
+import time
 from google.api_core.datetime_helpers import DatetimeWithNanoseconds
 from firebase_admin import auth
 
-PROJECT = "thoth-dev-346022"
+
 DATASET = "thoth"
 
 client = bigquery.Client()
 dataset = client.dataset(DATASET)
+PROJECT=client.project
 
 
 firebase_admin.initialize_app()
@@ -68,7 +71,7 @@ def getJsonObject( doc ):
         if (type(data[prop]) is date):
             data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
         if isinstance(data[prop],DatetimeWithNanoseconds):
-            data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S')
+            data[prop] = data[prop].strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
 
@@ -104,22 +107,24 @@ def getExisting(tablename:str, id:str):
 def getLastValidFromTable(tablename:str):
     
     QUERY = (
-        "SELECT MAX(valid_from) as valid_from FROM " + PROJECT + "." + DATASET + "." + tablename)
+        "SELECT max( JSON_VALUE(value.updated_on)) as updated_on FROM " + PROJECT + "." + DATASET + "." + tablename + " where valid_to is null")
     query_job = client.query(QUERY)  
     rows = query_job.result() 
     if rows.total_rows > 0: 
         for row in list(rows):
-            return row.get("valid_from")
-    return None  
-
-
+            updated_on = row.get("updated_on")
+            dt = None
+            if updated_on != None:
+                dt = datetime.fromisoformat(updated_on)                  
+            return dt
+    return None 
 
 def create_table(tableName:str):
     table_id = bigquery.Table.from_string(PROJECT + "." + DATASET + "." + tableName)
     schema = [
         bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
         bigquery.SchemaField("value", "JSON", mode="REQUIRED"),
-        bigquery.SchemaField("valid_from", "TIMESTAMP", mode="REQUIRED", default_value_expression="CURRENT_TIMESTAMP()"),
+        bigquery.SchemaField("valid_from", "TIMESTAMP", mode="REQUIRED"),
         bigquery.SchemaField("valid_to", "TIMESTAMP",mode="NULLABLE")
     ]
     table = bigquery.Table(table_id, schema=schema)
@@ -128,12 +133,12 @@ def create_table(tableName:str):
         "Created table {}.{}.{}".format(table.project, table.dataset_id, table.table_id)
     )
 
-def insertRow(tableName:str, id:str, jsonValueStr:str):
+def insertRow(tableName:str, id:str, jsonValueStr:str, executionTime):
     today = date.today()
 
     table = client.get_table("{}.{}.{}".format(PROJECT, DATASET, tableName))
 
-    rows_to_insert = [{u"id": id, u"value": jsonValueStr, u"valid_to":None}]
+    rows_to_insert = [{u"id": id, u"value": jsonValueStr, u"valid_to":None, u"valid_from": executionTime }]
 
     log.debug("*** Insert row" + str(tableName) + ":" + str(id) )
 
@@ -145,13 +150,13 @@ def insertRow(tableName:str, id:str, jsonValueStr:str):
         log.error('*** ERROR: {}'.format(str(errors)))
         return False   
 
-def archiveOldRow(tableName:str, id:str):
+def archiveOldRow(tableName:str, id:str, executionTime):
     try:
         log.debug("*** archiveOldRow " + str(tableName) + " row:" + str(id) )
         today = date.today()
         dml_statement = \
             "UPDATE " + PROJECT + "." + DATASET + "." + tableName + \
-            " SET valid_to = CURRENT_TIMESTAMP() " + \
+            " SET valid_to = '" + executionTime  + "'" \
             " WHERE id= '"+ str(id) + "'  and valid_to is null"
         query_job = client.query(dml_statement)  # API request
         query_job.result()  # Waits for statement to finish
@@ -175,12 +180,15 @@ def getUserList():
     return userlist
 
 #collections=["examGrades"]
-collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations"]
+collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations","exams","groups","niveles","revision"]
 SUFFIX = "_snapshot"
 USER_TABLE = "user" + SUFFIX
 
 def backupAll():
     log.debug("**** Start Backup")
+
+    today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
 
     #save user list
     """
@@ -216,13 +224,13 @@ def backupAll():
             create_table(tableName )
 
         lastValidFrom = getLastValidFromTable(tableName)
-        
-
-        coll =  db.collection(c)
         if lastValidFrom:
             print(lastValidFrom)
+
+
+        coll = db.collection(c)
+        if lastValidFrom:            
             coll = coll.where("updated_on",">",lastValidFrom)
-        
         docRef = coll.get()
         for doc in docRef:
             data = getJsonObject(doc)
@@ -232,20 +240,21 @@ def backupAll():
             if existingObj:
                 valueOldStr = json.dumps( existingObj , sort_keys=True)
                 if valueNewStr != valueOldStr:
-                    if archiveOldRow(tableName, data["id"] ) == False: 
+                    if archiveOldRow(tableName, data["id"], today ) == False: 
                         log.error("*** ERROR updating:" + data["id"])
                         exit(1)
-                    if insertRow(tableName, data["id"],valueNewStr) == False:
+                    if insertRow(tableName, data["id"],valueNewStr, today) == False:
                         log.error("*** ERROR inserting:" + data["id"])
                         exit(1)
             else:
-                if insertRow(tableName, data["id"],valueNewStr) == False:
+                if insertRow(tableName, data["id"],valueNewStr, today) == False:
                     log.error("*** ERROR inserting:" + data["id"])
                     exit(1)
     log.debug("**** End Backup")
 
 
-
+if __name__ == "__main__":
+   backupAll()
         
 
 

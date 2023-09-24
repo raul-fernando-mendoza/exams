@@ -242,7 +242,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     }
     else{
       db.collection("examGrades").doc(examGrade_id).update({
-        isDeleted:true
+        isDeleted:true,
+        updated_on:new Date()
       }).then(()=>{
         console.log("examGrade has been deleted")
         db.collection("examGrades/" + examGrade_id + "/parameterGrades").get().then(
@@ -270,7 +271,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
  
     db.collection("examGrades").doc(row.obj["id"]).update({
-      isReleased:value
+      isReleased:value,
+      updated_on:new Date()
     }).then( ()=>{
       console.log("examGrade was released")
       this.update()

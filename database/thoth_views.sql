@@ -4,14 +4,13 @@ AS (
     id,
 	JSON_VALUE(value.organization_name) organization_name,
 	cast( JSON_VALUE(value.isDeleted) as BOOLEAN) isDeleted,
-	cast( JSON_VALUE(value.isDefaultOrganization) as BOOLEAN) isDefaultOrganization,
-  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.created_on')) as created_on,
-  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.updated_on')) as updated_on,
+	cast( JSON_VALUE(value.isDefaultOrganization) as BOOLEAN) isDefaultOrganization
   FROM
     `thoth.organizations_snapshot`
   where valid_to is null
 );
 
+select * from thoth.organizations
 
 CREATE OR REPLACE VIEW thoth.examGrades
 AS (
@@ -21,7 +20,7 @@ AS (
   JSON_VALUE(value.exam_id) exam_id,
   JSON_VALUE(value.materia_id) materia_id,
   cast( JSON_VALUE(value.isCompleted) as BOOLEAN) isCompleted,
-  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.applicationDate')) as applicationDate,
+  parse_datetime('%Y-%m-%d %H:%M:%E*S', json_value(value, '$.applicationDate')) as applicationDate,
   cast( JSON_VALUE(value.applicationDay) as NUMERIC) applicationDay,
   cast( JSON_VALUE(value.applicationMonth) as NUMERIC) applicationMonth,
   cast( JSON_VALUE(value.applicationYear) as NUMERIC) applicationYear,
@@ -34,13 +33,14 @@ AS (
   cast( JSON_VALUE(value.isReleased) as BOOLEAN) isReleased, 
   cast( JSON_VALUE(value.isApproved) AS BOOLEAN) isApproved, 
   cast( JSON_VALUE(value.isWaiver) AS BOOLEAN) isWaiver,
-  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.created_on')) as created_on,
-  parse_datetime("%Y-%m-%d %H:%M:%S", json_value(value, '$.updated_on')) as updated_on,
+  parse_datetime('%Y-%m-%d %H:%M:%E*S', json_value(value, '$.created_on')) as created_on,
+  parse_datetime('%Y-%m-%d %H:%M:%E*S', json_value(value, '$.updated_on')) as updated_on
   FROM
     `thoth.examGrades_snapshot`
   where valid_to is null
 );
 
+select * from thoth.examGrades limit 100
 
 CREATE OR REPLACE VIEW thoth.parameterGrades
 AS (
@@ -74,6 +74,8 @@ AS (
   where valid_to is null
 );
 
+select * from thoth.parameterGrades limit 100
+
 CREATE OR REPLACE VIEW thoth.criteriaGrades
 AS (
   SELECT 
@@ -92,6 +94,8 @@ AS (
   where valid_to is null 
 )
 
+select * from thoth.criteriaGrades
+
 CREATE OR REPLACE VIEW thoth.materias
 AS (
   SELECT 
@@ -102,6 +106,7 @@ AS (
     `thoth.materias_snapshot` materia 
   where valid_to is null		
 )
+select * from thoth.materias
 
 CREATE OR REPLACE VIEW thoth.materias_exams
 AS (
@@ -115,3 +120,5 @@ AS (
     , UNNEST(JSON_EXTRACT_ARRAY(value.exams)) exams 
   where valid_to is null	
 )
+
+select * from thoth.materias_exams limit 100

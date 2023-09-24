@@ -1,16 +1,3 @@
-{"applicationDate":"2021-08-09",
-"certificate_url":"https://storage.googleapis.com/certificates.raxacademy.com/Iqrl5hiDk5EO6XzvSFuP.jpg",
-"completed":true,
-"course":"Técnica II",
-"exam_id":"5CcaaDy9BrKBPkVLtCy7",
-"exam_label":"COORDINACION Y RESISTENCIA",
-"expression":null,
-"id":"Iqrl5hiDk5EO6XzvSFuP",
-"score":9,
-"student_name":"Melina Díaz",
-"student_uid":"V9J8BmER4iR8qvQdy7AwYqoGCc73",
-"title":"Coordinación y Resistencia","updateon":"2021-08-14"}
-
 drop view exams.examGrades
 
 create view celtic-bivouac-307316.exams.examGrades as 
