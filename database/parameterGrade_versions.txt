@@ -1,22 +1,22 @@
-create or replace view thoth-dev-346022.thoth.parameter_grade_score_version as(
+create or replace view thoth.parameter_grade_score_version as(
 with a as (
 select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, avg(pg.score) as parameter_grade_score
-from thoth-dev-346022.thoth.examGrades eg
-join thoth-dev-346022.thoth.organizations o on eg.organization_id = o.id
-join thoth-dev-346022.thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
-join thoth-dev-346022.thoth.materias m on m.id = eg.materia_id
-join thoth-dev-346022.thoth.materias_exams me on me.id = eg.exam_id 
+from thoth.examGrades eg
+join thoth.organizations o on eg.organization_id = o.id
+join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
+join thoth.materias m on m.id = eg.materia_id
+join thoth.materias_exams me on me.id = eg.exam_id 
 where eg.isDeleted=false and eg.isReleased = true and pg.version = 0  --and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5
 order by  1,2,3,4,5
 )
 ,b as (
 select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, avg(pg.score) as parameter_grade_score_last
-from thoth-dev-346022.thoth.examGrades eg
-join thoth-dev-346022.thoth.organizations o on eg.organization_id = o.id
-join thoth-dev-346022.thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
-join thoth-dev-346022.thoth.materias m on m.id = eg.materia_id
-join thoth-dev-346022.thoth.materias_exams me on me.id = eg.exam_id 
+from thoth.examGrades eg
+join thoth.organizations o on eg.organization_id = o.id
+join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
+join thoth.materias m on m.id = eg.materia_id
+join thoth.materias_exams me on me.id = eg.exam_id 
 where eg.isDeleted=false and eg.isReleased = true and pg.isCurrentVersion = true  --and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5
 order by  1,2,3,4,5
@@ -27,18 +27,18 @@ join b using( applicationDay, organization_name, materia_name, exam_label, param
 )
 
 
-select * from thoth-dev-346022.thoth.parameter_grade_score_version
+select * from thoth.parameter_grade_score_version
 
 
-create or replace view thoth-dev-346022.thoth.criteria_grade_score_version as(
+create or replace view thoth.criteria_grade_score_version as(
 with a as (
 select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score * 10) score 
-from thoth-dev-346022.thoth.examGrades eg
-join thoth-dev-346022.thoth.organizations o on eg.organization_id = o.id
-join thoth-dev-346022.thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
-join thoth-dev-346022.thoth.materias m on m.id = eg.materia_id
-join thoth-dev-346022.thoth.materias_exams me on me.id = eg.exam_id 
-join thoth-dev-346022.thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
+from thoth.examGrades eg
+join thoth.organizations o on eg.organization_id = o.id
+join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
+join thoth.materias m on m.id = eg.materia_id
+join thoth.materias_exams me on me.id = eg.exam_id 
+join thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
 where eg.isDeleted=false and eg.isReleased = true and pg.version = 0  
 and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5,6
@@ -46,12 +46,12 @@ order by  1,2,3,4,5,6
 )
 ,b as(
 select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score * 10) score_latest
-from thoth-dev-346022.thoth.examGrades eg
-join thoth-dev-346022.thoth.organizations o on eg.organization_id = o.id
-join thoth-dev-346022.thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
-join thoth-dev-346022.thoth.materias m on m.id = eg.materia_id
-join thoth-dev-346022.thoth.materias_exams me on me.id = eg.exam_id 
-join thoth-dev-346022.thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
+from thoth.examGrades eg
+join thoth.organizations o on eg.organization_id = o.id
+join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
+join thoth.materias m on m.id = eg.materia_id
+join thoth.materias_exams me on me.id = eg.exam_id 
+join thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
 where eg.isDeleted=false and eg.isReleased = true and pg.isCurrentVersion = true
 and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5,6
@@ -62,5 +62,15 @@ from a
 join b using ( applicationDay, organization_name, materia_name, exam_label, parameter_grade_label, criteria_label) 
 )
 
-select * from thoth-dev-346022.thoth.criteria_grade_score_version
+select * from thoth.criteria_grade_score_version
+
+select eg.applicationDay,o.organization_name,  m.materia_name, me.exam_label, pg.label parameter_grade_label, pg.version, pg.score as parameter_grade_score
+from thoth.examGrades eg
+join thoth.organizations o on eg.organization_id = o.id
+join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
+join thoth.materias m on m.id = eg.materia_id
+join thoth.materias_exams me on me.id = eg.exam_id 
+where eg.isDeleted=false and eg.isReleased = true  and eg.id ='62199e62-93c6-4789-932f-4bdaeea9362f'
+order by  1,2,3,4,5
+
 

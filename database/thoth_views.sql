@@ -89,7 +89,7 @@ AS (
     `thoth.examGrades_snapshot`
   , UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades)) parameter
   , UNNEST(JSON_EXTRACT_ARRAY(parameter.criteriaGrades )) criteria
-  where valid_to is null --and id like '3d280a4e-3cae-4a99-a362-426f1c27707b%' 
+  where valid_to is null 
 )
 
 CREATE OR REPLACE VIEW thoth.materias
