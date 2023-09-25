@@ -43,7 +43,7 @@ Calificaciones
     </ng-container>    
     <ng-container matColumnDef="score">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>score</th>
-      <td mat-cell *matCellDef="let row">{{ row.obj.score }}</td>
+      <td mat-cell *matCellDef="let row">{{ row.obj.isCompleted?row.obj.score:"N/A" }}</td>
     </ng-container>    
 
     <ng-container matColumnDef="completed">

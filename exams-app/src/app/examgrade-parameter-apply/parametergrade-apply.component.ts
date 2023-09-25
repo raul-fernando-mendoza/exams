@@ -77,6 +77,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
           let criteriaGrade:CriteriaGrade = doc.data() as CriteriaGrade
           this.criteriaGrades.push(criteriaGrade)
       })
+      this.onInitializedEarnedPoints()
       this.criteriaGrades.sort( (a, b) =>{ 
         if(a.idx > b.idx){
           return 1
@@ -90,6 +91,17 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
         alert("Error reading criteria list" + reason)
     })    
   }
+
+  onInitializedEarnedPoints(){
+    this.parameterGrade.earnedPoints = 0
+    this.parameterGrade.availablePoints = 0    
+    for(let i=0; i<this.criteriaGrades.length; i++){
+      this.parameterGrade.availablePoints += this.criteriaGrades[i].availablePoints
+      this.parameterGrade.earnedPoints += this.criteriaGrades[i].earnedPoints
+    }
+    //recalculate parameter score
+    this.parameterGrade.score =  Number((this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints * 10).toFixed(1))
+  }  
   onCriteriaGradeChange(e:CriteriaGradeApplyChange){
     this.parameterGrade.earnedPoints = 0
     this.parameterGrade.availablePoints = 0
@@ -106,10 +118,6 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     }
     //recalculate parameter score
     this.parameterGrade.score =  Number((this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints * 10).toFixed(1))
-
-
-    
-
   }
   submit(){
 

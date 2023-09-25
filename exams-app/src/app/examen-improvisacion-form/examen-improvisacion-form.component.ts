@@ -472,13 +472,20 @@ export class ExamenImprovisacionFormComponent {
   }
 
   saveCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade, criteriaGradeFG:FormGroup):Promise<void>{
+
+    //calculate the     
+    let aspectGradesFA = criteriaGradeFG.controls.aspectGradesFA as FormArray
+    let criteriaGradeCount = aspectGradesFA.length
+
     let criteriaGrade:CriteriaGrade = {
       id:uuid.v4(),
       idx:criteriaGradeFG.controls.idx.value,
       label:criteriaGradeFG.controls.label.value,
       description:criteriaGradeFG.controls.description.value,
-      score:1,
-      isSelected:true     
+      score:10,
+      isSelected:true,
+      earnedPoints:criteriaGradeCount,
+      availablePoints:criteriaGradeCount    
     }
     return new Promise<void>((resolve, reject) =>{
       db.collection(`examGrades/${examGrade.id}/parameterGrades/${parameterGrade.id}/criteriaGrades`).doc(criteriaGrade["id"]).set(criteriaGrade).then(()=>{
