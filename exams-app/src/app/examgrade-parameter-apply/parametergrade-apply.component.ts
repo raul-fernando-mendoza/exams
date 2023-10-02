@@ -37,6 +37,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   @Output() change=new EventEmitter<ParameterGradeApplyChange>()
   examGrade_id:string
   parameterGrade:ParameterGrade
+  evaluatorDisplayName = null  
 
   criteriaGrades:CriteriaGrade[] = []
 
@@ -63,6 +64,12 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   update(){
     db.collection(this.collection).doc(this.parameterGrade_id).get().then( doc =>{
       this.parameterGrade = doc.data() as ParameterGrade
+
+      this.examImprovisacionService.getUser(this.parameterGrade.evaluator_uid).then( evaluator =>{
+        this.evaluatorDisplayName = this.userLoginService.getDisplayNameForUser(evaluator)
+        
+      })     
+
       this.loadCriterias()
     },
     reason =>{
@@ -100,7 +107,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
       this.parameterGrade.earnedPoints += this.criteriaGrades[i].earnedPoints
     }
     //recalculate parameter score
-    this.parameterGrade.score =  Number((this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints * 10).toFixed(1))
+    this.parameterGrade.score =  Number(( (this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints) * 10).toFixed(1))
   }  
   onCriteriaGradeChange(e:CriteriaGradeApplyChange){
     this.parameterGrade.earnedPoints = 0
@@ -162,18 +169,20 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       if( result != undefined ){
-        db.collection(this.collection).doc(this.parameterGrade_id).update( { "evaluator_comment":result } ).then( () =>{
-          let values:ParameterGradeApplyChange = {
-            parameterGradeGrade_id: this.parameterGrade_id,
-            change: {
-              isCompleted:true
-            }            
-          }  
-          thiz.change.emit( values )        
-        }),
-        reason=>{
-          alert("ERROR saving comment" + reason)
-        }        
+        db.collection(this.collection).doc(this.parameterGrade_id).update( { "evaluator_comment":result } ).then( 
+          () =>{
+            let values:ParameterGradeApplyChange = {
+              parameterGradeGrade_id: this.parameterGrade_id,
+              change: {
+                isCompleted:true
+              }            
+            }  
+            thiz.change.emit( values )        
+          },
+          reason=>{
+            alert("ERROR saving comment" + reason)
+          }
+        )        
       }
     });
   }

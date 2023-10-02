@@ -18,7 +18,7 @@ class TestExamenObservations(unittest.TestCase):
     def testDeleteObject(self):
 
         db = firestore.client()
-        closeExamGrade( db, documentId="53c6bc22-f8c5-4cb3-a265-d2342be57a12")
+        closeExamGrade( db, documentId="3e251884-07ab-4576-ac39-7f8bf7a215e2")
 
 if __name__ == '__main__':
     unittest.main()

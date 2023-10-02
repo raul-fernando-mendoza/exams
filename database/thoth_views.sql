@@ -86,7 +86,9 @@ AS (
   JSON_VALUE(criteria.label) label, 
   JSON_VALUE(criteria.description) description, 
   CAST( JSON_VALUE(criteria.score) as NUMERIC ) score,   
-  CAST( JSON_VALUE(criteria.isSelected) as BOOL) isSelected 
+  CAST( JSON_VALUE(criteria.isSelected) as BOOL) isSelected,
+  CAST( JSON_VALUE(criteria.earnedPoints) as NUMERIC) earnedPoints,
+  CAST( JSON_VALUE(criteria.availablePoints) as NUMERIC) availablePoints
     FROM
     `thoth.examGrades_snapshot`
   , UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades)) parameter

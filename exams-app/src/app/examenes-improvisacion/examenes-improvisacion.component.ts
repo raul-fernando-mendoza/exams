@@ -49,7 +49,9 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   organization_id = null
 
   unsubscribe = null
+  parameterUnsubscribes = new Map()
 
+  
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
@@ -63,6 +65,10 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   ngOnDestroy(): void {
     if( this.unsubscribe ){
       this.unsubscribe()
+      console.log("unsubscribe called")
+      this.parameterUnsubscribes.forEach( (value, key) =>{
+        value()
+      })      
     }
   }
 
@@ -71,7 +77,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
 
   updateTable(){
       this.dataSource = new ExamenesImprovisacionDataSource(this.examenes);
-      
+      /*
       var examenesSort = localStorage.getItem('jsonExamenesSort')
       if( examenesSort ){
         var jsonExamenesSort = JSON.parse(examenesSort)
@@ -82,7 +88,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
         this.sort.active = 'materia'
         this.sort.direction = 'asc'
       }
-      
+      */
 
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
@@ -145,40 +151,48 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
 
     var qry = db.collection('examGrades')
       .where("organization_id", "==", this.organization_id)
-      .where( "evaluators", "array-contains",userUid)
+      .where("evaluators", "array-contains",userUid)
       .where("isCompleted", '==', false)  
+      .where("isDeleted","==",false)
       
 
     if( this.selectedDay ){
       qry = qry.where("applicationDay", "==", this.dateFormatService.getDayId(this.selectedDay) )
     }
-
-
-    this.submitting = true
-
     if( this.unsubscribe ){
       this.unsubscribe()
+      console.log("exam list unsubscribe")
     }
     this.unsubscribe = qry.onSnapshot( set => {
+      console.log("onsnapshot haspendingWrite:" + set.metadata.hasPendingWrites)
+      console.log("onsnapshot fromcache:" + set.metadata.fromCache)
+      console.log("onsnapshot length:" + set.docs.length)
+      this.submitting = true
+
+      this.parameterUnsubscribes.forEach( (value, key) =>{
+        value()
+      })
+      this.parameterUnsubscribes.clear()
 
       this.examenes.length = 0;
 
       var map = set.docs.map( doc =>{        
         const examGrade:ExamGrade = doc.data()
-        return this.addDbParameterGrade( examGrade )
+        return this.addDbParameterGrade( examGrade)
       })
       Promise.all(map).then(()=>{
         this.submitting = false
         this.examenes.sort( (a,b) =>{
           var ap = a as ExamenesImprovisacionItem
           var bp = b as ExamenesImprovisacionItem
-          if( ap.examGrade.applicationDate == bp.examGrade.applicationDate ){
+          if( this.dateFormatService.getDayId(new Date(ap.examGrade.applicationDate)) == this.dateFormatService.getDayId(new Date(bp.examGrade.applicationDate)) ){
             return a.examGrade.title > b.examGrade.title ? 1 : -1
           }
           else{
             return a.examGrade.applicationDate < b.examGrade.applicationDate ? 1 : -1
           }
         })
+        console.log("end sorting parameters")
         this.updateTable()
       })       
     },
@@ -186,28 +200,37 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       alert("ERROR reading list of exams to approve:" + reason)
     })
   }
-  addDbParameterGrade(examGrade:ExamGrade):Promise<void>{  
+  addDbParameterGrade(examGrade:ExamGrade ):Promise<void>{  
     return new Promise<void>((resolve, reject) =>{
-      db.collection('examGrades/' + examGrade.id + "/parameterGrades")
+      let parameterUnsubscribe = db.collection('examGrades/' + examGrade.id + "/parameterGrades")
         .where("evaluator_uid", "==", this.userLoginService.getUserUid())
         .where("version","==", 0)      
         .where("isCompleted", '==', false) 
-        .get().then( set =>{
+        .onSnapshot( set =>{
           console.log("exams found:" + set.docs.length)
+          //first remove all the parameter related to this examgradeid
+          for(let i=this.examenes.length; i>0; i--){
+            if( this.examenes[i-1].examGrade.id == examGrade.id ){
+              this.examenes.splice(i-1,1);
+            }
+          }
                   
           var map = set.docs.map( doc =>{
             const parameterGrade:ParameterGrade = doc.data() as ParameterGrade
-            var examGrade_id = parameterGrade.id
-            if( parameterGrade.evaluator_uid == this.userLoginService.getUserUid() ){
-              return this.addParameterGrade(examGrade, parameterGrade)
-            }          
+            var obj:ExamenesImprovisacionItem = {
+              exam:null,
+              examGrade:examGrade,
+              parameterGrade: parameterGrade, 
+              materia: null,
+              studentDisplayName: null,
+              approverDisplayName:null,
+              isCompleted:parameterGrade.isCompleted
+            }
+            this.examenes.push(obj)
+            this.retriveDetails(obj)
+            this.updateTable()
           })
-          Promise.all( map ).then( ()=>{
-            resolve()
-          },
-          reason =>{
-            reject()
-          })
+          resolve()
         },
         reason =>{
           console.error("Error: reading exam list" + reason)
@@ -215,58 +238,32 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
           this.submitting = false
         }
       )  
+      this.parameterUnsubscribes.set(examGrade.id, parameterUnsubscribe)
     }) 
   } 
-  addParameterGrade(examGrade:ExamGrade,parameterGrade:ParameterGrade):Promise<void>{
-    return new Promise<void>((resolve, reject) =>{
-      var transaction:Promise<void>[] = []
-
-      var obj:ExamenesImprovisacionItem = {
-        exam:null,
-        examGrade:examGrade,
-        parameterGrade: parameterGrade, 
-        materia: null,
-        studentDisplayName: null,
-        approverDisplayName:null,
-        isCompleted:parameterGrade.isCompleted
-      }
-
-      obj.approverDisplayName = this.userLoginService.getDisplayName()
-      transaction.push(
-        this.examImprovisacionService.getExam( examGrade.materia_id, examGrade.exam_id).then( exam =>{
-          obj.exam = exam
-        },
-        reason =>{
-          console.log("ERROR reading exam:" + reason)
-        })
-      )
-      transaction.push(
-        this.examImprovisacionService.getMateria( examGrade.materia_id).then( materia =>{
-          obj.materia = materia
-        },
-        reason =>{
-          console.log("ERROR materia cannot be read:" + reason)
-        })
-      )
-      transaction.push(
-        this.getUser(examGrade.student_uid).then(student =>{
-          obj.studentDisplayName = this.getDisplayNameForUser(student)
-        },
-        reason =>{
-          console.log("ERROR student cannot be read:" + reason)
-        }) 
-      )   
-      Promise.all(transaction).then(()=>{
-        if( obj.examGrade && obj.examGrade.isDeleted == false ){
-              this.examenes.push(obj)
-        }        
-        resolve()
-      },
-      reason =>{
-        console.log("some errors has been found:" + reason)
-        reject()
-      })
+  retriveDetails( obj:ExamenesImprovisacionItem){
+    obj.approverDisplayName = this.userLoginService.getDisplayName()
+    this.examImprovisacionService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
+      obj.exam = exam
+    }
+    ,reason =>{
+      console.log("ERROR exam can not be read:" + reason)
     })
+
+    this.examImprovisacionService.getMateria( obj.examGrade.materia_id).then( materia =>{
+      obj.materia = materia
+    },
+    reason =>{
+      console.log("ERROR materia cannot be read:" + reason)
+    })
+ 
+    this.getUser(obj.examGrade.student_uid).then(student =>{
+      obj.studentDisplayName = this.getDisplayNameForUser(student)
+    },
+    reason =>{
+      console.log("ERROR student cannot be read:" + reason)
+    }) 
+
   }
 
   onCreate(){
@@ -276,7 +273,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     this.router.navigate(['/eiReporte']);
   }
   onEdit(examGrade_id, parameterGrade_id){
-    this.router.navigate(['/ei-ap-parameter-form-component',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
+    this.router.navigate(['/examGrade-parameterGrade-apply',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
   }
   onGraph(student_email:string,applicationDate:Date ){
     this.router.navigate(['/examgrades-report',{student_email:student_email,applicationDate:applicationDate }]);
@@ -349,5 +346,4 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
     this.updateTable()
   }
-
 }

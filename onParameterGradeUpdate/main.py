@@ -29,6 +29,11 @@ def examGradeScoreUpdate(event, context):
 def closeExamGrade(db, documentId):  
     
     doc_ref = db.collection(u'examGrades').document(documentId)
+
+    exam = doc_ref.get().to_dict()
+
+    
+
     parameters_arr = doc_ref.collection("parameterGrades").get()
 
     
@@ -48,29 +53,30 @@ def closeExamGrade(db, documentId):
 
         dateNow = datetime.datetime.now()
 
-        if isCompleted == True: 
-            grade = total / numScores
-            isApproved = False
-            if grade> 7:
-                isApproved = True
+        if exam["isCompleted"] != isCompleted:
+            if isCompleted == True: 
+                grade = total / numScores
+                isApproved = False
+                if grade> 7:
+                    isApproved = True
 
 
-            doc_ref.update({
-                u'score': grade,
-                u'isCompleted': True,
-                u'isApproved':isApproved,
-                u'updated_on': dateNow
-            })
-            log.debug("*** documentId:" + documentId + " completed")  
-        else:
-            doc_ref.update({
-                u'score':0,
-                u'isCompleted':False,
-                u'isApproved':False,
-                u'isReleased':False,
-                u'updated_on': dateNow
-            })     
-            log.debug("*** documentId:" + documentId + " reopen")        
+                doc_ref.update({
+                    u'score': grade,
+                    u'isCompleted': True,
+                    u'isApproved':isApproved,
+                    u'updated_on': dateNow
+                })
+                log.debug("*** documentId:" + documentId + " completed")  
+            else:
+                doc_ref.update({
+                    u'score':0,
+                    u'isCompleted':False,
+                    u'isApproved':False,
+                    u'isReleased':False,
+                    u'updated_on': dateNow
+                })     
+                log.debug("*** documentId:" + documentId + " reopen")        
 
 
     

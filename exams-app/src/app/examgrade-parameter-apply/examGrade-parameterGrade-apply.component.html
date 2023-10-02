@@ -4,8 +4,10 @@
     <div *ngIf="examGrade" class="debug">id:{{ examGrade_id }}</div>
 </div>  
 <div *ngIf="examGrade">
-    <div>Examen: {{ examGrade.title }}</div>
-    <div>Estudiante: {{userDisplayName}}</div>
+    <div>Estudiante: <b>{{userDisplayName}}</b></div>
+    <div>Nivel: {{ examGrade.level}}</div>
+    <div *ngIf="materia">Habilidad: {{ materia.materia_name }} </div>
+    <div>Título: {{ examGrade.title }}</div>
     <div>Expresión: {{ examGrade.expression }}</div>
     <parametergrade-apply *ngIf="collection" collection="{{collection}}/parameterGrades" parameterGrade_id="{{parameterGrade_id}}" (change)="onParameterGradeChange($event)"></parametergrade-apply>
 </div>  

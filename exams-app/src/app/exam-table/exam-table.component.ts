@@ -5,7 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { copyObj, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade } from '../exams/exams.module';
+import { copyObj, CriteriaGrade, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 
 import * as uuid from 'uuid';
@@ -159,7 +159,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         Promise.all(m).then( () =>{
           console.log("End loading Exams")
           this.examGradeList.sort( (a,b) =>{
-            if( a.obj["applicationDate"] == b.obj["applicationDate"] ){
+            if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
               if ( a.obj["title"] ){
                 return a.obj["title"] > b.obj["title"] ? 1 : -1
               }
@@ -216,6 +216,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
             isLeaf:true
           }
           parent.push(node)          
+        })
+        parent.sort( (a,b) =>{
+          return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
 
         this.updateList()
@@ -353,7 +356,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         Promise.all( criteriaMap ).then( ()=>{
           parameterGradeDoc.update({
             isCompleted:false,
-            score:null, 
+            score:10, 
             evaluator_comment:null     
           }).then( () =>{
             resolve()
@@ -375,8 +378,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
   resetCriteria(criteriaDoc):Promise<void>{
     return new Promise<void>( (resolve, reject)=>{
+      let criteriaGrade:CriteriaGrade = criteriaDoc.data() as CriteriaGrade
       criteriaDoc.ref.update({
-        score:null
+        score:10,
+        earnedPoints:criteriaGrade.availablePoints
       })
       criteriaDoc.ref.collection('aspectGrades').get().then( aspectGradeSet =>{
         let aspectMap = aspectGradeSet.docs.map( aspectGradeDoc=>{

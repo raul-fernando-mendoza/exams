@@ -96,7 +96,7 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
     for(let i=0; i<this.aspectGrades.length; i++){
       this.criteriaGrade.earnedPoints += this.aspectGrades[i].score
     }
-    this.criteriaGrade.score = this.criteriaGrade.earnedPoints / this.criteriaGrade.availablePoints
+    this.criteriaGrade.score = Number(( (this.criteriaGrade.earnedPoints/this.criteriaGrade.availablePoints) * 10).toFixed(1))
     var values:CriteriaGradeApplyChange = {
       change: {
         score: this.criteriaGrade.score,
@@ -110,6 +110,9 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
     db.collection(this.collection).doc(this.criteriaGrade_id).update( values.change ).then( () =>{
       console.log("criteria updated")
       thiz.change.emit(values)
+    },
+    reason =>{
+      console.log("ERROR:updating criteria")
     })
     
   }  

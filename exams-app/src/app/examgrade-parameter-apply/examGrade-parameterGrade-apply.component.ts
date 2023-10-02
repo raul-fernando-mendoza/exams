@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
-import { ExamGrade, ParameterGrade } from '../exams/exams.module';
+import { ExamGrade, Materia, ParameterGrade } from '../exams/exams.module';
 import { ParameterGradeApplyChange } from './parametergrade-apply.component';
 import { UntypedFormGroup } from '@angular/forms';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
@@ -13,7 +13,7 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
   templateUrl: './examGrade-parameterGrade-apply.component.html',
   styleUrls: ['./examGrade-parameterGrade-apply.component.css']
 })
-export class ExamgradeParameterGradeApplyComponent implements OnInit, OnDestroy{
+export class ExamgradeParameterGradeApplyComponent implements OnInit{
 
   organization_id:string
   isAdmin:boolean
@@ -21,10 +21,10 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit, OnDestroy{
   examGrade:ExamGrade
   parameterGrade_id:string
   collection:string = ""
-  unsubscribe
   isDisabled = false
   submitting = false
   userDisplayName = ""
+  materia:Materia = null
 
   constructor(
     private activatedRoute: ActivatedRoute 
@@ -43,16 +43,10 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit, OnDestroy{
         thiz.examGrade = null
         thiz.examGrade_id = paramMap.get('examGrade_id')
         thiz.parameterGrade_id = paramMap.get('parameterGrade_id')
-        this.collection = "examGrades/" + thiz.examGrade_id 
+        thiz.collection = "examGrades/" + thiz.examGrade_id 
         thiz.update()
       }
     })  
-  }
-
-  ngOnDestroy(): void {
-    if(this.unsubscribe){
-      this.unsubscribe()
-    }
   }
 
   ngOnInit(): void {
@@ -66,8 +60,17 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit, OnDestroy{
       
       this.examImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
         this.userDisplayName = this.userLoginService.getDisplayNameForUser(user)
-        
-      })      
+      },
+      reason =>{
+        console.log("ERROR: reading student user data:" + reason)
+      })   
+      
+      this.examImprovisacionService.getMateria( this.examGrade.materia_id).then( materia =>{
+        this.materia = materia
+      },
+      reason =>{
+        console.log("ERROR materia cannot be read:" + reason)
+      })
     },
     reason=>{
       alert("ERROR reading exam parameter:" + reason.toString())
