@@ -32,7 +32,7 @@ select * from thoth.parameter_grade_score_version
 
 create or replace view thoth.criteria_grade_score_version as(
 with a as (
-select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score * 10) score 
+select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score) score 
 from thoth.examGrades eg
 join thoth.organizations o on eg.organization_id = o.id
 join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
@@ -40,12 +40,12 @@ join thoth.materias m on m.id = eg.materia_id
 join thoth.materias_exams me on me.id = eg.exam_id 
 join thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
 where eg.isDeleted=false and eg.isReleased = true and pg.version = 0  
-and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
+--and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5,6
 order by  1,2,3,4,5,6
 )
 ,b as(
-select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score * 10) score_latest
+select eg.applicationDay,o.organization_name, m.materia_name, me.exam_label, pg.label parameter_grade_label, cg.label criteria_label, avg(cg.score) score_latest
 from thoth.examGrades eg
 join thoth.organizations o on eg.organization_id = o.id
 join thoth.parameterGrades pg on pg.exam_grade_id = eg.id 
@@ -53,7 +53,7 @@ join thoth.materias m on m.id = eg.materia_id
 join thoth.materias_exams me on me.id = eg.exam_id 
 join thoth.criteriaGrades cg on cg.parameter_grade_id = pg.id  
 where eg.isDeleted=false and eg.isReleased = true and pg.isCurrentVersion = true
-and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
+--and eg.id ='3a6715fe-60a7-48f3-8237-766b6f1df7d8'
 group by 1,2,3,4,5,6
 order by  1,2,3,4,5,6
 )

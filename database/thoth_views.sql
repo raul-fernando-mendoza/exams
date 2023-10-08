@@ -37,7 +37,7 @@ AS (
   parse_datetime('%Y-%m-%d %H:%M:%E*S', json_value(value, '$.updated_on')) as updated_on
   FROM
     `thoth.examGrades_snapshot`
-  where valid_to is null
+  where valid_to is null and cast( JSON_VALUE(value.isDeleted) as BOOLEAN)  = false
 );
 
 select * from thoth.examGrades limit 100

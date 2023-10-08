@@ -46,10 +46,10 @@ def backupfull(request):
     obj = {"code":"success"}
     try:
         log.debug("main backupfull has been called")
-        #req = request.get_json(force=True)
-        #log.debug("data:" + str(req))
+        req = request.get_json(force=True)
+        log.debug("data:" + str(req))
 
-        backup.backupAll()
+        backup.backupAll(req["collections"], req["fullRefresh"])
     except Exception as e:
         log.error("**** processRequest Exception:" + str(e))
         return ({"error":str(e)}, 404, headers)

@@ -179,12 +179,10 @@ def getUserList():
         )
     return userlist
 
-#collections=["examGrades"]
-collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations","exams","groups","niveles","revision"]
 SUFFIX = "_snapshot"
 USER_TABLE = "user" + SUFFIX
 
-def backupAll():
+def backupAll(collections, fullRefresh=False):
     log.debug("**** Start Backup")
 
     today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -223,13 +221,14 @@ def backupAll():
         if tblExist == False:
             create_table(tableName )
 
-        lastValidFrom = getLastValidFromTable(tableName)
-        if lastValidFrom:
-            print(lastValidFrom)
+        if fullRefresh == False:
+            lastValidFrom = getLastValidFromTable(tableName)
+            if lastValidFrom:
+                print(lastValidFrom)
 
 
         coll = db.collection(c)
-        if lastValidFrom:            
+        if fullRefresh==False and lastValidFrom:            
             coll = coll.where("updated_on",">",lastValidFrom)
         docRef = coll.get()
         for doc in docRef:
@@ -254,7 +253,10 @@ def backupAll():
 
 
 if __name__ == "__main__":
-   backupAll()
+    all_collections=["examGrades"]
+    #all_collections=["examGrades","careerAdvance","careers","employee","laboratoryGrades","materiaEnrollments","materias","organizations","exams","groups","niveles","revision"]
+   
+    backupAll(all_collections, True)
         
 
 

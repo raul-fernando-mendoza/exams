@@ -12,7 +12,7 @@ log = logging.getLogger("cheneque")
 db = firestore.client()
 print( db.project )
 
-eGradeRef = db.collection("examGrades").get()
+eGradeRef = db.collection("examGrades")
 
 dt = datetime.now()
 ts = datetime.timestamp(dt)
@@ -56,9 +56,9 @@ for eGradeDoc in eGradeRef:
                     print( "--" + "availablePoint:" + str(json["availablePoint"]))
                     print( "--" + "earnedPoints:" + str(json["earnedPoints"]))
                     print( "--" + "score:" + str(json["score"]))
-                    if( "availablePoint" in cg and cg["availablePoint"] != json["availablePoint"] and
-                        "earnedPoints" in cg and cg["earnedPoints"] != json["earnedPoints"] and
-                        "score" in cg and cg["availablePoint"] != json["availablePoint"] ):
+                    if( "availablePoint" in cg and cg["availablePoint"] == json["availablePoint"] and
+                        "earnedPoints" in cg and cg["earnedPoints"] == json["earnedPoints"] and
+                        "score" in cg and cg["availablePoint"] == json["availablePoint"] ):
                         print("no need to update")
                     else:
                         updated = True
