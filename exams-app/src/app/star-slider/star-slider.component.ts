@@ -15,7 +15,7 @@ import { Observable, Subject } from 'rxjs';
 export class StarSliderComponent  implements ControlValueAccessor {
 
   @ViewChild('location') location;
-  @Input() private disabled = false;
+  //@Input() private disabled = false;
   @Output() private valueChange = new EventEmitter();
   widget;
 
@@ -47,7 +47,7 @@ export class StarSliderComponent  implements ControlValueAccessor {
   }
   percentage = 100
   onContainerClick(event: MouseEvent): void {
-    if( !this.disabled ){
+    if( !this._isDisabled ){
       let pct = this.getRoundPct( 50 + (event.offsetX/250) * 50 )
      
         this.percentage = pct

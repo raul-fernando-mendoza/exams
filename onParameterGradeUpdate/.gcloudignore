@@ -3,3 +3,6 @@ venv
 readme.txt
 *.jpg 
 __pycache__
+.vscode
+.gcloudignore
+.gitignore

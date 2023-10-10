@@ -32,7 +32,7 @@ def closeExamGrade(db, documentId):
 
     exam = doc_ref.get().to_dict()
 
-    
+    dateNow = datetime.datetime.now()    
 
     parameters_arr = doc_ref.collection("parameterGrades").get()
 
@@ -51,32 +51,51 @@ def closeExamGrade(db, documentId):
                     isCompleted = False
                     break
 
-        dateNow = datetime.datetime.now()
-
-        if exam["isCompleted"] != isCompleted:
-            if isCompleted == True: 
-                grade = total / numScores
-                isApproved = False
-                if grade> 7:
-                    isApproved = True
 
 
-                doc_ref.update({
-                    u'score': grade,
-                    u'isCompleted': True,
-                    u'isApproved':isApproved,
-                    u'updated_on': dateNow
-                })
-                log.debug("*** documentId:" + documentId + " completed")  
-            else:
-                doc_ref.update({
-                    u'score':0,
-                    u'isCompleted':False,
-                    u'isApproved':False,
-                    u'isReleased':False,
-                    u'updated_on': dateNow
-                })     
-                log.debug("*** documentId:" + documentId + " reopen")        
+        if numScores>0:
+            if exam["isCompleted"] != isCompleted:
+                if isCompleted == True: 
+                    grade = total / numScores
+                    isApproved = False
+                    if grade> 7:
+                        isApproved = True
+
+
+                    doc_ref.update({
+                        u'score': grade,
+                        u'isCompleted': True,
+                        u'isApproved':isApproved,
+                        u'updated_on': dateNow
+                    })
+                    log.debug("*** documentId:" + documentId + " completed")  
+                else:
+                    doc_ref.update({
+                        u'score':0,
+                        u'isCompleted':False,
+                        u'isApproved':False,
+                        u'isReleased':False,
+                        u'updated_on': dateNow
+                    })     
+                    log.debug("*** documentId:" + documentId + " reopen")
+        else:
+            doc_ref.update({
+                u'score':0,
+                u'isCompleted':False,
+                u'isApproved':False,
+                u'isReleased':False,
+                u'updated_on': dateNow
+            })     
+            log.debug("*** documentId:" + documentId + " reopen")    
+    elif exam["isCompleted"] == True: #the exam does not have any parameters and has been marked as terminated 
+        doc_ref.update({
+            u'score':0,
+            u'isCompleted':False,
+            u'isApproved':False,
+            u'isReleased':False,
+            u'updated_on': dateNow
+        })     
+        log.debug("*** documentId:" + documentId + " reopen")               
 
 
     

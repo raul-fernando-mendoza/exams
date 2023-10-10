@@ -404,4 +404,43 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     })
   }  
 
+  onRemoveParameterGrade(examGrade_id, parameterGrade_id, title){
+    if( !confirm("Esta seguro de querer eliminar:" +  title) ){
+      return
+    }    
+
+    var req = {
+      collection:"examGrades/" + examGrade_id + "/parameterGrades",
+      id:parameterGrade_id
+    }
+
+    this.userLoginService.getUserIdToken().then( token => {
+      this.examImprovisacionService.firestoreApiInterface("deleteCollectionObject", token, req).subscribe(
+        {
+          next(data){ 
+            var res = data["result"] 
+            //now update the examGrade updated_on
+
+            db.collection("examGrades/").doc(examGrade_id).update({"updated_on": new Date()}).then(
+              ()=>{
+                console.log("examgrade has been updated for updated_on")
+              },
+              reason=>{
+                alert("Error removiendo parameter:" + reason)
+              }
+            ) 
+          },   
+          error(reason){  
+            alert( "ERROR: removiendo parameter:" + JSON.stringify(reason))
+          },
+          complete(){
+            console.log("never called")
+          }
+        }
+      )
+    },
+    error => {
+      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+    }) 
+  }
 }

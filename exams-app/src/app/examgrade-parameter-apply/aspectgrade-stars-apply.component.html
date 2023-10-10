@@ -5,7 +5,7 @@
 </div>  
 <div *ngIf="aspectGrade && aspectGradeForm" [formGroup]="aspectGradeForm">
     <div class="question" (click)="showText(aspectGrade.description)">{{ aspectGrade.label }} </div>
-    <app-star-slider formControlName="score" (valueChange)="onChangeStarts()" [disabled]="disabled"></app-star-slider>
+    <app-star-slider formControlName="score" (valueChange)="onChangeStarts()" ></app-star-slider>
 </div>
     
 

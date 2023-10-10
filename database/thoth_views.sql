@@ -71,7 +71,7 @@ AS (
   
   FROM
     `thoth.examGrades_snapshot`, UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades , '$')) parameter
-  where valid_to is null
+  where valid_to is null and cast( JSON_VALUE(value.isDeleted) as BOOLEAN)  = false
 );
 
 select * from thoth.parameterGrades limit 100
@@ -93,7 +93,7 @@ AS (
     `thoth.examGrades_snapshot`
   , UNNEST(JSON_EXTRACT_ARRAY(value.parameterGrades)) parameter
   , UNNEST(JSON_EXTRACT_ARRAY(parameter.criteriaGrades )) criteria
-  where valid_to is null 
+  where valid_to is null and cast( JSON_VALUE(value.isDeleted) as BOOLEAN)  = false
 )
 
 select * from thoth.criteriaGrades

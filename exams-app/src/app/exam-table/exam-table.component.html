@@ -83,9 +83,12 @@ Calificaciones
             <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onReset(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting">
               <mat-icon>change_circle</mat-icon> 
               <span>Reset</span>
-            </button>             
+            </button> 
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onRemoveParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting">
+              <mat-icon>delete</mat-icon>
+              <span>delete</span>
+            </button>                         
           </mat-menu>         
-
         </div>  
       </td>
     </ng-container>
