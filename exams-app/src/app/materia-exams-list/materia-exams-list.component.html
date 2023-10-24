@@ -30,12 +30,12 @@
               </mat-menu>
               <div *ngIf="isEnrolled ;  else noEnrolledBlock">
                 <div *ngIf="ei.examGrade != null">
-                  <span *ngIf="ei.examGrade.isReleased == false">En Espera de liberación</span>
+                  <span class="status" *ngIf="ei.examGrade.isReleased == false">: En Espera de liberación</span>
                   <button *ngIf="ei.examGrade.isReleased == true" (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button>Abrir Reporte</button>
                 </div>  
               </div> 
               <ng-template #noEnrolledBlock>
-                No Enrolado
+               <!-- do nothing -->
               </ng-template>
                
         </mat-list-item>
