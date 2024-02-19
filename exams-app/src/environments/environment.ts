@@ -40,6 +40,9 @@ export var environment = {
   recaptcha: {
     siteKey: '6LcFB7ohAAAAAMBJx7mf6-49OMW2JYbLuVgLl3d2',
   },
+  computeURL:'https://us-central1-thoth-dev-346022.cloudfunctions.net/computeRequest',
+  zone:'us-central1-a',
+  OPENVIDU_INSTANCE_NAME:'openvidu-test'
   
 };
 

@@ -81,6 +81,11 @@ export class NavigationComponent {
   }
 
   onConference(){
-    window.location.href = "https://openvidu.raxacademy.com";
+    if ( this.isAdmin() ){
+      this.router.navigate(["/conference"])
+    }
+    else{
+      window.location.href = "https://openvidu.raxacademy.com";
+    }
   }
 }

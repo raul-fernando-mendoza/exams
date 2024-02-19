@@ -103,6 +103,7 @@ import { AspectGradeStarsApplyComponent } from './examgrade-parameter-apply/aspe
 import { ParameterGradeCommentDialog } from './examgrade-parameter-apply/parameterGrade-comment-dlg';
 import { ParameterGradeDescriptionDialog } from './examgrade-parameter-apply/parameterGrade-description-dlg';
 import { AspectGradeItemsApplyComponent } from './examgrade-parameter-apply/aspectgrade-items-apply.component';
+import { ComputestatusComponent } from './computestatus/computestatus.component';
 
 @NgModule({
     declarations: [
@@ -168,7 +169,8 @@ import { AspectGradeItemsApplyComponent } from './examgrade-parameter-apply/aspe
         CommentApplyDialog,
         DescriptionApplyDialog,
         ParameterGradeCommentDialog,
-        ParameterGradeDescriptionDialog
+        ParameterGradeDescriptionDialog,
+        ComputestatusComponent
 
     ],
     imports: [

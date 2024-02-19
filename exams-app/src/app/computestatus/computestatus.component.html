@@ -1,0 +1,32 @@
+
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-subtitle>
+                <a href="http://openvidu.raxacademy.com">openvidu.raxacademy.com</a>
+            </mat-card-subtitle>
+            <mat-card-title>
+                Openvidu Server Status
+            </mat-card-title>
+        </mat-card-title-group>
+
+    </mat-card-header>
+    <mat-card-content>
+        <h2>{{instanceName}}  {{ instanceStatus }}</h2>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="onStart()">Start</button>
+        <button mat-raised-button color="warn" (click)="onStop()">Stop</button>
+    </mat-card-actions>
+    <mat-card-footer>
+        {{ lastAction }}
+        
+        <mat-progress-bar *ngIf="statusCount" mode="determinate" [value]="statusCount"></mat-progress-bar>
+
+    </mat-card-footer>
+</mat-card>
+
+
+
+

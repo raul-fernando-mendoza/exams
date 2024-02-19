@@ -34,6 +34,7 @@ import { RevisionListComponent } from './revision-list/revision-list.component';
 import { RevisionEditComponent } from './revision-edit/revision-edit.component';
 import { AuthguardService } from './authguard.service';
 import { ExamgradeParameterGradeApplyComponent } from './examgrade-parameter-apply/examGrade-parameterGrade-apply.component';
+import { ComputestatusComponent } from './computestatus/computestatus.component';
 
 
 const routes: Routes = [
@@ -72,6 +73,7 @@ const routes: Routes = [
   { path: 'revision-list', component:RevisionListComponent},
   { path: 'revision-edit', component:RevisionEditComponent, canActivate: [AuthguardService]},
   { path: 'examGrade-parameterGrade-apply', component:ExamgradeParameterGradeApplyComponent},
+  { path: 'conference', component:ComputestatusComponent},
   { path: '**', component: WelcomeComponent },  
   
 ];
