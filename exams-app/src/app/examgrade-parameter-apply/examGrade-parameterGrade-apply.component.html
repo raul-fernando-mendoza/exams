@@ -4,7 +4,7 @@
 </div>  
 <div *ngIf="examGrade">
     <div class="centered_container" >
-        <div><h1>Aplicación de examen</h1></div>
+        <div><h1 *ngIf="parameterGrade">{{ parameterGrade.label }}</h1></div>
         <div class="inline">
             <mat-icon class="personIcon">person</mat-icon><h2 class="userName">{{userDisplayName}}</h2>
         </div>    
@@ -13,16 +13,16 @@
 
     <mat-grid-list class="skill" cols="2" rowHeight="2em">
         <mat-grid-tile  colspan="1" >
-            <div *ngIf="materia" class="skill_title">Habilidad:</div>
+            <div  class="skill_title">Habilidad:</div>
         </mat-grid-tile>
         <mat-grid-tile class="skill_cell_title" colspan="1" >
-            <span class="skill_value">{{ materia.materia_name }}</span>
+            <span *ngIf="materia" class="skill_value">{{ materia.materia_name }}</span>
         </mat-grid-tile>
 
         <mat-grid-tile  colspan="1" >
-            <div *ngIf="materia" class="skill_title">Título:</div>
+            <div class="skill_title">Título:</div>
         </mat-grid-tile>
-        <mat-grid-tile class="skill_cell_title" colspan="1" >
+        <mat-grid-tile *ngIf="materia"  class="skill_cell_title" colspan="1" >
             <span class="skill_value">{{ examGrade.title }}</span>
         </mat-grid-tile> 
         <mat-grid-tile  colspan="1" >

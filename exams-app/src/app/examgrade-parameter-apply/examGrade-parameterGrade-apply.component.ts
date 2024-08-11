@@ -25,6 +25,7 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
   submitting = false
   userDisplayName = ""
   materia:Materia = null
+  parameterGrade:ParameterGrade | null = null
 
   constructor(
     private activatedRoute: ActivatedRoute 
@@ -53,29 +54,40 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
     this.collection = "examGrades/" + this.examGrade_id    
   }
   update(){
-    
     db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
-      this.examGrade = doc.data() as ExamGrade
+        this.examGrade = doc.data() as ExamGrade
 
-      
-      this.examImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
-        this.userDisplayName = this.userLoginService.getDisplayNameForUser(user)
+        this.examImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
+          this.userDisplayName = this.userLoginService.getDisplayNameForUser(user)
+        },
+        reason =>{
+          console.log("ERROR: reading student user data:" + reason)
+        })   
+        
+        this.examImprovisacionService.getMateria( this.examGrade.materia_id).then( materia =>{
+          this.materia = materia
+        },
+        reason =>{
+          console.log("ERROR materia cannot be read:" + reason)
+        })
       },
-      reason =>{
-        console.log("ERROR: reading student user data:" + reason)
-      })   
-      
-      this.examImprovisacionService.getMateria( this.examGrade.materia_id).then( materia =>{
-        this.materia = materia
-      },
-      reason =>{
-        console.log("ERROR materia cannot be read:" + reason)
-      })
-    },
-    reason=>{
-      alert("ERROR reading exam parameter:" + reason.toString())
-    })      
+      reason=>{
+        alert("ERROR reading exam parameter:" + reason.toString())
+      }
+    )
+    
+    db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").doc(this.parameterGrade_id).get().then( doc => {
+        this.parameterGrade = doc.data() as ParameterGrade
+      }
+      ,reason =>{
+        alert("ERROR: reason examgrade parameter:" + this.parameterGrade_id )
+      }
+    )
   }
+     
+    
+    
+  
 
   onParameterGradeChange(e:ParameterGradeApplyChange){
     

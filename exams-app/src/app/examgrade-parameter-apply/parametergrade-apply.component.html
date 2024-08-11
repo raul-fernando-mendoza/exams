@@ -9,7 +9,9 @@
 <div *ngIf="parameterGrade">
 
     <div *ngIf="isAdmin" class="bar">
+        <!--
         <div  *ngIf="parameterGrade" class="inline">Parametro: <span><h1>{{ parameterGrade.label }}</h1></span></div>
+        -->
         <div class="spacer"></div>
         <div *ngIf="isAdmin && parameterGrade && parameterGrade.isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
     </div> 
