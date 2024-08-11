@@ -1,0 +1,37 @@
+.centered_container{
+    display: flex;
+    flex-direction: column;
+}
+.centered_container div{
+    display:block; 
+    align-self: center;
+    
+}
+.inline .personIcon{
+    vertical-align:middle;
+    display:inline-block;
+}
+.inline h2{
+    display:inline-block;
+}
+.level{
+    margin-top: 2em;
+}
+.skill{
+    width: 80%;
+    margin-right: auto;
+}
+.skill_title{
+    text-align: right;
+    margin-left: auto;
+    padding: 2px;
+}
+.skill_value{
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2px;
+}
+.skill_cell_title{
+    background-color: lightgray;
+}

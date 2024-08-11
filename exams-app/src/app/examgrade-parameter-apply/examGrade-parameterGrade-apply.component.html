@@ -1,14 +1,37 @@
 <div class="bar">
-    <div>Aplicación de examen</div>
     <div class="spacer"></div>
     <div *ngIf="examGrade" class="debug">id:{{ examGrade_id }}</div>
 </div>  
 <div *ngIf="examGrade">
-    <div>Estudiante: <b>{{userDisplayName}}</b></div>
-    <div>Nivel: {{ examGrade.level}}</div>
-    <div *ngIf="materia">Habilidad: {{ materia.materia_name }} </div>
-    <div>Título: {{ examGrade.title }}</div>
-    <div>Expresión: {{ examGrade.expression }}</div>
+    <div class="centered_container" >
+        <div><h1>Aplicación de examen</h1></div>
+        <div class="inline">
+            <mat-icon class="personIcon">person</mat-icon><h2 class="userName">{{userDisplayName}}</h2>
+        </div>    
+        <div class="level">Ciclo: {{ examGrade.level}}</div>    
+    </div>    
+
+    <mat-grid-list class="skill" cols="2" rowHeight="2em">
+        <mat-grid-tile  colspan="1" >
+            <div *ngIf="materia" class="skill_title">Habilidad:</div>
+        </mat-grid-tile>
+        <mat-grid-tile class="skill_cell_title" colspan="1" >
+            <span class="skill_value">{{ materia.materia_name }}</span>
+        </mat-grid-tile>
+
+        <mat-grid-tile  colspan="1" >
+            <div *ngIf="materia" class="skill_title">Título:</div>
+        </mat-grid-tile>
+        <mat-grid-tile class="skill_cell_title" colspan="1" >
+            <span class="skill_value">{{ examGrade.title }}</span>
+        </mat-grid-tile> 
+        <mat-grid-tile  colspan="1" >
+            <div *ngIf="materia" class="skill_title">Expresión:</div>
+        </mat-grid-tile>
+        <mat-grid-tile class="skill_cell_title" colspan="1" >
+            <span class="skill_value">{{ examGrade.expression }}</span>
+        </mat-grid-tile>               
+    </mat-grid-list>
     <parametergrade-apply *ngIf="collection" collection="{{collection}}/parameterGrades" parameterGrade_id="{{parameterGrade_id}}" (change)="onParameterGradeChange($event)"></parametergrade-apply>
 </div>  
 

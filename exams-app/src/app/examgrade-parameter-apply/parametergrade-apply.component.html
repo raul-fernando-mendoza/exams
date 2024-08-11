@@ -7,12 +7,13 @@
 
 
 <div *ngIf="parameterGrade">
-    <div class="bar">
-        <div *ngIf="parameterGrade">Parametro: {{ parameterGrade.label }}</div>
+
+    <div *ngIf="isAdmin" class="bar">
+        <div  *ngIf="parameterGrade" class="inline">Parametro: <span><h1>{{ parameterGrade.label }}</h1></span></div>
         <div class="spacer"></div>
         <div *ngIf="isAdmin && parameterGrade && parameterGrade.isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
     </div> 
-    <div *ngIf="evaluatorDisplayName">Evaluador:{{evaluatorDisplayName}}</div>
+    <div *ngIf="isAdmin && evaluatorDisplayName">Evaluador:{{evaluatorDisplayName}}</div>
 
 
     <div *ngFor="let criteriaGrade of criteriaGrades">
