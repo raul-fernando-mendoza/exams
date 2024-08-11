@@ -1,4 +1,6 @@
 # ExamsApp
+
+
 #to execute use
 npm start
 #helpful commands
@@ -16,6 +18,10 @@ firebase init
 ng build --configuration="production"
 firebase deploy
 
+#to change user
+firebase login:list
+firebase login:add rfmh24hr@gmail.com
+firebase login:use rfmh24hr@gmail.com
 
 
 #use to run the emulator activate the emulator mode in environment.ts
