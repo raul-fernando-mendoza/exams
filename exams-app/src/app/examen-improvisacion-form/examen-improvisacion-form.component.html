@@ -6,11 +6,8 @@ Editar Examen
 
       <mat-form-field appearance="fill" >
         <mat-label>selecciona estudiante</mat-label>
-        <mat-select formControlName="student_uid" (selectionChange)="examStudentChange($event)">
-          <mat-option *ngFor="let e of getExamStudents()" [value]="e.uid">
-            {{getUserDisplayName(e)}}
-          </mat-option>
-        </mat-select>
+        <app-user-selector formControlName="student_uid" (userselected)="examStudentChange($event)" required></app-user-selector>
+       
       </mat-form-field>
 
       <mat-form-field appearance="fill" > 

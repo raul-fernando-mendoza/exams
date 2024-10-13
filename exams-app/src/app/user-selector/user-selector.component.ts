@@ -155,6 +155,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
           }
           this.students.push(obj)
         }
+        this.students.sort( (a,b)=> a.displayName.toUpperCase() > b.displayName.toUpperCase() ?  1 : -1 )
         this.filteredOptions = this.myControl.valueChanges.pipe(
           startWith(''),
           map(value => {

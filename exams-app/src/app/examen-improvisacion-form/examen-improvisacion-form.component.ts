@@ -160,8 +160,7 @@ export class ExamenImprovisacionFormComponent {
     })     
   }  
   
-  examStudentChange(event) {
-    var studentId = event.value
+  examStudentChange(studentId) {
     this.loadMateriaEnrollment(studentId)
   }   
 
