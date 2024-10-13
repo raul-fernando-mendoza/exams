@@ -76,6 +76,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
 
 
   updateTable(){
+    console.log("update table")
       this.dataSource = new ExamenesImprovisacionDataSource(this.examenes);
       /*
       var examenesSort = localStorage.getItem('jsonExamenesSort')
@@ -142,6 +143,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   }
 
   updateList(){
+    console.log("update list started")
     this.examenes.length = 0
     this.submitting = true
 
@@ -160,22 +162,25 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       qry = qry.where("applicationDay", "==", this.dateFormatService.getDayId(this.selectedDay) )
     }
     if( this.unsubscribe ){
-      this.unsubscribe()
       console.log("exam list unsubscribe")
+      this.unsubscribe()
+      
     }
+    console.log("onSnapshot")
     this.unsubscribe = qry.onSnapshot( set => {
       console.log("onsnapshot haspendingWrite:" + set.metadata.hasPendingWrites)
       console.log("onsnapshot fromcache:" + set.metadata.fromCache)
       console.log("onsnapshot length:" + set.docs.length)
       this.submitting = true
 
+      console.log("unsubscribe parameters")
       this.parameterUnsubscribes.forEach( (value, key) =>{
         value()
       })
       this.parameterUnsubscribes.clear()
 
       this.examenes.length = 0;
-
+      console.log("mapping exams")
       var map = set.docs.map( doc =>{        
         const examGrade:ExamGrade = doc.data()
         return this.addDbParameterGrade( examGrade)
@@ -194,21 +199,24 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
         })
         console.log("end sorting parameters")
         this.updateTable()
+        
       })       
     },
     reason =>{
       alert("ERROR reading list of exams to approve:" + reason)
+      this.submitting = false
     })
   }
   addDbParameterGrade(examGrade:ExamGrade ):Promise<void>{  
     return new Promise<void>((resolve, reject) =>{
+      console.log("subscribe to parameters of exam" + examGrade.id)
       let parameterUnsubscribe = db.collection('examGrades/' + examGrade.id + "/parameterGrades")
         .where("evaluator_uid", "==", this.userLoginService.getUserUid())
         .where("version","==", 0)      
         .where("isCompleted", '==', false) 
         .onSnapshot( set =>{
           console.log("exams found:" + set.docs.length)
-          //first remove all the parameter related to this examgradeid
+          console.log("first remove all the parameter related to this examgradeid")          
           for(let i=this.examenes.length; i>0; i--){
             if( this.examenes[i-1].examGrade.id == examGrade.id ){
               this.examenes.splice(i-1,1);
@@ -226,10 +234,11 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
               approverDisplayName:null,
               isCompleted:parameterGrade.isCompleted
             }
+            console.log("add parameter" + parameterGrade.label)
             this.examenes.push(obj)
-            this.retriveDetails(obj)
-            this.updateTable()
+            this.retriveDetails(obj)            
           })
+          this.updateTable()
           resolve()
         },
         reason =>{
@@ -242,6 +251,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     }) 
   } 
   retriveDetails( obj:ExamenesImprovisacionItem){
+    console.log("retrive detail:" + obj.examGrade.exam_id)
     obj.approverDisplayName = this.userLoginService.getDisplayName()
     this.examImprovisacionService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
       obj.exam = exam
@@ -250,13 +260,15 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       console.log("ERROR exam can not be read:" + reason)
     })
 
+    console.log("retrive materia:" + obj.examGrade.materia_id)
     this.examImprovisacionService.getMateria( obj.examGrade.materia_id).then( materia =>{
       obj.materia = materia
     },
     reason =>{
       console.log("ERROR materia cannot be read:" + reason)
     })
- 
+
+    console.log("retrive user" + obj.examGrade.student_uid)
     this.getUser(obj.examGrade.student_uid).then(student =>{
       obj.studentDisplayName = this.getDisplayNameForUser(student)
     },
@@ -342,8 +354,10 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   }
   sortData($event){
     console.log("sort:" + $event)
-    let json = { active:$event["active"], direction:$event["direction"]}
-    localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
-    this.updateTable()
+    if( $event ){
+      let json = { active:$event["active"], direction:$event["direction"]}
+      localStorage.setItem('jsonExamenesSort' , JSON.stringify(json))
+      this.updateTable()
+    }
   }
 }
