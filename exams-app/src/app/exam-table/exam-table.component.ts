@@ -131,7 +131,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         })
         this.snapshots.length = 0
       }
-      qry.limit(100)
+      if( !this.applicationDate && !studentUid){
+        qry = qry.limit(10)
+      }
+     
       var unsubscribe = qry.onSnapshot( set =>{
         this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
