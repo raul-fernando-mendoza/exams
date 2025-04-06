@@ -18,7 +18,7 @@ firebase init hosting
 ng build --configuration="production"
 firebase deploy
 
-
+run: gcloud auth application-default login 
 grpc._channel._MultiThreadedRendezvous: <_MultiThreadedRendezvous of RPC that terminated with:
         status = StatusCode.UNAVAILABLE
         details = "Getting metadata from plugin failed with error: ('invalid_grant: Bad Request', {

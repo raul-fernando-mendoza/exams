@@ -3,12 +3,19 @@ Calificaciones
 
   <button *ngIf="isAdmin()" mat-button color="primary" (click)="onCreate()" >Crear</button>
   
-  <mat-form-field appearance="fill">
-    <mat-label>date: </mat-label>
-    <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+  <form [formGroup]="filterForm">
+    <mat-form-field appearance="fill">
+      <mat-label>date: </mat-label>
+      <input matInput [matDatepicker]="picker" [(value)]="applicationDate"  (dateChange)="applicationFilterChange($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill" >
+      <mat-label>selecciona estudiante</mat-label>
+      <app-user-selector formControlName="studentUid" (userselected)="examStudentChange($event)"></app-user-selector>
+    </mat-form-field> 
+  </form>
+ 
   <!--
   <mat-slide-toggle class="filter_element"  [(ngModel)]="released" (change)="applicationFilterChange($event)" aria-label="examenes released solamente">Mostrar Liberados</mat-slide-toggle>
   <mat-slide-toggle class="filter_element"  [(ngModel)]="showDeleted" (change)="applicationFilterChange($event)" aria-label="mostrar los borrados">Mostrar Borrados</mat-slide-toggle>

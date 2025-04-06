@@ -21,3 +21,19 @@
     padding-left:50px;
     text-align:right;  
 }
+.propertygrid{
+    width:80%;
+    max-width: 20em;        
+    margin:auto;
+}
+.property{
+    width:100%;
+    padding: 1px;
+    background-color: lightgray;
+    text-align:right; 
+}
+.propertyValue{
+    width:100%;
+    padding: 1px;
+    text-align:left; 
+}

@@ -8,6 +8,7 @@ import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
 import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 //http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
 
@@ -63,6 +64,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
           materia_id:examGrade.materia_id,
           isReleased:examGrade.isReleased,
           applicationDate:doc.data().applicationDate,
+          score :examGrade.score,
           parameterGrades:[]
         }
         

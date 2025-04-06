@@ -14,6 +14,7 @@ import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datas
 import { UserPreferencesService } from '../user-preferences.service';
 import { map } from 'rxjs/operators';
 import { DateFormatService } from '../date-format.service';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-exam-table',
@@ -43,6 +44,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   organization_id = null
 
   snapshots:Array<any> = []
+
+  filterForm = this.fb.group({
+    studentUid:[""]
+  })
   
   constructor( 
       private router: Router
@@ -50,6 +55,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesService:UserPreferencesService
     , public dateFormatService:DateFormatService
+    , public fb:FormBuilder
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
@@ -102,7 +108,10 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           this.applicationDate == null
         }
       }    
+
       
+       
+
       var qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
@@ -111,12 +120,18 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         var dateId = this.dateFormatService.getDayId(this.applicationDate)
         qry = qry.where( "applicationDay", "==", dateId )
       }
+
+      var studentUid = localStorage.getItem('studentUid')
+      if( studentUid ){
+        qry = qry.where("student_uid","==", studentUid)
+      }
       if( this.snapshots.length > 0){
         this.snapshots.map( func =>{
           func()
         })
         this.snapshots.length = 0
       }
+      qry.limit(100)
       var unsubscribe = qry.onSnapshot( set =>{
         this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
@@ -146,7 +161,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           }
           this.examGradeList.push(node)
           db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
-            node.obj["materia_name"] = doc.data().materia_name
+            if( doc.exists ){
+              node.obj["materia_name"] = doc.data().materia_name
+            }
           })
           this.examImprovisacionService.getUser(examGrade.student_uid).then( user =>{
             let displayName = this.userLoginService.getDisplayNameForUser(user)
@@ -299,7 +316,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     }
     console.log("date changed to:" + this.applicationDate)
     localStorage.setItem('released' , this.released.toString())
-    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)    
+    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)  
+   
+
     this.userLoginService.getUserIdToken().then(
       token => {
         this.update()
@@ -443,4 +462,21 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       alert("Error in token:" + error.errorCode + " " + error.errorMessage)
     }) 
   }
+  examStudentChange(studentUid) {
+    console.log("student selection:" + studentUid)
+    localStorage.setItem('studentUid', studentUid ? studentUid : "", )     
+    this.userLoginService.getUserIdToken().then(
+      token => {
+        this.update()
+      },
+      error => {
+        if( error.status == 401 ){
+          this.router.navigate(['/loginForm']);
+        }
+        else{
+          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
+        }
+      }
+    )    
+  }  
 }

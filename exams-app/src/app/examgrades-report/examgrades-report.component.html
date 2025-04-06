@@ -10,7 +10,15 @@ Reporte Examen<button mat-button (click)="onBack()"><mat-icon>arrow_back</mat-ic
 </mat-card>
 
 <div *ngIf="examGrade && examGrade.isReleased">
-  {{ formatDate(examGrade.applicationDate) }}
+
+  <mat-grid-list class="propertygrid" cols="2" rowHeight="1.5em">
+    <mat-grid-tile><div class="property">Fecha</div></mat-grid-tile>
+    <mat-grid-tile><div class="propertyValue">{{ formatDate(examGrade.applicationDate) }}</div></mat-grid-tile>
+    <mat-grid-tile><div class="property">Calificación</div></mat-grid-tile>    
+    <mat-grid-tile><div class="propertyValue">{{ formatDecimal(examGrade.score) }}</div></mat-grid-tile>
+  </mat-grid-list>
+  
+
   <div id="report_container">
       <canvas id="{{examGrade_id}}" ></canvas>
   </div>

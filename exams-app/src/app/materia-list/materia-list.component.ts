@@ -83,6 +83,9 @@ export class MateriaListComponent implements OnInit , OnDestroy{
               this.enrolledOnly = true
             }
             materiaItem.materiaEnrollment = materiaEnrollement
+          }
+          ,reason=>{
+            console.log("ERROR when reading getMateriaEnrollment:" + reason)
           })
           this.materiasList.push(materiaItem)          
         })
@@ -92,7 +95,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       },
       reason =>{
         this.submitting = false
-        console.log("materias where not loaded")
+        console.log("materias where not loaded:" + reason)
         reject()
       })
     })
