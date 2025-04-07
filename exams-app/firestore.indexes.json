@@ -71,7 +71,25 @@
           "order": "ASCENDING"
         }
       ]
-    }
+    },
+    {
+      "collectionGroup": "examGrades",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "organization_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "applicationDate",
+          "order": "DESCENDING"
+        }
+      ]
+    }    
   ],
   "fieldOverrides": []
 }

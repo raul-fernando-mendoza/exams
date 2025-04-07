@@ -45,6 +45,7 @@ gsutil cors set cors.json gs://thoth-qa.appspot.com
 
 #to export the indexes the file should be stored as firestore.indexes.json
 firebase firestore:indexes > firestore.indexes_export.json
+firebase deploy --only firestore:indexes
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 

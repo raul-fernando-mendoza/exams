@@ -1,18 +1,15 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { copyObj, CriteriaGrade, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ParameterGrade } from '../exams/exams.module';
+import { CriteriaGrade, ExamGrade, ParameterGrade } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 
-import * as uuid from 'uuid';
 import { db } from 'src/environments/environment';
 import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datasource';
 import { UserPreferencesService } from '../user-preferences.service';
-import { map } from 'rxjs/operators';
 import { DateFormatService } from '../date-format.service';
 import { FormBuilder } from '@angular/forms';
 
@@ -23,7 +20,6 @@ import { FormBuilder } from '@angular/forms';
 })
 export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
 
   examGradeList:NodeTableRow[] = []
@@ -37,6 +33,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   periodicRefresh = false
   
   applicationDate:Date = null
+  studentId:string|null = null
 
   submmiting = false
   showDeleted = false
@@ -73,21 +70,35 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
 
   ngOnInit() {
+    var saved_applicationDate = localStorage.getItem('applicationDate')
+    if (saved_applicationDate && saved_applicationDate != 'null'){
+      try{
+        this.applicationDate = new Date( saved_applicationDate )
+      }
+      catch(e){
+        this.applicationDate == null
+      }
+    }  
+    var studentUid = localStorage.getItem('studentUid')
+    if( studentUid ){
+      this.filterForm.controls.studentUid.setValue( studentUid )
+    }
+
     this.update()
   }
   ngAfterViewInit() {
-    this.sort.active = 'title'
-    this.sort.direction = 'asc'    
+    this.loadExamGrades().then( ()=>{
+      this.updateList()
+    })       
   }
 
   update(){
     this.loadExamGrades().then( ()=>{
       this.updateList()
-    })
+    }) 
   }
   updateList(){
     this.dataSource = new NodeTableDataSource(this.examGradeList);
-    this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.table.dataSource = this.dataSource;   
   }
@@ -99,25 +110,14 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
       this.examGradeList.length = 0
 
-      var saved_applicationDate = localStorage.getItem('applicationDate')
-      if (saved_applicationDate && saved_applicationDate != 'null'){
-        try{
-          this.applicationDate = new Date( saved_applicationDate )
-        }
-        catch(e){
-          this.applicationDate == null
-        }
-      }    
-
-      
-       
-
       var qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
 
-      if( this.applicationDate ){
-        var dateId = this.dateFormatService.getDayId(this.applicationDate)
+      var saved_applicationDate = localStorage.getItem('applicationDate')
+      if( saved_applicationDate && saved_applicationDate != 'null'){
+        var d:Date = new Date(saved_applicationDate)
+        var dateId = this.dateFormatService.getDayId(d)
         qry = qry.where( "applicationDay", "==", dateId )
       }
 
@@ -132,7 +132,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         this.snapshots.length = 0
       }
       if( !this.applicationDate && !studentUid){
-        qry = qry.limit(10)
+        qry = qry.orderBy("applicationDate", "desc")
+        qry = qry.limit(100)
       }
      
       var unsubscribe = qry.onSnapshot( set =>{
@@ -140,7 +141,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         let m = set.docs.map( doc =>{
           let examGrade:ExamGrade = doc.data() as ExamGrade
           var d:any = examGrade.applicationDate
-          console.log( d.toDate() )
+          console.log( d.toDate("applicationDate", "desc") )
 
           let node:NodeTableRow = {
             obj:{
@@ -192,7 +193,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
               return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
             }
           })
-          this.updateList()
+          //this.updateList()
           _resolve()
         }) 
         .catch(reason =>{
@@ -201,6 +202,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         }) 
       },
       reason =>{
+        console.log(reason)
         alert("Error loading exams grades:" + reason)
       })
       this.snapshots.push( unsubscribe )
@@ -219,6 +221,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       var unsubscribe = qry.onSnapshot( set =>{
         parent.length = 0
         let m = set.docs.map( doc =>{
+          console.log("loading ParameterGrades for:" + examGrade_id)
           let parameterGrade = doc.data() as ParameterGrade
 
           let node:NodeTableRow = {
@@ -241,7 +244,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
 
-        this.updateList()
+
 
         console.log("End loading ParameterGrades")
         _resolve()

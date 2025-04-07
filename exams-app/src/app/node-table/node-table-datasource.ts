@@ -1,8 +1,7 @@
 import { DataSource } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { map } from 'rxjs/operators';
-import { Observable, of as observableOf, merge } from 'rxjs';
+import { Observable, of as observableOf, merge, of } from 'rxjs';
 
 // TODO: Replace this with your own data model type
 export class NodeTableRow {
@@ -25,8 +24,10 @@ const EXAMPLE_DATA: NodeTableRow[] = [
 export class NodeTableDataSource extends DataSource<NodeTableRow> {
   data: NodeTableRow[] = EXAMPLE_DATA;
   paginator: MatPaginator;
-  sort: MatSort;
   flattened_data:Array<NodeTableRow>
+  cnt = 0
+
+
 
   constructor(customized_data) {
     super();
@@ -45,13 +46,38 @@ export class NodeTableDataSource extends DataSource<NodeTableRow> {
     // stream for the data-table to consume.
     const dataMutations = [
       observableOf(this.data),
-      this.paginator.page,
-      this.sort.sortChange
+      this.paginator.page
     ];
 
-    return merge(dataMutations).pipe(map(() => {
+
+
+    let observable = new Observable<NodeTableRow[]>( subscriber =>{
+      
+
+      this.paginator.page.subscribe( e =>{
+        subscriber.next( this.getPagedData(this.getSortedData([...this.data])) )
+      })
+
+      this.cnt = 0
+      for( let idx = 0; idx < this.data.length; idx++){
+        if( this.data[idx].nodeClass == 'examGrade' ){
+          this.cnt++;
+        }
+      }
+            
+     
+      subscriber.next( this.getPagedData(this.getSortedData([...this.data])) )
+    }) 
+
+
+
+    return observable
+/*
+    return merge(dataMutations).pipe(map((e) => {
+      console.log(e)
       return this.getPagedData(this.getSortedData([...this.data]));
     }));
+    */
   }
 
   /**
@@ -65,7 +91,22 @@ export class NodeTableDataSource extends DataSource<NodeTableRow> {
    * this would be replaced by requesting the appropriate data from the server.
    */
   private getPagedData(data: NodeTableRow[]) {
-    return data
+    let result = []
+    let cnt = -1
+    for( let idx = 0; idx < data.length; idx++){
+      if( data[idx].nodeClass == 'examGrade' ){
+        cnt++;
+        if( cnt >= this.paginator.pageSize + (this.paginator.pageIndex * this.paginator.pageSize)){
+          break
+        }
+          
+      }
+      
+      if( cnt>=this.paginator.pageIndex * this.paginator.pageSize ){
+        result.push( data[idx] )
+      }
+    }
+    return result
   }
 
   /**
@@ -82,6 +123,10 @@ export class NodeTableDataSource extends DataSource<NodeTableRow> {
       result.push(node)
       var list = this.NodeFlattener( node.children, result)     
     };
+  }
+
+  getSize():number{
+    return this.cnt
   }
 }
 
