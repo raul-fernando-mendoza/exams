@@ -51,6 +51,9 @@ firebase deploy --only firestore:indexes
 cd node_modules\.bin\
 ./tsc -v
 
+#to get all depencies
+npm list --depth=0 > list_dependencies.txt
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 
 ## Development server
