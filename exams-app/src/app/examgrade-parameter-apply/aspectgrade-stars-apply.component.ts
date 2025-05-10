@@ -4,7 +4,7 @@ import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { AspectGrade } from '../exams/exams.module';
 import { DescriptionApplyDialog } from './description-apply-dlg';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { FormBuilder } from '@angular/forms';
 
 export class AspectGradeStartsApplyChange{

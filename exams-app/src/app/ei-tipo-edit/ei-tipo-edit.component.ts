@@ -7,7 +7,7 @@ import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { UserLoginService } from '../user-login.service';
 import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, MateriaRequest, Materia} from 'src/app/exams/exams.module'
-import { MatSelectChange } from '@angular/material/select';
+import { MatLegacySelectChange as MatSelectChange } from '@angular/material/legacy-select';
 
 
 

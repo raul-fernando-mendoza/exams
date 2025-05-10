@@ -5,7 +5,7 @@ import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
 import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 
 

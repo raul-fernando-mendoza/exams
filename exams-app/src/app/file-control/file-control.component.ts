@@ -1,8 +1,8 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Optional, Output, Self, ViewChild } from '@angular/core';
 import { AbstractControlDirective, ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatFormFieldControl } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { MatLegacyFormFieldControl as MatFormFieldControl } from '@angular/material/legacy-form-field';
+import { MatLegacyInput as MatInput } from '@angular/material/legacy-input';
 import { Observable, Observer, Subject } from 'rxjs';
 import { storage  } from 'src/environments/environment';
 import * as uuid from 'uuid';

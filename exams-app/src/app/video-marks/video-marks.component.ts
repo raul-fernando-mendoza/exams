@@ -7,7 +7,7 @@ import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TimerDialog } from '../timer-dialog/timer-dlg';
 import videojs from 'video.js';
 import * as uuid from 'uuid';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { TitleStrategy } from '@angular/router';
 import { VideoMarker, Marker, MarkerPath, MarkerPoint } from '../exams/exams.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';

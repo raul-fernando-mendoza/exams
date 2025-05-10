@@ -1,13 +1,13 @@
 import { Component,ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
 import { CareerTableDataSource } from './carrer-list-datasource';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
 import { Career } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 
 import * as uuid from 'uuid';
 import { UserLoginService } from '../user-login.service';

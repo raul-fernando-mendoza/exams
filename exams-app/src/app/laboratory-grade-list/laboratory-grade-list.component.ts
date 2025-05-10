@@ -6,7 +6,7 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { DateFormatService } from '../date-format.service';
-import { MatTable } from '@angular/material/table';
+import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
 import * as uuid from 'uuid';
 
 interface LaboratoryGradeItem{

@@ -1,5 +1,5 @@
 import {  Component,  Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import { UserPreferencesService } from '../user-preferences.service';
 import * as uuid from 'uuid';
 import { FormBuilder } from '@angular/forms';

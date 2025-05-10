@@ -5,7 +5,7 @@ import {map, startWith} from 'rxjs/operators';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 import { User } from '../exams/exams.module';
-import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatLegacyFormFieldControl as MatFormFieldControl } from '@angular/material/legacy-form-field';
 import * as uuid from 'uuid';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 

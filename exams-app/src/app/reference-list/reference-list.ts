@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core"
-import { MatDialog } from "@angular/material/dialog"
+import { MatLegacyDialog as MatDialog } from "@angular/material/legacy-dialog"
 import { Reference } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage} from 'src/environments/environment';
 import { UserPreferencesService } from "../user-preferences.service"
-import { MatTable } from "@angular/material/table";
+import { MatLegacyTable as MatTable } from "@angular/material/legacy-table";
 import { ReferenceDialog } from "../reference-edit/reference-edit";
 
 

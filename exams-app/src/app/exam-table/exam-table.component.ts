@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTable } from '@angular/material/table';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { CriteriaGrade, ExamGrade, ParameterGrade } from '../exams/exams.module';

@@ -5,7 +5,7 @@ import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { CriteriaGrade, ParameterGrade } from '../exams/exams.module';
 import { CriteriaGradeApplyChange } from './criteriagrade-apply.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ParameterGradeCommentDialog } from './parameterGrade-comment-dlg';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 

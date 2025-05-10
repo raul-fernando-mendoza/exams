@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, OnInit, ViewChild, Inject } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
 import { MateriaCertificatesDataSource, NodeTableRow } from './materia-certificates-datasource';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';

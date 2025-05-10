@@ -5,7 +5,7 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { UserLoginService } from '../user-login.service';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import { UserPreferencesService } from '../user-preferences.service';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import * as uuid from 'uuid';
