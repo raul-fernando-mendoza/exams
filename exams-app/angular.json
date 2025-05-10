@@ -98,17 +98,17 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "exams-app:build"
+            "buildTarget": "exams-app:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "exams-app:build:production"
+              "buildTarget": "exams-app:build:production"
             },
             "qa": {
-              "browserTarget": "exams-app:build:qa"
+              "buildTarget": "exams-app:build:qa"
             },
             "development": {
-              "browserTarget": "exams-app:build:development"
+              "buildTarget": "exams-app:build:development"
             }            
           },
           "defaultConfiguration": "development"
@@ -116,7 +116,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "exams-app:build"
+            "buildTarget": "exams-app:build"
           }
         },
         "test": {
