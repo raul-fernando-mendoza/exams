@@ -47,6 +47,10 @@ gsutil cors set cors.json gs://thoth-qa.appspot.com
 firebase firestore:indexes > firestore.indexes_export.json
 firebase deploy --only firestore:indexes
 
+#to verify the typescript version installed 
+cd node_modules\.bin\
+./tsc -v
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.3.
 
 ## Development server
