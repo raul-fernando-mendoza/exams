@@ -8,8 +8,8 @@ describe('CertificateTypeEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CertificateTypeEditComponent ]
-    })
+    imports: [CertificateTypeEditComponent]
+})
     .compileComponents();
   });
 

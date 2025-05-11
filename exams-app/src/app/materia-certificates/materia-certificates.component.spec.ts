@@ -12,14 +12,14 @@ describe('MateriaCertificatesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MateriaCertificatesComponent ],
-      imports: [
+    imports: [
         NoopAnimationsModule,
         MatPaginatorModule,
         MatSortModule,
         MatTableModule,
-      ]
-    }).compileComponents();
+        MateriaCertificatesComponent,
+    ]
+}).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,8 +8,8 @@ describe('PasswordResetEmailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PasswordResetEmailComponent ]
-    })
+    imports: [PasswordResetEmailComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(PasswordResetEmailComponent);

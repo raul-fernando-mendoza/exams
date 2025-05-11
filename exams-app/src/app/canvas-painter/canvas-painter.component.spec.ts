@@ -8,8 +8,8 @@ describe('CanvasPainterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanvasPainterComponent ]
-    })
+    imports: [CanvasPainterComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(CanvasPainterComponent);

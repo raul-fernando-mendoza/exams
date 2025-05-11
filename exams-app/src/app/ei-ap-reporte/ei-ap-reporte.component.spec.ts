@@ -8,8 +8,8 @@ describe('EiApReporteComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EiApReporteComponent ]
-    })
+    imports: [EiApReporteComponent]
+})
     .compileComponents();
   });
 

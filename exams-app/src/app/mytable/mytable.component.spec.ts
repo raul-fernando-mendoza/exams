@@ -12,14 +12,14 @@ describe('MytableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MytableComponent ],
-      imports: [
+    imports: [
         NoopAnimationsModule,
         MatPaginatorModule,
         MatSortModule,
         MatTableModule,
-      ]
-    }).compileComponents();
+        MytableComponent,
+    ]
+}).compileComponents();
   }));
 
   beforeEach(() => {

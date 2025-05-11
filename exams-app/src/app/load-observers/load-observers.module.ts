@@ -5,13 +5,7 @@ import { FormControl } from '@angular/forms';
 import { db, storage } from 'src/environments/environment';
 
 
-@NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
-})
-export class LoadObserversModule { }
+
 
 export class FileLoadObserver implements Observer<any>  {
   constructor( 

@@ -15,8 +15,7 @@ describe('ExamenImprovisacionFormComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExamenImprovisacionFormComponent ],
-      imports: [
+    imports: [
         NoopAnimationsModule,
         ReactiveFormsModule,
         MatButtonModule,
@@ -24,8 +23,9 @@ describe('ExamenImprovisacionFormComponent', () => {
         MatInputModule,
         MatRadioModule,
         MatSelectModule,
-      ]
-    }).compileComponents();
+        ExamenImprovisacionFormComponent,
+    ]
+}).compileComponents();
   }));
 
   beforeEach(() => {

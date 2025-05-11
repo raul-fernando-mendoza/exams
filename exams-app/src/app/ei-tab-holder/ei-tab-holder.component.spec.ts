@@ -8,8 +8,8 @@ describe('EiTabHolderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EiTabHolderComponent ]
-    })
+    imports: [EiTabHolderComponent]
+})
     .compileComponents();
   });
 

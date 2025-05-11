@@ -8,8 +8,8 @@ describe('RevisionEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RevisionEditComponent ]
-    })
+    imports: [RevisionEditComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(RevisionEditComponent);

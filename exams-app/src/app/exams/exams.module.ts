@@ -5,13 +5,7 @@ import { UntypedFormGroup } from '@angular/forms';
 import * as uuid from 'uuid';
 import { MatMonthView } from '@angular/material/datepicker';
 
-@NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
-})
-export class ExamsModule { }
+
 
 export function copyObj( to:{}, from:{} ) {
   var result = {}

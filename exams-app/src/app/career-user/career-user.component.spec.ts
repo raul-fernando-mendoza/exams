@@ -8,8 +8,8 @@ describe('CareerUserComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CareerUserComponent ]
-    })
+    imports: [CareerUserComponent]
+})
     .compileComponents();
   });
 

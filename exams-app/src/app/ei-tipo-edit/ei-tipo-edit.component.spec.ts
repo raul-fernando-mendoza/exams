@@ -8,8 +8,8 @@ describe('EiTipoEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EiTipoEditComponent ]
-    })
+    imports: [EiTipoEditComponent]
+})
     .compileComponents();
   });
 

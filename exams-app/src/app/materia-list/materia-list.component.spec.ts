@@ -8,8 +8,8 @@ describe('MateriaListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MateriaListComponent ]
-    })
+    imports: [MateriaListComponent]
+})
     .compileComponents();
   });
 

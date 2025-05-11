@@ -8,8 +8,8 @@ describe('AppVjsPlayerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AppVjsPlayerComponent ]
-    })
+    imports: [AppVjsPlayerComponent]
+})
     .compileComponents();
   });
 
