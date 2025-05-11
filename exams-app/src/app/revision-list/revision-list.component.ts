@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog  } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Revision, RevisionStatus, RevisionStatusNames, User } from '../exams/exams.module';
 import { RevisionCreateDialog } from '../revision-create-dialog/revision-create-component';
 import * as uuid from 'uuid';
 import { db , storage  } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { MatLegacyTable as MatTable } from '@angular/material/legacy-table';
+import { MatTable } from '@angular/material/table';
 import { DateFormatService } from '../date-format.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';

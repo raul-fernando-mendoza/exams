@@ -3,7 +3,7 @@ import { Exam, ExamGrade, MateriaEnrollment } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog  } from '@angular/material/dialog';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as uuid from 'uuid';

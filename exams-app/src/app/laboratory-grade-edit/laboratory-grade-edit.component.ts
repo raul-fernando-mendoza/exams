@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder,Validators } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog  } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { NavigationService } from '../navigation.service';

@@ -37,7 +37,7 @@ import { ExamgradeParameterGradeApplyComponent } from './examgrade-parameter-app
 import { ComputestatusComponent } from './computestatus/computestatus.component';
 
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: 'loginForm', component: LoginFormComponent },
   { path: 'NavigationComponent', component: NavigationComponent},
   { path: 'ExamenesImprovisacion_old', component: ExamenesImprovisacionComponent },

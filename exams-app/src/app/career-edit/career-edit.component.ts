@@ -8,7 +8,7 @@ import { ExamFormService } from '../exam-form.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogListSelectDialog } from '../list-select/list-select-dialog';
 import { Observer } from 'rxjs';
 import videojs from 'video.js';

@@ -4,7 +4,7 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import * as uuid from 'uuid';
 import { Router } from '@angular/router';
 import { DateFormatService } from '../date-format.service';

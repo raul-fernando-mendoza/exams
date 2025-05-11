@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { Organization } from '../exams/exams.module';
@@ -23,7 +23,7 @@ export class UserProfileEditComponent implements OnInit {
   organizations:Array<Organization> = []
 
   constructor(
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private userLogin: UserLoginService,
     private examImprovisation: ExamenesImprovisacionService,
     private router: Router,

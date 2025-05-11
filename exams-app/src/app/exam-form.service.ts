@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { UntypedFormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Aspect, AspectGrade, Criteria, CriteriaGrade, Exam, ExamGrade, Parameter, ParameterGrade } from './exams/exams.module';
 import { db, environment } from 'src/environments/environment';
-import { MatLegacySelectChange as MatSelectChange } from '@angular/material/legacy-select';
+import { MatSelectChange } from '@angular/material/select';
 
 @Injectable({
   providedIn: 'root'

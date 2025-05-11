@@ -3,7 +3,7 @@ import { HostBinding } from '@angular/core';
 import { Self } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatLegacyFormFieldControl as MatFormFieldControl } from '@angular/material/legacy-form-field';
+import { MatFormFieldControl } from '@angular/material/form-field';
 import { Observable, Subject } from 'rxjs';
 
 @Component({
