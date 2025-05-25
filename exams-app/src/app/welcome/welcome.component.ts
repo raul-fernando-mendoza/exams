@@ -14,10 +14,19 @@ import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observable } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-welcome',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule       
+  ],  
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.css']
 })

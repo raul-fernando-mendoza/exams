@@ -1,5 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DateFormatService } from '../date-format.service';
+import { MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 interface DateSelection{
   id:number|null
@@ -8,6 +15,19 @@ interface DateSelection{
 
 @Component({
   selector: 'app-date-selector',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule  
+    ,MatSelectModule 
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+    
+  ],   
   templateUrl: './date-selector.component.html',
   styleUrls: ['./date-selector.component.css']
 })

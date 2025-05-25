@@ -4,6 +4,7 @@ import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { Router } from '@angular/router';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 interface ExamsList{
   exam:Exam,
@@ -12,6 +13,9 @@ interface ExamsList{
 
 @Component({
   selector: 'app-exam-grades-list',
+  imports: [
+      MatGridListModule
+  ],   
   templateUrl: './exam-grades-list.component.html',
   styleUrls: ['./exam-grades-list.component.css']
 })

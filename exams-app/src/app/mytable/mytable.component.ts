@@ -3,9 +3,16 @@ import { MatPaginator  } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MytableDataSource, MytableItem } from './mytable-datasource';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-mytable',
+  standalone: true,
+  imports: [
+    MatTableModule 
+    ,MatPaginatorModule 
+  ],   
   templateUrl: './mytable.component.html',
   styleUrls: ['./mytable.component.css']
 })

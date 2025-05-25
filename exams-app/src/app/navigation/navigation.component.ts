@@ -2,16 +2,35 @@ import { Component ,OnInit, resolveForwardRef} from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { async, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { Organization } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import * as uuid from 'uuid';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatListModule} from '@angular/material/list';
 
 @Component({
   selector: 'app-navigation',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule 
+    ,MatToolbarModule
+    ,MatSidenavModule
+    ,MatDialogModule
+    ,MatListModule
+    ,RouterModule,
+
+  ],    
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.css']
 })

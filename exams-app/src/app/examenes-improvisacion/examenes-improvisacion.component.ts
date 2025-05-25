@@ -1,14 +1,23 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {  Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginator  } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './examenes-improvisacion-datasource';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { copyObj, ExamGrade, ExamGradeMultipleRequest, Exam, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
 import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 import { db } from 'src/environments/environment';
 import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
@@ -21,6 +30,19 @@ import { DateFormatService } from '../date-format.service';
 
 @Component({
   selector: 'app-examenes-improvisacion',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule 
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule     
+    ,MatPaginatorModule 
+    ,MatDatepickerModule
+    ,MatToolbarModule
+  ],  
   templateUrl: './examenes-improvisacion.component.html',
   styleUrls: ['./examenes-improvisacion.component.css'] 
 })

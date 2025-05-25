@@ -7,12 +7,37 @@ import { UserLoginService } from "../user-login.service";
 import { UserPreferencesService } from "../user-preferences.service";
 import * as uuid from 'uuid';
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service";
-import { FileLoadedEvent } from "../file-loader/file-loader.component";
+import { FileLoadedEvent, FileLoaderComponent } from "../file-loader/file-loader.component";
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+
+import { MatDialogModule } from '@angular/material/dialog'
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
     selector: 'reference-edit',
+    standalone: true,
+    imports: [
+      CommonModule
+      ,MatIconModule
+      ,MatButtonModule   
+     
+      ,FormsModule
+      ,ReactiveFormsModule
+      ,MatFormFieldModule
+      ,MatInputModule 
+  
+      ,MatDialogModule 
+      ,FileLoaderComponent
+   
+    ],    
     templateUrl: 'reference-edit.html' ,
     styleUrls: ['reference-edit.css']
     })

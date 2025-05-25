@@ -19,12 +19,36 @@ import { DialogNameDialog } from "../name-dialog/name-dlg"
 import { FileLoadedEvent } from "../file-loader/file-loader.component"
 
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+
+import { MatDialogModule } from '@angular/material/dialog';
+
 var storageRef
 var materia_id
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
     selector: 'materia-edit',
+    standalone: true,
+    imports: [
+      CommonModule
+      ,MatIconModule
+      ,MatButtonModule   
+     
+      ,FormsModule
+      ,ReactiveFormsModule
+      ,MatFormFieldModule
+      ,MatInputModule 
+  
+      ,MatDialogModule  
+    ],      
     templateUrl: 'materia-edit.html',
     styleUrls: ['materia-edit.css']
   })

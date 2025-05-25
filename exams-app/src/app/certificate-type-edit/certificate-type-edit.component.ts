@@ -7,8 +7,27 @@ import { CertificateType } from '../exams/exams.module';
 import { UserPreferencesService } from '../user-preferences.service';
 import { FileLoadObserver } from "../load-observers/load-observers.module"
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 @Component({
   selector: 'app-certificate-type-edit',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+  ],   
   templateUrl: './certificate-type-edit.component.html',
   styleUrls: ['./certificate-type-edit.component.css']
 })

@@ -3,13 +3,20 @@ import { Exam, ExamRequest, Materia, MateriaEnrollment, MateriaRequest } from '.
 import { db } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import { UserPreferencesService } from '../user-preferences.service';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import * as uuid from 'uuid';
 import { Alert } from 'selenium-webdriver';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface MateriaItem{
   materia:Materia
@@ -19,6 +26,21 @@ interface MateriaItem{
 
 @Component({
   selector: 'app-materia-list',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatDialogModule  
+    ,MatButtonToggleModule
+    ,MatProgressSpinnerModule
+  ],    
   templateUrl: './materia-list.component.html',
   styleUrls: ['./materia-list.component.css']
 })

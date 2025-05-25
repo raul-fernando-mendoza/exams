@@ -6,8 +6,19 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { DateFormatService } from '../date-format.service';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import * as uuid from 'uuid';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { UserSelectorComponent } from '../user-selector/user-selector.component';
+import { DateSelectorComponent } from '../date-selector/date-selector.component';
 
 interface LaboratoryGradeItem{
   laboratoryGrade:LaboratoryGrade
@@ -17,6 +28,26 @@ interface LaboratoryGradeItem{
 
 @Component({
   selector: 'app-laboratory-grade-list',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatDialogModule  
+    ,MatTableModule
+    ,MatSlideToggleModule
+    ,MatTableModule
+    ,MatDatepickerModule
+
+    ,UserSelectorComponent
+    ,DateSelectorComponent
+  ],    
   templateUrl: './laboratory-grade-list.component.html',
   styleUrls: ['./laboratory-grade-list.component.css']
 })

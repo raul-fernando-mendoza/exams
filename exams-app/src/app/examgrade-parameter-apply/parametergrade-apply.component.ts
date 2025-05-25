@@ -9,6 +9,8 @@ import { MatDialog  } from '@angular/material/dialog';
 import { ParameterGradeCommentDialog } from './parameterGrade-comment-dlg';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
+import {MatGridListModule} from '@angular/material/grid-list';
+
 export class ParameterGradeApplyChange{
   parameterGradeGrade_id:string
   change:{
@@ -22,6 +24,10 @@ export class ParameterGradeApplyChange{
 
 @Component({
   selector: 'parametergrade-apply',
+  standalone: true,
+  imports: [
+    MatGridListModule
+  ],    
   templateUrl: './parametergrade-apply.component.html',
   styleUrls: ['./parametergrade-apply.component.css']
 })

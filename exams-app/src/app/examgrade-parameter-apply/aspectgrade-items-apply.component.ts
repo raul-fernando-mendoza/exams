@@ -7,6 +7,10 @@ import { DescriptionApplyDialog } from './description-apply-dlg';
 import { MatDialog  } from '@angular/material/dialog';
 import { FormBuilder } from '@angular/forms';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 export class AspectGradeItemsApplyChange{
   aspectGrade_id:string
   change:{
@@ -19,6 +23,13 @@ export class AspectGradeItemsApplyChange{
 
 @Component({
   selector: 'aspectgrade-items-apply',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+
+  ],   
   templateUrl: './aspectgrade-items-apply.component.html',
   styleUrls: ['./aspectgrade-items-apply.component.css']
 })

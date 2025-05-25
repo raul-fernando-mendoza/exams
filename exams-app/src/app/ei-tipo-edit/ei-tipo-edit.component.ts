@@ -9,10 +9,29 @@ import { UserLoginService } from '../user-login.service';
 import { Exam, Parameter, ExamRequest, ParameterRequest, CriteriaRequest, AspectRequest, MateriaRequest, Materia} from 'src/app/exams/exams.module'
 import { MatSelectChange} from '@angular/material/select';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-ei-tipo-edit',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    
+    ,MatProgressSpinnerModule 
+
+  ],    
   templateUrl: './ei-tipo-edit.component.html',
   styleUrls: ['./ei-tipo-edit.component.css']
 })

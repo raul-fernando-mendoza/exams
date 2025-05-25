@@ -13,8 +13,34 @@ import * as uuid from 'uuid';
 import { UserLoginService } from '../user-login.service';
 import { Router } from '@angular/router';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 @Component({
   selector: 'app-career-list',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatDialogModule  
+    ,MatProgressSpinnerModule       
+ 
+  ],    
   templateUrl: './career-list.component.html',
   styleUrls: ['./career-list.component.css']
 })
@@ -162,6 +188,19 @@ export interface CareerData {
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
   selector: 'career-dlg',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule     
+    ,MatDialogModule 
+ 
+  ],   
   templateUrl: 'career-dlg.html',
 })
 export class CareerDialog { 

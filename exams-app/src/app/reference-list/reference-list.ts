@@ -6,11 +6,24 @@ import { db , storage} from 'src/environments/environment';
 import { UserPreferencesService } from "../user-preferences.service"
 import { MatTable } from "@angular/material/table";
 import { ReferenceDialog } from "../reference-edit/reference-edit";
-
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
     selector: 'reference-list',
+    standalone: true,
+    imports: [
+      CommonModule
+      ,MatIconModule
+      ,MatButtonModule   
+
+  
+      ,MatTableModule 
+   
+    ],    
     templateUrl: 'reference-list.html',
     styleUrls: ['reference-list.css']
   })

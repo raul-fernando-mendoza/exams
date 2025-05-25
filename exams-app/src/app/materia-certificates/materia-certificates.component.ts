@@ -3,7 +3,7 @@ import { MatPaginator  } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { MateriaCertificatesDataSource, NodeTableRow } from './materia-certificates-datasource';
-import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
@@ -12,14 +12,32 @@ import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam, Career } fr
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
 import * as uuid from 'uuid';
-import { Router, RouterLinkWithHref } from '@angular/router';
-import { NONE_TYPE } from '@angular/compiler';
+import { Router } from '@angular/router';
 import { DateFormatService } from '../date-format.service';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'app-materia-certificates',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule      
+    ,MatPaginatorModule
+    ,MatDialogModule 
+    ,MatToolbarModule 
+    ,MatSelectModule    
+  ], 
+
   templateUrl: './materia-certificates.component.html',
-  styleUrls: ['./materia-certificates.component.css']
+  styleUrls: ['./materia-certificates.component.css'],
+
 })
 export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -605,6 +623,15 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
   selector: 'enroll-materia-dlg',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule 
+    ,FormsModule  
+    ,MatDialogModule
+    ,MatSelectModule   
+  ],   
   templateUrl: 'enroll-materia-dlg.html',
 })
 export class DialogEnrollMateriaDialog implements OnInit{ 

@@ -16,8 +16,29 @@ import { FileLoadedEvent } from '../file-loader/file-loader.component';
 import * as uuid from 'uuid';
 
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatStepperModule} from '@angular/material/stepper';
+
 @Component({
   selector: 'app-laboratory-grade-edit',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+
+    ,MatStepperModule 
+
+  ],  
   templateUrl: './laboratory-grade-edit.component.html',
   styleUrls: ['./laboratory-grade-edit.component.css']
 })

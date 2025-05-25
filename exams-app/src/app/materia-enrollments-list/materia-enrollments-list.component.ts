@@ -4,6 +4,8 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface MyEnrollment {
   enrollment_id:string
@@ -16,6 +18,12 @@ interface MyEnrollment {
 
 @Component({
   selector: 'app-materia-enrollments-list',
+  standalone: true,
+  imports: [
+    MatCardModule
+    ,MatProgressSpinnerModule
+  ],  
+
   templateUrl: './materia-enrollments-list.component.html',
   styleUrls: ['./materia-enrollments-list.component.css']
 })

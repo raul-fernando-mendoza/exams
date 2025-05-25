@@ -1,5 +1,15 @@
 import { AfterViewInit, Component, Input, OnInit, resolveForwardRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+
+import { MatDialogModule } from '@angular/material/dialog';
 import { Chart } from 'node_modules/chart.js'
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Materia, ParameterGrade, User } from '../exams/exams.module';
@@ -9,6 +19,11 @@ import { NavigationService } from '../navigation.service';
 import { ExamFormService } from '../exam-form.service';
 import { DateFormatService } from '../date-format.service';
 import {MatGridListModule} from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { ReferenceComponent } from '../reference-list/reference-list';
+import { MatTableModule } from '@angular/material/table';
+
 
 //http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
 
@@ -17,6 +32,24 @@ import {MatGridListModule} from '@angular/material/grid-list';
 
 @Component({
   selector: 'app-examgrades-report',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatDialogModule  
+    ,MatCardModule
+    ,MatGridListModule
+    ,MatExpansionModule
+    ,ReferenceComponent
+    ,MatTableModule
+  ],   
   templateUrl: './examgrades-report.component.html',
   styleUrls: ['./examgrades-report.component.css']
 })

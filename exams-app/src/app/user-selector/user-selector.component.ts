@@ -9,8 +9,27 @@ import { MatFormFieldControl as MatFormFieldControl } from '@angular/material/fo
 import * as uuid from 'uuid';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatSelectModule} from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+
 @Component({
   selector: 'app-user-selector',
+  standalone: true,
+  imports: [
+   
+    FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatSelectModule
+    ,MatAutocompleteModule 
+ 
+  ],   
   templateUrl: './user-selector.component.html',
   styleUrls: ['./user-selector.component.css'],
   providers: [{provide: MatFormFieldControl, useExisting: UserSelectorComponent,multi:true}]

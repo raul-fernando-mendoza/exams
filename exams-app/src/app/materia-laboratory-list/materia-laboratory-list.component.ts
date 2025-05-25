@@ -9,6 +9,10 @@ import * as uuid from 'uuid';
 import { Router } from '@angular/router';
 import { DateFormatService } from '../date-format.service';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface LaboratoryItem{
   laboratory:Laboratory
@@ -17,6 +21,14 @@ interface LaboratoryItem{
 
 @Component({
   selector: 'app-materia-laboratory-list',
+  standalone: true,
+  imports: [
+
+    MatIconModule
+    ,MatButtonModule 
+    ,MatListModule   
+    ,MatProgressSpinnerModule
+  ], 
   templateUrl: './materia-laboratory-list.component.html',
   styleUrls: ['./materia-laboratory-list.component.css']
 })

@@ -13,8 +13,40 @@ import { UserPreferencesService } from '../user-preferences.service';
 import { DateFormatService } from '../date-format.service';
 import { FormBuilder } from '@angular/forms';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 @Component({
   selector: 'app-exam-table',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatTableModule
+    ,MatPaginatorModule
+    ,MatDatepickerModule
+    ,MatToolbarModule
+    
+    ,MatProgressSpinnerModule
+  ],    
   templateUrl: './exam-table.component.html',
   styleUrls: ['./exam-table.component.css']
 })

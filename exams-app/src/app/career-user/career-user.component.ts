@@ -7,10 +7,23 @@ import { UserLoginService } from '../user-login.service';
 import { ExamenImprovisacionFormComponent } from '../examen-improvisacion-form/examen-improvisacion-form.component';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @Component({
   selector: 'app-career-user',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+    ,MatCardModule 
+    ,MatProgressSpinnerModule 
+  ],   
   templateUrl: './career-user.component.html',
   styleUrls: ['./career-user.component.css']
 })

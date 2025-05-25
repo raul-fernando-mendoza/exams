@@ -42,6 +42,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTreeModule } from '@angular/material/tree';
 import { AppComponent } from './app/app.component';
+import { provideHttpClient } from '@angular/common/http';
 
 if (environment.production) {
   enableProdMode();
@@ -54,7 +55,8 @@ bootstrapApplication(AppComponent, {
         provideRouter(routes),
         UserLoginService,
         { provide: MAT_DATE_LOCALE, useValue: 'en-US' },
-        provideAnimations()
+        provideAnimations(),
+        provideHttpClient()
     ]
 })
   .catch(err => console.error(err));

@@ -16,8 +16,28 @@ import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-obs
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { FileLoadedEvent } from '../file-loader/file-loader.component';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+
 @Component({
   selector: 'app-career-edit',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+  ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']
 })

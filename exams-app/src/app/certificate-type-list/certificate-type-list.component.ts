@@ -7,10 +7,28 @@ import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog  } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-certificate-type-list',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+
+    ,MatMenuModule   
+  ],    
   templateUrl: './certificate-type-list.component.html',
   styleUrls: ['./certificate-type-list.component.css']
 })

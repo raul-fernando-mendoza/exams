@@ -6,9 +6,20 @@ import { MatInput as MatInput } from '@angular/material/input';
 import { Observable, Observer, Subject } from 'rxjs';
 import { storage  } from 'src/environments/environment';
 import * as uuid from 'uuid';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-file-control',
+
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+
+  ],   
   templateUrl: './file-control.component.html',
   styleUrls: ['./file-control.component.css'],
   providers: [{provide: MatFormFieldControl, useExisting: FileControlComponent,multi:true}]

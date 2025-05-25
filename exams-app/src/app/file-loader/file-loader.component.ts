@@ -1,4 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { Observer } from 'rxjs';
 import { db, storage  } from 'src/environments/environment';
 
@@ -38,6 +45,19 @@ class FileLoadObserver implements Observer<any>  {
 
 @Component({
   selector: 'app-file-loader',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+
+    ,MatDialogModule  
+  ],   
   templateUrl: './file-loader.component.html',
   styleUrls: ['./file-loader.component.css']
 })

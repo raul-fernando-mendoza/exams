@@ -8,6 +8,10 @@ import { ExamenesImprovisacionService } from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 
 interface examItem{
   exam:Exam
@@ -16,6 +20,13 @@ interface examItem{
 
 @Component({
   selector: 'app-materia-exams-list',
+  standalone: true,
+  imports: [
+    MatButtonModule   
+    ,MatProgressSpinnerModule
+    ,MatListModule
+    ,MatMenuModule
+  ],   
   templateUrl: './materia-exams-list.component.html',
   styleUrls: ['./materia-exams-list.component.css']
 })

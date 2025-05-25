@@ -1,9 +1,22 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { VminstanceService } from '../vminstance.service';
 import { environment } from 'src/environments/environment';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import {MatCardModule} from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-computestatus',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule
+    ,MatCardModule
+    ,MatProgressBarModule 
+  ],    
   templateUrl: './computestatus.component.html',
   styleUrls: ['./computestatus.component.css']
 })

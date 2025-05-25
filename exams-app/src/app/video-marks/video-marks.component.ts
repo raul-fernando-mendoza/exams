@@ -11,6 +11,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { TitleStrategy } from '@angular/router';
 import { VideoMarker, Marker, MarkerPath, MarkerPoint } from '../exams/exams.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+import {MatDividerModule} from '@angular/material/divider';
 
 interface MarkerItem{
   marker:Marker
@@ -29,6 +38,18 @@ const PREV = 'prev'
 
 @Component({
   selector: 'app-video-marks',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+   
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+    ,MatDividerModule
+  ],    
   templateUrl: './video-marks.component.html',
   styleUrls: ['./video-marks.component.css'],
   encapsulation: ViewEncapsulation.None
