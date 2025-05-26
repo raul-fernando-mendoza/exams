@@ -243,15 +243,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }
 
   getMateriaEnrollment(organizationId:string, materiaId:string, studentId:string):Promise<MateriaEnrollment>{
-    var result = false
-    var id = uuid.v4()
-    var _resolve
-    var _reject
     return new Promise<MateriaEnrollment>((resolve, reject) =>{
-      _resolve = resolve
-      _reject = reject
-
-      db.collection('materiaEnrollments')
+       db.collection('materiaEnrollments')
       .where("organization_id","==", organizationId)
       .where("student_uid", "==", studentId)
       .where("materia_id", "==", materiaId)
@@ -265,6 +258,9 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
         else{
           resolve(null)
         }
+      },
+      error =>{
+        reject(error)
       })
     })
   }

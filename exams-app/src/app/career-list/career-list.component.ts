@@ -23,6 +23,9 @@ import { MatInputModule } from '@angular/material/input';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-career-list',
@@ -38,7 +41,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     ,MatInputModule 
 
     ,MatDialogModule  
-    ,MatProgressSpinnerModule       
+    ,MatProgressSpinnerModule  
+    ,MatMenuModule 
+    ,MatCardModule    
  
   ],    
   templateUrl: './career-list.component.html',
