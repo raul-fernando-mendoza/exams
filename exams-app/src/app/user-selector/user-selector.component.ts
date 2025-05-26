@@ -1,5 +1,5 @@
-import {Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Optional, Output, Self} from '@angular/core';
-import {AbstractControlDirective, FormControl, NgControl} from '@angular/forms';
+import {Component, EventEmitter, forwardRef, HostBinding, Input, OnDestroy, OnInit, Optional, Output, Self} from '@angular/core';
+import {AbstractControlDirective, FormControl, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {Observable, Subject} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
@@ -8,6 +8,10 @@ import { User } from '../exams/exams.module';
 import { MatFormFieldControl as MatFormFieldControl } from '@angular/material/form-field';
 import * as uuid from 'uuid';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
+
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,8 +24,11 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'app-user-selector',
   standalone: true,
   imports: [
-   
-    FormsModule
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule     
+
+    ,FormsModule
     ,ReactiveFormsModule
     ,MatFormFieldModule
     ,MatInputModule 

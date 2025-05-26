@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Exam, ExamRequest, Materia, MateriaEnrollment, MateriaRequest } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
@@ -17,6 +17,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { MatMenuModule } from '@angular/material/menu';
 
 interface MateriaItem{
   materia:Materia
@@ -40,9 +42,11 @@ interface MateriaItem{
     ,MatDialogModule  
     ,MatButtonToggleModule
     ,MatProgressSpinnerModule
+    ,MatMenuModule
   ],    
   templateUrl: './materia-list.component.html',
-  styleUrls: ['./materia-list.component.css']
+  styleUrls: ['./materia-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MateriaListComponent implements OnInit , OnDestroy{
 
@@ -118,7 +122,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       reason =>{
         this.submitting = false
         console.log("materias where not loaded:" + reason)
-        reject()
+        reject(reason)
       })
     })
   }
