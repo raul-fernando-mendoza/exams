@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTable } from '@angular/material/table';
@@ -21,11 +21,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatInputModule } from '@angular/material/input';
-import {MatTableModule} from '@angular/material/table';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatToolbarModule} from '@angular/material/toolbar';
+import { MatTableModule} from '@angular/material/table';
+import { MatPaginatorModule} from '@angular/material/paginator';
+import { MatDatepickerModule} from '@angular/material/datepicker';
+import { MatToolbarModule} from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { UserSelectorComponent } from '../user-selector/user-selector.component';
 
 @Component({
   selector: 'app-exam-table',
@@ -46,9 +48,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ,MatToolbarModule
     
     ,MatProgressSpinnerModule
+    ,MatMenuModule
+    ,UserSelectorComponent
   ],    
   templateUrl: './exam-table.component.html',
-  styleUrls: ['./exam-table.component.css']
+  styleUrls: ['./exam-table.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -56,7 +61,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
   examGradeList:NodeTableRow[] = []
 
-  dataSource: NodeTableDataSource;
+  dataSource = signal<NodeTableDataSource>(new NodeTableDataSource(this.examGradeList));
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
@@ -67,7 +72,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   applicationDate:Date = null
   studentId:string|null = null
 
-  submmiting = false
+  submitting = signal(true)
   showDeleted = false
 
   organization_id = null
@@ -85,6 +90,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     , private userPreferencesService:UserPreferencesService
     , public dateFormatService:DateFormatService
     , public fb:FormBuilder
+    ,private changeDetectorRef: ChangeDetectorRef
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
@@ -123,16 +129,17 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       this.updateList()
     })       
   }
-
   update(){
     this.loadExamGrades().then( ()=>{
-      this.updateList()
+      this.updateList() 
     }) 
   }
   updateList(){
-    this.dataSource = new NodeTableDataSource(this.examGradeList);
-    this.dataSource.paginator = this.paginator;
-    this.table.dataSource = this.dataSource;   
+    this.changeDetectorRef.detectChanges()
+    let nodeTableDataSource = new NodeTableDataSource(this.examGradeList)
+    this.dataSource.set(nodeTableDataSource);
+    this.dataSource().paginator = this.paginator;
+    this.table.dataSource = this.dataSource();   
   }
 
   loadExamGrades():Promise<void>{
@@ -167,7 +174,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         qry = qry.orderBy("applicationDate", "desc")
         qry = qry.limit(100)
       }
-     
+
+      this.submitting.set(true)
       var unsubscribe = qry.onSnapshot( set =>{
         this.examGradeList.length = 0
         let m = set.docs.map( doc =>{
@@ -210,6 +218,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           
         })
         Promise.all(m).then( () =>{
+          this.submitting.set(false)
           console.log("End loading Exams")
           this.examGradeList.sort( (a,b) =>{
             if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
@@ -225,7 +234,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
               return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
             }
           })
-          //this.updateList()
           _resolve()
         }) 
         .catch(reason =>{
@@ -275,9 +283,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         parent.sort( (a,b) =>{
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
-
-
-
         console.log("End loading ParameterGrades")
         _resolve()
       },
@@ -292,9 +297,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
 
   onDelete(title, examGrade_id){
-    
-    
-
     if( !confirm("Esta seguro de querer borrar todos los examenes de::" + title ) ){
       return
     }
@@ -322,7 +324,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
         console.log("ERROR removing examGrade:" + reason)
       })
     }
-
   }
   
   updateRelease(row:NodeTableRow, value:boolean){

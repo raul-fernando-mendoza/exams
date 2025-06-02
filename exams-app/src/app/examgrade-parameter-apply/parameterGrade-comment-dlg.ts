@@ -1,5 +1,5 @@
 import { Component, Inject } from "@angular/core";
-import {  MAT_DIALOG_DATA, MatDialogRef as MatDialogRef } from "@angular/material/dialog";
+import {  MAT_DIALOG_DATA, MatDialogModule, MatDialogRef as MatDialogRef } from "@angular/material/dialog";
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,6 +32,8 @@ export interface ParameterGradeCommentDialogData {
       ,MatFormFieldModule
       ,MatInputModule 
       ,SoundfileEditComponent
+
+      ,MatDialogModule       
  
     ],      
     templateUrl: './parameterGrade-comment-dlg.html',

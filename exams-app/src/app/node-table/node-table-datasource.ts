@@ -126,7 +126,7 @@ export class NodeTableDataSource extends DataSource<NodeTableRow> {
   }
 
   getSize():number{
-    return this.cnt
+    return this.data.length
   }
 }
 

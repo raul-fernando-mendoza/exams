@@ -5,9 +5,19 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db, storage, environment } from 'src/environments/environment';
 import { FileLoadObserver } from '../load-observers/load-observers.module';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-soundfile-edit',
+  standalone: true,
+  imports: [
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule   
+ 
+  ],  
   templateUrl: './soundfile-edit.component.html',
   styleUrls: ['./soundfile-edit.component.css']
 })

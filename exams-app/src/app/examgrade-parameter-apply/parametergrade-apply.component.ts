@@ -1,14 +1,17 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { CriteriaGrade, ParameterGrade } from '../exams/exams.module';
-import { CriteriaGradeApplyChange } from './criteriagrade-apply.component';
-import { MatDialog  } from '@angular/material/dialog';
+import { CriteriaGradeApplyChange, CriteriaGradeApplyComponent } from './criteriagrade-apply.component';
+import { MatDialog, MatDialogModule  } from '@angular/material/dialog';
 import { ParameterGradeCommentDialog } from './parameterGrade-comment-dlg';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
 
 export class ParameterGradeApplyChange{
@@ -26,7 +29,13 @@ export class ParameterGradeApplyChange{
   selector: 'parametergrade-apply',
   standalone: true,
   imports: [
-    MatGridListModule
+    CommonModule
+    ,MatIconModule
+    ,MatButtonModule       
+    ,MatGridListModule
+    ,CriteriaGradeApplyComponent
+
+    ,MatDialogModule     
   ],    
   templateUrl: './parametergrade-apply.component.html',
   styleUrls: ['./parametergrade-apply.component.css']
@@ -42,10 +51,10 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   @Input() parameterGrade_id:string
   @Output() change=new EventEmitter<ParameterGradeApplyChange>()
   examGrade_id:string
-  parameterGrade:ParameterGrade
-  evaluatorDisplayName = null  
+  parameterGrade = signal<ParameterGrade|null>(null)
+  evaluatorDisplayName = signal("")  
 
-  criteriaGrades:CriteriaGrade[] = []
+  criteriaGrades = signal<CriteriaGrade[]>([])
 
   sample = [1,2,3]
 
@@ -69,10 +78,10 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   }
   update(){
     db.collection(this.collection).doc(this.parameterGrade_id).get().then( doc =>{
-      this.parameterGrade = doc.data() as ParameterGrade
+      this.parameterGrade.set(doc.data() as ParameterGrade)
 
-      this.examImprovisacionService.getUser(this.parameterGrade.evaluator_uid).then( evaluator =>{
-        this.evaluatorDisplayName = this.userLoginService.getDisplayNameForUser(evaluator)
+      this.examImprovisacionService.getUser(this.parameterGrade().evaluator_uid).then( evaluator =>{
+        this.evaluatorDisplayName.set(this.userLoginService.getDisplayNameForUser(evaluator)) 
         
       })     
 
@@ -84,14 +93,15 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     
   }
   loadCriterias(){
-    this.criteriaGrades.length = 0
+    let newCriteriaGrades:Array<CriteriaGrade> = new Array<CriteriaGrade>()
     db.collection(this.collection + "/" + this.parameterGrade_id + "/criteriaGrades").get().then( set =>{
       set.docs.map( doc =>{
           let criteriaGrade:CriteriaGrade = doc.data() as CriteriaGrade
-          this.criteriaGrades.push(criteriaGrade)
+          newCriteriaGrades.push(criteriaGrade)
       })
+      this.criteriaGrades.set( newCriteriaGrades )
       this.onInitializedEarnedPoints()
-      this.criteriaGrades.sort( (a, b) =>{ 
+      this.criteriaGrades().sort( (a, b) =>{ 
         if(a.idx > b.idx){
           return 1
         }
@@ -99,6 +109,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
           return -1
         }
       })
+      this.criteriaGrades.set( newCriteriaGrades )
     },
     reason =>{
         alert("Error reading criteria list" + reason)
@@ -106,40 +117,40 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   }
 
   onInitializedEarnedPoints(){
-    this.parameterGrade.earnedPoints = 0
-    this.parameterGrade.availablePoints = 0    
-    for(let i=0; i<this.criteriaGrades.length; i++){
-      this.parameterGrade.availablePoints += this.criteriaGrades[i].availablePoints
-      this.parameterGrade.earnedPoints += this.criteriaGrades[i].earnedPoints
+    this.parameterGrade().earnedPoints = 0
+    this.parameterGrade().availablePoints = 0    
+    for(let i=0; i<this.criteriaGrades().length; i++){
+      this.parameterGrade().availablePoints += this.criteriaGrades()[i].availablePoints
+      this.parameterGrade().earnedPoints += this.criteriaGrades()[i].earnedPoints
     }
     //recalculate parameter score
-    this.parameterGrade.score =  Number(( (this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints) * 10).toFixed(1))
+    this.parameterGrade().score =  Number(( (this.parameterGrade().earnedPoints/this.parameterGrade().availablePoints) * 10).toFixed(1))
   }  
   onCriteriaGradeChange(e:CriteriaGradeApplyChange){
-    this.parameterGrade.earnedPoints = 0
-    this.parameterGrade.availablePoints = 0
+    this.parameterGrade().earnedPoints = 0
+    this.parameterGrade().availablePoints = 0
 
     
-    for(let i=0; i<this.criteriaGrades.length; i++){
-      if( this.criteriaGrades[i].id == e.criteriaGradeGrade_id ){
-        this.criteriaGrades[i].score = e.change.score
-        this.criteriaGrades[i].earnedPoints = e.change.earnedPoints
-        this.criteriaGrades[i].availablePoints = e.change.availablePoints
+    for(let i=0; i<this.criteriaGrades().length; i++){
+      if( this.criteriaGrades()[i].id == e.criteriaGradeGrade_id ){
+        this.criteriaGrades()[i].score = e.change.score
+        this.criteriaGrades()[i].earnedPoints = e.change.earnedPoints
+        this.criteriaGrades()[i].availablePoints = e.change.availablePoints
       }
-      this.parameterGrade.availablePoints += this.criteriaGrades[i].availablePoints
-      this.parameterGrade.earnedPoints += this.criteriaGrades[i].earnedPoints
+      this.parameterGrade().availablePoints += this.criteriaGrades()[i].availablePoints
+      this.parameterGrade().earnedPoints += this.criteriaGrades()[i].earnedPoints
     }
     //recalculate parameter score
-    this.parameterGrade.score =  Number((this.parameterGrade.earnedPoints/this.parameterGrade.availablePoints * 10).toFixed(1))
+    this.parameterGrade().score =  Number((this.parameterGrade().earnedPoints/this.parameterGrade().availablePoints * 10).toFixed(1))
   }
   submit(){
 
     let values:ParameterGradeApplyChange = {
       parameterGradeGrade_id: this.parameterGrade_id,
       change: {
-        score: this.parameterGrade.score,
-        earnedPoints: this.parameterGrade.earnedPoints,
-        availablePoints: this.parameterGrade.availablePoints,
+        score: this.parameterGrade().score,
+        earnedPoints: this.parameterGrade().earnedPoints,
+        availablePoints: this.parameterGrade().availablePoints,
         isCompleted:true
       }
     }
@@ -161,8 +172,8 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ParameterGradeCommentDialog, {
       width: '250px',
       data: {
-        calificacion:this.parameterGrade.score ? this.parameterGrade.score : 1, 
-        comentario: this.parameterGrade.evaluator_comment ? this.parameterGrade.evaluator_comment : "",
+        calificacion:this.parameterGrade().score ? this.parameterGrade().score : 1, 
+        comentario: this.parameterGrade().evaluator_comment ? this.parameterGrade().evaluator_comment : "",
         collection: this.collection,
         id: this.parameterGrade_id,
         property: "commentSound"
@@ -194,7 +205,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   }
   onEditParameterGrade(){
     this.submitting = true
-    this.newVersionExamGrade( this.examGrade_id, this.parameterGrade_id, this.parameterGrade.version).then( 
+    this.newVersionExamGrade( this.examGrade_id, this.parameterGrade_id, this.parameterGrade().version).then( 
       parameterGrade =>{
         this.submitting = false
         this.router.navigate(['/examGrade-parameterGrade-apply',{examGrade_id:this.examGrade_id,parameterGrade_id:parameterGrade.id}]);

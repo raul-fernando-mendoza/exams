@@ -1,11 +1,13 @@
-import { Component, Input, OnDestroy, OnInit, Output , EventEmitter} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output , EventEmitter, signal} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { AspectGrade, CriteriaGrade } from '../exams/exams.module';
-import { AspectGradeStartsApplyChange } from './aspectgrade-stars-apply.component';
+import { AspectGradeStarsApplyComponent, AspectGradeStartsApplyChange } from './aspectgrade-stars-apply.component';
 
+import { CommonModule } from '@angular/common';
+import { AspectGradeItemsApplyComponent } from './aspectgrade-items-apply.component';
 
 export class CriteriaGradeApplyChange{
   criteriaGradeGrade_id:string
@@ -18,6 +20,12 @@ export class CriteriaGradeApplyChange{
 
 @Component({
   selector: 'criteriagrade-apply',
+  standalone: true,
+  imports: [
+    CommonModule 
+    ,AspectGradeStarsApplyComponent
+    ,AspectGradeItemsApplyComponent
+  ],  
   templateUrl: './criteriagrade-apply.component.html',
   styleUrls: ['./criteriagrade-apply.component.css']
 })
@@ -32,8 +40,8 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
   @Input() disabled:boolean
   @Output() change = new EventEmitter<CriteriaGradeApplyChange>();
 
-  criteriaGrade:CriteriaGrade
-  aspectGrades:AspectGrade[] = []
+  criteriaGrade = signal<CriteriaGrade|null>(null)
+  aspectGrades = signal<AspectGrade[]>([])
   
   
 
@@ -54,7 +62,7 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
   }
   update(){
     db.collection(this.collection).doc(this.criteriaGrade_id).get().then( doc =>{
-      this.criteriaGrade = doc.data() as CriteriaGrade
+      this.criteriaGrade.set(doc.data() as CriteriaGrade) 
       this.loadAspects()
     },
     reason =>{
@@ -62,13 +70,14 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
     } )     
   }
   loadAspects(){
+    let newAspectGrades = new Array<AspectGrade>()
     db.collection(this.collection + "/" + this.criteriaGrade_id + "/aspectGrades").get().then( set =>{
-      this.aspectGrades.length = 0
+
       set.docs.map( doc =>{
           let aspectGrade:AspectGrade = doc.data() as AspectGrade
-          this.aspectGrades.push(aspectGrade)
+          newAspectGrades.push(aspectGrade)
       })
-      this.aspectGrades.sort( (a, b) =>{ 
+      newAspectGrades.sort( (a, b) =>{ 
         if(a.idx > b.idx){
           return 1
         }
@@ -76,6 +85,7 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
           return -1
         }
       })
+      this.aspectGrades.set(newAspectGrades)
     },
     reason =>{
         alert("Error reading aspect list" + reason)
@@ -85,23 +95,23 @@ export class CriteriaGradeApplyComponent implements OnInit, OnDestroy {
     e.aspectGrade_id
 
     //update the criteria in memory with the new earnedPoint
-    for(let i=0; i<this.aspectGrades.length; i++){
-      if( this.aspectGrades[i].id == e.aspectGrade_id ){
-        this.aspectGrades[i].score = e.change.score
+    for(let i=0; i<this.aspectGrades().length; i++){
+      if( this.aspectGrades()[i].id == e.aspectGrade_id ){
+        this.aspectGrades()[i].score = e.change.score
       }
     }    
     //calculate the new earnedPoint and availablePoints and score for criteria.
-    this.criteriaGrade.availablePoints = this.aspectGrades.length
-    this.criteriaGrade.earnedPoints = 0
-    for(let i=0; i<this.aspectGrades.length; i++){
-      this.criteriaGrade.earnedPoints += this.aspectGrades[i].score
+    this.criteriaGrade().availablePoints = this.aspectGrades().length
+    this.criteriaGrade().earnedPoints = 0
+    for(let i=0; i<this.aspectGrades().length; i++){
+      this.criteriaGrade().earnedPoints += this.aspectGrades()[i].score
     }
-    this.criteriaGrade.score = Number(( (this.criteriaGrade.earnedPoints/this.criteriaGrade.availablePoints) * 10).toFixed(1))
+    this.criteriaGrade().score = Number(( (this.criteriaGrade().earnedPoints/this.criteriaGrade().availablePoints) * 10).toFixed(1))
     var values:CriteriaGradeApplyChange = {
       change: {
-        score: this.criteriaGrade.score,
-        availablePoints: this.criteriaGrade.availablePoints,
-        earnedPoints: this.criteriaGrade.earnedPoints
+        score: this.criteriaGrade().score,
+        availablePoints: this.criteriaGrade().availablePoints,
+        earnedPoints: this.criteriaGrade().earnedPoints
       },
       criteriaGradeGrade_id: this.criteriaGrade_id
     }

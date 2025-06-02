@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
@@ -10,6 +10,12 @@ import { FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 export class AspectGradeItemsApplyChange{
   aspectGrade_id:string
@@ -28,7 +34,11 @@ export class AspectGradeItemsApplyChange{
     CommonModule
     ,MatIconModule
     ,MatButtonModule   
-
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule 
+    ,MatButtonToggleModule
   ],   
   templateUrl: './aspectgrade-items-apply.component.html',
   styleUrls: ['./aspectgrade-items-apply.component.css']
@@ -42,7 +52,7 @@ export class AspectGradeItemsApplyComponent implements OnInit, OnDestroy {
   @Input() aspectGrade_id:string
   @Input() disabled:boolean = false
   @Output() changeGrade = new EventEmitter<AspectGradeItemsApplyChange>();
-  aspectGrade:AspectGrade
+  aspectGrade = signal<AspectGrade | null>(null)
   aspectGradeForm
   
   unsubscribe
@@ -75,13 +85,12 @@ export class AspectGradeItemsApplyComponent implements OnInit, OnDestroy {
   }    
   update(){
     this.unsubscribe = db.collection(this.collection).doc(this.aspectGrade_id).onSnapshot( doc =>{
-      this.aspectGrade = doc.data() as AspectGrade
-
-      
+      let newAspectGrade = doc.data() as AspectGrade
       this.aspectGradeForm = this.fb.group({
-        score:[{ value:String(this.nvl(this.aspectGrade.score,"1")), disabled:this.disabled}],
-        missingElements:[{ value:this.nvl(this.aspectGrade.missingElements,""), disabled:this.disabled}]
-      })        
+        score:[{ value:String(this.nvl(newAspectGrade.score,"1")), disabled:this.disabled}],
+        missingElements:[{ value:this.nvl(newAspectGrade.missingElements,""), disabled:this.disabled}]
+      })  
+      this.aspectGrade.set( newAspectGrade )      
     },
     reason =>{
       alert("Error reading parameter:" + reason)

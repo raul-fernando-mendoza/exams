@@ -23,6 +23,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { UserSelectorComponent } from '../user-selector/user-selector.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 function AllChildValid(control: AbstractControl): ValidationErrors | null {
   var formArray = control as FormArray
@@ -50,6 +53,9 @@ function AllChildValid(control: AbstractControl): ValidationErrors | null {
     ,MatInputModule
     ,MatCardModule 
     ,MatDatepickerModule
+    ,UserSelectorComponent
+    ,MatSelectModule 
+    ,MatCheckboxModule
   ],    
   templateUrl: './examen-improvisacion-form.component.html',
   styleUrls: ['./examen-improvisacion-form.component.css']

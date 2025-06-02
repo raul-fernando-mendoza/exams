@@ -3,8 +3,8 @@
     <div class="spacer"></div>
     <div class="debug">id:{{ aspectGrade_id }}</div>
 </div>  
-<div *ngIf="aspectGrade && aspectGradeForm" [formGroup]="aspectGradeForm">
-    <div class="question" (click)="showText(aspectGrade.description)">{{ aspectGrade.label }} </div>
+<div *ngIf="aspectGrade()" [formGroup]="aspectGradeForm">
+    <div class="question" (click)="showText(aspectGrade().description)">{{ aspectGrade().label }} </div>
     <div>
     <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="score" (change)="onChangeAspect()">
         <mat-button-toggle class="cancelation" value="0" aria-label="no se puede calificar">
@@ -28,7 +28,7 @@
     </div>
 
     
-    <mat-form-field  appearance="legacy" >
+    <mat-form-field >
         <mat-label>Faltante</mat-label>
         <textarea  matInput maxlength="700" rows="3" placeholder="Elementos faltantes"  formControlName="missingElements" (change)="onChangeAspect(examGradeFG,p,c,a)">
         </textarea>

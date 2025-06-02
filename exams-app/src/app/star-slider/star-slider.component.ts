@@ -1,13 +1,14 @@
-import { EventEmitter, Input, Optional, Output, ViewChild } from '@angular/core';
-import { HostBinding } from '@angular/core';
-import { Self } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { EventEmitter, Output, signal, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatFormFieldControl } from '@angular/material/form-field';
-import { Observable, Subject } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-star-slider',
+  standalone: true,
+  imports: [
+    CommonModule 
+  ],   
   templateUrl: './star-slider.component.html',
   styleUrls: ['./star-slider.component.css'],
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: StarSliderComponent,multi:true}],
@@ -18,7 +19,7 @@ export class StarSliderComponent  implements ControlValueAccessor {
   //@Input() private disabled = false;
   @Output() private valueChange = new EventEmitter();
   widget;
-
+  percentage = signal(100)
   constructor() { 
 
   }
@@ -26,10 +27,10 @@ export class StarSliderComponent  implements ControlValueAccessor {
   writeValue(obj: any): void {
     console.log("********** recibing value:" + obj)
     if(typeof obj === 'string' || obj instanceof String){
-      this.percentage = Math.round( Number(obj) * 100 )
+      this.percentage.set( Math.round( Number(obj) * 100 ) )
     }
     else{
-      this.percentage = Math.round( obj*100 )
+      this.percentage.set( Math.round( obj*100 ) )
     }
   }
   _onChange:any
@@ -45,15 +46,15 @@ export class StarSliderComponent  implements ControlValueAccessor {
   setDisabledState?(isDisabled: boolean): void {
     this._isDisabled = isDisabled
   }
-  percentage = 100
+ 
   onContainerClick(event: MouseEvent): void {
     if( !this._isDisabled ){
       let pct = this.getRoundPct( 50 + (event.offsetX/250) * 50 )
      
-        this.percentage = pct
+        this.percentage.set(pct) 
       // console.log("calling on change on " + this.percentage/100)
-        this._onChange(this.percentage/100)
-        this.valueChange.emit(this.percentage/100);
+        this._onChange(this.percentage()/100)
+        this.valueChange.emit(this.percentage()/100);
     }    
       
   }

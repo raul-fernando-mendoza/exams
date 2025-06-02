@@ -1,18 +1,16 @@
 <div class="bar">
-    <span class="debug">Criteria</span>
     <span class="spacer"></span>
-    <span class="debug">id:{{criteriaGrade_id}}</span>
+    <span class="debug">CriteriaGradeId:{{criteriaGrade_id}}</span>
 </div>  
-<div *ngIf="criteriaGrade">
+<div *ngIf="criteriaGrade()">
     <div class="bar">
         <span class="spacer"></span>
-        <span><h2>{{criteriaGrade.label}}</h2></span>
-        <span class="debug">score:{{criteriaGrade.score}}</span>        
+        <span><h2>{{criteriaGrade().label}}</h2></span>
+        <span class="debug">Criteria score:{{criteriaGrade().score}}</span>        
         <span class="spacer"></span>
     </div>
-    
-
-    <div *ngFor="let aspectGrade of aspectGrades">
+    Criteria score:{{criteriaGrade().score}}
+    <div *ngFor="let aspectGrade of aspectGrades()">
         <aspectgrade-stars-apply *ngIf="scoreType=='starts'" collection="{{collection}}/{{criteriaGrade_id}}/aspectGrades" aspectGrade_id="{{aspectGrade.id}}" (changeGrade)="onAspectGradeChange($event)" [disabled]="disabled"></aspectgrade-stars-apply>
         <aspectgrade-items-apply *ngIf="scoreType=='status'" collection="{{collection}}/{{criteriaGrade_id}}/aspectGrades" aspectGrade_id="{{aspectGrade.id}}" (changeGrade)="onAspectGradeChange($event)" [disabled]="disabled"></aspectgrade-items-apply>
     </div>

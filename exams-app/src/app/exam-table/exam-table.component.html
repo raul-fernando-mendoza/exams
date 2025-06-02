@@ -10,10 +10,12 @@ Calificaciones
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    
     <mat-form-field appearance="fill" >
-      <mat-label>selecciona estudiante</mat-label>
+      <!--<mat-label>selecciona estudiante</mat-label>-->
       <app-user-selector formControlName="studentUid" (userselected)="examStudentChange($event)"></app-user-selector>
     </mat-form-field> 
+  
   </form>
  
   <!--
@@ -21,9 +23,10 @@ Calificaciones
   <mat-slide-toggle class="filter_element"  [(ngModel)]="showDeleted" (change)="applicationFilterChange($event)" aria-label="mostrar los borrados">Mostrar Borrados</mat-slide-toggle>
 -->
 </mat-toolbar>
-<div *ngIf="submmiting == false; else elseBlock">
-</div>
-  <table mat-table class="full-width-table" aria-label="Elements" [hidden]="submmiting">
+
+<div *ngIf="submitting() == false; else elseBlock">
+
+  <table mat-table class="full-width-table" aria-label="Elements">
     <!-- Id Column -->
     <ng-container matColumnDef="applicationDate">
       <th mat-header-cell *matHeaderCellDef >Fecha</th>
@@ -82,15 +85,15 @@ Calificaciones
             <mat-icon>more_vert</mat-icon>
           </button>                                    
           <mat-menu #menu="matMenu" >
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEditParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id)" [disabled]="submitting">
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onEditParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id)" [disabled]="submitting()">
               <mat-icon>file_open</mat-icon>
               <span>abrir</span>
             </button> 
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onReset(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting">
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onReset(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting()">
               <mat-icon>change_circle</mat-icon> 
               <span>Reset</span>
             </button> 
-            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onRemoveParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting">
+            <button *ngIf="isAdmin()" mat-menu-item color="primary" (click)="onRemoveParameterGrade(row.obj.examGrade_id, row.obj.parameterGrade_id, row.obj.label)" [disabled]="submitting()">
               <mat-icon>delete</mat-icon>
               <span>delete</span>
             </button>                         
@@ -109,16 +112,16 @@ Calificaciones
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-
+  
   <mat-paginator #paginator
-      [length]="dataSource?.getSize()"
+      [length]="dataSource()?.getSize()"
       [pageIndex]="0"
       [pageSize]="50"
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
 
-
+</div>  
 <ng-template #elseBlock>
-  Cargando Calificaciones.
+  Cargando Calificaciones. 
   <mat-spinner></mat-spinner>
 </ng-template>
