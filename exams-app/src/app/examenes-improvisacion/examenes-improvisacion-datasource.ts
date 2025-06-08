@@ -113,6 +113,9 @@ export class ExamenesImprovisacionDataSource extends DataSource<ExamenesImprovis
       }
     });
   }
+  getSize():number{
+    return this.data.length
+  }  
 }
 
 /** Simple sort comparator for example ID/Name columns (for client-side sorting). */
@@ -150,4 +153,5 @@ function compareDate(a, b, isAsc: boolean) {
       return a.examGrade.title > b.examGrade.title ? 1:-1
     } 
   }
+  
 }

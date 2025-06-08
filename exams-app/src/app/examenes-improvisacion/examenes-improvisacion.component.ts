@@ -1,4 +1,4 @@
-import {  Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {  ChangeDetectorRef, Component, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,8 +6,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginator  } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './examenes-improvisacion-datasource';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
@@ -38,10 +38,13 @@ import { DateFormatService } from '../date-format.service';
     ,FormsModule
     ,ReactiveFormsModule
     ,MatFormFieldModule
-    ,MatInputModule     
+    ,MatInputModule    
+    ,MatTableModule 
+    ,MatSortModule      
     ,MatPaginatorModule 
     ,MatDatepickerModule
     ,MatToolbarModule
+ 
   ],  
   templateUrl: './examenes-improvisacion.component.html',
   styleUrls: ['./examenes-improvisacion.component.css'] 
@@ -50,7 +53,6 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<ExamenesImprovisacionItem>;
-  dataSource: ExamenesImprovisacionDataSource;
 
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
@@ -67,6 +69,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   releasedOnly = null
 
   examenes: ExamenesImprovisacionItem[] = [];  
+  dataSource = signal(new ExamenesImprovisacionDataSource(this.examenes));
 
   organization_id = null
 
@@ -80,6 +83,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     , private examImprovisacionService: ExamenesImprovisacionService
     , private userPreferencesService: UserPreferencesService
     , private dateFormatService: DateFormatService
+    , private changeDetectorRef: ChangeDetectorRef
     ) {
       
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -94,12 +98,12 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     }
   }
 
-  submitting = false
+  submitting = signal(false)
 
 
   updateTable(){
     console.log("update table")
-      this.dataSource = new ExamenesImprovisacionDataSource(this.examenes);
+      
       /*
       var examenesSort = localStorage.getItem('jsonExamenesSort')
       if( examenesSort ){
@@ -112,10 +116,12 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
         this.sort.direction = 'asc'
       }
       */
-
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.table.dataSource = this.dataSource;  
+    this.changeDetectorRef.detectChanges()
+    let newDataSource= new ExamenesImprovisacionDataSource(this.examenes)
+    newDataSource.sort = this.sort;
+    newDataSource.paginator = this.paginator;
+    this.table.dataSource = newDataSource; 
+    this.dataSource.set( newDataSource ); 
   }  
   
   ngOnInit() {
@@ -167,7 +173,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   updateList(){
     console.log("update list started")
     this.examenes.length = 0
-    this.submitting = true
+    this.submitting.set(true)
 
     var userUid= this.userLoginService.getUserUid()
 
@@ -193,7 +199,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       console.log("onsnapshot haspendingWrite:" + set.metadata.hasPendingWrites)
       console.log("onsnapshot fromcache:" + set.metadata.fromCache)
       console.log("onsnapshot length:" + set.docs.length)
-      this.submitting = true
+      this.submitting.set(true)
 
       console.log("unsubscribe parameters")
       this.parameterUnsubscribes.forEach( (value, key) =>{
@@ -208,7 +214,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
         return this.addDbParameterGrade( examGrade)
       })
       Promise.all(map).then(()=>{
-        this.submitting = false
+        this.submitting.set(false)
         this.examenes.sort( (a,b) =>{
           var ap = a as ExamenesImprovisacionItem
           var bp = b as ExamenesImprovisacionItem
@@ -226,7 +232,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
     },
     reason =>{
       alert("ERROR reading list of exams to approve:" + reason)
-      this.submitting = false
+      this.submitting.set(false)
     })
   }
   addDbParameterGrade(examGrade:ExamGrade ):Promise<void>{  
@@ -260,13 +266,13 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
             this.examenes.push(obj)
             this.retriveDetails(obj)            
           })
-          this.updateTable()
+          //this.updateTable()
           resolve()
         },
         reason =>{
           console.error("Error: reading exam list" + reason)
           alert("ERROR reading parameterGrades:" + reason)
-          this.submitting = false
+          this.submitting.set(false)
         }
       )  
       this.parameterUnsubscribes.set(examGrade.id, parameterUnsubscribe)
