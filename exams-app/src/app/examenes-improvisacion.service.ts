@@ -69,6 +69,22 @@ export class ExamenesImprovisacionService {
     return this.http.post(url, request_data, {headers: myheaders})
   }
 
+    public authApi(action, token, data): Observable<Object> {
+
+    var url = environment.authURL
+
+    var request_data = {
+      "service":"auth",
+      "action":action,
+      "token":token,
+      "data":data
+    }
+
+    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
+
+
+    return this.http.post(url, request_data, {headers: myheaders})
+  }
 
   public authApiInterface(action, token, data): Promise<Object> {
 

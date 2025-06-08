@@ -1,5 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { AbstractControl, EmailValidator, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { AbstractControl, EmailValidator, FormGroup, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
 import { UserLoginService } from '../user-login.service';
@@ -13,6 +13,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatGridListModule } from '@angular/material/grid-list';
+
+
+interface UserItem{
+  uid:string
+  email:string
+  displayName:string
+  fg:FormGroup
+  claims:WritableSignal<Array<string>>
+}
 
 @Component({
   selector: 'app-users-list',
@@ -30,8 +39,6 @@ import { MatGridListModule } from '@angular/material/grid-list';
     ,MatProgressSpinnerModule  
     ,MatMenuModule 
     ,MatGridListModule
-       
- 
   ], 
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.css']
@@ -43,6 +50,10 @@ export class UsersListComponent implements OnInit {
   users_formarray = new UntypedFormArray([])
 
   organization_id = null 
+
+  submitting = signal(false) 
+  userList = signal(new Array<UserItem>())
+  
 
   constructor(private examImprovisacionService: ExamenesImprovisacionService
     , private userLoginService: UserLoginService
@@ -73,80 +84,79 @@ export class UsersListComponent implements OnInit {
   }
 
   reloadUserList(token){
-    this.users_formarray.clear()
+    this.submitting.set(false)
+
+    
     var request = {
     }
+    let thiz = this
 
-    this.examImprovisacionService.authApiInterface("getUserList", token, request).then(
-      data => {
+    this.examImprovisacionService.authApi("getUserList", token, request).subscribe({
+      next(data){
+        thiz.submitting.set(false)
         var users = data["result"]
+        let newUserItems = new Array<UserItem>()
         for( const user of users){
-          var user_group = this.fb.group({
-            uid:[user.uid],
-            email:[user.email],
-            displayName:[user.displayName],
-            claims: new UntypedFormArray([])
-          })
-
-          var claims_array = user_group.controls.claims as UntypedFormArray
+          let userItem:UserItem = {
+            uid:user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            fg: thiz.fb.group({
+              displayName:[user.displayName?user.displayName:""]
+            }),
+            claims: signal([])
+          }
+          let claims = []
           for( const claim in user.claims){
             var claimValue = user.claims[claim]
-            if( claim == "displayName"){
-              if( claimValue != null )
-                user_group.controls.displayName.setValue( claimValue ) 
+            if( claim.split("-")[0] == 'role' && claim.split("-")[2] == thiz.organization_id){
+                 claims.push(claim)
             }
-            else{
-              if( claim.split("-")[0] == 'role' && claim.split("-")[2] == this.organization_id){
-                var role_formgroup = this.fb.group({
-                  id:[claim],
-                  value:[claimValue]
-                })
-                claims_array.push(role_formgroup)
-              }
+            if( claim == 'displayName'){
+              userItem.fg.controls.displayName.setValue( claimValue )
+              userItem.displayName = claim
             }
           }
-          this.users_formarray.push(user_group)
+          userItem.claims.set(claims)
+          newUserItems.push(userItem)
         }
-        this.users_formarray.controls.sort( (a, b) => {
-          var ag:UntypedFormGroup = a as UntypedFormGroup
-          var bg:UntypedFormGroup = b as UntypedFormGroup
-          if( ag.controls.email.value >= bg.controls.email.value )
+        newUserItems.sort( (a, b) => {
+          if( a.email >= b.email )
             return 1
           else
             return -1
         } )
+        thiz.userList.set(newUserItems)
       },
-      error => {
-        alert("error retriving the users:" + error.error)
+      error(reason){
+        alert("error retriving the users:" + reason.error)
       }
-    );
+    });
   }
 
   
 
-  addRole(user:UntypedFormGroup, role_id:string){
-
-    var roles_fa = user.controls.claims as UntypedFormArray
-
-    for(let i=0; i<roles_fa.controls.length; i++){
-      let role_fg:UntypedFormGroup = roles_fa.controls[i] as UntypedFormGroup
-      if( role_fg.controls.id.value == role_id){
+  addRole(user:UserItem, role_id:string){
+    for(let i=0; i<user.claims().length; i++){
+      
+      if( user.claims()[i] == role_id){
         alert("El role el usuario ya tiene el rol:" +  role_id)
         return 0
       }
     }
     var reques_addroles = {
-        email:user.controls.email.value,
+        email:user.email,
         claims:{}
     }
     reques_addroles["claims"][role_id] = true
+    let thiz = this
+
     this.userLoginService.getUserIdToken().then( token => { 
       this.examImprovisacionService.authApiInterface("addClaim", token, reques_addroles).then(
         data => {
-          var role_fg:UntypedFormGroup = this.fb.group({
-            id:[role_id]
-          }) 
-          roles_fa.push(role_fg)
+          let claims = user.claims()
+          claims.push( role_id )
+          user.claims.set(claims.slice())
         },
         error => {
           alert("error retriving the users:" + error.errorCode + " " + error.errorMessage)
@@ -158,22 +168,22 @@ export class UsersListComponent implements OnInit {
     })
   }
   
-  delRole(user:UntypedFormGroup, role:string){
+  delRole(user:UserItem, role:string){
     var request = {
-        email:user.controls.email.value,
+        email:user.email,
         claim:role
     }
     this.userLoginService.getUserIdToken().then( token => {
       this.examImprovisacionService.authApiInterface("removeClaim", token, request).then(
         data => {
-        var roles_fa: UntypedFormArray = user.controls.claims as UntypedFormArray
-        for( let i =0 ; i< roles_fa.controls.length; i++){
-          var role_fg:UntypedFormGroup = roles_fa.controls[i] as UntypedFormGroup
-
-          if(  role_fg.controls.id.value == role){
-            roles_fa.removeAt(i)
+        
+          let claims = user.claims()
+          for( let i =0 ; i< user.claims().length; i++){
+            if(  claims[i] == role){
+              claims.splice(i,1)
+            }
           }
-        }
+          user.claims.set(claims.slice())
         
         },
         error => {
@@ -186,11 +196,11 @@ export class UsersListComponent implements OnInit {
     })  
   }
 
-  onChangeUsenDisplayName(user){
+  onChangeUserDisplayName(user){
     var req = {
-        email:user.controls.email.value,  
+        email:user.email,  
         claims:{     
-          displayName:user.controls.displayName.value
+          displayName:user.fg.controls.displayName.value
         }
     }
     this.userLoginService.getUserIdToken().then( token => {

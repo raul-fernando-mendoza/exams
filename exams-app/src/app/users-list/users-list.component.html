@@ -1,43 +1,53 @@
 <p>User List</p>
 
+@if( submitting() == false ){
+    @for(user of userList();track user.uid; let i=$index){
+        <mat-grid-list cols="9">
+            <mat-grid-tile  colspan="4">
+            <span class="user-name">{{ user.email }}</span>
+            </mat-grid-tile>
+            <mat-grid-tile  colspan=4>
+                <form [formGroup]="user.fg">
+                <mat-form-field>
+                    <mat-label>nombre</mat-label>
+                    <input  matInput placeholder="change it" [value]="displayName" formControlName="displayName" (change)="onChangeUserDisplayName(user)">
+                </mat-form-field>  
+                </form>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1">
+                <button mat-icon-button [matMenuTriggerFor]="usermenu" >
+                    <mat-icon>more_vert</mat-icon>
+                </button>   
+                <mat-menu #usermenu="matMenu" >
+                    
+                    <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role + '-' +  organization_id)" [disabled]="submitting()">
+                        <span>{{ role.split("-")[1] }}</span>
+                    </button> 
+                    <button (click)="deleteUser( user.email )">
+                        <mat-icon>delete</mat-icon>
+                    </button>      
+                              
+                </mat-menu>                   
+            </mat-grid-tile>  
+        </mat-grid-list> 
+        
+        <div class="role" *ngFor="let claim of user.claims(); let j=index">
+            
+                {{ claim.split("-")[1]}} 
+                <button mat-icon-button [matMenuTriggerFor]="claimMenu" >
+                    <mat-icon>more_vert</mat-icon>
+                </button>                                    
+                <mat-menu #claimMenu="matMenu" >
+                    <button mat-menu-item  (click)="delRole(user, claim )" [disabled]="submitting()">
+                        <mat-icon>delete</mat-icon>
+                        <span>borrar</span>
+                    </button> 
+                </mat-menu> 
+        </div> 
+        
 
-<div *ngFor="let user of users_formarray.controls; let i=index" [formGroup]="user">
-    <mat-grid-list cols="9">
-        <mat-grid-tile  colspan="4">
-           <span class="user-name">{{ user.controls.email.value }}</span>
-        </mat-grid-tile>
-        <mat-grid-tile  colspan=4>
-            <mat-form-field>
-                <mat-label>nombre</mat-label>
-                <input  matInput placeholder="change it" [value]="displayName" formControlName="displayName" (change)="onChangeUsenDisplayName(user)">
-            </mat-form-field>  
-        </mat-grid-tile>
-        <mat-grid-tile colspan="1">
-            <button mat-icon-button [matMenuTriggerFor]="usermenu" >
-                <mat-icon>more_vert</mat-icon>
-            </button>   
-            <mat-menu #usermenu="matMenu" >
-                <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role + '-' +  organization_id)" [disabled]="submitting">
-                    <span>{{ role.split("-")[1] }}</span>
-                </button> 
-                <button (click)="deleteUser( user.controls.email.value )">
-                    <mat-icon>delete</mat-icon>
-                </button>                
-            </mat-menu>                   
-        </mat-grid-tile>  
-    </mat-grid-list> 
-            <div class="role" *ngFor="let claim of user.controls.claims.controls; let j=index" [formGroup]="claim">
-                
-                    {{ claim.controls.id.value.split("-")[1] }} 
-                    <button mat-icon-button [matMenuTriggerFor]="claimMenu" >
-                        <mat-icon>more_vert</mat-icon>
-                    </button>                                    
-                    <mat-menu #claimMenu="matMenu" >
-                        <button mat-menu-item  (click)="delRole(user, claim.controls.id.value)" [disabled]="submitting">
-                            <mat-icon>delete</mat-icon>
-                            <span>borrar</span>
-                        </button> 
-                    </mat-menu> 
-            </div> 
-
-</div>
+    }
+}
+@else{
+  <mat-spinner></mat-spinner>    
+}
