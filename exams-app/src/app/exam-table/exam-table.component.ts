@@ -28,6 +28,7 @@ import { MatToolbarModule} from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserSelectorComponent } from '../user-selector/user-selector.component';
+import { MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-exam-table',
@@ -50,6 +51,7 @@ import { UserSelectorComponent } from '../user-selector/user-selector.component'
     ,MatProgressSpinnerModule
     ,MatMenuModule
     ,UserSelectorComponent
+    ,MatSortModule
   ],    
   templateUrl: './exam-table.component.html',
   styleUrls: ['./exam-table.component.css'],
