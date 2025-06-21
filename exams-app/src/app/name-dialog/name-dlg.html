@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>{{ data.label }}</h1>
 <mat-dialog-content>
   <mat-form-field>
-    <mat-label>nombre</mat-label>
+    <mat-label>{{data.label ? data.label: "nombre"}}</mat-label>
     <input  matInput [(ngModel)]="data.name">
   </mat-form-field>      
 </mat-dialog-content>
