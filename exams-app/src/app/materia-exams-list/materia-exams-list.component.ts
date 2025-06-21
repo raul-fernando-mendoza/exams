@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { Exam, ExamGrade, MateriaEnrollment } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 interface examItem{
   exam:Exam
@@ -22,7 +24,9 @@ interface examItem{
   selector: 'app-materia-exams-list',
   standalone: true,
   imports: [
-    MatButtonModule   
+     CommonModule
+    ,MatIconModule
+    ,MatButtonModule       
     ,MatProgressSpinnerModule
     ,MatListModule
     ,MatMenuModule
@@ -35,7 +39,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   organization_id:string
   isAdmin = false
   unsubscribe = null
-  submitting = false
+  submitting = signal(false)
   exams:Array<examItem> = []
   userUid = null
   isEnrolled = false
@@ -66,10 +70,10 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   loadExams():Promise<void>{
     return new Promise<void>((resolve, reject) =>{
       this.exams.length = 0
-      this.submitting = true
+      this.submitting.set(true)
       this.unsubscribe = db.collection("materias/" + this.materiaid + "/exams")
       .where("isDeleted","==", false).onSnapshot( snapshot =>{
-        this.submitting = false
+        this.submitting.set(false)
         this.exams.length = 0
         snapshot.docs.map( doc =>{
           const exam = doc.data() as Exam
@@ -108,14 +112,14 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
     )
   }  
   onDuplicateExam(exam:Exam){
-    this.submitting = true
+    this.submitting.set(true)
     
     this.duplicateExam(exam.id, exam.label + "_copy").then( () =>{
-      this.submitting = false
+      this.submitting.set(false)
     },
     reason=>{
       alert("duplicate failed" + reason)
-      this.submitting = false
+      this.submitting.set(false)
     })
   }  
   duplicateExam(exam_id, exam_label:string):Promise<void>{
@@ -157,7 +161,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
       },
       error => {
         alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
+        this.submitting.set(false)
       }) 
     }) 
         
@@ -175,7 +179,8 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
         label:label,
         
         isDeleted:false,
-        isRequired:false
+        isRequired:false,
+        parameters:[]
       }
       db.collection('materias/' + this.materiaid + '/exams').doc(id).set(exam).then( () =>{
         console.log("examen created")

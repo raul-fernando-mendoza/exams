@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit, ViewChild } from "@angular/core"
+import { Component, Inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core"
 import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@angular/forms"
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
-import { MatSelectChange as MatSelectChange } from "@angular/material/select"
+import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
 import { CertificateType, Exam, Laboratory, Materia } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
@@ -16,7 +16,7 @@ import { UserPreferencesService } from "../user-preferences.service"
 import { Observable, Observer } from "rxjs"
 import { FileLoadObserver } from "../load-observers/load-observers.module"
 import { DialogNameDialog } from "../name-dialog/name-dlg"
-import { FileLoadedEvent } from "../file-loader/file-loader.component"
+import { FileLoadedEvent, FileLoaderComponent } from "../file-loader/file-loader.component"
 
 
 import { CommonModule } from '@angular/common';
@@ -29,9 +29,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { MatDialogModule } from '@angular/material/dialog';
-
-var storageRef
-var materia_id
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
+import { MatCheckboxModule } from "@angular/material/checkbox"
+import { MatCardModule } from "@angular/material/card"
+import { MateriaLaboratoryListComponent } from "../materia-laboratory-list/materia-laboratory-list.component"
+import { MateriaExamsListComponent } from "../materia-exams-list/materia-exams-list.component"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -45,9 +47,16 @@ var materia_id
       ,FormsModule
       ,ReactiveFormsModule
       ,MatFormFieldModule
+      ,MatCardModule 
       ,MatInputModule 
+      ,MatCheckboxModule
+      ,MatSelectModule
   
       ,MatDialogModule  
+      ,MatProgressSpinnerModule
+      ,FileLoaderComponent
+      ,MateriaLaboratoryListComponent
+      ,MateriaExamsListComponent
     ],      
     templateUrl: 'materia-edit.html',
     styleUrls: ['materia-edit.css']
@@ -62,8 +71,26 @@ export class DialogMateriaDialog implements OnInit{
   examenes:Array<Exam>=[]
 
   materia_id = null
-  m:FormGroup = null
-  submitting:boolean = false
+  m:FormGroup =  this.fb.group({
+            id: [""],
+            isDeleted:[false],
+            materia_name:["", Validators.required],
+            
+            certificateTypeId:[""],
+
+            description:[""],
+            videoUrl:[""],
+            videoDescription:[""],
+            pictureUrl:[""],
+            pictureDescription:[""],
+            isEnrollmentActive:[false],
+            label1:[""], 
+            label2:[""], 
+            label3:[""], 
+            label4:[""], 
+            color1:[""], 
+            color2:[""], 
+          })
 
   certificateTypes:Array<CertificateType> = []
   certificateIcons = []
@@ -83,6 +110,8 @@ export class DialogMateriaDialog implements OnInit{
   materiaEnrollment = null
 
   materiaReferenceCollection = null
+
+  submitting = signal(true)
 
   constructor(
       private fb: FormBuilder
@@ -111,8 +140,6 @@ export class DialogMateriaDialog implements OnInit{
     
         
   }
-
-
   ngOnInit(): void {
     this.loadMastersList()
     this.update()
@@ -133,28 +160,28 @@ export class DialogMateriaDialog implements OnInit{
                   
       var unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
         snapshot =>{
+          this.submitting.set(false)
           this.materia = snapshot.data() as Materia
 
-          this.m = this.fb.group({
-            id: [this.materia.id],
-            isDeleted:[this.materia.isDeleted],
-            materia_name:[this.materia.materia_name, Validators.required],
+          this.m.controls.id.setValue(this.materia.id)
+          this.m.controls.isDeleted.setValue(this.materia.isDeleted)
+          this.m.controls.materia_name.setValue(this.materia.materia_name)
             
-            certificateTypeId:[this.materia.certificateTypeId],
+          this.m.controls.certificateTypeId.setValue(this.materia.certificateTypeId)
 
-            description:[this.materia.description],
-            videoUrl:[this.materia.videoUrl],
-            videoDescription:[this.materia.videoDescription],
-            pictureUrl:[this.materia.pictureUrl],
-            pictureDescription:[this.materia.pictureDescription],
-            isEnrollmentActive:[this.materia.isEnrollmentActive],
-            label1:[""], 
-            label2:[""], 
-            label3:[""], 
-            label4:[""], 
-            color1:[""], 
-            color2:[""], 
-          })
+          this.m.controls.description.setValue(this.materia.description)
+          this.m.controls.videoUrl.setValue(this.materia.videoUrl)
+          this.m.controls.videoDescription.setValue(this.materia.videoDescription)
+          this.m.controls.pictureUrl.setValue(this.materia.pictureUrl)
+          this.m.controls.pictureDescription.setValue(this.materia.pictureDescription)
+          this.m.controls.isEnrollmentActive.setValue(this.materia.isEnrollmentActive)
+          this.m.controls.label1.setValue("") 
+          this.m.controls.label2.setValue("") 
+          this.m.controls.label3.setValue("") 
+          this.m.controls.label4.setValue("") 
+          this.m.controls.color1.setValue("") 
+          this.m.controls.color2.setValue("") 
+          
           //this.loadExams(this.materia_id, this.m.controls.exams as FormArray)
           //this.loadLaboratories(this.materia_id, this.m.controls.laboratories as FormArray) 
       }) 

@@ -1,0 +1,45 @@
+@for( a of aspects(); track a.aspect.id ; let i=$index){
+    <form class="aspect" [formGroup]="a.fg">
+            <mat-form-field >
+                <input matInput  resizeToFitContent  formControlName="label" placeholder="Escriba lo que debe ocurrir" (change)="onChangeAspect(a.fg)">
+            </mat-form-field> 
+            
+            <mat-form-field appearance="fill">
+                <mat-label>descripcion</mat-label>
+                <textarea matInput
+                cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="1"
+                cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeAspect(a.fg)"></textarea>
+            </mat-form-field> 
+             
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>  
+            <mat-menu #menu="matMenu" >
+                <button mat-menu-item  (click)="delAspect(a.fg)" [disabled]="submitting()">
+                    <mat-icon>delete</mat-icon>
+                    <span>borrar</span>
+                </button> 
+                <button mat-menu-item  (click)="upAspect(a.fg, i)" [disabled]="submitting()">
+                    <mat-icon>arrow_circle_up</mat-icon>
+                    <span>mover arriba</span>
+                </button> 
+                <button mat-menu-item color="primary" (click)="downAspect(a.fg, i)" [disabled]="submitting()">
+                    <mat-icon>arrow_circle_down</mat-icon>
+                    <span>mover abajo</span>
+                </button> 
+                <button mat-menu-item color="primary" (click)="dupAspect(a.fg, i)" [disabled]="submitting()">
+                    <mat-icon>content_copy</mat-icon>
+                    <span>duplicar</span>
+                </button> 
+            </mat-menu>
+    </form>
+}
+@empty{
+    No hay Aspectos
+}
+<div>
+<button mat-raised-button [disabled]="submitting()" (click)="onNewAspect()">Nuevo Aspecto</button>
+</div>
+

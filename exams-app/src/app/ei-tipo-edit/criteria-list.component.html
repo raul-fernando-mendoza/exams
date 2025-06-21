@@ -1,0 +1,45 @@
+@for( c of criterias(); track c.criteria.id ; let i=$index){
+    <form class="criteria" [formGroup]="c.fg">
+        <mat-toolbar color="warn">
+            <mat-form-field >
+                <input matInput  resizeToFitContent  formControlName="label" (change)="onChangeCriteria(c.fg)">
+            </mat-form-field> 
+            <span class="example-spacer"></span> 
+
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>  
+            <mat-menu #menu="matMenu" >
+                <button mat-menu-item  (click)="delCriteria(c.fg)" [disabled]="submitting()">
+                    <mat-icon>delete</mat-icon>
+                    <span>borrar</span>
+                </button> 
+                <button mat-menu-item  (click)="upCriteria(c.fg, i)" [disabled]="submitting()">
+                    <mat-icon>arrow_circle_up</mat-icon>
+                    <span>mover arriba</span>
+                </button> 
+                <button mat-menu-item color="primary" (click)="downCriteria(c.fg, i)" [disabled]="submitting()">
+                    <mat-icon>arrow_circle_down</mat-icon>
+                    <span>mover abajo</span>
+                </button> 
+                <button mat-menu-item color="primary" (click)="dupCriteria(c.fg, i)" [disabled]="submitting()">
+                    <mat-icon>content_copy</mat-icon>
+                    <span>duplicar</span>
+                </button> 
+            </mat-menu>
+        </mat-toolbar>
+    </form>
+    <app-aspect-list [materia_id]="materia_id" [exam_id]="exam_id" [parameter_id]="parameter_id" [criteria_id]="c.criteria.id"></app-aspect-list>
+}
+@empty{
+    No hay criterios
+}
+<div>
+    <mat-toolbar>
+        <span class="example-spacer"></span>
+        <button mat-raised-button color="warn" [disabled]="submitting()" (click)="onNewCriteria()">Nuevo Criterio</button>
+        <span class="example-spacer"></span>
+    </mat-toolbar>
+
+</div>
+

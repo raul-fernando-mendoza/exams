@@ -2,12 +2,12 @@
     <mat-icon>more_vert</mat-icon>
   </button></h3>
   <mat-menu #menu="matMenu" >
-    <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting">
+    <button mat-menu-item (click)="onCreateExam()" [disabled]="submitting()">
       <mat-icon>library_add</mat-icon>
       <span>Nuevo Examen</span>
     </button>            
   </mat-menu> 
-<div *ngIf="submitting==false;  else spinnerBlock">
+<div *ngIf="submitting()==false;  else spinnerBlock">
     <mat-list  *ngFor="let ei of exams">
         <mat-list-item>
             <span class="exam-label">{{ ei.exam.label }}</span>
@@ -15,15 +15,15 @@
                 <mat-icon>more_vert</mat-icon>
             </button>
               <mat-menu #menu="matMenu" >
-                <button mat-menu-item (click)="onEditExam(ei.exam.id)" [disabled]="submitting">
+                <button mat-menu-item (click)="onEditExam(ei.exam.id)" [disabled]="submitting()">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                 </button>    
-                <button  mat-menu-item (click)="onDeleteExam(ei.exam)" [disabled]="submitting">
+                <button  mat-menu-item (click)="onDeleteExam(ei.exam)" [disabled]="submitting()">
                   <mat-icon>delete</mat-icon>
                   <span>Borrar</span>
                 </button>      
-                <button  mat-menu-item (click)="onDuplicateExam(ei.exam)" [disabled]="submitting">
+                <button  mat-menu-item (click)="onDuplicateExam(ei.exam)" [disabled]="submitting()">
                   <mat-icon>content_copy</mat-icon>
                   <span>Duplicar</span>
                 </button>       

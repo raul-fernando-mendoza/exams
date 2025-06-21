@@ -19,6 +19,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
 
 interface MateriaItem{
   materia:Materia
@@ -43,6 +44,7 @@ interface MateriaItem{
     ,MatButtonToggleModule
     ,MatProgressSpinnerModule
     ,MatMenuModule
+    ,MatCardModule 
   ],    
   templateUrl: './materia-list.component.html',
   styleUrls: ['./materia-list.component.css'],
@@ -50,9 +52,9 @@ interface MateriaItem{
 })
 export class MateriaListComponent implements OnInit , OnDestroy{
 
-  materiasList:Array<MateriaItem> = []
+  materiasList = signal( new Array<MateriaItem>() )
  
-  submitting = false
+  submitting = signal(false)
 
   organization_id:string
   isAdmin = false
@@ -91,12 +93,13 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
   loadMaterias():Promise<void>{
     return new Promise<void>((resolve, reject) =>{
-      this.submitting = true
+      this.submitting.set(true)
       this.unsubscribe = db.collection("materias")
       .where("organization_id","==", this.organization_id)
       .where("isDeleted","==", false)
       .onSnapshot( snapshot =>{
-        this.materiasList.length = 0
+        this.submitting.set(false)
+        let newMateriasList = new Array<MateriaItem>()
         snapshot.docs.map( doc =>{
           const materia = doc.data() as Materia
 
@@ -113,14 +116,15 @@ export class MateriaListComponent implements OnInit , OnDestroy{
           ,reason=>{
             console.log("ERROR when reading getMateriaEnrollment:" + reason)
           })
-          this.materiasList.push(materiaItem)          
+          newMateriasList.push(materiaItem)          
         })
-        this.materiasList.sort( (a,b) => {return a.materia.materia_name > b.materia.materia_name? 1:-1})
-        this.submitting = false
+        newMateriasList.sort( (a,b) => {return a.materia.materia_name > b.materia.materia_name? 1:-1})
+        
+        this.materiasList.set( newMateriasList )
         resolve()
       },
       reason =>{
-        this.submitting = false
+        this.submitting.set(false)
         console.log("materias where not loaded:" + reason)
         reject(reason)
       })
@@ -161,19 +165,19 @@ export class MateriaListComponent implements OnInit , OnDestroy{
   createMateria( materia_name ):Promise<string>{
     return new Promise<string>( (resolve, reject) =>{
       const id =uuid.v4()
-      this.submitting = true
+      this.submitting.set(true)
       db.collection("materias").doc(id).set({
         id:id,
         materia_name:materia_name,
         isDeleted:false,
         organization_id:this.organization_id
       }).then( () =>{
-        this.submitting = false
+        this.submitting.set(false)
         console.log("materia created")
         resolve( id )
       },
       reason =>{
-        this.submitting = false
+        this.submitting.set(false)
         alert("ERROR: Can not create materia:" + reason)
         reject( reason )
       })
@@ -186,9 +190,9 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       return
     }
     else{
-      this.submitting = true
+      this.submitting.set(true)
       db.collection("materias").doc(materia_id).update({"isDeleted":true}).then(()=>{
-        this.submitting = false
+        this.submitting.set(false)
         this.update() 
       })
 
@@ -196,15 +200,15 @@ export class MateriaListComponent implements OnInit , OnDestroy{
     
   }  
   onDuplicateMateria(materia_id:string, materia_label:string){
-    this.submitting = true
+    this.submitting.set(true)
     
     this.duplicateMateria(materia_id, materia_label).then( () =>{
-      this.submitting = false
+      this.submitting.set(false)
       this.update()
     },
     reason=>{
       alert("duplicate failed" + reason)
-      this.submitting = false
+      this.submitting.set(false)
     })
   }
 
@@ -239,7 +243,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       },
       error => {
         alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-        this.submitting = false
+        this.submitting.set(false)
       }) 
     }) 
        

@@ -1,12 +1,13 @@
 Habilidad
-<form *ngIf="m" [formGroup]="m" >
+<div *ngIf="submitting()==false;  else spinnerBlock">
+<form *ngIf="materia" [formGroup]="m" >
   <mat-card >
     <mat-card-title-group>
       <mat-card-title *ngIf="!isAdmin">{{ m.controls.materia_name.value }}</mat-card-title>
       <mat-card-title *ngIf="isAdmin">
         <mat-form-field class="field-name">
           <mat-label>Nombre</mat-label>
-          <input  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" >
+          <textarea  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" ></textarea >
         </mat-form-field>  
       </mat-card-title>
       <img mat-card-sm-image *ngIf="materia.materiaIconUrl" mat-card-sm-image src="{{materia.materiaIconUrl}}">
@@ -25,7 +26,7 @@ Habilidad
         Enrolado activo
       </mat-checkbox>
 
-      <mat-form-field *ngIf="isAdmin" appearance="legacy">
+      <mat-form-field *ngIf="isAdmin" >
           <mat-label>Certificado Maestro</mat-label>
           <mat-select formControlName="certificateTypeId"  name="certificateTypeId" (selectionChange)="onSelectChange($event, m)">
             <mat-option *ngFor="let tc of certificateTypes" [value]="tc.id">
@@ -41,14 +42,17 @@ Habilidad
   <mat-card *ngIf="isAdmin || materia.pictureUrl || materia.pictureDescription">
     <mat-card-title-group>
       <mat-card-title>Objetivos</mat-card-title>
-      <img class="picture" src="{{materia.pictureUrl}}">    
-
     </mat-card-title-group>
     <mat-card-content>
+      <img class="picture" src="{{materia.pictureUrl}}">       
       <app-file-loader *ngIf="isAdmin" label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
 
-      <quill-view-html *ngIf="!isAdmin && m.controls.pictureDescription.value" [content]="m.controls.pictureDescription.value"></quill-view-html>
-      <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="pictureDescription" (onBlur)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></quill-editor>
+      
+      <mat-form-field class="description" appearance="outline">
+      <textarea matInput  class="description" *ngIf="!isAdmin" formControlName="pictureDescription" [readonly]="true"></textarea >
+      <textarea matInput class="description" *ngIf="isAdmin"  formControlName="pictureDescription" (change)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></textarea>
+      </mat-form-field> 
+      
         
     </mat-card-content>
   </mat-card>
@@ -56,21 +60,26 @@ Habilidad
   <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
     <mat-card-title-group>
       <mat-card-title>Experiencias</mat-card-title>
+    </mat-card-title-group>
+    <mat-card-content>
       <video  *ngIf="materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
       vjs-video vjs-setup="options">
         <source src="{{ materia.videoUrl }}" type='video/mp4' />
       </video>
-    </mat-card-title-group>
-    <mat-card-content>
-
       <app-file-loader *ngIf="isAdmin" label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
-      <quill-view-html *ngIf="!isAdmin && m.controls.videoDescription.value" [content]="m.controls.videoDescription.value"></quill-view-html>
-      <quill-editor *ngIf="isAdmin" [modules]="modules" formControlName="videoDescription" (onBlur)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></quill-editor>
+      <mat-form-field class="description" appearance="outline">
+      <textarea matInput class="description" *ngIf="!isAdmin" formControlName="videoDescription" [readonly]="true"></textarea >
+      <textarea matInput class="description" *ngIf="isAdmin" formControlName="videoDescription" (change)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></textarea>
+      </mat-form-field>
 
     </mat-card-content>
   </mat-card>
+  
   <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Certificados</mat-card-title>
+    </mat-card-title-group>    
     <mat-card-content>
 
       <mat-grid-list *ngIf="materiaEnrollment && materiaEnrollment.certificateUrl" class="certificate-grid" cols="2" rowHeight="4em">
@@ -84,7 +93,13 @@ Habilidad
       <reference-list *ngIf="materiaEnrollment || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
     </mat-card-content>
   </mat-card>
+
 </form>
+</div>
+<ng-template #spinnerBlock>
+  Cargando información.
+  <mat-spinner></mat-spinner>
+</ng-template>
 
 
 

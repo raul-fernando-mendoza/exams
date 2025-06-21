@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { Exam, getLaboratoryStatusName, Laboratory, LaboratoryGrade, LaboratoryGradeStatus } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
 
 interface LaboratoryItem{
   laboratory:Laboratory
@@ -23,11 +25,12 @@ interface LaboratoryItem{
   selector: 'app-materia-laboratory-list',
   standalone: true,
   imports: [
-
-    MatIconModule
+    CommonModule
+    ,MatIconModule
     ,MatButtonModule 
     ,MatListModule   
     ,MatProgressSpinnerModule
+    ,MatMenuModule
   ], 
   templateUrl: './materia-laboratory-list.component.html',
   styleUrls: ['./materia-laboratory-list.component.css']
@@ -37,7 +40,7 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   organization_id:string
   isAdmin = false
   unsubscribe = null
-  submitting = false
+  submitting = signal(false)
   isEnrolled = false
   laboratoryList:Array<LaboratoryItem> = []
   userUid = null
@@ -74,10 +77,10 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   loadLaboratories(materia_id:string):Promise<void>{
     return new Promise<void>((resolve, reject) =>{
 
-      this.submitting = true
+      this.submitting.set(true)
       this.unsubscribe = db.collection("materias/" + materia_id + "/laboratory")
       .where("isDeleted","==", false).onSnapshot( snapshot =>{
-        this.submitting = false
+        this.submitting.set(false)
         this.laboratoryList.length = 0
         snapshot.docs.map( doc =>{
           const laboratory = doc.data() as Laboratory
@@ -204,14 +207,14 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
         label:laboratory_Label,
         isDeleted:false     
       }
-      this.submitting = true
+      this.submitting.set(true)
       db.collection("materias/" + this.materiaid + "/laboratory").doc(id).set(laboratory).then( () =>{
-        this.submitting = false
+        this.submitting.set(false)
         console.log("materia created")
         resolve( id )
       },
       reason =>{
-        this.submitting = false
+        this.submitting.set(false)
         alert("ERROR: Can not create materia:" + reason)
         reject( reason )
       })

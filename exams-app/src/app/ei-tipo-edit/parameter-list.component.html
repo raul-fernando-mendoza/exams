@@ -1,0 +1,66 @@
+Parametros
+ <mat-accordion  multi="false">
+@for( p of parameters(); track p.parameter.id ; let i=$index){
+   
+    <mat-expansion-panel>
+        <mat-expansion-panel-header > 
+            <mat-panel-title>
+
+                <mat-toolbar color="primary">
+                 {{ p.parameter.label }}
+                 </mat-toolbar>                                     
+        
+            </mat-panel-title> 
+        </mat-expansion-panel-header>    
+
+        <form class="parameter" [formGroup]="p.fg">
+            <div class="bar">
+                <mat-form-field >
+                    <input matInput  resizeToFitContent  formControlName="label" (change)="onChangeParameter(p.fg)">
+                </mat-form-field> 
+                <span class="example-spacer"></span> 
+                <mat-button-toggle-group #group="matButtonToggleGroup" formControlName="scoreType" (change)="onChangeParameter(p.fg)">
+                    <mat-button-toggle value="status" aria-label="calificar usando estrellas">
+                        <mat-icon>remove_red_eye</mat-icon>
+                    </mat-button-toggle>
+                    <mat-button-toggle value="starts" aria-label="calificar usando statuses">
+                        <mat-icon >stars</mat-icon> 
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>  
+                <mat-menu #menu="matMenu" >
+                    <button mat-menu-item  (click)="delParameter(p.fg)" [disabled]="submitting()">
+                        <mat-icon>delete</mat-icon>
+                        <span>borrar</span>
+                    </button> 
+                    <button mat-menu-item  (click)="upParameter(p.fg, i)" [disabled]="submitting()">
+                        <mat-icon>arrow_circle_up</mat-icon>
+                        <span>mover arriba</span>
+                    </button> 
+                    <button mat-menu-item color="primary" (click)="downParameter(p.fg, i)" [disabled]="submitting()">
+                        <mat-icon>arrow_circle_down</mat-icon>
+                        <span>mover abajo</span>
+                    </button> 
+                    <button mat-menu-item color="primary" (click)="dupParameter(p.fg, i)" [disabled]="submitting()">
+                        <mat-icon>content_copy</mat-icon>
+                        <span>duplicar</span>
+                    </button> 
+                </mat-menu>
+            </div>
+        </form>
+        <app-criteria-list [materia_id]="materia_id" [exam_id]="exam_id" [parameter_id]="p.parameter.id"></app-criteria-list>
+    </mat-expansion-panel>
+}
+@empty{
+    No hay parametros
+}
+<div>
+    <mat-toolbar>
+        <span class="example-spacer"></span>
+        <button mat-raised-button color="primary" [disabled]="submitting()" (click)="onNewParameter()">Nuevo Parametro</button>
+    </mat-toolbar>    
+
+</div>
+</mat-accordion>

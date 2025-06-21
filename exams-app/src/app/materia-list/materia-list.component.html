@@ -18,8 +18,8 @@
   </div>
 
 
-<div *ngIf="submitting==false;  else spinnerBlock">
-  <mat-card class="materia-card" *ngFor="let mi of materiasList" class="materia-card" [ngClass]="isSearched(mi)">
+<div *ngIf="submitting()==false;  else spinnerBlock">
+  <mat-card class="materia-card" *ngFor="let mi of materiasList()" class="materia-card" [ngClass]="isSearched(mi)">
     <mat-card-header>
       <mat-card-title-group>
         <mat-card-title class="enroll-card"><span (click)="onEditMateria(mi.materia)">{{ mi.materia.materia_name }}</span>
@@ -28,16 +28,16 @@
           </button>
           <mat-menu #menu="matMenu" >
 
-            <button mat-menu-item (click)="onEditMateria(mi.materia)" [disabled]="submitting">
+            <button mat-menu-item (click)="onEditMateria(mi.materia)" [disabled]="submitting()">
               <mat-icon>edit</mat-icon>
               <span>Editar</span>
             </button>
 
-            <button mat-menu-item (click)="onRemoveMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting">
+            <button mat-menu-item (click)="onRemoveMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting()">
               <mat-icon>delete</mat-icon>
               <span>Borrar</span>
             </button>            
-            <button mat-menu-item (click)="onDuplicateMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting">
+            <button mat-menu-item (click)="onDuplicateMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting()">
               <mat-icon>library_add</mat-icon>
               <span>Duplicate</span>
             </button>            
