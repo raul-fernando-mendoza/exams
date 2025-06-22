@@ -43,7 +43,7 @@ export class LoginFormComponent {
   loginForm = this.fb.group({
     username: [null, Validators.required],
     password: [null, Validators.required],
-    recaptchaReactive:[null, Validators.required],
+    //recaptchaReactive:[null, Validators.required],
   });
   isRegister = false
   hide = true;
