@@ -33,10 +33,7 @@ export const environment = {
   gsApiUrl: "https://us-central1-thoth-qa.cloudfunctions.net/gsRequest" ,
   certificatesBucket:"certificates-thoth-qa",
 
-  stripeCreatePaymentIntentURL: "https://us-central1-thoth-qa.cloudfunctions.net/createPaymentIntendPost",
-  stripeGetProductDefaultPriceURL: "https://us-central1-thoth-qa.cloudfunctions.net/getProductDefaultPricePost",
-  stripeGetPaymentIntent: "https://us-central1-thoth-qa.cloudfunctions.net/getPaymentIntentPost",
-
+  
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 
   recaptcha: {

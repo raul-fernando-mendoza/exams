@@ -323,49 +323,6 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }  
 
 
-  public stripeCreatePaymentIntent(product_id, metadata): Observable<Object> {
-
-    var url = environment.stripeCreatePaymentIntentURL
-
-    var request_data = {
-      "product_id":product_id,
-      "metadata":metadata
-    }
-
-    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
-
-
-    return this.http.post(url, request_data, {headers: myheaders})
-  }
-
-
-  public stripeGetProduct(product_id): Observable<Object> {
-
-    var url = environment.stripeGetProductDefaultPriceURL
-
-    var request_data = {
-      "product_id":product_id
-    }
-
-    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
-
-
-    return this.http.post(url, request_data, {headers: myheaders})
-  }
-  public stripeGetPaymentIntent(paymentIntent_id): Observable<Object> {
-
-    var url = environment.stripeGetPaymentIntent
-
-    var request_data = {
-      "paymentIntentId":paymentIntent_id
-    }
-
-    var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
-
-
-    return this.http.post(url, request_data, {headers: myheaders})
-  }  
-
   fileLoaded(db_collection:string, id:string, e:FileLoadedEvent):Promise<FileLoaded>{
     return new Promise<FileLoaded>( (resolve, reject) =>{
       db.collection(db_collection).doc(id).get().then( doc =>{

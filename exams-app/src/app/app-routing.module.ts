@@ -21,8 +21,6 @@ import { CareerUserComponent } from './career-user/career-user.component';
 import { CertificateTypeListComponent } from './certificate-type-list/certificate-type-list.component';
 import { CertificateTypeEditComponent } from './certificate-type-edit/certificate-type-edit.component';
 import { UserProfileEditComponent } from './user-profile-edit/user-profile-edit.component';
-import { PaymentComponent } from './payment/payment.component';
-import { CheckoutComponent } from './checkout/checkout.component';
 import { PasswordResetEmailComponent } from './password-reset-email/password-reset-email.component';
 import { VideoMarksComponent } from './video-marks/video-marks.component';
 import { CanvasPainterComponent } from './canvas-painter/canvas-painter.component';
@@ -60,9 +58,7 @@ export const routes: Routes = [
   { path: 'career-user', component: CareerUserComponent},
   { path: 'certificate-type-list', component:CertificateTypeListComponent },
   { path: 'certificate-type-edit', component:CertificateTypeEditComponent },
-  { path: 'user-profile-edit', component:UserProfileEditComponent },
-  { path: 'payment', component:PaymentComponent },
-  { path: 'checkout', component:CheckoutComponent },  
+  { path: 'user-profile-edit', component:UserProfileEditComponent },  
   { path: 'password-reset-email', component:PasswordResetEmailComponent },
   { path: 'video-marks', component:VideoMarksComponent },
   { path: 'canvas-painter', component:CanvasPainterComponent },
