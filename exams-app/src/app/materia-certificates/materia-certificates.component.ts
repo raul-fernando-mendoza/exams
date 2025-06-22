@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, Inject, signal, ChangeDetectorRef } from '@angular/core';
 import { MatPaginator  } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTable, MatTableModule } from '@angular/material/table';
 import { MateriaCertificatesDataSource, NodeTableRow } from './materia-certificates-datasource';
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import { db } from 'src/environments/environment';
@@ -21,6 +21,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-materia-certificates',
@@ -32,7 +34,12 @@ import {MatSelectModule} from '@angular/material/select';
     ,MatPaginatorModule
     ,MatDialogModule 
     ,MatToolbarModule 
-    ,MatSelectModule    
+    ,MatSelectModule
+    ,MatProgressSpinnerModule 
+    ,MatTableModule
+    ,MatPaginatorModule 
+    ,MatSortModule 
+    ,MatMenuModule  
   ], 
 
   templateUrl: './materia-certificates.component.html',
@@ -43,7 +50,9 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
-  dataSource: MateriaCertificatesDataSource;
+
+  nodeList = Array<NodeTableRow>()
+  dataSource = signal<MateriaCertificatesDataSource>(new MateriaCertificatesDataSource(this.nodeList));
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['student_name', 'approved', 'actions'];
@@ -52,12 +61,12 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   materiaListener = null
   examListener = null
 
-  nodeList = Array<NodeTableRow>()
+  
   open_transactions:Set<string> = new Set()
 
   organization_id = null
 
-  submitting = false
+  submitting = signal(false)
 
   constructor(
       private userPreferencesService:UserPreferencesService
@@ -68,6 +77,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     , private userPreferencesServide: UserPreferencesService
     , private router: Router
     , private dateFormatService:DateFormatService
+    , private changeDetectorRef: ChangeDetectorRef
   ){
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
   }
@@ -82,10 +92,11 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
 
   update(){
-    this.dataSource = new MateriaCertificatesDataSource(this.nodeList)
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.table.dataSource = this.dataSource; 
+    
+    this.dataSource.set(new MateriaCertificatesDataSource(this.nodeList))
+    this.dataSource().sort = this.sort;
+    this.dataSource().paginator = this.paginator;
+    this.table.dataSource =this.dataSource(); 
   }
 
   loadStudents():Promise<void>{
@@ -200,15 +211,15 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   }
 
   onMateriaClick(row:NodeTableRow){
-    if(this.submitting == false && row.opened == false){
-      this.submitting = true
+    if(this.submitting() == false && row.opened == false){
+      this.submitting.set(true)
       row.opened = true
       this.loadExamsForRow(row).then(()=>{
-        this.submitting = false
+        this.submitting.set(false)
         this.update()
       })
     }
-    else if ( this.submitting == false && row.opened == true) {
+    else if ( this.submitting() == false && row.opened == true) {
       row.opened=false
       row.children.length=0
       this.update()
@@ -363,21 +374,21 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
   onMateriasClick(row:NodeTableRow){
     console.log("opening materias:" + "submmiting:" + this.submitting + "row oppened:" + row.opened)
-    if(this.submitting == false && row.opened == false){
-      this.submitting = true
+    if(this.submitting() == false && row.opened == false){
+      this.submitting.set(true)
       this.loadEnrollmentForRow(row).then( () =>{
-        this.submitting = false
+        this.submitting.set(false)
         this.update()
 
 
       },
       reason =>{
-        this.submitting = false
+        this.submitting.set(false)
         alert("error loading rows")
         
       })
     }
-    else if( this.submitting == false && row.opened == true ){
+    else if( this.submitting() == false && row.opened == true ){
       row.children.length=0
       row.opened=false
       this.update()
