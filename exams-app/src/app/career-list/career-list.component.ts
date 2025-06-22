@@ -1,8 +1,4 @@
-import { Component,ViewChild, Inject, OnInit, OnDestroy } from '@angular/core';
-import { CareerTableDataSource } from './carrer-list-datasource';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTable } from '@angular/material/table';
+import { Component,ViewChild, Inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { Career } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { db } from 'src/environments/environment';
@@ -51,7 +47,7 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class CareerListComponent implements OnInit, OnDestroy {
 
-  careers:Array<Career> = []
+  careers = signal<Array<Career>>( null )
 
   submitting = false
   unsubscribe = null
@@ -89,18 +85,19 @@ export class CareerListComponent implements OnInit, OnDestroy {
       this.unsubscribe =query.onSnapshot( 
         set =>{
           this.submitting = false
-          this.careers.length = 0
+          let careers = new Array<Career>()
           set.docs.map(doc =>{
             var career:Career = doc.data() as Career           
-            this.careers.push(
+            careers.push(
               career
             )
           })
-          this.careers.sort( (a,b)=>{
+          careers.sort( (a,b)=>{
             return a.career_name > b.career_name ? 1 : 0
           })
           
           console.log( "***DONE careers***" )
+          this.careers.set( careers )
           resolve()
         },
         reason => {

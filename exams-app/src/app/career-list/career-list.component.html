@@ -43,8 +43,8 @@
   [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
 -->
-<div *ngIf="submitting==false;  else spinnerBlock">
-  <mat-card *ngFor="let c of careers">
+@if(careers()){
+  <mat-card class="example-card" *ngFor="let c of careers()">
     <mat-card-title-group>
         <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
             <mat-icon>more_vert</mat-icon>
@@ -60,20 +60,19 @@
             </button>      
           </mat-menu>     
       </mat-card-title>   
+      <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">      
         <mat-card-subtitle (click)="onCareerDetails(c.id)">
-          {{ c.description }}  
+          subtitle
         </mat-card-subtitle>
-        <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">
-                                    
     </mat-card-title-group>
-    
+    <img mat-card-image  *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
     <mat-card-content>
-      <img img mat-card-image *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
+      {{ c.description }}  
     </mat-card-content>
   </mat-card>
 
-</div>
-<ng-template #spinnerBlock>
+}
+@else{
   Cargando información.
   <mat-spinner></mat-spinner>
-</ng-template>
+}
