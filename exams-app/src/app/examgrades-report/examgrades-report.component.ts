@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit, resolveForwardRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, resolveForwardRef, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ import { MatCardModule } from '@angular/material/card';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ReferenceComponent } from '../reference-list/reference-list';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 //http://localhost:4200/examgrades-report;student_uid=undefined;fechaApplicacion=2022-03-20
@@ -49,20 +50,23 @@ import { MatTableModule } from '@angular/material/table';
     ,MatExpansionModule
     ,ReferenceComponent
     ,MatTableModule
+    ,MatProgressSpinnerModule
   ],   
   templateUrl: './examgrades-report.component.html',
   styleUrls: ['./examgrades-report.component.css']
 })
 export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
+  @ViewChild('target') canvas: ElementRef<HTMLCanvasElement>;
 
   materia_id:string
   exam_id:string
-  exam:Exam = null
+  exam = signal<Exam>(null) 
   examGrade_id:string
-  exam_label:string
+  //exam_label:string
 
-  examGrade:ExamGrade
+  examGrade=signal<ExamGrade>(null)
+
 
 
 
@@ -71,6 +75,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     ,private examenesImprovisacionService:ExamenesImprovisacionService
     ,private navigationService:NavigationService
     ,private dateFormatService:DateFormatService
+    ,private changeDetectorRef: ChangeDetectorRef
   ) {
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.exam_id = this.route.snapshot.paramMap.get('exam_id')
@@ -82,74 +87,35 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    db.collection("materias/" + this.materia_id + "/exams").doc( this.exam_id ).get().then( doc =>{
-      this.exam = doc.data() as Exam      
+    this.getExam(this.exam_id).then( exam =>{
+      this.exam.set( exam )
     })
+    this.getExamGrade( this.examGrade_id ).then( examGrade =>{
+      this.examGrade.set( examGrade )
+      this.changeDetectorRef.detectChanges()
+      var labels = []
+      let scores = []
+      for( let i=0; i< this.examGrade().parameterGrades.length; i++){
+        let p = this.examGrade().parameterGrades[i]
+        labels[i] = p.label
+        scores[i] = p.score
+      }  
+      
+      this.createGraph(this.examGrade_id, this.examGrade().student.displayName, labels, scores)        
 
-    if( this.examGrade_id){
-      db.collection("examGrades").doc(this.examGrade_id).get().then( doc =>{
-        const examGrade:ExamGrade = doc.data() as ExamGrade
-        this.examGrade = {
-          id:examGrade.id,
-          exam_id:examGrade.exam_id,
-          title:examGrade.title,
-          student_uid:examGrade.student_uid,
-          materia_id:examGrade.materia_id,
-          isReleased:examGrade.isReleased,
-          applicationDate:doc.data().applicationDate,
-          score :examGrade.score,
-          parameterGrades:[]
-        }
-        
-        
-        
-        var labels = []
-        let scores = []
-
-        db.collection("materias/" + examGrade.materia_id + "/exams").doc(this.examGrade.exam_id).get().then( doc =>{
-          this.exam_label = doc.data().label
-        })
-
-        this.examenesImprovisacionService.getUser(this.examGrade.student_uid).then( user =>{
-          this.examGrade.student = {
-            uid:user.uid,
-            displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
-          }
-
-          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
-          .where("isCurrentVersion", "==", true).get().then( set =>{
-
-            set.docs.map( doc =>{
-              var parameterGrade:ParameterGrade = doc.data() as ParameterGrade
-             
-              parameterGrade.criteriaGrades=[]
-              
-            
-              this.examGrade.parameterGrades.push(parameterGrade)
-
-              this.addCriteriaGrades(this.examGrade, parameterGrade)
-            })
-
-            this.examGrade.parameterGrades.sort((a,b) =>{
-              return a.label > b.label ? 1: -1
-            })
-
-            for( let i=0; i< this.examGrade.parameterGrades.length; i++){
-              let p = this.examGrade.parameterGrades[i]
-              labels[i] = p.label
-              scores[i] = p.score
-            }  
-            this.createGraph(this.examGrade_id, this.examGrade.student.displayName, labels, scores)        
-
-          },
-          reason =>{
-            console.error("ERROR: reading parameterGrades:" + reason)
-          })
-
-        })
-      })
-    }  
+    })
   }
+
+  getExam(exam_id:string):Promise<Exam>{
+    return new Promise<Exam>( (resolve, reject) =>{
+      db.collection("materias/" + this.materia_id + "/exams").doc( this.exam_id ).get().then( doc =>{
+        let exam = doc.data() as Exam      
+        resolve( exam )
+      })  
+    })
+  }
+
+
 
   ngOnInit(): void {
     
@@ -157,7 +123,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   
 
   createGraph(name, label, labels, data){
-    var myChart = new Chart(name, {
+    var myChart = new Chart(this.canvas.nativeElement, {
       type: 'bar',
       data: {
           labels: labels,
@@ -202,10 +168,67 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   onBack(){
     this.navigationService.back()
   }
+
+  getExamGrade(examGrade_id):Promise<ExamGrade>{
+    return new Promise<ExamGrade>( (resolve,reject)=>{
+      db.collection("examGrades").doc(examGrade_id).get().then( doc =>{
+        const data:ExamGrade = doc.data() 
+        let examGrade:ExamGrade = {
+          id:data.id,
+          exam_id:data.exam_id,
+          title:data.title,
+          student_uid:data.student_uid,
+          materia_id:data.materia_id,
+          isReleased:data.isReleased,
+          applicationDate:data.applicationDate,
+          score :data.score,
+          parameterGrades:[]
+        }
+        
+
+
+        this.examenesImprovisacionService.getUser(examGrade.student_uid).then( user =>{
+          examGrade.student = {
+            uid:user.uid,
+            displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
+          }
+
+          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
+          .where("isCurrentVersion", "==", true).get().then( set =>{
+            let transactions = []
+
+            set.docs.map( doc =>{
+              var parameterGrade:ParameterGrade = doc.data() as ParameterGrade
+            
+              parameterGrade.criteriaGrades=[]
+              
+            
+              examGrade.parameterGrades.push(parameterGrade)
+
+              let t = this.addCriteriaGrades(examGrade, parameterGrade)
+              transactions.push(t)
+            })
+
+            Promise.all(transactions).then( () =>{
+              examGrade.parameterGrades.sort((a,b) =>{
+                return a.label > b.label ? 1: -1
+              })
+
+              resolve( examGrade )
+
+            })
+
+          },
+          reason =>{
+            console.error("ERROR: reading parameterGrades:" + reason)
+          })
+
+        })
+      })
+    }) 
+  }  
   
   addCriteriaGrades(examGrade:ExamGrade, parameterGrade:ParameterGrade):Promise<void>{
-    var _resolve
-    var _reject
     return new Promise<void>((resolve,reject) =>{
       db.collection("examGrades/" + examGrade.id + "/parameterGrades/" + parameterGrade.id + "/criteriaGrades" ).get().then( snapshot =>{
         
@@ -229,6 +252,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
       },
       reason =>{
         console.error("Error")
+        reject(reason)
       })
     })
 
