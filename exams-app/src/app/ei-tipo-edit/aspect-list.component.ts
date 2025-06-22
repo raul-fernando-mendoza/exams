@@ -87,6 +87,7 @@ export class AspectListComponent implements OnInit , OnDestroy{
   update(){
     this.unsubscribe = db.collection("materias/" + this.materia_id + "/exams/" + this.exam_id + "/parameters/" + this.parameter_id + "/criterias/" + this.criteria_id + "/aspects/").onSnapshot( 
       set =>{
+        console.log("aspects have changed")
         let newAspects = new Array<AspectItem>()
         set.docs.forEach( a =>{
           let newAspect = a.data() as Aspect
@@ -209,7 +210,7 @@ upAspect(c:FormGroup, idx:number) {
               id:this.criteria_id,
               aspects:{
                 id: c.controls.id.value,
-                idx:idx-1
+                idx:c.controls.idx.value-1
               }
             }
           }
@@ -248,7 +249,7 @@ upAspect(c:FormGroup, idx:number) {
               id: this.criteria_id,
               aspects:{
                 id:c.controls.id.value,
-                idx:idx+1
+                idx:c.controls.idx.value+1
               }
             }
           }
@@ -261,6 +262,7 @@ upAspect(c:FormGroup, idx:number) {
       this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           this.submitting.set(false)
+          console.log("aspecto down completed")
         },
         error => {
           this.submitting.set(false)

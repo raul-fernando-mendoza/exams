@@ -203,7 +203,7 @@ upCriteria(c:FormGroup, idx:number) {
             id:this.parameter_id,
             criterias:{
               id: c.controls.id.value,
-              idx:idx-1
+              idx:c.controls.idx.value-1
             }
           }
         }
@@ -244,7 +244,7 @@ upCriteria(c:FormGroup, idx:number) {
             id:this.parameter_id,
             criterias:{
               id: c.controls.id.value,
-              idx:idx+1
+              idx:c.controls.idx.value+1
             }
           }
         }

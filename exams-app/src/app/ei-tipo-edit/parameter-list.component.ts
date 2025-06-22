@@ -198,7 +198,7 @@ upParameter(p:FormGroup, index:number){
           id:this.exam_id,
           parameters:{
             id: p.controls.id.value,
-            idx:index-1
+            idx:p.controls.idx.value-1
           }
         }
       }
@@ -232,7 +232,7 @@ upParameter(p:FormGroup, index:number){
           id:this.exam_id,
           parameters:{
             id: p.controls.id.value,
-            idx:index+1
+            idx:p.controls.idx.value+1
           }
         }
       }
