@@ -41,8 +41,8 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   isAdmin = false
   unsubscribe = null
   submitting = signal(false)
-  isEnrolled = false
-  laboratoryList:Array<LaboratoryItem> = []
+  isEnrolled = signal(false)
+  laboratoryList = signal<Array<LaboratoryItem>|null>(null)
   userUid = null
 
   constructor(
@@ -67,44 +67,51 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    
     if( this.materiaid != null){
       this.examenesImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled => {
-        this.isEnrolled = isEnrolled
-        this.loadLaboratories(this.materiaid)
+        this.isEnrolled.set(isEnrolled)
+        this.loadLaboratories(this.materiaid).then( (laboratoryList)=>{
+          this.laboratoryList.set( laboratoryList )
+        })
       })
     }
-  }
-  loadLaboratories(materia_id:string):Promise<void>{
-    return new Promise<void>((resolve, reject) =>{
 
-      this.submitting.set(true)
+  }
+  loadLaboratories(materia_id:string):Promise<Array<LaboratoryItem>>{
+    return new Promise<Array<LaboratoryItem>>((resolve, reject) =>{
+      let transactions =[]
       this.unsubscribe = db.collection("materias/" + materia_id + "/laboratory")
       .where("isDeleted","==", false).onSnapshot( snapshot =>{
-        this.submitting.set(false)
-        this.laboratoryList.length = 0
+        let laboratoryList = []
         snapshot.docs.map( doc =>{
           const laboratory = doc.data() as Laboratory
           var laboratoryItem:LaboratoryItem = {
             laboratory:laboratory,
             laboratoryGrade:null
           }
-          this.laboratoryList.push(laboratoryItem)
-          if( this.isEnrolled ){
-            this.getLaboratoryGrade( laboratory.id ).then( laboratoryGrade =>{
+          laboratoryList.push(laboratoryItem)
+          
+          if( this.isEnrolled() ){
+            let t = this.getLaboratoryGrade( laboratory.id ).then( laboratoryGrade =>{
               laboratoryItem.laboratoryGrade =laboratoryGrade
             },
             reason =>{
               //do nothing
             })
+            transactions.push(t)
           }
+            
         })
-        
-        this.laboratoryList.sort( (a,b) => {
-          return a.laboratory.label > b.laboratory.label ? 1:-1})
-        resolve()
+        Promise.all(transactions).then( ()=>{
+          laboratoryList.sort( (a,b) => {
+            return a.laboratory.label > b.laboratory.label ? 1:-1
+          })
+          resolve(laboratoryList)
+        })
       },
-      reason =>{
-        console.log("ERROR reading Laboratory:" + reason)
+      reason=>{
+        alert("Error retriving laboratories:" + reason)
         reject()
       })
     })

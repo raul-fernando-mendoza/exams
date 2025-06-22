@@ -1,4 +1,3 @@
-
 <h3>Lecciones Interactivas<button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
     <mat-icon>more_vert</mat-icon>
   </button></h3>
@@ -8,10 +7,11 @@
       <span>Nueva leccion interactiva</span>
     </button>            
   </mat-menu> 
-<div *ngIf="submitting()==false;  else spinnerBlock">
-    <mat-list  *ngFor="let li of laboratoryList">
+@if( laboratoryList() ){
+    <mat-list  *ngFor="let li of laboratoryList()">
         <mat-list-item>
             {{ li.laboratory.label }} 
+       
             <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
                 <mat-icon>more_vert</mat-icon>
             </button>
@@ -29,13 +29,14 @@
                   <span>Duplicar</span>
                 </button>       
               </mat-menu>
-            <span *ngIf="isEnrolled"> {{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
-            <button *ngIf="isEnrolled" (click)="onOpenLaboratoryGrade(li)" mat-button >Abrir</button>
-
+            <span *ngIf="isEnrolled()"> {{ li.laboratoryGrade ? getStatusName(l) : "no iniciado"}}</span>
+            <button *ngIf="isEnrolled()" (click)="onOpenLaboratoryGrade(li)" mat-button >Abrir</button>
+           
         </mat-list-item>
     </mat-list >
-</div>
-<ng-template #spinnerBlock>
+  }
+  @else{
     Cargando información.
     <mat-spinner></mat-spinner>
-</ng-template>
+  }
+  

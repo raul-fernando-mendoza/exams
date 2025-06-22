@@ -1,5 +1,5 @@
 <p>Leccion interactiva</p>
-<form *ngIf="l" [formGroup]="l" >
+<form *ngIf="laboratory()" [formGroup]="l" >
 
     <div *ngIf="!isAdmin">
         <h1>{{ l.controls.label.value }}</h1>

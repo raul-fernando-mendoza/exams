@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog  } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-laboratory-edit',
@@ -28,6 +29,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     ,FormsModule
     ,ReactiveFormsModule
     ,MatFormFieldModule
+    ,MatInputModule
 
   ],   
   templateUrl: './laboratory-edit.component.html',
@@ -41,7 +43,7 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
   materia_id = null
   laboratory_id = null
   l = null
-  laboratory:Laboratory = null
+  laboratory = signal<Laboratory>(null)
   unsubscribe = null
 
   constructor(
@@ -71,15 +73,16 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
 
     this.unsubscribe = db.collection("materias/" + this.materia_id + "/laboratory/" ).doc(this.laboratory_id).onSnapshot( 
       snapshot =>{
-        this.laboratory = snapshot.data() as Laboratory
+        let laboratory = snapshot.data() as Laboratory
         this.l = this.fb.group({
-          id: [this.laboratory_id],
-          label:[this.laboratory.label],
-          videoUrl:[this.laboratory.videoUrl],
-          videoPath:[this.laboratory.videoPath],
-          soundUrl:[this.laboratory.soundUrl],
-          soundPath:[this.laboratory.soundPath],          
+          id: [laboratory.id],
+          label:[laboratory.label],
+          videoUrl:[laboratory.videoUrl],
+          videoPath:[laboratory.videoPath],
+          soundUrl:[laboratory.soundUrl],
+          soundPath:[laboratory.soundPath],          
         })
+        this.laboratory.set(laboratory)
       },
       error=>{
         console.log("ERROR reading materia")
@@ -91,10 +94,10 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
     return "organizations/" + this.organization_id + "/materias/" + this.materia_id + "/laboratory/" + this.laboratory_id
   }
   fileLoaded(e){
-    this.examImprovisacionService.fileLoaded("materias/" + this.materia_id + "/laboratory", this.laboratory.id, e)
+    this.examImprovisacionService.fileLoaded("materias/" + this.materia_id + "/laboratory", this.laboratory().id, e)
   }  
   fileDeleted(e){
-    this.examImprovisacionService.fileDeleted("materias/" + this.materia_id + "/laboratory", this.laboratory.id, e)
+    this.examImprovisacionService.fileDeleted("materias/" + this.materia_id + "/laboratory", this.laboratory().id, e)
   }
   onPropertyChange(event){
 
@@ -102,7 +105,7 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
     var value = event.target.value      
     var data = {}
     data[propertyName]=value                       
-    db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory.id).update(data).then( () =>{
+    db.collection("materias/" + this.materia_id + "/laboratory").doc(this.laboratory().id).update(data).then( () =>{
       console.log("property updated")
     },
     reason =>{
