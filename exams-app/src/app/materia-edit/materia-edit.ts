@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@ang
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
-import { CertificateType, Exam, Laboratory, Materia } from "../exams/exams.module"
+import { CertificateType, Exam, Laboratory, Materia, MateriaEnrollment } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage  } from 'src/environments/environment';
 
@@ -66,7 +66,7 @@ export class DialogMateriaDialog implements OnInit{
    
   materia_observable: Observable<Materia> 
 
-  materia:Materia=null
+  materia = signal<Materia | null>(null)
 
   examenes:Array<Exam>=[]
 
@@ -107,7 +107,7 @@ export class DialogMateriaDialog implements OnInit{
 
   userUid= null
   isEnrolled = false
-  materiaEnrollment = null
+  materiaEnrollment = signal<MateriaEnrollment|null>(null)
 
   materiaReferenceCollection = null
 
@@ -153,7 +153,7 @@ export class DialogMateriaDialog implements OnInit{
 
       if( this.isEnrolled ){
         this.examImprovisacionService.getMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( materiaEnrollment =>{
-          this.materiaEnrollment = materiaEnrollment
+          this.materiaEnrollment.set( materiaEnrollment )
         })
       }
           
@@ -161,29 +161,28 @@ export class DialogMateriaDialog implements OnInit{
       var unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
         snapshot =>{
           this.submitting.set(false)
-          this.materia = snapshot.data() as Materia
+          let m = snapshot.data() as Materia
 
-          this.m.controls.id.setValue(this.materia.id)
-          this.m.controls.isDeleted.setValue(this.materia.isDeleted)
-          this.m.controls.materia_name.setValue(this.materia.materia_name)
+          this.m.controls.id.setValue(m.id)
+          this.m.controls.isDeleted.setValue(m.isDeleted)
+          this.m.controls.materia_name.setValue(m.materia_name)
             
-          this.m.controls.certificateTypeId.setValue(this.materia.certificateTypeId)
+          this.m.controls.certificateTypeId.setValue(m.certificateTypeId)
 
-          this.m.controls.description.setValue(this.materia.description)
-          this.m.controls.videoUrl.setValue(this.materia.videoUrl)
-          this.m.controls.videoDescription.setValue(this.materia.videoDescription)
-          this.m.controls.pictureUrl.setValue(this.materia.pictureUrl)
-          this.m.controls.pictureDescription.setValue(this.materia.pictureDescription)
-          this.m.controls.isEnrollmentActive.setValue(this.materia.isEnrollmentActive)
+          this.m.controls.description.setValue(m.description)
+          this.m.controls.videoUrl.setValue(m.videoUrl)
+          this.m.controls.videoDescription.setValue(m.videoDescription)
+          this.m.controls.pictureUrl.setValue(m.pictureUrl)
+          this.m.controls.pictureDescription.setValue(m.pictureDescription)
+          this.m.controls.isEnrollmentActive.setValue(m.isEnrollmentActive)
           this.m.controls.label1.setValue("") 
           this.m.controls.label2.setValue("") 
           this.m.controls.label3.setValue("") 
           this.m.controls.label4.setValue("") 
           this.m.controls.color1.setValue("") 
           this.m.controls.color2.setValue("") 
+          this.materia.set(m)
           
-          //this.loadExams(this.materia_id, this.m.controls.exams as FormArray)
-          //this.loadLaboratories(this.materia_id, this.m.controls.laboratories as FormArray) 
       }) 
     })  
   }
@@ -269,11 +268,11 @@ export class DialogMateriaDialog implements OnInit{
   }  
   fileLoaded(e:FileLoadedEvent){
 
-    this.examImprovisacionService.fileLoaded('materias', this.materia.id, e)
+    this.examImprovisacionService.fileLoaded('materias', this.materia().id, e)
 
   }  
   fileDeleted(e:FileLoadedEvent){
-    this.examImprovisacionService.fileDeleted('materias', this.materia.id, e)
+    this.examImprovisacionService.fileDeleted('materias', this.materia().id, e)
   }
   onCopyToClipboard(){
     alert("url ha sido copiada al portapapeles")

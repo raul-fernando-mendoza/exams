@@ -7,8 +7,8 @@
       <span>Nuevo Examen</span>
     </button>            
   </mat-menu> 
-<div *ngIf="submitting()==false;  else spinnerBlock">
-    <mat-list  *ngFor="let ei of exams">
+@if( exams() ){
+    <mat-list  *ngFor="let ei of exams()">
         <mat-list-item>
             <span class="exam-label">{{ ei.exam.label }}</span>
             <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
@@ -28,7 +28,7 @@
                   <span>Duplicar</span>
                 </button>       
               </mat-menu>
-              <div *ngIf="isEnrolled ;  else noEnrolledBlock">
+              <div *ngIf="isEnrolled() ;  else noEnrolledBlock">
                 <div *ngIf="ei.examGrade != null">
                   <span class="status" *ngIf="ei.examGrade.isReleased == false">: En Espera de liberación</span>
                   <button *ngIf="ei.examGrade.isReleased == true" (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button>Abrir Reporte</button>
@@ -40,8 +40,8 @@
                
         </mat-list-item>
     </mat-list >
-</div>
-<ng-template #spinnerBlock>
+  }
+  @else{
     Cargando información.
     <mat-spinner></mat-spinner>
-</ng-template>
+  }

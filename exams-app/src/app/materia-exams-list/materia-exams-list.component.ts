@@ -40,9 +40,9 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   isAdmin = false
   unsubscribe = null
   submitting = signal(false)
-  exams:Array<examItem> = []
+  exams= signal<Array<examItem>|null>(null) 
   userUid = null
-  isEnrolled = false
+  isEnrolled = signal(false)
 
   constructor(
     private userPreferenceService:UserPreferencesService
@@ -61,38 +61,43 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     if( this.materiaid != null){
-      this.loadExams()
+      this.loadExams().then( exams =>{
+        this.exams.set(exams)
+      })
     }
     this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled =>{
-      this.isEnrolled = isEnrolled
+      this.isEnrolled.set(isEnrolled)
     })
   }
-  loadExams():Promise<void>{
-    return new Promise<void>((resolve, reject) =>{
-      this.exams.length = 0
+  loadExams():Promise<Array<examItem>>{
+    return new Promise<Array<examItem>>((resolve, reject) =>{
+      let exams = new Array<examItem>()
+      let transactions = []
       this.submitting.set(true)
       this.unsubscribe = db.collection("materias/" + this.materiaid + "/exams")
       .where("isDeleted","==", false).onSnapshot( snapshot =>{
         this.submitting.set(false)
-        this.exams.length = 0
         snapshot.docs.map( doc =>{
           const exam = doc.data() as Exam
           var ei:examItem={
             exam:exam,
             examGrade:null
           }
-          this.exams.push(ei)
-          this.getExamGrade( exam.id ).then( examGrade =>{
+          exams.push(ei)
+          let t = this.getExamGrade( exam.id ).then( examGrade =>{
             ei.examGrade = examGrade
           },
           reason =>{
             console.log("no materia exams found")
           })
+          transactions.push(t)
         })
-        
-        this.exams.sort( (a,b) => {
-          return a.exam.label > b.exam.label ? 1:-1})
-        resolve()
+        Promise.all( transactions ).then( ()=>{
+          exams.sort( (a,b) => {
+            return a.exam.label > b.exam.label ? 1:-1})
+          resolve(exams)
+        })
+
       },
       reason =>{
         console.log("ERROR reading exam:" + reason)

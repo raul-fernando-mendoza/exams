@@ -1,6 +1,6 @@
 Habilidad
-<div *ngIf="submitting()==false;  else spinnerBlock">
-<form *ngIf="materia" [formGroup]="m" >
+@if( materia() ){
+<form [formGroup]="m" >
   <mat-card >
     <mat-card-title-group>
       <mat-card-title *ngIf="!isAdmin">{{ m.controls.materia_name.value }}</mat-card-title>
@@ -10,7 +10,7 @@ Habilidad
           <textarea  matInput type="text"  formControlName="materia_name" (change)="onPropertyChange($event)" ></textarea >
         </mat-form-field>  
       </mat-card-title>
-      <img mat-card-sm-image *ngIf="materia.materiaIconUrl" mat-card-sm-image src="{{materia.materiaIconUrl}}">
+      <img mat-card-sm-image *ngIf="materia().materiaIconUrl" mat-card-sm-image src="{{materia().materiaIconUrl}}">
       
     </mat-card-title-group>
     <mat-card-content>
@@ -39,12 +39,12 @@ Habilidad
     </mat-card-actions>
   </mat-card>  
  
-  <mat-card *ngIf="isAdmin || materia.pictureUrl || materia.pictureDescription">
+  <mat-card *ngIf="isAdmin || materia().pictureUrl || materia().pictureDescription">
     <mat-card-title-group>
       <mat-card-title>Objetivos</mat-card-title>
     </mat-card-title-group>
     <mat-card-content>
-      <img class="picture" src="{{materia.pictureUrl}}">       
+      <img class="picture" src="{{materia().pictureUrl}}">       
       <app-file-loader *ngIf="isAdmin" label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
 
       
@@ -57,14 +57,14 @@ Habilidad
     </mat-card-content>
   </mat-card>
 
-  <mat-card *ngIf="isAdmin || (materia.videoDescription || materia.videoUrl)">
+  <mat-card *ngIf="isAdmin || (materia().videoDescription || materia().videoUrl)">
     <mat-card-title-group>
       <mat-card-title>Experiencias</mat-card-title>
     </mat-card-title-group>
     <mat-card-content>
-      <video  *ngIf="materia && materia.videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+      <video  *ngIf="materia() && materia().videoUrl" class="video-js vjs-default-skin" controls preload="auto"
       vjs-video vjs-setup="options">
-        <source src="{{ materia.videoUrl }}" type='video/mp4' />
+        <source src="{{ materia().videoUrl }}" type='video/mp4' />
       </video>
       <app-file-loader *ngIf="isAdmin" label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
@@ -82,24 +82,29 @@ Habilidad
     </mat-card-title-group>    
     <mat-card-content>
 
-      <mat-grid-list *ngIf="materiaEnrollment && materiaEnrollment.certificateUrl" class="certificate-grid" cols="2" rowHeight="4em">
-        <mat-grid-tile><a  [href]="materiaEnrollment.certificateUrl">certificado</a></mat-grid-tile>
-        <mat-grid-tile><button *ngIf="materiaEnrollment && materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>content_copy</mat-icon></button></mat-grid-tile>
+      <mat-grid-list *ngIf="materiaEnrollment() && materiaEnrollment().certificateUrl" class="certificate-grid" cols="2" rowHeight="4em">
+        <mat-grid-tile><a  [href]="materiaEnrollment().certificateUrl">certificado</a></mat-grid-tile>
+        <mat-grid-tile><button *ngIf="materiaEnrollment() && materiaEnrollment().certificateUrl" [cdkCopyToClipboard]="materiaEnrollment().certificateUrl" (click)="onCopyToClipboard()"><mat-icon>content_copy</mat-icon></button></mat-grid-tile>
       </mat-grid-list>
       
       
-      <app-materia-laboratory-list [materiaid]="materia_id"></app-materia-laboratory-list>
+      
+      
       <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
-      <reference-list *ngIf="materiaEnrollment || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
+   
+      <reference-list *ngIf="materiaEnrollment() || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
+      
+      <app-materia-laboratory-list [materiaid]="materia_id"></app-materia-laboratory-list>
+      
     </mat-card-content>
   </mat-card>
 
 </form>
-</div>
-<ng-template #spinnerBlock>
+}
+@else{
   Cargando información.
   <mat-spinner></mat-spinner>
-</ng-template>
+}
 
 
 
