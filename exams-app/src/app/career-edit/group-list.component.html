@@ -1,0 +1,33 @@
+<h2 *ngIf="isAdmin" >Groups <button  (click)="onCreateGroup()"><mat-icon>add</mat-icon></button></h2>
+<div  class="group" [formGroup]="g.fg" *ngFor="let g of groupItems()">
+    <mat-form-field *ngIf="isAdmin" class="example-full-width">
+        <mat-label>Grupo</mat-label>
+        <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + career.id + '/levels/' + level.id + '/groups', g.fg.controls.id.value, $event)">
+    </mat-form-field>  
+    <mat-toolbar-row *ngIf="!isAdmin" >
+        <span>{{ g.controls.group_name.value }}</span>
+        <span class="example-spacer"></span>
+        <span>{{ getGroupGradeDescription( g.controls.group_grade_type_id.value ) }} </span>
+    </mat-toolbar-row> 
+    <mat-form-field *ngIf="isAdmin" appearance="fill" >
+        <mat-label>selecciona tipo de evaluacion</mat-label>
+        <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + career.id + '/levels/' + level.id + '/groups', g.fg.controls.id.value,$event)">
+        <mat-option *ngFor="let ggt of getGroupGradeTypes()" [value]="ggt.id">
+            {{ ggt.description }}
+        </mat-option>
+        </mat-select>
+    </mat-form-field>            
+
+    <button *ngIf="isAdmin"  mat-icon-button [matMenuTriggerFor]="menuGroup" >
+        <mat-icon>more_vert</mat-icon>
+    </button>                                    
+    <mat-menu #menuGroup="matMenu" >
+        <button mat-menu-item color="primary" (click)="onRemoveGroup(g.group.id)" [disabled]="submitting()">
+            <mat-icon>remove</mat-icon>
+            <span>Borrar</span>
+        </button> 
+    </mat-menu> 
+    
+    <app-materiagroup-list [career]="career" [level]="level" [group]="g.group"></app-materiagroup-list>
+
+</div>

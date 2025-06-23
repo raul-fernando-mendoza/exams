@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, AbstractControl, FormControl, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db, storage } from 'src/environments/environment';
@@ -14,7 +14,7 @@ import { Observer } from 'rxjs';
 import videojs from 'video.js';
 import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-observers.module';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { FileLoadedEvent } from '../file-loader/file-loader.component';
+import { FileLoadedEvent, FileLoaderComponent } from '../file-loader/file-loader.component';
 
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,6 +24,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { LevelListComponent } from './level-list.component';
 
 @Component({
   selector: 'app-career-edit',
@@ -36,7 +42,16 @@ import { MatInputModule } from '@angular/material/input';
     ,FormsModule
     ,ReactiveFormsModule
     ,MatFormFieldModule
-    ,MatInputModule 
+    ,MatInputModule
+    
+    ,MatProgressSpinnerModule 
+    ,MatMenuModule 
+    ,MatSelectModule
+    ,FileLoaderComponent
+    ,MatCardModule
+
+
+    ,LevelListComponent
   ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']
@@ -47,7 +62,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   organization_id = null
 
-  career:Career = null
+  career = signal<Career>(null)
 
   snapshots:Array<any> = []
 
@@ -62,15 +77,15 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
 
   c = this.fb.group({
-    id: [null, Validators.required],
-    career_name:[null, Validators.required], 
-    description:[null],
-    pictureUrl:[null],
-    pictureDescription:[null],
-    iconUrl:[null],
-    videoUrl:[null],  
-    videoDescription:[null],
-    levels:new UntypedFormArray([])
+    id: ["", Validators.required],
+    career_name:["", Validators.required], 
+    description:[""],
+    pictureUrl:[""],
+    pictureDescription:[""],
+    iconUrl:[""],
+    videoUrl:[""],  
+    videoDescription:[""],
+    levels:new FormArray([])
   })
 
   pictureUrlStatus = {
@@ -81,7 +96,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }  
 
   constructor(
-      private fb: UntypedFormBuilder
+      private fb: FormBuilder
     , private route: ActivatedRoute
     , private userLoginService:UserLoginService
     , public formService:ExamFormService
@@ -113,22 +128,21 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
 
 
-  getFormArrayControls( fg:UntypedFormGroup , property):AbstractControl[]{
-    var fa:UntypedFormArray = fg.controls[property] as UntypedFormArray
-    return fa.controls
-  }  
+ 
   ngOnInit(): void {
     const unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
-      this.career = doc.data() as Career
-      this.c.controls.id.setValue(this.career.id)  
-      this.c.controls.career_name.setValue(this.career.career_name)
-      this.c.controls.description.setValue(this.career.description)
-      this.c.controls.pictureUrl.setValue(this.career.pictureUrl)
-      this.c.controls.pictureDescription.setValue(this.career.pictureDescription)
-      this.c.controls.videoUrl.setValue(this.career.videoUrl)
-      this.c.controls.videoDescription.setValue(this.career.videoDescription)
-      this.loadLevels(this.career.id, this.c.controls.levels as UntypedFormArray).then( () =>{
-      })
+      let career = doc.data() as Career
+  
+      this.c.controls.id.setValue(career.id ? career.id:"" )  
+      this.c.controls.career_name.setValue(career.career_name)
+      this.c.controls.description.setValue(career.description)
+      this.c.controls.pictureUrl.setValue(career.pictureUrl)
+      this.c.controls.pictureDescription.setValue(career.pictureDescription)
+      this.c.controls.videoUrl.setValue(career.videoUrl)
+      this.c.controls.videoDescription.setValue(career.videoDescription)
+      this.career.set( career )
+      //this.loadLevels(career.id, this.c.controls.levels as UntypedFormArray).then( () =>{
+      //})
     },
     reason =>{
       alert("ERROR: reading career" + reason)
@@ -137,6 +151,24 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   }
 
+  getBasePath():string{
+    return "organizations/" + this.organization_id + "/careers/" + this.career().id
+
+  }
+  fileLoaded(e:FileLoadedEvent){
+
+    this.examenesImprovisacionService.fileLoaded('careers', this.career().id, e)
+
+  }  
+  fileDeleted(e:FileLoadedEvent){
+    this.examenesImprovisacionService.fileDeleted('careers', this.career().id, e)
+  }
+
+/*
+  getFormArrayControls( fg:UntypedFormGroup , property):AbstractControl[]{
+    var fa:UntypedFormArray = fg.controls[property] as UntypedFormArray
+    return fa.controls
+  }   
   onCreateLevel(career_id){
     const dialogRef = this.dialog.open(DialogNameDialog, {
       height: '400px',
@@ -350,12 +382,14 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           const materia:Materia = doc.data() as Materia
           var fg = this.fb.group({
             id:[materia.id],
-            materia_name: null
+            materia_name: [""]
           })
           materias.controls.push( fg )
           return db.collection("materias").doc( materia.id).get().then( doc =>{
-            const materiaDetail:Materia = doc.data() as Materia
-            fg.controls.materia_name.setValue( materiaDetail.materia_name )
+            if( doc.exists ){
+              const materiaDetail:Materia = doc.data() as Materia
+              fg.controls.materia_name.setValue( materiaDetail.materia_name )
+            }
           },
           reason=>{
             console.log("materia not found:" + materia.id + "-" + reason)
@@ -478,18 +512,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     }      
   }
 
-  getBasePath():string{
-    return "organizations/" + this.organization_id + "/careers/" + this.career.id
 
-  }
-  fileLoaded(e:FileLoadedEvent){
-
-    this.examenesImprovisacionService.fileLoaded('careers', this.career.id, e)
-
-  }  
-  fileDeleted(e:FileLoadedEvent){
-    this.examenesImprovisacionService.fileDeleted('careers', this.career.id, e)
-  }
 
   onEnrollmentsUpdate(){
     var data = {
@@ -513,5 +536,6 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       }
     })
   }
+    */
 }
 

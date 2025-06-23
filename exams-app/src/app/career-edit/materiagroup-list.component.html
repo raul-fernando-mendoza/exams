@@ -1,0 +1,14 @@
+<h3 *ngIf="isAdmin">Materias <button  (click)="onAddMateria()"><mat-icon>add</mat-icon></button></h3>
+<div class="materia" *ngFor="let m of materiaGroupItems()">
+    {{m.materia?.materia_name }}
+    
+    <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="materiamenu" >
+        <mat-icon>more_vert</mat-icon>
+    </button>                                    
+    <mat-menu #materiamenu="matMenu" >
+        <button mat-menu-item color="primary" (click)="onRemoveMateria(m.materiaGroup.materia_id)" [disabled]="submitting()">
+            <mat-icon>remove</mat-icon>
+            <span>Borrar</span>
+        </button> 
+    </mat-menu>      
+</div> 
