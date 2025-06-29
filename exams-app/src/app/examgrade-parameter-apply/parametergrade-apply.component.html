@@ -16,8 +16,6 @@
         <div *ngIf="isAdmin && parameterGrade() && parameterGrade().isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
     </div> 
     <div *ngIf="isAdmin && evaluatorDisplayName">Evaluador:{{evaluatorDisplayName()}}</div>
-    parameterGrade().score: {{parameterGrade().score}}
-    criteriaGrades().length: {{ criteriaGrades().length }}
 
     <div *ngFor="let criteriaGrade of criteriaGrades()">
         <criteriagrade-apply collection="{{collection}}/{{parameterGrade_id}}/criteriaGrades" criteriaGrade_id="{{criteriaGrade.id}}" scoreType="{{parameterGrade().scoreType}}" (change)="onCriteriaGradeChange($event)" [disabled]="parameterGrade().isCompleted">

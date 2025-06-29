@@ -9,7 +9,6 @@
         <span class="debug">Criteria score:{{criteriaGrade().score}}</span>        
         <span class="spacer"></span>
     </div>
-    Criteria score:{{criteriaGrade().score}}
     <div *ngFor="let aspectGrade of aspectGrades()">
         <aspectgrade-stars-apply *ngIf="scoreType=='starts'" collection="{{collection}}/{{criteriaGrade_id}}/aspectGrades" aspectGrade_id="{{aspectGrade.id}}" (changeGrade)="onAspectGradeChange($event)" [disabled]="disabled"></aspectgrade-stars-apply>
         <aspectgrade-items-apply *ngIf="scoreType=='status'" collection="{{collection}}/{{criteriaGrade_id}}/aspectGrades" aspectGrade_id="{{aspectGrade.id}}" (changeGrade)="onAspectGradeChange($event)" [disabled]="disabled"></aspectgrade-items-apply>

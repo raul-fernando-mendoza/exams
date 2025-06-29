@@ -173,7 +173,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         maskDraw = ImageDraw.Draw(mask_im)
 
         maskDraw.ellipse((100, 100, 400, 400), fill=255)
-        maskDraw.ellipse((line_size * 2,  line_size * 2,logo_w - line_size * 2,  logo_h - line_size * 2), fill=0)
+        maskDraw.ellipse((line_size * 2,  line_size * 2,(line_size * 2) + logo_w,  (line_size * 2) + logo_h), fill=0)
 
 
 

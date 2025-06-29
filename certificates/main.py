@@ -63,19 +63,17 @@ def hasCompletedMateria(db, materia_id, student_uid ):
         examGradeSetV2 = db.collection("examGrades") \
             .where("materia_id", "==", materia_id) \
             .where("exam_id", "==", examDoc.get("id")) \
-            .where("student_uid","array_contains", student_uid) \
+            .where("studentUids","array_contains", student_uid) \
             .where("isDeleted","==", False) \
             .where("isCompleted","==", True) \
             .where("isReleased","==",True) \
             .where("isApproved","==",True) \
             .get()
             
-        if( len(examGradeSetV1) > 0 ):
-            examGradeSet = examGradeSetV1
-        else:
-            examGradeSet = examGradeSetV2
+        #join both results 
+        examGradeSetV1.extend(examGradeSetV2)
                 
-        for examGradeDoc in examGradeSet:
+        for examGradeDoc in examGradeSetV1:
             #if found then count it
             if "isRequired" in exam and exam["isRequired"]:  
                 requiredReleased +=1 

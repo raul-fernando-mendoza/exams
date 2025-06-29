@@ -108,7 +108,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
       }
       
-      this.createGraph(this.examGrade_id, students, labels, scores)        
+      this.createGraph(this.examGrade_id, studentNames, labels, scores)        
 
     })
   }

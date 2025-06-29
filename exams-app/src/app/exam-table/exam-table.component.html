@@ -24,7 +24,7 @@ Calificaciones
 -->
 </mat-toolbar>
 
-<div *ngIf="submitting() == false; else elseBlock">
+@if( true ){
 
   <table mat-table class="full-width-table" aria-label="Elements">
     <!-- Id Column -->
@@ -126,8 +126,8 @@ Calificaciones
       [pageSizeOptions]="[25, 50, 100, 250]">
   </mat-paginator>
 
-</div>  
-<ng-template #elseBlock>
+}
+@else{
   Cargando Calificaciones. 
   <mat-spinner></mat-spinner>
-</ng-template>
+}

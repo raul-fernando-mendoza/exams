@@ -251,23 +251,24 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
             }
           }
                   
-          var map = set.docs.map( doc =>{
+          var m = set.docs.map( doc =>{
             const parameterGrade:ParameterGrade = doc.data() as ParameterGrade
             var obj:ExamenesImprovisacionItem = {
               exam:null,
               examGrade:examGrade,
               parameterGrade: parameterGrade, 
               materia: null,
-              studentDisplayName: null,
+              studentDisplayName: [],
               approverDisplayName:null,
               isCompleted:parameterGrade.isCompleted
             }
             console.log("add parameter" + parameterGrade.label)
             this.examenes.push(obj)
-            this.retriveDetails(obj)            
+            return this.retriveDetails(obj)            
           })
-          //this.updateTable()
-          resolve()
+          Promise.all( m ).then( ()=>{
+            resolve()
+          })
         },
         reason =>{
           console.error("Error: reading exam list" + reason)
@@ -278,31 +279,52 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       this.parameterUnsubscribes.set(examGrade.id, parameterUnsubscribe)
     }) 
   } 
-  retriveDetails( obj:ExamenesImprovisacionItem){
-    console.log("retrive detail:" + obj.examGrade.exam_id)
-    obj.approverDisplayName = this.userLoginService.getDisplayName()
-    this.examImprovisacionService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
-      obj.exam = exam
-    }
-    ,reason =>{
-      console.log("ERROR exam can not be read:" + reason)
-    })
+  retriveDetails( obj:ExamenesImprovisacionItem):Promise<void>{
+    return new Promise<void>( (resolve, reject) =>{
+      console.log("retrive detail:" + obj.examGrade.exam_id)
+      obj.approverDisplayName = this.userLoginService.getDisplayName()
+      let transactions = []
+      let e = this.examImprovisacionService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
+        obj.exam = exam
+      }
+      ,reason =>{
+        console.log("ERROR exam can not be read:" + reason)
+      })
+      transactions.push(e)
 
-    console.log("retrive materia:" + obj.examGrade.materia_id)
-    this.examImprovisacionService.getMateria( obj.examGrade.materia_id).then( materia =>{
-      obj.materia = materia
-    },
-    reason =>{
-      console.log("ERROR materia cannot be read:" + reason)
-    })
+      console.log("retrive materia:" + obj.examGrade.materia_id)
+      let m = this.examImprovisacionService.getMateria( obj.examGrade.materia_id).then( materia =>{
+        obj.materia = materia
+      },
+      reason =>{
+        console.log("ERROR materia cannot be read:" + reason)
+      })
+      transactions.push(m)
 
-    console.log("retrive user" + obj.examGrade.student_uid)
-    this.getUser(obj.examGrade.student_uid).then(student =>{
-      obj.studentDisplayName = this.getDisplayNameForUser(student)
-    },
-    reason =>{
-      console.log("ERROR student cannot be read:" + reason)
-    }) 
+      console.log("retrive user" + obj.examGrade.student_uid)
+      if( "students" in  obj.examGrade ){
+        let studentNames = new Array<string>
+        obj.examGrade.students.forEach( e =>{
+          studentNames.push( e.displayName?e.displayName:e.email)
+        })
+        obj.studentDisplayName = studentNames
+      }
+      else{
+        let u = this.getUser(obj.examGrade.student_uid).then(student =>{
+          obj.studentDisplayName = [this.getDisplayNameForUser(student)]
+        },
+        reason =>{
+          console.log("ERROR student cannot be read:" + reason)
+        })
+        transactions.push(u)
+      } 
+      Promise.all( transactions ).then( ()=>{
+        resolve()
+      },
+      reason =>{
+        reject(reason)
+      })
+    })
 
   }
 

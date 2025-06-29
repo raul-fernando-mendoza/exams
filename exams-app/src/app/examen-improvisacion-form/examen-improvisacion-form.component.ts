@@ -442,9 +442,9 @@ export class ExamenImprovisacionFormComponent {
 
   onSubmit() {
     this.submitting = true
-    let selectedStudentsUids:Array<string> = []
+    let studentUids:Array<string> = []
     this.selectedStudents().map( e =>{
-      selectedStudentsUids.push( e.uid )
+      studentUids.push( e.uid )
     })
     let applicationDate = this.examGradeFG.controls.applicationDate.value
     let examGrade:ExamGrade = {
@@ -457,8 +457,9 @@ export class ExamenImprovisacionFormComponent {
       applicationDay: this.dateFormatService.getDayId(applicationDate),
       applicationMonth:this.dateFormatService.getMonthId(applicationDate),
       applicationYear: this.dateFormatService.getYearId(applicationDate),    
-      student_uid:selectedStudentsUids, 
+      student_uid:"", 
       students:this.selectedStudents(),
+      studentUids:studentUids,
       title:this.examGradeFG.controls.title.value,
       expression:this.examGradeFG.controls.expression.value,
       level:this.examGradeFG.controls.level.value,

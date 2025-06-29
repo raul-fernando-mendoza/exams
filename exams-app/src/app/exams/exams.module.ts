@@ -318,8 +318,9 @@ export interface ExamGrade{
   applicationMonth?:number
   applicationYear?:number
 
-  student_uid?:string|Array<string>
+  student_uid?:string
   students?:Array<User>
+  studentUids?:Array<string>
 
   title?:string 
   expression?:string 

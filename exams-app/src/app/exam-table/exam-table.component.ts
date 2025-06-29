@@ -57,13 +57,14 @@ import { MatSortModule } from '@angular/material/sort';
   styleUrls: ['./exam-table.component.css'],
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
+export class ExamTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
 
-  examGradeList:NodeTableRow[] = []
+  examGradeList = [new Array<NodeTableRow>(),new Array<NodeTableRow>()]
+  examGradeListAll:NodeTableRow[] = []
 
-  dataSource = signal<NodeTableDataSource>(new NodeTableDataSource(this.examGradeList));
+  dataSource = signal<NodeTableDataSource>(null);
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
@@ -124,54 +125,105 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       this.filterForm.controls.studentUid.setValue( studentUid )
     }
 
-    this.update()
-  }
-  ngAfterViewInit() {
-    this.loadExamGrades().then( ()=>{
-      this.updateList()
-    })       
+    this.update()  
   }
   update(){
     this.loadExamGrades().then( ()=>{
-      this.updateList() 
+      console.log("update completed") 
     }) 
   }
   updateList(){
+
+    console.log("merge both versions")
+    this.examGradeListAll.length = 0
+    this.examGradeList.forEach( v => {
+      v.forEach( a =>{
+        this.examGradeListAll.push( a )
+      })
+    })
+    //now sort all versions
+    this.examGradeListAll.sort( (a,b) =>{
+      if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
+        if ( a.obj["title"] ){
+          return a.obj["title"] > b.obj["title"] ? 1 : -1
+        }
+        if( a.obj["label"] ){
+          return a.obj["label"] > b.obj["label"] ? 1 : -1
+        }
+        
+      }
+      else{
+        return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
+      }
+    })
+
     this.changeDetectorRef.detectChanges()
-    let nodeTableDataSource = new NodeTableDataSource(this.examGradeList)
+    let nodeTableDataSource = new NodeTableDataSource(this.examGradeListAll)
     this.dataSource.set(nodeTableDataSource);
+    
     this.dataSource().paginator = this.paginator;
     this.table.dataSource = this.dataSource();   
   }
 
   loadExamGrades():Promise<void>{
-    var _resolve = null
-    return new Promise<void>((resolve, reject) =>{  
-      _resolve = resolve
+    return new Promise<void>((resolve, reject) =>{ 
 
-      this.examGradeList.length = 0
+      //remove any existing snapshots
+      if( this.snapshots.length > 0){
+        this.snapshots.map( func =>{
+          func()
+        })
+        this.snapshots.length = 0
+      }      
+
+
+      let transactions = [] 
+      let v1 = this.loadExamGradesVersion(0)
+      transactions.push(v1)
+      let v2 = this.loadExamGradesVersion(1)
+      transactions.push(v2)
+      Promise.all(transactions).then( ()=>{
+          resolve()
+        },
+        reason =>{
+          reject()
+        })
+      
+    })
+  }
+
+  loadExamGradesVersion(version:number):Promise<void>{
+    return new Promise<void>((resolve, reject) =>{  
+      this.examGradeList[version].length = 0
 
       var qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
 
-      var saved_applicationDate = localStorage.getItem('applicationDate')
+      var saved_applicationDate = this.applicationDate?.toISOString()
       if( saved_applicationDate && saved_applicationDate != 'null'){
         var d:Date = new Date(saved_applicationDate)
         var dateId = this.dateFormatService.getDayId(d)
         qry = qry.where( "applicationDay", "==", dateId )
       }
 
-      var studentUid = localStorage.getItem('studentUid')
-      if( studentUid ){
-        qry = qry.where("student_uid","==", studentUid)
+      
+      var studentUid = this.filterForm.controls.studentUid.value
+      if( version == 1 ){
+        if( studentUid ){ //if version = 1 and there is a search then add the query 
+          qry = qry.where("studentUids","array-contains", studentUid)
+        }
       }
-      if( this.snapshots.length > 0){
-        this.snapshots.map( func =>{
-          func()
-        })
-        this.snapshots.length = 0
+      else{
+        if( studentUid ){
+          qry = qry.where("student_uid","==", studentUid)
+        }
+        else{ //there is not any search by uuid so nothing to do.
+          resolve()
+          return ;
+        }         
       }
+
       if( !this.applicationDate && !studentUid){
         qry = qry.orderBy("applicationDate", "desc")
         qry = qry.limit(100)
@@ -179,7 +231,8 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
       this.submitting.set(true)
       var unsubscribe = qry.onSnapshot( set =>{
-        this.examGradeList.length = 0
+        this.submitting.set(false)
+        this.examGradeList[version].length = 0
 
         let transactions = []
         set.docs.map( doc =>{
@@ -206,7 +259,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
 
             
           }
-          this.examGradeList.push(node)
+          this.examGradeList[version].push(node)
 
           
           let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
@@ -216,7 +269,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           })
           transactions.push(m)
 
-          if( examGrade.students ){
+          if( "students" in examGrade ){
             node.obj['students'] = Array.isArray(examGrade.students) ? examGrade.students: [examGrade.students]
           }
           else{
@@ -242,23 +295,9 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           
         })
         Promise.all(transactions).then( () =>{
-          this.submitting.set(false)
-          console.log("End loading Exams")
-          this.examGradeList.sort( (a,b) =>{
-            if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
-              if ( a.obj["title"] ){
-                return a.obj["title"] > b.obj["title"] ? 1 : -1
-              }
-              if( a.obj["label"] ){
-                return a.obj["label"] > b.obj["label"] ? 1 : -1
-              }
-              
-            }
-            else{
-              return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
-            }
-          })
-          _resolve()
+          this.updateList()
+          resolve()
+          
         }) 
         .catch(reason =>{
           console.error("Error waiting for parameters:" + reason)
@@ -275,9 +314,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   loadParameterGrades(examGrade_id, parent:NodeTableRow[]):Promise<void>{
-    var _resolve = null
     return new Promise<void>((resolve, reject) =>{  
-      _resolve = resolve
       let qry = db.collection("examGrades/" + examGrade_id + "/parameterGrades")
       .where("isCurrentVersion", "==",true)
 
@@ -308,10 +345,13 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
         console.log("End loading ParameterGrades")
-        _resolve()
+        this.updateList()
+        resolve()
+        
       },
       reason =>{
         alert( "error reading exams:" + reason)
+        reject(reason)
       })
      
       this.snapshots.push( unsubscribe )
@@ -337,7 +377,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
             })
             Promise.all( all_promises ).then(
               () => {
-                this.update()
+                console.log("delete completed")
               }
             )
             
@@ -358,7 +398,6 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       updated_on:new Date()
     }).then( ()=>{
       console.log("examGrade was released")
-      this.update()
     },
     reason =>{
       console.log("Examgrade release failed:" + reason)
@@ -416,7 +455,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
     }    
 
     this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then( ()=>{
-      this.update()
+      console.log("completed")
     })
     .catch( ()=>{
       console.log("ERROR: reseteando el examen")

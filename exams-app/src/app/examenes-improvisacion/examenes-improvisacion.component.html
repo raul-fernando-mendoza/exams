@@ -36,7 +36,13 @@
 
       <ng-container matColumnDef="estudiante">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>estudiante</th>
-        <td mat-cell *matCellDef="let row">{{ row.studentDisplayName?row.studentDisplayName:"" }}</td>
+        <td mat-cell *matCellDef="let row">
+          <ul>
+          @for( s of row.studentDisplayName; track s){
+          <li>{{ s }}</li>
+          }
+          </ul>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="evaluador">

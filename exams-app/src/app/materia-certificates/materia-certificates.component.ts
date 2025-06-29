@@ -287,7 +287,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           //now get the grades for the exams version 1
           const tV2 = db.collection("examGrades")
           .where("organization_id","==", this.organization_id)
-          .where("student_uid","array-contains", row.user.uid)
+          .where("studentUids","array-contains", row.user.uid)
           .where("materia_id","==", row.materia.id)
           .where("exam_id","==",exam.id)
           .where("isDeleted","==",false).get().then( set => {
