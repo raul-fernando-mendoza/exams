@@ -80,6 +80,9 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
         this.myControl.setValue(user)     
       })
     }
+    else{
+      this.myControl.setValue("")
+    }
     this.userUid= useruid
   }
   _onChange = (value) =>{}

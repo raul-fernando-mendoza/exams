@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
-import { Aspect, copyFromForm, Criteria, Exam, ExamGrade, ExamGradeRequest, ExamMultipleRequest, ExamRequest, Materia, Parameter, ParameterGrade, User, CriteriaGrade, AspectGrade, copyObj } from '../exams/exams.module';
+import { Aspect, copyFromForm, Criteria, Exam, ExamGrade, Materia, Parameter, ParameterGrade, User, CriteriaGrade, AspectGrade } from '../exams/exams.module';
 import { ExamFormService } from '../exam-form.service';
 import { db } from 'src/environments/environment';
 import * as uuid from 'uuid';
@@ -39,6 +39,8 @@ function AllChildValid(control: AbstractControl): ValidationErrors | null {
   return  result;
 };
 
+
+
 @Component({
   selector: 'app-examen-improvisacion-form',
   standalone: true,
@@ -71,20 +73,19 @@ export class ExamenImprovisacionFormComponent {
   criteria_label 
 
 
-
-  students:User[] 
+  allUsers = signal<User[]>([]) 
+  selectedStudents = signal<User[]>([]) 
   evaluators:User[] 
 
-  materias:Array<Materia> = []
-  exams:Array<Exam> = []
+  materias = signal<Array<Materia>>([])
+  exams = signal<Array<Exam>>([])
 
   organization_id = null
 
   
-  
   examGradeFG = this.fb.group({
     id:[uuid.v4()],
-    student_uid:[null,Validators.required],
+    
     materia_id:[null,Validators.required],
     exam_id: [null, Validators.required],
     applicationDate: [null, Validators.required],
@@ -95,6 +96,10 @@ export class ExamenImprovisacionFormComponent {
     parameterGradesFA: this.fb.array([],AllChildValid)
   });
 
+  fg = this.fb.group({
+    student_uid:[null]
+  })
+
 
   constructor(private fb: UntypedFormBuilder,private route: ActivatedRoute
     , private router: Router
@@ -104,7 +109,7 @@ export class ExamenImprovisacionFormComponent {
     , private examFormService:ExamFormService
     , private userPreferencesService:UserPreferencesService
     , private dateFormatService:DateFormatService 
-    , private navigationService:NavigationService   
+    , private navigationService:NavigationService 
   ) {
     
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -146,10 +151,11 @@ export class ExamenImprovisacionFormComponent {
   initialize(token){
 
     this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
-      let students = data["result"] as Array<any>;
-      this.students = []
-      for( let i =0; i<students.length; i++){
-        let estudiante = students[i]
+      let set = data["result"] as Array<any>;
+      let studentsOnly:Array<User> = []
+      
+      for( let i =0; i<set.length; i++){
+        let estudiante = set[i]
         let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
         let obj:User = {
           "uid":estudiante.uid,
@@ -157,8 +163,9 @@ export class ExamenImprovisacionFormComponent {
           "displayName":displayName,
           "claims":estudiante.claims
         }
-        this.students.push(obj)
+        studentsOnly.push(obj)
       }
+      this.allUsers.set(studentsOnly)
     },
     error => {
         alert( "Error retriving estudiante" + error )
@@ -189,25 +196,78 @@ export class ExamenImprovisacionFormComponent {
     })     
   }  
   
-  examStudentChange(studentId) {
-    this.loadMateriaEnrollment(studentId)
+  onAddStudent() {
+
+    let studentId = this.fg.controls.student_uid.value
+
+    let selectedStudent = this.allUsers().find( e => e.uid == studentId)
+    
+
+    
+    if( selectedStudent ){
+      let currentSelectedStudents = this.selectedStudents()
+      let alreadySelectedCustomer = currentSelectedStudents.find( e => e.uid == studentId)
+      if( !alreadySelectedCustomer ){
+        let selectedStudentItem:User = {
+          uid: studentId,
+          displayName: selectedStudent.displayName
+        }
+        
+        let newSelectedStudents = [...currentSelectedStudents, selectedStudentItem]
+        this.selectedStudents.set( newSelectedStudents )
+        this.fg.controls.student_uid.setValue("")
+        this.loadMateriaEnrollment()
+      }
+    }
+    
   }   
 
-  loadMateriaEnrollment(userUid){
-    this.materias.length = 0
-
-    this.examImprovisacionService.getMateriasEnrolled( this.organization_id, userUid ).then( materias =>{
-      this.materias = materias
+  onRemoveStudent( user:User ){
+    let currentStudents = this.selectedStudents()
+    let idx = currentStudents.findIndex( e => e.uid == user.uid)
+    if( idx >= 0 ){
+      currentStudents.splice(idx,1)
+      this.selectedStudents.set([...currentStudents])
+      this.loadMateriaEnrollment()
+    }
+  }
+  loadMateriaEnrollment(){
+    let all_arrays:Array<Array<Materia>> = []
+    this.materias.set( [] )
+   
+    let selectedStudentsArray:Array<User> = this.selectedStudents()
+    let transactions = selectedStudentsArray.map( e =>{
+      return this.examImprovisacionService.getMateriasEnrolled( this.organization_id, e.uid ).then( materias =>{
+        all_arrays.push(materias)
+      })
     })
+    Promise.all( transactions ).then( ()=>{
+      let common_array:Array<Materia> = undefined
+      for( let a=0; a<all_arrays.length; a++){
+        let curr:Array<Materia> = all_arrays[a] 
+        if( !common_array ){
+          common_array = [...curr]
+        }
+        else{
+          let new_array:Array<Materia> = []
+          for(let i=0; i<curr.length; i++ ){
+            let m = curr[i]
+            if( common_array.find(e => e.id == m.id) ){
+              new_array.push(m)
+            }
+          }
+          common_array = [...new_array]
+        }
+        this.materias.set( common_array )
+      }
+    })
+
   }
 
   loadExams(materiaId){
-    this.exams.length = 0
-    this.examImprovisacionService.getExams(materiaId).then( materias =>{
-        this.exams.length = 0
-        materias.forEach( exam =>{
-          this.exams.push(exam)  
-        })
+    this.exams.set([])
+    this.examImprovisacionService.getExams(materiaId).then( exams =>{
+        this.exams.set( exams )
       },
       reason =>{
         console.log("ERROR reading exams:" + reason)
@@ -332,7 +392,7 @@ export class ExamenImprovisacionFormComponent {
   }  
 
   getExamStudents(){
-    return this.students;    
+    return this.selectedStudents;    
   }  
 
    getExamEvaluators(){
@@ -382,6 +442,10 @@ export class ExamenImprovisacionFormComponent {
 
   onSubmit() {
     this.submitting = true
+    let selectedStudentsUids:Array<string> = []
+    this.selectedStudents().map( e =>{
+      selectedStudentsUids.push( e.uid )
+    })
     let applicationDate = this.examGradeFG.controls.applicationDate.value
     let examGrade:ExamGrade = {
       id:uuid.v4(), 
@@ -393,7 +457,8 @@ export class ExamenImprovisacionFormComponent {
       applicationDay: this.dateFormatService.getDayId(applicationDate),
       applicationMonth:this.dateFormatService.getMonthId(applicationDate),
       applicationYear: this.dateFormatService.getYearId(applicationDate),    
-      student_uid:this.examGradeFG.controls.student_uid.value, 
+      student_uid:selectedStudentsUids, 
+      students:this.selectedStudents(),
       title:this.examGradeFG.controls.title.value,
       expression:this.examGradeFG.controls.expression.value,
       level:this.examGradeFG.controls.level.value,

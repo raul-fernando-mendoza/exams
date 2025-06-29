@@ -44,8 +44,10 @@ Certificados
           <div *ngIf="row.nodeClass=='User'">
             {{row.user.id}}
           </div>
-          <div *ngIf="row.nodeClass=='MateriaEnrollment'">          
-            <button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()">certificado</button>
+          <div *ngIf="row.nodeClass=='MateriaEnrollment'"> 
+            
+            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>link</mat-icon></a>       
+            <button mat-icon-button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>content_copy</mat-icon></button>
           </div>    
           <div *ngIf="row.nodeClass=='Exam'; else missing">
             <div *ngIf="row.examGrade && row.examGrade.isReleased">

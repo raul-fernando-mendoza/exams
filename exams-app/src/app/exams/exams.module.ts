@@ -302,7 +302,6 @@ export interface ParameterGrade{
   criteriaGrades?: CriteriaGrade[] 
 }
 
-
 export interface ExamGrade{
   id?:string 
   organization_id?:string
@@ -319,8 +318,8 @@ export interface ExamGrade{
   applicationMonth?:number
   applicationYear?:number
 
-  student_uid?:string 
-  student?:User
+  student_uid?:string|Array<string>
+  students?:Array<User>
 
   title?:string 
   expression?:string 

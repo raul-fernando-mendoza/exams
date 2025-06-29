@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
-import { ExamGrade, Materia, ParameterGrade } from '../exams/exams.module';
+import { ExamGrade, Materia, ParameterGrade, User } from '../exams/exams.module';
 import { ParameterGradeApplyChange, ParameterGradeApplyComponent } from './parametergrade-apply.component';
 
 import { CommonModule } from '@angular/common';
@@ -38,7 +38,7 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
   collection:string = ""
   isDisabled = false
   submitting = false
-  userDisplayName = signal("")
+  userDisplayName = signal<Array<User>>([])
   materia = signal<Materia>(null)
   parameterGrade = signal<ParameterGrade|null>(null)
 
@@ -72,12 +72,18 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
     db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
         this.examGrade.set(doc.data() as ExamGrade)
 
-        this.examImprovisacionService.getUser(this.examGrade().student_uid).then( user =>{
-          this.userDisplayName.set(this.userLoginService.getDisplayNameForUser(user)) 
-        },
-        reason =>{
-          console.log("ERROR: reading student user data:" + reason)
-        })   
+        if( this.examGrade().students ){
+          this.userDisplayName.set( this.examGrade().students )
+          
+        }
+        else{
+          this.examImprovisacionService.getUser(this.examGrade().student_uid).then( user =>{
+            this.userDisplayName.set([user]) 
+          },
+          reason =>{
+            console.log("ERROR: reading student user data:" + reason)
+          })  
+        } 
         
         this.examImprovisacionService.getMateria( this.examGrade().materia_id).then( materia =>{
           this.materia.set(materia)

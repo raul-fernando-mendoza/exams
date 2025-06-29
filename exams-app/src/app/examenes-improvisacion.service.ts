@@ -179,11 +179,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }
 
   getMateriasEnrolled(organizationId:string, studentUid:string):Promise<Array<Materia>>{
-    var _resolve
-    var _reject
     return new Promise<Array<Materia>>((resolve, reject) =>{
-      _resolve = resolve
-      _reject = reject
       var materias:Array<Materia> = Array<Materia>()
 
       db.collection('materiaEnrollments')
@@ -431,7 +427,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
 
   }
 
-  getExams( materiaId ):Promise<Array<Parameter>>{
+  getExams( materiaId ):Promise<Array<Exam>>{
     return new Promise<Array<Parameter>>( (resolve,reject) =>{
       db.collection('materias/' + materiaId + '/exams/').where("isDeleted","==",false).get().then( examSet =>{
         var exams = new Array<Exam>()

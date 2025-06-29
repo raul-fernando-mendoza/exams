@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
-import { CriteriaGrade, ExamGrade, ParameterGrade } from '../exams/exams.module';
+import { CriteriaGrade, ExamGrade, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
@@ -180,10 +180,11 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
       this.submitting.set(true)
       var unsubscribe = qry.onSnapshot( set =>{
         this.examGradeList.length = 0
-        let m = set.docs.map( doc =>{
+
+        let transactions = []
+        set.docs.map( doc =>{
           let examGrade:ExamGrade = doc.data() as ExamGrade
-          var d:any = examGrade.applicationDate
-          console.log( d.toDate("applicationDate", "desc") )
+          var d:any = examGrade.applicationDate      
 
           let node:NodeTableRow = {
             obj:{
@@ -192,7 +193,7 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
               "materia_id":examGrade.materia_id,
               "materia_name":null,
               "student_uid":examGrade.student_uid,
-              "student_name":null,
+              "students":null,
               "title":examGrade.title,
               "score":this.toFixed(examGrade.score,2),
               "isReleased":examGrade.isReleased,
@@ -206,20 +207,41 @@ export class ExamTableComponent implements AfterViewInit, OnInit, OnDestroy {
             
           }
           this.examGradeList.push(node)
-          db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
+
+          
+          let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
             if( doc.exists ){
               node.obj["materia_name"] = doc.data().materia_name
             }
           })
-          this.examImprovisacionService.getUser(examGrade.student_uid).then( user =>{
-            let displayName = this.userLoginService.getDisplayNameForUser(user)
-            node.obj['student_name'] = displayName
-          })
+          transactions.push(m)
 
-          return this.loadParameterGrades(examGrade.id,node.children)
+          if( examGrade.students ){
+            node.obj['students'] = Array.isArray(examGrade.students) ? examGrade.students: [examGrade.students]
+          }
+          else{
+            let u = this.examImprovisacionService.getUser(examGrade.student_uid).then( user =>{
+              if( user == null ){
+                let newUser:User = {
+                  uid: "",
+                  email:"desconocido" ,
+                  displayName:"desconocido" ,        
+                }
+                node.obj['students'] = [newUser]
+              }
+              else{
+                let displayName = this.userLoginService.getDisplayNameForUser(user)
+                node.obj['students'] = [user]
+              }
+            })
+            transactions.push(u)
+          }
+
+          let p = this.loadParameterGrades(examGrade.id,node.children)
+          transactions.push(p)
           
         })
-        Promise.all(m).then( () =>{
+        Promise.all(transactions).then( () =>{
           this.submitting.set(false)
           console.log("End loading Exams")
           this.examGradeList.sort( (a,b) =>{

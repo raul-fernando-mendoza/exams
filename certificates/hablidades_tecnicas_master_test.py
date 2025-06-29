@@ -7,7 +7,7 @@ from firebase_admin import credentials
 firebase_admin.initialize_app()
 
 from google.cloud import storage
-import certificates_master_generation
+import certificates_master_generation_test
 
 log = logging.getLogger("cheneque")
 """
@@ -29,7 +29,7 @@ class TestFireStore(unittest.TestCase):
         storage_client = storage.Client()
             
         #logging.debug( json.dumps(obj,  indent=4, sort_keys=True) )
-        data = certificates_master_generation.createStorageCertificate( storage_client, 
+        data = certificates_master_generation_test.createStorageCertificate( storage_client, 
         "certificates_support/certificate_master_habilidades_tecnicas.jpg",
         "certificates_logos/empty_icon.jpg",
         "certificates_master/habilidades_tecnicas" , 

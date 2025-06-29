@@ -1,19 +1,29 @@
 Editar Examen
-<form [formGroup]="examGradeFG" novalidate (ngSubmit)="onSubmit()">
 
+      <div [formGroup]="fg">
+        Estudiantes:
+        <mat-form-field>
+          <app-user-selector formControlName="student_uid"  required></app-user-selector>
+        </mat-form-field>
+        <button mat-button (click)="onAddStudent()">add</button>
+        <ul>
+        @for( u of selectedStudents() ; track u.uid; let i=$index){
+          <li> {{ u.displayName }} <button mat-icon-button (click)="onRemoveStudent(u)"><mat-icon>delete</mat-icon></button></li> 
+
+        }
+        @empty{
+          no hay estudiantes seleccionados
+        }
+        </ul>
+      </div>   
+
+<form [formGroup]="examGradeFG" novalidate (ngSubmit)="onSubmit()">
   <mat-card >
     <mat-card-content > 
-
-      <mat-form-field appearance="fill" >
-        <!--<mat-label>selecciona estudiante</mat-label>-->
-        <app-user-selector formControlName="student_uid" (userselected)="examStudentChange($event)" required></app-user-selector>
-       
-      </mat-form-field>
-
       <mat-form-field appearance="fill" > 
         <mat-label>Habilidad</mat-label>
         <mat-select formControlName="materia_id" (selectionChange)="materiaChange($event)">
-          <mat-option *ngFor="let m of materias" [value]="m.id" >
+          <mat-option *ngFor="let m of materias()" [value]="m.id" >
             {{m.materia_name}} 
           </mat-option>
         </mat-select>
@@ -21,7 +31,7 @@ Editar Examen
       <mat-form-field appearance="fill" > 
         <mat-label>Tipo de Examen</mat-label>
         <mat-select formControlName="exam_id" (selectionChange)="examChange($event)">
-          <mat-option *ngFor="let t of exams" [value]="t.id" >
+          <mat-option *ngFor="let t of exams()" [value]="t.id" >
             {{t.label}} 
           </mat-option>
         </mat-select>
@@ -48,7 +58,9 @@ Editar Examen
       <mat-form-field class="example-full-width">
         <mat-label>Nivel</mat-label>
         <input matInput placeholder="" value="" formControlName="level">
-      </mat-form-field>       
+      </mat-form-field>   
+      
+
       
       <div formArrayName="parameterGradesFA">
         <div *ngFor="let p of parameterGradesFA.controls; let i=index">
@@ -78,11 +90,11 @@ Editar Examen
           </div>   
         </div>
       </div>
-     
+
     </mat-card-content>  
     <mat-card-actions>
       <button mat-raised-button color="primary" type="submit" [disabled]="submitting || !examGradeFG.valid">Enviar</button>
     </mat-card-actions> 
   </mat-card>  
-    
-</form>
+</form>     
+

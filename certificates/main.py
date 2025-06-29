@@ -5,6 +5,7 @@ from firebase_admin import auth
 import certificates
 import uuid
 import firebase_admin
+#uses FIREBASE_CONFIG environment variable
 firebase_admin.initialize_app()
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.DEBUG)
@@ -30,16 +31,9 @@ def createCertificateOnExamGradeEvent(event, context):
 
     db = firestore.Client()
     createCertificateExamGrade(db, documentId)
-
-def createCertificateExamGrade(db, examGrade_id):  
     
-    examGrade = db.collection(u'examGrades').document(examGrade_id).get().to_dict()
-
-    materia_id = examGrade["materia_id"]
-    organization_id = examGrade["organization_id"]
- 
-    #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
-    materia = db.collection("materias").document(materia_id).get().to_dict()
+#return true when the user has completed all the required exams for a materia    
+def hasCompletedMateria(db, materia_id, student_uid ):   
     #find all exams for materia
     examSet = db.collection("materias/" + materia_id + "/exams") \
     .where("isDeleted","==",False) \
@@ -50,25 +44,37 @@ def createCertificateExamGrade(db, examGrade_id):
     optionalCount = 0
     optionalReleased = 0
 
-    student = auth.get_user(examGrade["student_uid"])
-    displayName = student.custom_claims["displayName"] if ("displayName" in student.custom_claims) else student.email
-
-
     for examDoc in examSet:
         exam = examDoc.to_dict()
         if "isRequired" in exam and exam["isRequired"]:
             requiredCount += 1
         else: optionalCount += 1
 
-        examGradeSet = db.collection("examGrades") \
+        examGradeSetV1 = db.collection("examGrades") \
             .where("materia_id", "==", materia_id) \
             .where("exam_id", "==", examDoc.get("id")) \
-            .where("student_uid","==", student.uid) \
+            .where("student_uid","==", student_uid) \
             .where("isDeleted","==", False) \
             .where("isCompleted","==", True) \
             .where("isReleased","==",True) \
             .where("isApproved","==",True) \
             .get()
+            
+        examGradeSetV2 = db.collection("examGrades") \
+            .where("materia_id", "==", materia_id) \
+            .where("exam_id", "==", examDoc.get("id")) \
+            .where("student_uid","array_contains", student_uid) \
+            .where("isDeleted","==", False) \
+            .where("isCompleted","==", True) \
+            .where("isReleased","==",True) \
+            .where("isApproved","==",True) \
+            .get()
+            
+        if( len(examGradeSetV1) > 0 ):
+            examGradeSet = examGradeSetV1
+        else:
+            examGradeSet = examGradeSetV2
+                
         for examGradeDoc in examGradeSet:
             #if found then count it
             if "isRequired" in exam and exam["isRequired"]:  
@@ -77,83 +83,113 @@ def createCertificateExamGrade(db, examGrade_id):
             else:
                 optionalReleased +=1
                 break
-    #if all has been passed generate the cerfificate
-    log.debug("*** requiredCount:" + str(requiredCount) + " == requiredReleased:" + str(requiredReleased))
-    log.debug("*** optionalCount:" + str(optionalCount) + " > optionalReleased:" + str(optionalReleased))
+            
+            
     if requiredCount == requiredReleased and (
         optionalCount == 0 or optionalReleased > 0):
-        
-        storage_client = storage.Client()
-
-        materiaEnrollmentSet = db.collection("materiaEnrollments") \
-            .where( "materia_id" , "==", materia_id) \
-            .where( "student_uid", "==", student.uid) \
-            .where( "isDeleted", "==", False) \
-            .where( "organization_id", "==", organization_id).get()
-            
-        materiaEnrollmentRef = None
-        for materiaEnrollmentDoc in materiaEnrollmentSet:
-            materiaEnrollmentRef = materiaEnrollmentDoc
-
-        materiaEnrollment = materiaEnrollmentRef.to_dict()
-
-        certificateId =  student.uid + "_" + materia["id"] 
-
-        certificateTypeRef = db.collection("organizations/" + organization_id + "/certificateTypes").document(materia["certificateTypeId"]).get()
-        certificateType = certificateTypeRef.to_dict()
-
-        masterName = certificateType["certificateTypePath"]
-        logoName =  materia["materiaIconPath"]
-        studentName = displayName
-        materiaName = materia["materia_name"]
-        label1 = certificateType["label1"]
-        if certificateType["label2"] == "{materia_name}": 
-            label2 = materia["materia_name"]
-        else:
-            label2 = certificateType["label2"] 
-        label3 = certificateType["label3"]
-        label4 = certificateType["label4"]
-        color1 =  certificateType["color1"] 
-        color2 =  certificateType["color2"]
-
-
-        data = certificates.createStorageCertificate( storage_client, 
-         masterName,
-         logoName,
-        "organizations/" + materia["organization_id"] + "/materiaEnrollments/" + materiaEnrollment["id"] +  "/" + certificateId + "_" + str( uuid.uuid4() ),
-        studentName,
-        materiaName,
-        label1,
-        label2,
-        label3,
-        label4,
-        color1,
-        color2
-        )  
-        
-        json = {
-            "certificatePath":data["certificatePath"],
-            "certificateUrl": data["certificateUrl"],
-            "certificateBadgePath":data["certificateBadgePath"],
-            "certificateBadgeUrl": data["certificateBadgeUrl"] 
-
-        }
-
-        materiaEnrollmentRef.reference.update(json)
-        log.debug("*** certificate generated :" + data["certificateUrl"])
+        return True
     else:
-        materiaEnrollmentsSet = db.collection("materiaEnrollments") \
-            .where("materia_id","==", materia_id) \
-            .where("student_uid","==", student.uid) \
-            .get()
+        return False
+def createCertificate(db, organization_id, materia_id, student_uid):
+    student = auth.get_user(student_uid)
+    displayName = student.custom_claims["displayName"] if ("displayName" in student.custom_claims) else student.email
+    materia = db.collection("materias").document(materia_id).get().to_dict()
+    storage_client = storage.Client()
+
+    materiaEnrollmentSet = db.collection("materiaEnrollments") \
+        .where( "materia_id" , "==", materia_id) \
+        .where( "student_uid", "==", student.uid) \
+        .where( "isDeleted", "==", False) \
+        .where( "organization_id", "==", organization_id).get()
+        
+    materiaEnrollmentRef = None
+    for materiaEnrollmentDoc in materiaEnrollmentSet:
+        materiaEnrollmentRef = materiaEnrollmentDoc
+
+    materiaEnrollment = materiaEnrollmentRef.to_dict()
+
+    certificateId =  student.uid + "_" + materia["id"] 
+
+    certificateTypeRef = db.collection("organizations/" + organization_id + "/certificateTypes").document(materia["certificateTypeId"]).get()
+    certificateType = certificateTypeRef.to_dict()
+
+    masterName = certificateType["certificateTypePath"]
+    logoName =  materia["materiaIconPath"]
+    studentName = displayName
+    materiaName = materia["materia_name"]
+    label1 = certificateType["label1"]
+    if certificateType["label2"] == "{materia_name}": 
+        label2 = materia["materia_name"]
+    else:
+        label2 = certificateType["label2"] 
+    label3 = certificateType["label3"]
+    label4 = certificateType["label4"]
+    color1 =  certificateType["color1"] 
+    color2 =  certificateType["color2"]
+
+
+    data = certificates.createStorageCertificate( storage_client, 
+        masterName,
+        logoName,
+    "organizations/" + materia["organization_id"] + "/materiaEnrollments/" + materiaEnrollment["id"] +  "/" + certificateId + "_" + str( uuid.uuid4() ),
+    studentName,
+    materiaName,
+    label1,
+    label2,
+    label3,
+    label4,
+    color1,
+    color2
+    )  
+    
+    json = {
+        "certificatePath":data["certificatePath"],
+        "certificateUrl": data["certificateUrl"],
+        "certificateBadgePath":data["certificateBadgePath"],
+        "certificateBadgeUrl": data["certificateBadgeUrl"] 
+
+    }
+
+    materiaEnrollmentRef.reference.update(json)
+    log.debug("*** certificate generated :" + data["certificateUrl"])  
+    
+def removeCertificate(db, organization_id, materia_id, student_uid):
            
+    materiaEnrollmentSet = db.collection("materiaEnrollments") \
+        .where( "materia_id" , "==", materia_id) \
+        .where( "student_uid", "==", student_uid) \
+        .where( "isDeleted", "==", False) \
+        .where( "organization_id", "==", organization_id).get()
 
-        for materiaEnromentDoc in materiaEnrollmentsSet:
-            materiaEnrollment = materiaEnromentDoc.to_dict()            
-            deleteCertificateMaterialEnrollment(materiaEnrollment["id"])  
+    for materiaEnromentDoc in materiaEnrollmentSet:
+        materiaEnrollment = materiaEnromentDoc.to_dict()            
+        deleteCertificateMaterialEnrollment(materiaEnrollment["id"])  
 
-        log.debug("*** certificate removido :" )     
+    log.debug("*** certificate removido :" )      
 
+def createCertificateExamGrade(db, examGrade_id):  
+    
+    examGrade = db.collection(u'examGrades').document(examGrade_id).get().to_dict()
+
+    materia_id = examGrade["materia_id"]
+    organization_id = examGrade["organization_id"]
+ 
+    #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
+    materia = db.collection("materias").document(materia_id).get().to_dict()
+    
+    students = None
+    
+    if "students" in examGrade:
+        students = examGrade["students"]
+    else:
+        student = auth.get_user(examGrade["student_uid"])
+        students = [student]
+    
+    for s in students:
+        if hasCompletedMateria(db, materia_id, s['uid']):
+            createCertificate(db, organization_id,materia_id,s['uid'])
+        else:
+            removeCertificate(db, organization_id, materia_id, s['uid'])
             
 #********************************* URL ************************
 def createCertificateMateriaEnrollmentPost(request):

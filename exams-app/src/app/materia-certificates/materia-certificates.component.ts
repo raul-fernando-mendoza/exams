@@ -23,6 +23,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-materia-certificates',
@@ -39,7 +40,8 @@ import { MatMenuModule } from '@angular/material/menu';
     ,MatTableModule
     ,MatPaginatorModule 
     ,MatSortModule 
-    ,MatMenuModule  
+    ,MatMenuModule 
+    ,ClipboardModule 
   ], 
 
   templateUrl: './materia-certificates.component.html',
@@ -236,14 +238,16 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         row.children = []
       }
       
+      
       const query = db.collection("materias/" + row.materia.id + "/exams").
       where("isDeleted","==",false)
       query.get().then( set => {
-        var children:NodeTableRow[] = []
-        var transaction = set.docs.map( doc =>{
+        let children:NodeTableRow[] = []
+        
+        let allexams = set.docs.map( doc =>{
 
-          var exam:Exam = doc.data() as Exam
-          var n:NodeTableRow = {
+          let exam:Exam = doc.data() as Exam
+          let n:NodeTableRow = {
             user:row.user,
             materiaEnrollment: row.materiaEnrollment,
             materia:row.materia,
@@ -257,33 +261,63 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           }
           children.push(n)   
           
-          const grades = db.collection("examGrades")
+          let transactions = []
+          let examsGrades:Array<ExamGrade> = []
+          //now get the grades for the exams version 1
+          const tV1 = db.collection("examGrades")
           .where("organization_id","==", this.organization_id)
           .where("student_uid","==", row.user.uid)
           .where("materia_id","==", row.materia.id)
           .where("exam_id","==",exam.id)
-          .where("isDeleted","==",false)
-          
-    
-          return grades.get().then( grades => {
+          .where("isDeleted","==",false).get().then( set => {
 
-            for( var j=0; j<grades.docs.length; j++){
-              const g:ExamGrade = grades.docs[j].data() as ExamGrade
+            set.forEach( g =>{
+              if( g.exists ){
+                let eg = g.data() as ExamGrade
+                examsGrades.push( eg )
+              }
+            })
+          },
+          reason=>{
+            console.log("ERROR reading examGrades:" + reason)
+            reject()
+          })
+          transactions.push( tV1 )
+
+          //now get the grades for the exams version 1
+          const tV2 = db.collection("examGrades")
+          .where("organization_id","==", this.organization_id)
+          .where("student_uid","array-contains", row.user.uid)
+          .where("materia_id","==", row.materia.id)
+          .where("exam_id","==",exam.id)
+          .where("isDeleted","==",false).get().then( set => {
+
+            set.forEach( g =>{
+              if( g.exists ){
+                let eg = g.data() as ExamGrade
+                examsGrades.push( eg )
+              }
+            })
+          },
+          reason=>{
+            console.log("ERROR reading examGrades:" + reason)
+            reject()
+          })
+          transactions.push( tV2 )          
+
+          return Promise.all(transactions).then( ()=>{
+            for( var j=0; j<examsGrades.length; j++){
+              const g:ExamGrade = examsGrades[j] as ExamGrade
               if( n.examGrade == null){
                 n.examGrade = g
               }
               else if( g.isReleased == true && g.applicationDate > n.examGrade.applicationDate ){
                 n.examGrade = g
               }
-            }
-          },
-          reason=>{
-            console.log("ERROR reading examGrades:" + reason)
-            reject()
+            }            
           })
         })
-
-        Promise.all(transaction).then(()=>{
+        Promise.all(allexams).then( ()=>{
           children.sort( (a,b) =>{ return a.exam.label > b.exam.label ? 1:-1})
           row.opened = true 
           children.map( value => row.children.push(value))
@@ -483,23 +517,29 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       let d = new Date().toISOString().split('T')[0]
       let today =  new Date( d )
       let examGrade:ExamGrade = {
-        id:id, 
-        organization_id:this.organization_id,
-        exam_id:row.exam.id,
-        materia_id:row.materia.id, 
+        id: id,
+        organization_id: this.organization_id,
+        exam_id: row.exam.id,
+        materia_id: row.materia.id,
         isCompleted: true,
-        applicationDate:today,
-        applicationDay:this.dateFormatService.getDayId(today),
-        student_uid:row.user.uid, 
-        title:"acreditado por:" + this.userLoginService.getDisplayName(),
-        expression:"ninguna",
-        score:10,
-        isDeleted:false, 
-        isReleased:true, 
-        isApproved:true,
-        isWaiver:true,
-        created_on:new Date(),
-        updated_on:new Date()
+        applicationDate: today,
+        applicationDay: this.dateFormatService.getDayId(today),
+        student_uid: row.user.uid,
+        title: "acreditado por:" + this.userLoginService.getDisplayName(),
+        expression: "ninguna",
+        score: 10,
+        isDeleted: false,
+        isReleased: true,
+        isApproved: true,
+        isWaiver: true,
+        created_on: new Date(),
+        updated_on: new Date(),
+        students: [
+          { //row.user.uid
+            uid:row.user.uid,
+            displayName:row.user.displayName ? row.user.displayName: row.user.email
+          }
+        ]
       }
       db.collection("examGrades").doc(id ).set( examGrade ).then( ()=>{
         row.examGrade = examGrade    

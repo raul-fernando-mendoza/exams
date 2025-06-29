@@ -99,9 +99,16 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         let p = this.examGrade().parameterGrades[i]
         labels[i] = p.label
         scores[i] = p.score
-      }  
+      } 
+
+      let students:Array<User>
+      students = this.examGrade().students as Array<User>
+      let studentNames:Array<string> = []
+      for( let i=0 ; i<students.length ; i++){
+        studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
+      }
       
-      this.createGraph(this.examGrade_id, this.examGrade().student.displayName, labels, scores)        
+      this.createGraph(this.examGrade_id, students, labels, scores)        
 
     })
   }
@@ -178,6 +185,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
           exam_id:data.exam_id,
           title:data.title,
           student_uid:data.student_uid,
+          students:data.students,
           materia_id:data.materia_id,
           isReleased:data.isReleased,
           applicationDate:data.applicationDate,
@@ -185,19 +193,25 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
           parameterGrades:[]
         }
         
+        let transactions = []
 
+        if ( !("students" in examGrade) ){ //is version 1
 
-        this.examenesImprovisacionService.getUser(examGrade.student_uid).then( user =>{
-          examGrade.student = {
-            uid:user.uid,
-            displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
-          }
+          let u = this.examenesImprovisacionService.getUser(examGrade.student_uid).then( user =>{
+            examGrade.students = [{
+              uid:user.uid,
+              displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
+            }]
+          },
+          reason=>{
+            reject()
+          })
+          transactions.push(u)
+        }
 
-          db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
+        let p = db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
           .where("isCurrentVersion", "==", true).get().then( set =>{
-            let transactions = []
-
-            set.docs.map( doc =>{
+            let c = set.docs.map( doc =>{
               var parameterGrade:ParameterGrade = doc.data() as ParameterGrade
             
               parameterGrade.criteriaGrades=[]
@@ -205,24 +219,25 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
             
               examGrade.parameterGrades.push(parameterGrade)
 
-              let t = this.addCriteriaGrades(examGrade, parameterGrade)
-              transactions.push(t)
+              let c = this.addCriteriaGrades(examGrade, parameterGrade)
+              transactions.push(c)
+              
             })
-
-            Promise.all(transactions).then( () =>{
-              examGrade.parameterGrades.sort((a,b) =>{
-                return a.label > b.label ? 1: -1
-              })
-
-              resolve( examGrade )
-
-            })
-
-          },
-          reason =>{
-            console.error("ERROR: reading parameterGrades:" + reason)
+            
+        })
+        transactions.push(p)
+        
+        Promise.all(transactions).then( () =>{
+          examGrade.parameterGrades.sort((a,b) =>{
+            return a.label > b.label ? 1: -1
           })
 
+          resolve( examGrade )
+
+        },
+        reason=>{
+          alert(reason)
+          reject(reason)
         })
       })
     }) 

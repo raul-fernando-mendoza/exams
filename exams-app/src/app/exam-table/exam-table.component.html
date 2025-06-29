@@ -47,7 +47,13 @@ Calificaciones
     <ng-container matColumnDef="alumna">
       <th mat-header-cell *matHeaderCellDef >Estudiante</th>
       <td mat-cell *matCellDef="let row">
-        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'examGrade'">{{ row.obj.student_name }}</div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'examGrade'">
+          <ul>
+          @for(s of row.obj.students; track s){
+            <li>{{s.displayName?s.displayName:s.email }}</li>
+          }
+          </ul>
+        </div>
       </td>
     </ng-container>    
     <ng-container matColumnDef="score">

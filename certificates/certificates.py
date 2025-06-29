@@ -24,8 +24,8 @@ def calculateSizeStringOld(str, s):
         return w                       
 
 def calculateWidthString(text, font):
-    (x,y) = font.getsize(text)
-    return x
+    l = font.getlength(text)
+    return l
 
 def angleToPositive( angle:int):
         while angle<0:
