@@ -1,9 +1,17 @@
 @if( exams() ){
+
   <mat-grid-list cols="5" rowHeight="2em">
+    @if(average()){
+    <mat-grid-tile  colspan="3">
+      <span class="average">Promedio</span>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2">
+      <span class="average">{{ average() }}</span>
+    </mat-grid-tile>  
+    }    
   @for(ei of exams(); track ei){
     <mat-grid-tile colspan="3">
       <span class="examname">{{  ei.exam.label }}</span>
-        
     </mat-grid-tile>
     <mat-grid-tile colspan="2">
           @if( ei.examGrade ){
@@ -12,13 +20,12 @@
             }
             @else{
               <button (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button>{{formatScore(ei.examGrade.score)}}</button>
-              <mat-icon>check</mat-icon>
             }
           }
           @else{
             <mat-icon>radio_button_unchecked</mat-icon>
           }
-    </mat-grid-tile>         
+    </mat-grid-tile>      
   }
   </mat-grid-list>
 }

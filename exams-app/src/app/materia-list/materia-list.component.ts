@@ -219,7 +219,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
 
   onEditMateria(materia:Materia){
-    this.router.navigate(['/materia-edit',{materia_id:materia.id}]);
+    this.router.navigate(['/materia-edit',materia.id]);
   }
   onCreateMateria(){
     const dialogRef = this.dialog.open(DialogNameDialog, {

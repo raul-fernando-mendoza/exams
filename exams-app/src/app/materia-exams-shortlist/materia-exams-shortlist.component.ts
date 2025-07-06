@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { Exam, ExamGrade, MateriaEnrollment } from '../exams/exams.module';
+import { Exam, ExamGrade, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-interface examItem{
+interface ExamItem{
   exam:Exam
   examGrade:ExamGrade  
 }
@@ -37,14 +37,15 @@ interface examItem{
   styleUrls: ['./materia-exams-shortlist.component.css']
 })
 export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
-  @Input() materiaid:string = null
+  @Input() materia:Materia = null
+  @Input() materiaEnrollment:MateriaEnrollment = null
   organization_id:string
   isAdmin = false
   unsubscribe = null
   submitting = signal(false)
-  exams= signal<Array<examItem>>(null) 
-  userUid = null
-  isEnrolled = signal(false)
+  exams= signal<Array<ExamItem>>(null) 
+  average = signal("")
+ 
 
   constructor(
     private userPreferenceService:UserPreferencesService
@@ -54,31 +55,28 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     , private router: Router    
   ) {
     this.organization_id = this.userPreferenceService.getCurrentOrganizationId()
-    this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
-    this.userUid = this.userLoginService.getUserUid()
+    //this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
+    //this.userUid = this.userLoginService.getUserUid()
    }
   
    ngOnDestroy(): void {
     this.unsubscribe()
   }
   ngOnInit(): void {
-    if( this.materiaid != null){
-      this.loadExams()
+    if( this.materia){
+      this.loadExamItems()
     }
-    this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled =>{
-      this.isEnrolled.set(isEnrolled)
-    })
   }
-  loadExams(){
+  loadExamItems(){
     this.submitting.set(true)
-    this.unsubscribe = db.collection("materias/" + this.materiaid + "/exams")
+    this.unsubscribe = db.collection("materias/" + this.materia.id + "/exams")
     .where("isDeleted","==", false).onSnapshot( snapshot =>{
       this.submitting.set(false)
-      let exams = new Array<examItem>()
+      let exams = new Array<ExamItem>()
       let transactions = []
       snapshot.docs.map( doc =>{
         const exam = doc.data() as Exam
-        var ei:examItem={
+        var ei:ExamItem={
           exam:exam,
           examGrade:null
         }
@@ -92,9 +90,23 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
         transactions.push(t)
       })
       Promise.all( transactions ).then( ()=>{
+        exams = exams.filter( ei => !this.hideExam( ei ))
         exams.sort( (a,b) => {
           return a.exam.label > b.exam.label ? 1:-1
         })
+        let total = 0
+        let count = 0
+        exams.forEach( ei =>{
+          if( ei.examGrade && ei.examGrade.isReleased ){
+            total += ei.examGrade.score
+            count +=1
+          }
+        })
+        if( count ){
+          let avg = total / count
+          this.average.set( avg.toFixed(1) )
+        }
+
         this.exams.set(exams)
       })
 
@@ -103,134 +115,17 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
       console.log("ERROR reading exam:" + reason)
     })
   }
-
-  onDeleteExam(exam:Exam){
-    if( !confirm("Esta seguro de querer borrar el examen:" +  exam.label) ){
-      return
-    }     
-    db.collection("materias/" + this.materiaid + "/exams").doc(exam.id).update({"isDeleted":true}).then(
-      result =>{
-        console.log("exam delted")
-      }
-    )
-  }  
-  onDuplicateExam(exam:Exam){
-    this.submitting.set(true)
-    
-    this.duplicateExam(exam.id, exam.label + "_copy").then( () =>{
-      this.submitting.set(false)
-    },
-    reason=>{
-      alert("duplicate failed" + reason)
-      this.submitting.set(false)
-    })
-  }  
-  duplicateExam(exam_id, exam_label:string):Promise<void>{
-    
-    var _resolve
-    var _reject
-    return new Promise<null>((resolve, reject)=>{
-      _resolve = resolve
-      _reject = reject
-
-      if( exam_id == null || exam_label == null){
-        reject(null)
-      }
-      var req = {
-        materias:{
-          id:this.materiaid,
-          exams:
-            {
-              id:exam_id,
-              label:exam_label
-            }
-          
-        }
-      }
-      var options = {
-        exceptions:["references","Path","Url"]
-      }
-      this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req, options).subscribe(
-          data => { 
-            var exam:Exam = data["result"]
-            _resolve()
-          },   
-          error => {  
-            console.error( "ERROR: duplicando examen:" + JSON.stringify(req))
-            _reject()
-          }
-        )
-      },
-      error => {
-        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-        this.submitting.set(false)
-      }) 
-    }) 
-        
-  }
-
-  onEditExam(exam_id){
-    this.router.navigate(['/ei-tipo-edit',{materia_id:this.materiaid, exam_id:exam_id}]);
-  }
-
-  createExam(label:string):Promise<Exam>{
-    return new Promise<Exam>( (resolve, reject) =>{
-      var id = uuid.v4()
-      const exam:Exam = {
-        id:id,
-        label:label,
-        
-        isDeleted:false,
-        isRequired:false,
-        parameters:[]
-      }
-      db.collection('materias/' + this.materiaid + '/exams').doc(id).set(exam).then( () =>{
-        console.log("examen created")
-        resolve( exam )
-      },
-      reason =>{
-        alert("ERROR creating exam:" + reason)
-        reject(null)
-      })
-    })
-
-  }
-  onCreateExam(){
-    const dialogRef = this.dialog.open(DialogNameDialog, {
-      height: '400px',
-      width: '250px',
-      data: { label:"Examen", name:""}
-    });
-  
-    dialogRef.afterClosed().subscribe(data => {
-      console.log('The dialog was closed');
-      if( data != undefined ){
-        console.debug( data )
-        this.createExam(data.name).then( (exam)=>{
-          this.onEditExam(exam.id)
-        },
-        reason =>{
-          alert("ERROR: removing level")
-        })
-      }
-      else{
-        console.debug("none")
-      }
-    });
-  }
-
-
+ 
   onExamGradeReport(exam:Exam, examGrade:ExamGrade){
-    this.router.navigate(['/report',{materia_id:this.materiaid, exam_id:exam.id,examGrade_id:examGrade ? examGrade.id : null}]);
+    this.router.navigate(['/report',{materia_id:this.materia.id, exam_id:exam.id,examGrade_id:examGrade ? examGrade.id : null}]);
   }
 
   getExamGrade( examId ):Promise<ExamGrade>{
     return new Promise<ExamGrade>( (resolve, reject) =>{
       const qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id )
-      .where("student_uid","==", this.userUid)
-      .where("materia_id","==", this.materiaid)
+      .where("student_uid","==", this.materiaEnrollment.student_uid)
+      .where("materia_id","==", this.materia.id)
       .where("exam_id","==",examId)
       .where("isDeleted","==",false)
       //.where("isReleased","==",true)
@@ -261,11 +156,16 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     else
       return "N/A"
   }
-  formatExamName( name:string ){
-    if( name.length > 20 ){
-      return name.substring(1,20) + " ..."
-    }
-    return name
-  }
 
+  hideExam( ei:ExamItem ):boolean{
+    if(  this.materiaEnrollment.certificateUrl ){
+      if( ei.examGrade == null ){
+        return true
+      }
+      if( ei.examGrade && ei.examGrade.isReleased == false) {
+        return true
+      }
+    }   
+    return false; 
+  }
 }

@@ -4,7 +4,7 @@ Materia
 <form [formGroup]="m" >
 <mat-card >
   <mat-card-title-group>
-    @if( isAdmin ){
+    @if( isAdmin() ){
     <mat-card-title>
       <mat-form-field class="field-name">
         <mat-label>Nombre</mat-label>
@@ -19,17 +19,26 @@ Materia
     
   </mat-card-title-group>
   <mat-card-content>
-    @if( isAdmin ){
-    <app-file-loader *ngIf="isAdmin" label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
+    @if( isAdmin() ){
+    <app-file-loader label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
     
     <mat-form-field class="description" appearance="outline">
       <mat-label>description</mat-label>
       <textarea class="description" matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
     </mat-form-field> 
-    <mat-checkbox *ngIf="isAdmin" formControlName="isEnrollmentActive" name="isEnrollmentActive"  (change)="onCheckboxChange($event)" >
-      Enrolado activo
-    </mat-checkbox>
-    <mat-form-field *ngIf="isAdmin" >
+
+    
+    
+    <mat-form-field >
+        <mat-label><span [class]="materia().color1">&nbsp;&nbsp;&nbsp;</span>Color1</mat-label>
+        <mat-select formControlName="color1"  name="color1" (selectionChange)="onSelectChange($event, m)">
+          <mat-option *ngFor="let c of colors" [value]="c">
+            <span [class]="c">&nbsp;</span>{{c}}
+          </mat-option>
+        </mat-select>
+    </mat-form-field>    
+    
+    <mat-form-field >
         <mat-label>Certificado Maestro</mat-label>
         <mat-select formControlName="certificateTypeId"  name="certificateTypeId" (selectionChange)="onSelectChange($event, m)">
           <mat-option *ngFor="let tc of certificateTypes" [value]="tc.id">
@@ -37,8 +46,8 @@ Materia
           </mat-option>
         </mat-select>
     </mat-form-field>
-    
-    <button mat-raised-button color="primary" *ngIf="isAdmin" (click)="onCertificateTypes()">Certificados Maestros</button>    
+        
+    <button mat-raised-button color="primary" (click)="onCertificateTypes()">Certificados Maestros</button>    
     }
     @else{
       <div class="description">{{m.controls.description.value}}</div>       
@@ -50,18 +59,19 @@ Materia
 
 
 <mat-accordion>
-  @if(isAdmin || materia().pictureUrl || materia().pictureDescription) {
-  <mat-expansion-panel expanded="{{ materiaEnrollment()==null }}">
+  @if(isAdmin() || materia().pictureUrl || materia().pictureDescription) {
+  <mat-expansion-panel expanded="true">
     <mat-expansion-panel-header>
       <mat-panel-title> Objectivos </mat-panel-title>
     </mat-expansion-panel-header>
         <mat-card>
           <img mat-card-image  src="{{materia().pictureUrl}}"> 
           <mat-card-content>
-            @if( isAdmin ){
-            <app-file-loader *ngIf="isAdmin" label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+            @if( isAdmin() ){
+            <app-file-loader label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
             <mat-form-field class="description" appearance="outline">
-            <textarea matInput class="description" formControlName="pictureDescription" (change)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></textarea>
+              <mat-label>description de la imagen</mat-label>
+              <textarea matInput class="description" formControlName="pictureDescription" (change)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></textarea>
             </mat-form-field> 
             }
             @else{
@@ -69,22 +79,12 @@ Materia
             }
           </mat-card-content>
         </mat-card>
-      <reference-list *ngIf="materiaEnrollment() || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
   </mat-expansion-panel>
   }
-  <mat-expansion-panel expanded="{{ materiaEnrollment()==null }}">
-    <mat-expansion-panel-header>
-      <mat-panel-title> Referencias </mat-panel-title>
-    </mat-expansion-panel-header>
-        <mat-card>
-          <mat-card-content>
-            <reference-list *ngIf="materiaEnrollment() || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
-          </mat-card-content>
-        </mat-card>
-  </mat-expansion-panel>
+
  
-  @if(isAdmin || materia().videoDescription || materia().videoUrl) {
-  <mat-expansion-panel expanded="{{ materiaEnrollment()==null }}">
+ @if(isAdmin() || materia().videoDescription || materia().videoUrl) { 
+  <mat-expansion-panel expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title> Experiencias </mat-panel-title>
     </mat-expansion-panel-header>
@@ -95,18 +95,20 @@ Materia
           </mat-card-title-group>
           </mat-card-header>
           <mat-card-content>
-            <video  *ngIf="materia() && materia().videoUrl" class="video-js vjs-default-skin" controls preload="auto"
+            @if( materia().videoUrl ){
+            <video class="video-js vjs-default-skin" controls preload="auto"
             vjs-video vjs-setup="options">
               <source src="{{ materia().videoUrl }}" type='video/mp4' />
             </video>
+            }
 
-            @if(isAdmin){
+            @if(isAdmin()){
             
-            <app-file-loader *ngIf="isAdmin" label="Video Experiencias" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
+            <app-file-loader label="Carga un video" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
-            <mat-form-field class="description" appearance="outline">
-            <textarea matInput class="description" *ngIf="!isAdmin" formControlName="videoDescription" [readonly]="true"></textarea >
-            <textarea matInput class="description" *ngIf="isAdmin" formControlName="videoDescription" (change)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></textarea>
+            <mat-form-field class="description del video" appearance="outline">
+            <mat-label>description del video</mat-label>
+            <textarea matInput class="description" formControlName="videoDescription" (change)="onBlur('videoDescription', $event)"  placeholder="Descripción del video"></textarea>
             </mat-form-field>
             }
             @else{
@@ -114,37 +116,51 @@ Materia
             }
           </mat-card-content>
         </mat-card>
-      <reference-list *ngIf="materiaEnrollment() || isAdmin" [collection]="getMateriaReferenceCollection()"></reference-list>
   </mat-expansion-panel>
-  }  
-  <mat-expansion-panel expanded="{{ materiaEnrollment()!=null }}">
+}
+@if( isAdmin() ){
+  <mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Referencias </mat-panel-title>
+    </mat-expansion-panel-header>
+        <mat-card>
+          <mat-card-content>
+            <reference-list [materia_id]="materia().id"></reference-list>
+          </mat-card-content>
+        </mat-card>
+  </mat-expansion-panel>
+}
+  @if( materiaEnrollment() ) {
+  <mat-expansion-panel [expanded]="!!materiaEnrollment()">
     <mat-expansion-panel-header>
       <mat-panel-title> Calificaciones</mat-panel-title>
       <mat-panel-description>
       </mat-panel-description>
     </mat-expansion-panel-header>
-        <mat-card *ngIf="isAdmin || materia().pictureUrl || materia().pictureDescription">
+        <mat-card appearance="outlined">
           <mat-card-content>
-            @if( isAdmin ){
+            @if( isAdmin() ){
               <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
             }
             @else{
               <div class="shortlist">
-              <app-materia-exams-shortlist  [materiaid]="materia().id"></app-materia-exams-shortlist>
+              <app-materia-exams-shortlist  [materia]="materia()" [materiaEnrollment]="materiaEnrollment()"></app-materia-exams-shortlist>
               </div>
             }               
           </mat-card-content>
         </mat-card>  
   </mat-expansion-panel>
-  @if( isAdmin || ( !!materiaEnrollment() && !!materiaEnrollment().certificateUrl) ){  
+  }
+
+  @if( materiaEnrollment() && materiaEnrollment().certificateUrl ){  
   <mat-expansion-panel expanded="false">
     <mat-expansion-panel-header>
       <mat-panel-title> Certificado</mat-panel-title>
       <mat-panel-description>
       </mat-panel-description>
     </mat-expansion-panel-header>    
-        <mat-card *ngIf="isAdmin || materia().pictureUrl || materia().pictureDescription">
-          <img mat-card-image  src="{{materiaEnrollment().certificateUrl}}"> 
+        <mat-card>
+          <img mat-card-image src="{{materiaEnrollment().certificateUrl}}"> 
           <mat-card-content>
           </mat-card-content>
           <mat-card-actions>
@@ -153,6 +169,7 @@ Materia
         </mat-card>  
   </mat-expansion-panel>
   }
+ 
 </mat-accordion>
 </form> 
 }

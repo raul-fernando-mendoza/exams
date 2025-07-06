@@ -44,7 +44,7 @@ export const routes: Routes = [
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
   { path: 'materia-list', component: MateriaListComponent },  
-  { path: 'materia-edit', component: DialogMateriaDialog },  
+  { path: 'materia-edit/:materia_id', component: DialogMateriaDialog },  
   { path: 'user-list', component: UsersListComponent },
  
   { path: 'register', component: LoginFormComponent },

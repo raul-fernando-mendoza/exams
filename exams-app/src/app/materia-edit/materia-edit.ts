@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@ang
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
-import { CertificateType, Exam, Laboratory, Materia, MateriaEnrollment } from "../exams/exams.module"
+import { CertificateType, COLORS, Exam, Laboratory, Materia, MateriaEnrollment, User } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db , storage  } from 'src/environments/environment';
 
@@ -42,6 +42,7 @@ import {
   MatSnackBarLabel,
   MatSnackBarRef
 } from '@angular/material/snack-bar';
+import { ReferenceComponent } from "../reference-list/reference-list"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -67,6 +68,7 @@ import {
       ,MatExpansionModule
       ,MateriaExamsListComponent
       ,MateriaExamsShortListComponent
+      ,ReferenceComponent
       ,RouterModule
     ],      
     templateUrl: 'materia-edit.html',
@@ -110,13 +112,14 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
 
   selectedFiles
 
-  isAdmin:boolean = false
+  isAdmin = signal(false)
 
   isLoggedIn =false
 
   snapshots=Array<any>()
 
   userUid= null
+  user:User = null
   isEnrolled = false
   materiaEnrollment = signal<MateriaEnrollment>(null)
 
@@ -129,8 +132,11 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
 
   unsubscribe = undefined
 
+  colors = COLORS
+
   constructor(
-      private fb: FormBuilder
+      private activatedRoute: ActivatedRoute
+      ,private fb: FormBuilder
       ,private route: ActivatedRoute
       ,private router: Router
       ,private examImprovisacionService: ExamenesImprovisacionService
@@ -142,17 +148,25 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
-      this.isAdmin = true
-    }   
+      this.isAdmin.set(true)
+    }  
+    
+    this.user =  this.userLoginService.getUser()
+
     if( this.userLoginService.getUserUid() ){
       this.isLoggedIn = true
       this.userUid = this.userLoginService.getUserUid()
     }
-    if( this.route.snapshot.paramMap.get('materia_id') != 'null'){
-      this.materia_id = this.route.snapshot.paramMap.get('materia_id')
-      this.materiaReferenceCollection = "materias/" + this.materia_id + "/materiaReference"
-    }
-
+    var thiz = this
+    this.activatedRoute.paramMap.subscribe( {
+      next(paramMap){
+        thiz.materia_id = null
+        if( paramMap.get('materia_id') )
+          thiz.materia_id = paramMap.get('materia_id')
+          this.materiaReferenceCollection = "materias/" + this.materia_id + "/materiaReference"
+          thiz.update()
+        }
+    })
     
         
   }
@@ -173,6 +187,9 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       if( this.isEnrolled ){
         this.examImprovisacionService.getMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( materiaEnrollment =>{
           this.materiaEnrollment.set( materiaEnrollment )
+        },
+        reason=>{
+          alert("ERROR:" + reason)
         })
       }
           
@@ -194,15 +211,21 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
           this.m.controls.pictureUrl.setValue(m.pictureUrl)
           this.m.controls.pictureDescription.setValue(m.pictureDescription)
           this.m.controls.isEnrollmentActive.setValue(m.isEnrollmentActive)
-          this.m.controls.label1.setValue("") 
-          this.m.controls.label2.setValue("") 
-          this.m.controls.label3.setValue("") 
-          this.m.controls.label4.setValue("") 
-          this.m.controls.color1.setValue("") 
-          this.m.controls.color2.setValue("") 
+          this.m.controls.label1.setValue(m.label1) 
+          this.m.controls.label2.setValue(m.label2) 
+          this.m.controls.label3.setValue(m.label3) 
+          this.m.controls.label4.setValue(m.label4) 
+          this.m.controls.color1.setValue(m.color1) 
+          this.m.controls.color2.setValue(m.color2) 
           this.materia.set(m)
           
+      },
+      reason =>{
+        alert("ERROR:" + reason)
       }) 
+    },
+    reason =>{
+      alert("Error:" + reason)
     })  
   }
 
@@ -263,14 +286,6 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     
   }   
 
-  onEnroll(){
-    if( this.userLoginService.getUserUid() ){
-
-      this.router.navigate(['/payment',{"productId":"prod_MNGiZUsnJ1PA2t", "materiaId":this.materia_id}]);
-
-    }      
-  }
-
   public onBlur(propertyName, event:any): void {
     var values = {}
     values[propertyName]=this.m.controls[propertyName].value                                
@@ -294,10 +309,15 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     this.examImprovisacionService.fileDeleted('materias', this.materia().id, e)
   }
   onCopyToClipboard(){
-    this._snackBar.open("copiado al clipboard", "cerrar");
+    this._snackBar.open("copiado al clipboard", "X",{
+      duration: 3000
+    });
   }    
   getMateriaReferenceCollection(){
     return this.materiaReferenceCollection
   }
+  onCertificateTypes( ){
+    this.router.navigate(['certificate-type-list',{}])
+  }  
 }
 

@@ -263,6 +263,10 @@ export class UserLoginService {
       return true;
     return false
   }
+
+  getUser(){
+    return this.user
+  }
   getUserUid(){
     return (this.user)?this.user.uid:null
   }  

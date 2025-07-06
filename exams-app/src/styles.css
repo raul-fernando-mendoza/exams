@@ -18,3 +18,24 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     margin-right: 10px;
     color:white;
 }  
+
+
+  .aquamarine{
+    background-color:aquamarine;
+  }
+  .darkblue{
+    background-color:darkblue;
+  }
+  .brown{
+    background-color:brown;
+  }
+  .darkgreen{
+    background-color:darkgreen
+  }
+  .lightsalmon{
+    background-color:lightsalmon;
+  }
+  .darkmagenta{
+    background-color:darkmagenta;
+  }
+ 

@@ -106,6 +106,15 @@ export interface Laboratory{
   soundUrl?:string  
 }
 
+export const COLORS = [
+  "aquamarine",
+  "darkblue",
+  "brown",
+  "darkgreen",
+  "lightsalmon",
+  "darkmagenta"
+]
+
 export interface Materia{
 
   id:string 
@@ -141,6 +150,8 @@ export interface Materia{
 export interface MateriaRequest{
   materias:Materia
 }
+
+
 
 
 

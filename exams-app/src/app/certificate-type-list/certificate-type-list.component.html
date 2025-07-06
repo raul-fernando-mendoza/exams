@@ -1,5 +1,6 @@
 <h1>Certificados Maestros</h1>
-<div *ngFor="let ct of certificateTypes">
+@for( ct of certificateTypes(); track ct){
+    <div>
     <button mat-button (click)="onEdit(ct.id)">{{ ct.certificateTypeName }}</button>
     <button mat-icon-button [matMenuTriggerFor]="menuLevel" >
         <mat-icon>more_vert</mat-icon>
@@ -9,6 +10,7 @@
             <mat-icon>remove</mat-icon>
             <span>Borrar</span>
         </button> 
-    </mat-menu>      
-</div>
+    </mat-menu>    
+    </div>  
+}
 <button mat-raised-button color="primary" (click)="onCreate()">Create</button>

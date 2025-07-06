@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core"
+import { Component, Input, OnDestroy, OnInit, signal, ViewChild } from "@angular/core"
 import { MatDialog  } from "@angular/material/dialog"
 import { Reference } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
@@ -32,8 +32,8 @@ import { MatMenuModule } from "@angular/material/menu";
 
 export class ReferenceComponent implements OnInit, OnDestroy{ 
    
-  @Input() collection:string
-  @ViewChild(MatTable) table: MatTable<any>;
+  @Input() materia_id:string
+  collection:string
 
   isAdmin:boolean = false
   organization_id:string = null
@@ -41,7 +41,7 @@ export class ReferenceComponent implements OnInit, OnDestroy{
 
   unsubscribe = null
 
-  references = Array<Reference>()
+  references = signal<Array<Reference>>([])
 
   displayedColumns: string[] = ['label', 'description'];  
 
@@ -58,6 +58,7 @@ export class ReferenceComponent implements OnInit, OnDestroy{
     if( this.userLoginService.getUserUid() ){
       this.isLoggedIn = true
     }
+    
   }
   ngOnDestroy(): void {
     if( this.unsubscribe){
@@ -68,15 +69,16 @@ export class ReferenceComponent implements OnInit, OnDestroy{
 
  //"materias/" + this.materiaid + "/materiaReference"
   ngOnInit(): void {
+    this.collection = "materias/" + this.materia_id + "/materiaReference"
     this.unsubscribe = db.collection(this.collection).onSnapshot( 
       snapshot =>{
-        this.references.length = 0
+        let references = Array<Reference>()
         snapshot.docs.map( doc=>{
           var reference:Reference =  doc.data() as Reference
-          this.references.push(reference)
+          references.push(reference)
         })
-        this.references.sort( (a,b) => a.label >= b.label ? 1 : -1 )
-        this.table.renderRows()
+        references.sort( (a,b) => a.label >= b.label ? 1 : -1 )
+        this.references.set(references)
 
       },
       error=>{

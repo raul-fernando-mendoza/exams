@@ -24,11 +24,10 @@ mat-progress-bar{
     justify-self: center;
     margin-right: 20px;
 }
-.lightgreenbar{
+.verticalbar{
     display:inline;
     height: 100px; /* Set a fixed height or use flexbox for dynamic height */
     width: 5px;
-    background-color: lightcoral;
 }
 
 

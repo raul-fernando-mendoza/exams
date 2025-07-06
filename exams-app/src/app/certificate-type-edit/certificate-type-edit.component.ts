@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { db, storage } from 'src/environments/environment';
@@ -36,7 +36,7 @@ export class CertificateTypeEditComponent implements OnInit, OnDestroy {
   organization_id:string
   certificateTypeId:string
 
-  ct:CertificateType
+  ct = signal<CertificateType>(null)
   ct_FG = null
   unsubscribe = null
 
@@ -57,16 +57,17 @@ export class CertificateTypeEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.unsubscribe = db.collection("organizations/" + this.organization_id + "/certificateTypes").doc( this.certificateTypeId).onSnapshot( doc =>{
-      this.ct = doc.data() as CertificateType
+      let ct = doc.data() as CertificateType
       this.ct_FG = this.fb.group({
-        certificateTypeName:[this.ct.certificateTypeName, Validators.required], 
-        label1:[this.ct.label1],
-        label2:[this.ct.label2],
-        label3:[this.ct.label3],
-        label4:[this.ct.label4],
-        color1:[this.ct.color1],
-        color2:[this.ct.color2]       
+        certificateTypeName:[ct.certificateTypeName, Validators.required], 
+        label1:[ct.label1],
+        label2:[ct.label2],
+        label3:[ct.label3],
+        label4:[ct.label4],
+        color1:[ct.color1],
+        color2:[ct.color2]       
       })
+      this.ct.set( ct )
     })
 
   }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CertificateType } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -34,7 +34,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 })
 export class CertificateTypeListComponent implements OnInit, OnDestroy {
 
-  certificateTypes:Array<CertificateType> = [] 
+  certificateTypes = signal<Array<CertificateType>>([]) 
   organization_id:string
   unsubscribe
 
@@ -54,11 +54,12 @@ export class CertificateTypeListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.unsubscribe = db.collection("organizations/" + this.organization_id + "/certificateTypes").onSnapshot( certificateTypesSet =>{
-      this.certificateTypes.length = 0
+      let certificateTypes = new Array<CertificateType>()
       certificateTypesSet.docs.map( certificateTypeDoc =>{
         const certificateType:CertificateType = certificateTypeDoc.data() as CertificateType
-        this.certificateTypes.push(certificateType)
+        certificateTypes.push(certificateType)
       })
+      this.certificateTypes.set( certificateTypes )
     })
     
   }

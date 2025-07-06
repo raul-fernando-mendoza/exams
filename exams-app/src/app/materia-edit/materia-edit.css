@@ -9,13 +9,9 @@ mat-card{
     margin:auto;
 }
 
-mat-grid-list{
-    border: 5px solid black;
-    width:80%;
-    margin: auto;
-}
 .shortlist{
     width:80%;
     margin:auto;
     padding:5px;
 }
+

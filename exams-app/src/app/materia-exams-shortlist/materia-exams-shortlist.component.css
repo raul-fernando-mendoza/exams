@@ -6,3 +6,8 @@
     white-space: nowrap;
     text-overflow:ellipsis;
 }
+.average{
+    background-color: lightgrey;
+    width:100%;
+    text-align: center;
+}

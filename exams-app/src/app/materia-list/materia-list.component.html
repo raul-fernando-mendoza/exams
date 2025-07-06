@@ -26,7 +26,7 @@
   <mat-grid-list [cols]="numCols()" rowHeight="2:1">
   @for(mi of materiasList(); track mi.materia.id){  
     <mat-grid-tile>
-    <div class="lightgreenbar"></div>
+    <div class="{{mi.materia.color1}} verticalbar"></div>
     <mat-card class="materia-card" appearance="outlined">
       <mat-card-header>
         <mat-card-title-group>
