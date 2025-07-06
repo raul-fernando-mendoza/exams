@@ -19,7 +19,7 @@
     </mat-toolbar>
     <mat-nav-list *ngIf="isLoggedIn()">
       <a mat-list-item routerLink="/home">home</a>
-      <a *ngIf="isLoggedIn() && !isEvaluator()" mat-list-item routerLink="/materia-list">Habilidades</a>
+      <a *ngIf="isLoggedIn() && !isEvaluator()" mat-list-item routerLink="/materia-list">Materias</a>
       <a *ngIf="isAdmin()" mat-list-item routerLink="/laboratory-grade-list">Lecciones interactiva</a>
        
       <a *ngIf="isAdmin()" mat-list-item routerLink="/grades">Examenes</a>  

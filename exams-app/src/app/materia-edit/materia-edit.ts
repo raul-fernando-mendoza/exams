@@ -9,7 +9,7 @@ import { db , storage  } from 'src/environments/environment';
 
 
 
-import { ActivatedRoute, Router } from "@angular/router"
+import { ActivatedRoute, Router, RouterModule } from "@angular/router"
 import * as uuid from 'uuid';
 import { NavigationService } from "../navigation.service"
 import { UserPreferencesService } from "../user-preferences.service"
@@ -67,6 +67,7 @@ import {
       ,MatExpansionModule
       ,MateriaExamsListComponent
       ,MateriaExamsShortListComponent
+      ,RouterModule
     ],      
     templateUrl: 'materia-edit.html',
     styleUrls: ['materia-edit.css']
