@@ -157,7 +157,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
     let enrolledOnly = this.fg.controls.enrolledOnly.value
     if( enrolledOnly ){
       newMateriaList = this.materiaListOriginal.filter( (e) =>{
-        if( e.materiaEnrollment )
+        if( e.materiaEnrollment && !e.materiaEnrollment.certificateUrl  )
           return true
         else
           return false
