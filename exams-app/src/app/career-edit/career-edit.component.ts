@@ -164,6 +164,25 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     this.examenesImprovisacionService.fileDeleted('careers', this.career().id, e)
   }
 
+  onPropertyChange(event){
+    var id =this.c.controls.id.value
+
+    var propertyName = event.srcElement.attributes.formControlname.value
+    var value = event.target.value      
+    this.c.controls[propertyName].setValue( value )
+    if( id ){   
+      var values = {}
+      values[propertyName]=value                       
+      db.collection('careers').doc(id).update(values).then( () =>{
+        console.log("property has been update:" + propertyName + " " + value)
+      },
+      reason =>{
+        alert("ERROR: writing property:" + reason)
+      })
+    }      
+  }
+
+
 /*
   getFormArrayControls( fg:UntypedFormGroup , property):AbstractControl[]{
     var fa:UntypedFormArray = fg.controls[property] as UntypedFormArray
@@ -494,24 +513,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     })
     return desc
   }  
-  onPropertyChange(event){
-    var id =this.c.controls.id.value
-
-    var propertyName = event.srcElement.attributes.formControlname.value
-    var value = event.target.value      
-    this.c.controls[propertyName].setValue( value )
-    if( id ){   
-      var values = {}
-      values[propertyName]=value                       
-      db.collection('careers').doc(id).update(values).then( () =>{
-        console.log("property has been update:" + propertyName + " " + value)
-      },
-      reason =>{
-        alert("ERROR: writing property:" + reason)
-      })
-    }      
-  }
-
+  
 
 
   onEnrollmentsUpdate(){

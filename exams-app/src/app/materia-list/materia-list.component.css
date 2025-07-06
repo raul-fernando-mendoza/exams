@@ -1,14 +1,18 @@
-.materia-card{
-    margin-bottom: 8px;
+mat-card{
+    width:400px;
+    margin:0em;
+    margin:4px;
 }
-.materia-card mat-card-title-group{
-    display:flex;
-    width:100%;      
+mat-card-header{
+    height: 6em;
 }
-.materia-card mat-card-title-group img{
-    align-self: right;
+mat-card-content{
+    _height: 5em;
 }
 
+mat-progress-bar{
+    max-width: 80%;
+}
 .searchForm{
     display:flex;
     width:100%;
@@ -20,15 +24,11 @@
     justify-self: center;
     margin-right: 20px;
 }
-.enrolledoption{
-    justify-self: right;
+.lightgreenbar{
+    display:inline;
+    height: 100px; /* Set a fixed height or use flexbox for dynamic height */
+    width: 5px;
+    background-color: lightcoral;
 }
-
-.hidden{
-    display:none
-}
-
-
-
 
 

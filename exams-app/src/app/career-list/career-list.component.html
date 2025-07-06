@@ -1,76 +1,38 @@
 <h1>Lista de Carreras</h1>
-<!--
-<mat-toolbar>
-  <button mat-icon-button  (click)="onCreateCareer()">
-    <mat-icon>library_add</mat-icon>
-  </button>    
-</mat-toolbar>  
-<div>
-  <table mat-table class="full-width-table" matSort aria-label="Carreras"  >
-    <ng-container matColumnDef="career_name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-      <td mat-cell *matCellDef="let career">
-        
-        <div> 
-          <button mat-button (click)="onEdit(career.id)">{{career.career_name}}</button>
-        </div>        
-      </td>
-    </ng-container>    
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>id</th>
-      <td mat-cell *matCellDef="let career">
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu" >
-            <button mat-menu-item (click)="onDelete(career.id)">
-              <mat-icon>delete</mat-icon>
-              <span>Borrar</span>
-            </button>      
-          </mat-menu>
-      </td>
-    </ng-container>
-
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let carrer; columns: displayedColumns;"></tr>
-
-  </table>
-  <mat-paginator #paginator
-  [length]="dataSource?.data.length"
-  [pageIndex]="0"
-  [pageSize]="50"
-  [pageSizeOptions]="[25, 50, 100, 250]">
-  </mat-paginator>
--->
 @if(careers()){
-  <mat-card class="example-card" *ngFor="let c of careers()">
-    <mat-card-title-group>
-        <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu" >
-            <button mat-menu-item (click)="onEdit(c.id)">
-              <mat-icon>edit</mat-icon>
-              <span>editar</span>
-            </button>              
-            <button mat-menu-item (click)="onDelete(c)">
-              <mat-icon>delete</mat-icon>
-              <span>Borrar</span>
-            </button>      
-          </mat-menu>     
-      </mat-card-title>   
-      <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">      
-        <mat-card-subtitle (click)="onCareerDetails(c.id)">
-          subtitle
-        </mat-card-subtitle>
-    </mat-card-title-group>
-    <img mat-card-image  *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
-    <mat-card-content>
-      {{ c.description }}  
-    </mat-card-content>
-  </mat-card>
 
+<mat-grid-list [cols]="numCols()" rowHeight="1:1">
+  @for( c of careers(); track c.id; let i=$index){  
+  <div class="item">   
+    <mat-grid-tile>
+    <mat-card class="careercard">
+      <mat-card-title-group>
+          <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" >
+              <button mat-menu-item (click)="onEdit(c.id)">
+                <mat-icon>edit</mat-icon>
+                <span>editar</span>
+              </button>              
+              <button mat-menu-item (click)="onDelete(c)">
+                <mat-icon>delete</mat-icon>
+                <span>Borrar</span>
+              </button>      
+            </mat-menu>     
+        </mat-card-title>   
+        <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">      
+
+      </mat-card-title-group>
+      <img mat-card-image  *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
+      <mat-card-content>
+        {{ c.description }}  
+      </mat-card-content>
+    </mat-card> 
+    </mat-grid-tile>
+  </div>
+  }
+  </mat-grid-list>  
 }
 @else{
   Cargando información.

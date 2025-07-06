@@ -1,0 +1,28 @@
+@if( exams() ){
+  <mat-grid-list cols="5" rowHeight="2em">
+  @for(ei of exams(); track ei){
+    <mat-grid-tile colspan="3">
+      <span class="examname">{{  ei.exam.label }}</span>
+        
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2">
+          @if( ei.examGrade ){
+            @if( ei.examGrade.isReleased == false ){
+              <span class="status"><mat-icon>lock</mat-icon></span>
+            }
+            @else{
+              <button (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button>{{formatScore(ei.examGrade.score)}}</button>
+              <mat-icon>check</mat-icon>
+            }
+          }
+          @else{
+            <mat-icon>radio_button_unchecked</mat-icon>
+          }
+    </mat-grid-tile>         
+  }
+  </mat-grid-list>
+}
+@else{
+  Cargando información.
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}

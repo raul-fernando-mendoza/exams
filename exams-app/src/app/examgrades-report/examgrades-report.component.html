@@ -61,11 +61,6 @@ Reporte Examen<button mat-button (click)="onBack()"><mat-icon>arrow_back</mat-ic
   @else{
     <p>El reporte no ha sido liberado</p>
   }
-
-  <mat-card>
-    <reference-list [collection]="getExamCollection()"></reference-list>
-  </mat-card>
-
 }
 @else{
   Cargando información.

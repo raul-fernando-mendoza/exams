@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { MatMenuModule } from "@angular/material/menu";
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -21,7 +22,8 @@ import { MatTableModule } from '@angular/material/table';
       ,MatButtonModule   
 
   
-      ,MatTableModule 
+      ,MatTableModule
+      ,MatMenuModule 
    
     ],    
     templateUrl: 'reference-list.html',

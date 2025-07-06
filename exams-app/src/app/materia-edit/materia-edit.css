@@ -4,23 +4,18 @@ mat-form-field{
     width:90%;
 }
 
-/* this allows the picture to resize correctly */
-.picture{
-    object-fit: cover; 
-    width: 60%; 
+mat-card{
+    max-width: 80%;
+    margin:auto;
 }
-.experiences{
-    object-fit: cover; 
-    width: 60%; 
-}
-.remove-property-button{
-    margin-left:50px
-}
-.description{
+
+mat-grid-list{
+    border: 5px solid black;
     width:80%;
-    margin-left: auto;
-    margin-right:auto;
+    margin: auto;
 }
-.certificate-grid{
+.shortlist{
     width:80%;
+    margin:auto;
+    padding:5px;
 }

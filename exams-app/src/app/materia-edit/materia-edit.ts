@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core"
+import { Component, inject, Inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core"
 import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@angular/forms"
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
@@ -32,8 +32,16 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import { MatCheckboxModule } from "@angular/material/checkbox"
 import { MatCardModule } from "@angular/material/card"
-import { MateriaLaboratoryListComponent } from "../materia-laboratory-list/materia-laboratory-list.component"
 import { MateriaExamsListComponent } from "../materia-exams-list/materia-exams-list.component"
+import { MatExpansionModule } from "@angular/material/expansion"
+import { MateriaExamsShortListComponent } from "../materia-exams-shortlist/materia-exams-shortlist.component"
+import {
+  MatSnackBar,
+  MatSnackBarAction,
+  MatSnackBarActions,
+  MatSnackBarLabel,
+  MatSnackBarRef
+} from '@angular/material/snack-bar';
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -55,18 +63,20 @@ import { MateriaExamsListComponent } from "../materia-exams-list/materia-exams-l
       ,MatDialogModule  
       ,MatProgressSpinnerModule
       ,FileLoaderComponent
-      ,MateriaLaboratoryListComponent
+      
+      ,MatExpansionModule
       ,MateriaExamsListComponent
+      ,MateriaExamsShortListComponent
     ],      
     templateUrl: 'materia-edit.html',
     styleUrls: ['materia-edit.css']
   })
 
-export class DialogMateriaDialog implements OnInit{ 
+export class DialogMateriaDialog implements OnInit, OnDestroy{ 
    
   materia_observable: Observable<Materia> 
 
-  materia = signal<Materia | null>(null)
+  materia = signal<Materia>(null)
 
   examenes:Array<Exam>=[]
 
@@ -107,11 +117,16 @@ export class DialogMateriaDialog implements OnInit{
 
   userUid= null
   isEnrolled = false
-  materiaEnrollment = signal<MateriaEnrollment|null>(null)
+  materiaEnrollment = signal<MateriaEnrollment>(null)
 
   materiaReferenceCollection = null
 
   submitting = signal(true)
+
+  private _snackBar = inject(MatSnackBar);
+  durationInSeconds = 5;
+
+  unsubscribe = undefined
 
   constructor(
       private fb: FormBuilder
@@ -140,6 +155,9 @@ export class DialogMateriaDialog implements OnInit{
     
         
   }
+  ngOnDestroy(): void {
+    this.unsubscribe()
+  }
   ngOnInit(): void {
     this.loadMastersList()
     this.update()
@@ -158,7 +176,7 @@ export class DialogMateriaDialog implements OnInit{
       }
           
                   
-      var unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
+      this.unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
         snapshot =>{
           this.submitting.set(false)
           let m = snapshot.data() as Materia
@@ -275,12 +293,10 @@ export class DialogMateriaDialog implements OnInit{
     this.examImprovisacionService.fileDeleted('materias', this.materia().id, e)
   }
   onCopyToClipboard(){
-    alert("url ha sido copiada al portapapeles")
+    this._snackBar.open("copiado al clipboard", "cerrar");
   }    
   getMateriaReferenceCollection(){
     return this.materiaReferenceCollection
   }
 }
 
-
-  

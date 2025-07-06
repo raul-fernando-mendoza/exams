@@ -1,4 +1,4 @@
-import { Component,ViewChild, Inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { Career } from '../exams/exams.module';
 import { SortingService } from '../sorting.service';
 import { db } from 'src/environments/environment';
@@ -22,6 +22,10 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 
 import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-career-list',
@@ -39,7 +43,8 @@ import { MatCardModule } from '@angular/material/card';
     ,MatDialogModule  
     ,MatProgressSpinnerModule  
     ,MatMenuModule 
-    ,MatCardModule    
+    ,MatCardModule  
+    ,MatGridListModule  
  
   ],    
   templateUrl: './career-list.component.html',
@@ -54,6 +59,19 @@ export class CareerListComponent implements OnInit, OnDestroy {
   organization_id = null
   isAdmin = false
 
+  destroyed = new Subject<void>();
+  currentScreenSize: string;
+  numCols = signal(1)
+
+  // Create a map to display breakpoint names for demonstration purposes.
+  displayNameMap = new Map([
+    [Breakpoints.XSmall, 'XSmall'],
+    [Breakpoints.Small, 'Small'],
+    [Breakpoints.Medium, 'Medium'],
+    [Breakpoints.Large, 'Large'],
+    [Breakpoints.XLarge, 'XLarge'],
+  ]);  
+
   constructor( private sortingService:SortingService
     , private router: Router
     , public dialog: MatDialog
@@ -64,11 +82,43 @@ export class CareerListComponent implements OnInit, OnDestroy {
       if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
         this.isAdmin = true
       } 
+      inject(BreakpointObserver)
+        .observe([
+          Breakpoints.XSmall,
+          Breakpoints.Small,
+          Breakpoints.Medium,
+          Breakpoints.Large,
+          Breakpoints.XLarge,
+        ])
+        .pipe(takeUntil(this.destroyed))
+        .subscribe(result => {
+          for (const query of Object.keys(result.breakpoints)) {
+            if (result.breakpoints[query]) {
+              this.currentScreenSize = this.displayNameMap.get(query) ?? 'Unknown';
+              switch( this.currentScreenSize ){
+                case  'XSmall': this.numCols.set(1);
+                      break;
+                case  'Small': this.numCols.set(1);
+                      break;
+                case  'Medium':this.numCols.set(2);
+                      break;
+                case  'Large':this.numCols.set(2);
+                      break;
+                case  'XLarge':this.numCols.set(2);
+                      break;               
+              }
+            }
+          }
+        });      
 
     }
   ngOnDestroy(): void {
     this.unsubscribe()
+    this.destroyed.next();
+    this.destroyed.complete();    
   }
+
+
 
   ngOnInit(): void {
     this.loadCareers()

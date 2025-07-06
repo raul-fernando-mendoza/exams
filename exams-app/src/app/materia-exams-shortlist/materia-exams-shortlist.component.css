@@ -1,0 +1,8 @@
+.examname{
+    width:100%;
+    overflow: hidden;
+    text-align: left;
+    margin-bottom: 0.5em;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+}

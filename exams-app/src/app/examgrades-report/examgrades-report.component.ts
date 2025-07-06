@@ -48,7 +48,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ,MatCardModule
     ,MatGridListModule
     ,MatExpansionModule
-    ,ReferenceComponent
     ,MatTableModule
     ,MatProgressSpinnerModule
   ],   
@@ -102,7 +101,8 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
       } 
 
       let students:Array<User>
-      students = this.examGrade().students as Array<User>
+      
+      students = examGrade.students as Array<User>
       let studentNames:Array<string> = []
       for( let i=0 ; i<students.length ; i++){
         studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
@@ -195,7 +195,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         
         let transactions = []
 
-        if ( !("students" in examGrade) ){ //is version 1
+        if ( !examGrade.students  ){ //is version 1
 
           let u = this.examenesImprovisacionService.getUser(examGrade.student_uid).then( user =>{
             examGrade.students = [{
