@@ -134,6 +134,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
 
   colors = COLORS
 
+  hasExamGrades = signal(false)
   constructor(
       private activatedRoute: ActivatedRoute
       ,private fb: FormBuilder
@@ -163,7 +164,6 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
         thiz.materia_id = null
         if( paramMap.get('materia_id') )
           thiz.materia_id = paramMap.get('materia_id')
-          this.materiaReferenceCollection = "materias/" + this.materia_id + "/materiaReference"
           thiz.update()
         }
     })
@@ -181,6 +181,36 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   
 
   update(){
+    this.unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
+      snapshot =>{
+        this.submitting.set(false)
+        let m = snapshot.data() as Materia
+
+        this.m.controls.id.setValue(m.id)
+        this.m.controls.isDeleted.setValue(m.isDeleted)
+        this.m.controls.materia_name.setValue(m.materia_name)
+          
+        this.m.controls.certificateTypeId.setValue(m.certificateTypeId)
+
+        this.m.controls.description.setValue(m.description)
+        this.m.controls.videoUrl.setValue(m.videoUrl)
+        this.m.controls.videoDescription.setValue(m.videoDescription)
+        this.m.controls.pictureUrl.setValue(m.pictureUrl)
+        this.m.controls.pictureDescription.setValue(m.pictureDescription)
+        this.m.controls.isEnrollmentActive.setValue(m.isEnrollmentActive)
+        this.m.controls.label1.setValue(m.label1) 
+        this.m.controls.label2.setValue(m.label2) 
+        this.m.controls.label3.setValue(m.label3) 
+        this.m.controls.label4.setValue(m.label4) 
+        this.m.controls.color1.setValue(m.color1) 
+        this.m.controls.color2.setValue(m.color2) 
+        this.materia.set(m)
+        
+    },
+    reason =>{
+      alert("ERROR:" + reason)
+    }) 
+
     this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( isEnrolled =>{
       this.isEnrolled = isEnrolled
 
@@ -194,39 +224,11 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       }
           
                   
-      this.unsubscribe = db.collection("materias").doc(this.materia_id).onSnapshot( 
-        snapshot =>{
-          this.submitting.set(false)
-          let m = snapshot.data() as Materia
-
-          this.m.controls.id.setValue(m.id)
-          this.m.controls.isDeleted.setValue(m.isDeleted)
-          this.m.controls.materia_name.setValue(m.materia_name)
-            
-          this.m.controls.certificateTypeId.setValue(m.certificateTypeId)
-
-          this.m.controls.description.setValue(m.description)
-          this.m.controls.videoUrl.setValue(m.videoUrl)
-          this.m.controls.videoDescription.setValue(m.videoDescription)
-          this.m.controls.pictureUrl.setValue(m.pictureUrl)
-          this.m.controls.pictureDescription.setValue(m.pictureDescription)
-          this.m.controls.isEnrollmentActive.setValue(m.isEnrollmentActive)
-          this.m.controls.label1.setValue(m.label1) 
-          this.m.controls.label2.setValue(m.label2) 
-          this.m.controls.label3.setValue(m.label3) 
-          this.m.controls.label4.setValue(m.label4) 
-          this.m.controls.color1.setValue(m.color1) 
-          this.m.controls.color2.setValue(m.color2) 
-          this.materia.set(m)
-          
-      },
-      reason =>{
-        alert("ERROR:" + reason)
-      }) 
     },
     reason =>{
       alert("Error:" + reason)
-    })  
+    })
+    this.getExamGrades()  
   }
 
   loadMastersList(){
@@ -313,11 +315,20 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       duration: 3000
     });
   }    
-  getMateriaReferenceCollection(){
-    return this.materiaReferenceCollection
-  }
   onCertificateTypes( ){
     this.router.navigate(['certificate-type-list',{}])
   }  
+
+  getExamGrades(){
+    this.examImprovisacionService.getExamGrades(this.organization_id, this.materia_id, this.userUid ).then( examExamGrades =>{
+      examExamGrades.forEach( e=>{
+        if( e.examGrade && e.examGrade.isReleased ){
+          this.hasExamGrades.set(true)
+        }
+      })
+    })
+  }
+
+
 }
 

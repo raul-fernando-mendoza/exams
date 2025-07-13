@@ -1,4 +1,4 @@
-<a routerLink="../materia-list"><mat-icon>arrow_back</mat-icon></a>
+<a routerLink="/materia-list"><mat-icon>arrow_back</mat-icon></a>
 Materia
 @if( materia() ){
 <form [formGroup]="m" >
@@ -57,10 +57,9 @@ Materia
   </mat-card-actions>
 </mat-card>  
 
-
-<mat-accordion>
-  @if(isAdmin() || materia().pictureUrl || materia().pictureDescription) {
-  <mat-expansion-panel expanded="true">
+<mat-accordion multi="true">
+  @if(isAdmin() || (materia().pictureUrl || materia().pictureDescription) ) {
+  <mat-expansion-panel [expanded]="!materiaEnrollment()">
     <mat-expansion-panel-header>
       <mat-panel-title> Objectivos </mat-panel-title>
     </mat-expansion-panel-header>
@@ -82,9 +81,8 @@ Materia
   </mat-expansion-panel>
   }
 
- 
- @if(isAdmin() || materia().videoDescription || materia().videoUrl) { 
-  <mat-expansion-panel expanded="false">
+ @if(isAdmin() || (materia().videoDescription || materia().videoUrl)) { 
+  <mat-expansion-panel [expanded]="!materiaEnrollment()">
     <mat-expansion-panel-header>
       <mat-panel-title> Experiencias </mat-panel-title>
     </mat-expansion-panel-header>
@@ -118,8 +116,9 @@ Materia
         </mat-card>
   </mat-expansion-panel>
 }
+
 @if( isAdmin() ){
-  <mat-expansion-panel expanded="true">
+  <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title> Referencias </mat-panel-title>
     </mat-expansion-panel-header>
@@ -130,8 +129,9 @@ Materia
         </mat-card>
   </mat-expansion-panel>
 }
-  @if( materiaEnrollment() ) {
-  <mat-expansion-panel [expanded]="!!materiaEnrollment()">
+
+  @if( materiaEnrollment() && !(hasExamGrades()==false && materiaEnrollment().certificateUrl) ) {
+  <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title> Calificaciones</mat-panel-title>
       <mat-panel-description>
@@ -139,7 +139,7 @@ Materia
     </mat-expansion-panel-header>
         <mat-card appearance="outlined">
           <mat-card-content>
-            @if( isAdmin() ){
+            @if( isAdmin() ){ 
               <app-materia-exams-list [materiaid]="materia_id"></app-materia-exams-list>
             }
             @else{
@@ -153,7 +153,7 @@ Materia
   }
 
   @if( materiaEnrollment() && materiaEnrollment().certificateUrl ){  
-  <mat-expansion-panel expanded="false">
+  <mat-expansion-panel [expanded]="hasExamGrades()==false">
     <mat-expansion-panel-header>
       <mat-panel-title> Certificado</mat-panel-title>
       <mat-panel-description>
@@ -169,7 +169,6 @@ Materia
         </mat-card>  
   </mat-expansion-panel>
   }
- 
 </mat-accordion>
 </form> 
 }

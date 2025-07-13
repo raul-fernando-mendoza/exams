@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { Exam, ExamGrade, Materia, MateriaEnrollment, User } from '../exams/exams.module';
+import { Exam, ExamGrade, Materia, MateriaEnrollment, ExamExamGradeItem } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
@@ -16,10 +16,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-interface ExamItem{
-  exam:Exam
-  examGrade:ExamGrade  
-}
 
 @Component({
   selector: 'app-materia-exams-shortlist',
@@ -43,7 +39,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
   isAdmin = false
   unsubscribe = null
   submitting = signal(false)
-  exams= signal<Array<ExamItem>>(null) 
+  exams= signal<Array<ExamExamGradeItem>>(null) 
   average = signal("")
  
 
@@ -72,11 +68,11 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     this.unsubscribe = db.collection("materias/" + this.materia.id + "/exams")
     .where("isDeleted","==", false).onSnapshot( snapshot =>{
       this.submitting.set(false)
-      let exams = new Array<ExamItem>()
+      let exams = new Array<ExamExamGradeItem>()
       let transactions = []
       snapshot.docs.map( doc =>{
         const exam = doc.data() as Exam
-        var ei:ExamItem={
+        var ei:ExamExamGradeItem={
           exam:exam,
           examGrade:null
         }
@@ -128,7 +124,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
       .where("materia_id","==", this.materia.id)
       .where("exam_id","==",examId)
       .where("isDeleted","==",false)
-      //.where("isReleased","==",true)
+      .where("isReleased","==",true)
          
 
       qry.get().then( set => {
@@ -157,7 +153,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
       return "N/A"
   }
 
-  hideExam( ei:ExamItem ):boolean{
+  hideExam( ei:ExamExamGradeItem ):boolean{
     if(  this.materiaEnrollment.certificateUrl ){
       if( ei.examGrade == null ){
         return true

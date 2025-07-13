@@ -547,3 +547,8 @@ export interface VideoMarker{
   videoPath?:string  
   isDeleted:boolean
 }
+
+export interface ExamExamGradeItem{
+  exam:Exam
+  examGrade:ExamGrade  
+}

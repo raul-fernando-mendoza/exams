@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { db, storage, environment } from 'src/environments/environment';
-import { Aspect, Criteria, Exam, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, Revision, User, VideoMarker } from './exams/exams.module';
+import { Aspect, Criteria, Exam, ExamExamGradeItem, ExamGrade, Materia, MateriaEnrollment, Organization, Parameter, ParameterGrade, Revision, User, VideoMarker } from './exams/exams.module';
 import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
 import { UserLoginService } from './user-login.service';
@@ -590,5 +590,76 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }  
+
+  
+  getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
+    return new Promise<ExamGrade>( (resolve, reject) =>{
+      const qry = db.collection("examGrades")
+      .where("organization_id", "==", organization_id )
+      .where("student_uid","==", student_uid)
+      .where("materia_id","==", materia_id)
+      .where("exam_id","==",exam_Id)
+      .where("isDeleted","==",false)
+      .where("isReleased","==",true)
+         
+
+      qry.get().then( set => {
+          var examGrades = Array<ExamGrade>()
+          if( set.docs.length > 0){
+          set.docs.map( examGradeDoc =>{
+                let examGrade = examGradeDoc.data() as ExamGrade
+                examGrades.push(examGrade)
+            })
+            examGrades.sort( (a,b) => a.applicationDate < b.applicationDate ? 1 : -1)
+            resolve(examGrades[0])
+          }
+          else{
+            resolve(null)
+          }
+        },
+        reason =>{
+          console.error("ERROR reading examGrades:" + reason )
+          reject(reason)
+      })
+    })
+  }
+
+  getExamGrades(organization_id, materia_id, student_uid):Promise<Array<ExamExamGradeItem>>{
+    return new Promise<Array<ExamExamGradeItem>>( (resolve,reject)=>{
+      let transactions = []
+      db.collection("materias/" + materia_id + "/exams")
+      .where("isDeleted","==", false).get().then( set =>{
+        let exams = new Array<ExamExamGradeItem>()
+        let transactions = []
+        set.docs.map( doc =>{
+          const exam = doc.data() as Exam
+          var ei:ExamExamGradeItem={
+            exam:exam,
+            examGrade:null
+          }
+          exams.push(ei)
+          let t = this.getLastExamGrade( organization_id, materia_id, student_uid, exam.id ).then( examGrade =>{
+            ei.examGrade = examGrade
+          },
+          reason =>{
+            console.log("no materia exams found")
+          })
+          transactions.push(t)
+        })
+        Promise.all( transactions ).then( ()=>{
+          exams.sort( (a,b) => {
+            return a.exam.label > b.exam.label ? 1:-1
+          })
+          resolve( exams )
+        })
+
+      },
+      reason =>{
+        console.log("ERROR reading exam:" + reason)
+        reject(reason)
+      })
+    })
+  }  
+
   
 }
