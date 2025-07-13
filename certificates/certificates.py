@@ -61,7 +61,7 @@ def draw_text_angle (str:string, into:Image, at:int, down:bool):
                 angle = start_angle + s               
 
                 text_to_be_rotated = str[i]
-                mark_width, mark_height = font.getsize(text_to_be_rotated)
+                (x,y, mark_width, mark_height) = font.getbbox(text_to_be_rotated)
                 watermark = Image.new('RGBA', (mark_width, mark_height), (0, 0, 0, 255))
                 draw = ImageDraw.Draw(watermark)
                 draw.text((0, 0), text=text_to_be_rotated, font=font, fill=(255, 255, 255, 255))
@@ -170,10 +170,10 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         #mask_im = Image.new('RGBA', img_logo.size, (255, 255, 255, 0))
         mask_im =Image.new("L", img_logo.size, 0)
 
-        maskDraw = ImageDraw.Draw(mask_im)
+        #maskDraw = ImageDraw.Draw(mask_im)
 
-        maskDraw.ellipse((100, 100, 400, 400), fill=255)
-        maskDraw.ellipse((line_size * 2,  line_size * 2,logo_w - line_size * 2,  logo_h - line_size * 2), fill=0)
+        #maskDraw.ellipse((100, 100, 400, 400), fill=255)
+        #maskDraw.ellipse((line_size * 2,  line_size * 2,logo_w - line_size * 2,  logo_h - line_size * 2), fill=0)
 
 
 

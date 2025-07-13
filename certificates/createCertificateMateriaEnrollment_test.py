@@ -13,7 +13,7 @@ from firebase_admin import firestore
 
 class TestFireStore(unittest.TestCase):
 
-    def _test01_addDocument(self):
+    def test01_addDocument(self):
         """
         storage_client = storage.Client()
 
@@ -28,10 +28,10 @@ class TestFireStore(unittest.TestCase):
             log.debug(blob.name)
  
         """
-        data = main.createCertificateMateriaEnrollment('2bf3a406-b649-4eac-9ecb-4621f67ef51a')
+        data = main.createCertificateMateriaEnrollment('933cc41e-c88d-4086-b8aa-09b4a13defed')
         print(json.dumps(data))
 
-    def test02_addDocument(self):
+    def _test02_addDocument(self):
         data = main.createCertificateMateriaEnrollment('e64a84f4-d125-4008-ad3f-0370a5ba1757')
         print(json.dumps(data))
 
