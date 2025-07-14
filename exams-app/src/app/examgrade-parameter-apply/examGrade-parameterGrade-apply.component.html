@@ -9,7 +9,7 @@ Aplicar examen
         <div class="inline">
                 <ul>
                 @for(user of userDisplayName(); track user ){
-                    <li><mat-icon class="personIcon">person</mat-icon><h2 class="userName"> {{user.displayName?user.displayName:user.email}}</h2></li>
+                    <li class="persons"><mat-icon class="personIcon">person</mat-icon><h2 class="userName"> {{user.displayName?user.displayName:user.email}}</h2></li>
                 }
                 </ul>
            

@@ -35,3 +35,6 @@
 .skill_cell_title{
     background-color: lightgray;
 }
+.persons{
+    list-style-type: none;
+}
