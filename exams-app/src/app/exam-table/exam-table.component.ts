@@ -584,5 +584,10 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
   onClearName(){
     this.filterForm.controls.studentUid.setValue("")
+    this.examStudentChange("")
+  }
+  onClearDate(){
+    this.applicationDate = null
+    this.applicationFilterChange(null)
   }
 }
