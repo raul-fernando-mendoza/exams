@@ -11,7 +11,12 @@
     }    
   @for(ei of exams(); track ei){
     <mat-grid-tile colspan="3">
-      <span class="examname">{{  ei.exam.label }}</span>
+      @if( ei.examGrade && ei.examGrade.isReleased == true ){
+        <button (click)="onExamGradeReport(ei.exam,ei.examGrade)" mat-button>{{  ei.exam.label }}</button>
+      }
+      @else{
+        <span class="examname">{{  ei.exam.label }}</span>
+      }
     </mat-grid-tile>
     <mat-grid-tile colspan="2">
           @if( ei.examGrade ){
