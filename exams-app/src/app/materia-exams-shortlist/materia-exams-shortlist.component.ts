@@ -77,7 +77,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
           examGrade:null
         }
         exams.push(ei)
-        let t = this.getExamGrade( exam.id ).then( examGrade =>{
+        let t = this.examImprovisacionService.getLastExamGrade( this.organization_id, this.materia.id, this.materiaEnrollment.student_uid, exam.id ).then( examGrade =>{
           ei.examGrade = examGrade
         },
         reason =>{
@@ -116,36 +116,6 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/report',{materia_id:this.materia.id, exam_id:exam.id,examGrade_id:examGrade ? examGrade.id : null}]);
   }
 
-  getExamGrade( examId ):Promise<ExamGrade>{
-    return new Promise<ExamGrade>( (resolve, reject) =>{
-      const qry = db.collection("examGrades")
-      .where("organization_id", "==", this.organization_id )
-      .where("student_uid","==", this.materiaEnrollment.student_uid)
-      .where("materia_id","==", this.materia.id)
-      .where("exam_id","==",examId)
-      .where("isDeleted","==",false)
-      .where("isReleased","==",true)
-         
-
-      qry.get().then( set => {
-          var examGrades = Array<ExamGrade>()
-          if( set.docs.length > 0){
-          set.docs.map( examGradeDoc =>{
-                let examGrade = examGradeDoc.data() as ExamGrade
-                examGrades.push(examGrade)
-            })
-            examGrades.sort( (a,b) => a.applicationDate < b.applicationDate ? 1 : -1)
-            resolve(examGrades[0])
-          }
-          else{
-            reject(null)
-          }
-        },
-        reason =>{
-          console.error("ERROR reading examGrades:" + reason )
-      })
-    })
-  }
   formatScore( score:number){
     if( score )
       return score.toFixed(1)

@@ -592,7 +592,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
   }  
 
   
-  getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
+  getLastExamGradeV1( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
     return new Promise<ExamGrade>( (resolve, reject) =>{
       const qry = db.collection("examGrades")
       .where("organization_id", "==", organization_id )
@@ -623,6 +623,55 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }
+
+  getLastExamGradeV2( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
+    return new Promise<ExamGrade>( (resolve, reject) =>{
+      const qry = db.collection("examGrades")
+      .where("organization_id", "==", organization_id )
+      .where("studentUids","array-contains", student_uid)
+      .where("materia_id","==", materia_id)
+      .where("exam_id","==",exam_Id)
+      .where("isDeleted","==",false)
+      .where("isReleased","==",true)
+         
+
+      qry.get().then( set => {
+          var examGrades = Array<ExamGrade>()
+          if( set.docs.length > 0){
+          set.docs.map( examGradeDoc =>{
+                let examGrade = examGradeDoc.data() as ExamGrade
+                examGrades.push(examGrade)
+            })
+            examGrades.sort( (a,b) => a.applicationDate < b.applicationDate ? 1 : -1)
+            resolve(examGrades[0])
+          }
+          else{
+            resolve(null)
+          }
+        },
+        reason =>{
+          console.error("ERROR reading examGrades:" + reason )
+          reject(reason)
+      })
+    })
+  }  
+
+  getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
+    return new Promise<ExamGrade>( (resolve, reject) =>{
+      this.getLastExamGradeV2( organization_id, materia_id, student_uid, exam_Id ).then( examGradeV2 =>{
+        if( examGradeV2 ){
+          resolve(examGradeV2)
+        }
+        else{
+          this.getLastExamGradeV1( organization_id, materia_id, student_uid, exam_Id ).then( examGradeV1 =>{
+            resolve( examGradeV1 )
+          })
+        }
+      })
+    })
+  }
+    
+
 
   getExamGrades(organization_id, materia_id, student_uid):Promise<Array<ExamExamGradeItem>>{
     return new Promise<Array<ExamExamGradeItem>>( (resolve,reject)=>{
