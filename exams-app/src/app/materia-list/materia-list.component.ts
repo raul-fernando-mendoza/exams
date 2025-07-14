@@ -219,7 +219,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
 
   onEditMateria(materia:Materia){
-    this.router.navigate(['/materia-edit',materia.id]);
+    this.router.navigate(['/materia',materia.id]);
   }
   onCreateMateria(){
     const dialogRef = this.dialog.open(DialogNameDialog, {
@@ -233,7 +233,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       if( data != undefined ){
         console.debug( data )
         this.createMateria(data.name).then( (id)=>{
-          this.router.navigate(['/materia-edit',{materia_id:id}]);
+          this.router.navigate(['/materia',id]);
         },
         reason =>{
           alert("ERROR: removing level")
@@ -271,69 +271,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
   }
 
-  onRemoveMateria(materia_id, materia_name){
-    if( !confirm("Esta seguro de querer borrar la materia:" + materia_name) ){
-      return
-    }
-    else{
-      this.submitting.set(true)
-      db.collection("materias").doc(materia_id).update({"isDeleted":true}).then(()=>{
-        this.submitting.set(false)
-        this.update() 
-      })
-
-    }
-    
-  }  
-  onDuplicateMateria(materia_id:string, materia_label:string){
-    this.submitting.set(true)
-    
-    this.duplicateMateria(materia_id, materia_label).then( () =>{
-      this.submitting.set(false)
-      this.update()
-    },
-    reason=>{
-      alert("duplicate failed" + reason)
-      this.submitting.set(false)
-    })
-  }
-
-  duplicateMateria(materia_id, materia_name:string):Promise<void>{
-    
-    var _resolve
-    var _reject
-    return new Promise<null>((resolve, reject)=>{
-      _resolve = resolve
-      _reject = reject
-      var req = {
-        materias:{
-          id:materia_id,
-
-          materia_name:materia_name + "_copy"
-        }
-      }
-      var options = {
-        exceptions:["Reference","references","laboratory","Path","Url"]
-      }
-      this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisationService.firestoreApiInterface("dupDocument", token, req, options).subscribe(
-          data => { 
-            var exam:Exam = data["result"]
-            _resolve()
-          },   
-          error => {  
-            console.error( "ERROR: duplicando examen:" + JSON.stringify(req))
-            _reject()
-          }
-        )
-      },
-      error => {
-        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-        this.submitting.set(false)
-      }) 
-    }) 
-       
-  }
+  
 
   getShortDescription(str:string){
     if( str && str.length>80 ){

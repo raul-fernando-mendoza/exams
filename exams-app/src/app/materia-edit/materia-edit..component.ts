@@ -1,11 +1,11 @@
-import { Component, inject, Inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core"
-import { FormArray, FormControl, FormGroup, Validators, FormBuilder } from "@angular/forms"
+import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core"
+import { FormGroup, Validators, FormBuilder } from "@angular/forms"
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
 import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
 import { CertificateType, COLORS, Exam, Laboratory, Materia, MateriaEnrollment, User } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
-import { db , storage  } from 'src/environments/environment';
+import { db } from 'src/environments/environment';
 
 
 
@@ -43,6 +43,7 @@ import {
   MatSnackBarRef
 } from '@angular/material/snack-bar';
 import { ReferenceComponent } from "../reference-list/reference-list"
+import { MatMenuModule } from "@angular/material/menu"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -70,9 +71,10 @@ import { ReferenceComponent } from "../reference-list/reference-list"
       ,MateriaExamsShortListComponent
       ,ReferenceComponent
       ,RouterModule
+      ,MatMenuModule
     ],      
-    templateUrl: 'materia-edit.html',
-    styleUrls: ['materia-edit.css']
+    templateUrl: 'materia-edit.component.html',
+    styleUrls: ['materia-edit.component.css']
   })
 
 export class DialogMateriaDialog implements OnInit, OnDestroy{ 
@@ -329,6 +331,68 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     })
   }
 
+  onRemoveMateria(materia_id, materia_name){
+    if( !confirm("Esta seguro de querer borrar la materia:" + materia_name) ){
+      return
+    }
+    else{
+      this.submitting.set(true)
+      db.collection("materias").doc(materia_id).update({"isDeleted":true}).then(()=>{
+        this.submitting.set(false)
+        this.router.navigate(['materia-list',{}]) 
+      })
 
+    }
+    
+  }  
+  onDuplicateMateria(materia_id:string, materia_label:string){
+    this.submitting.set(true)
+    
+    this.duplicateMateria(materia_id, materia_label).then( () =>{
+      this.submitting.set(false)
+      this.update()
+    },
+    reason=>{
+      alert("duplicate failed" + reason)
+      this.submitting.set(false)
+    })
+  }
+
+  duplicateMateria(materia_id, materia_name:string):Promise<void>{
+    
+    var _resolve
+    var _reject
+    return new Promise<null>((resolve, reject)=>{
+      _resolve = resolve
+      _reject = reject
+      var req = {
+        materias:{
+          id:materia_id,
+
+          materia_name:materia_name + "_copy"
+        }
+      }
+      var options = {
+        exceptions:["Reference","references","laboratory","Path","Url"]
+      }
+      this.userLoginService.getUserIdToken().then( token => {
+        this.examImprovisacionService.firestoreApiInterface("dupDocument", token, req, options).subscribe(
+          data => { 
+            var exam:Exam = data["result"]
+            _resolve()
+          },   
+          error => {  
+            console.error( "ERROR: duplicando examen:" + JSON.stringify(req))
+            _reject()
+          }
+        )
+      },
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+        this.submitting.set(false)
+      }) 
+    }) 
+       
+  }
 }
 

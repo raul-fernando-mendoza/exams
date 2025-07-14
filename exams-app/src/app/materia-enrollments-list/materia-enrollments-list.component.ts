@@ -107,7 +107,7 @@ export class MateriaEnrollmentsListComponent implements OnInit , OnDestroy{
     }
   }
   onMateriaDetalles(materia_id){
-    this.router.navigate(['/materia-edit',{materia_id:materia_id}])
+    this.router.navigate(['/materia',materia_id])
   }
 
 }

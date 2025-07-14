@@ -280,7 +280,7 @@ upCriteria(c:FormGroup, idx:number) {
   
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
-      if( data != undefined ){
+      if( data ){
         console.debug( data )
         this.newCriteria(data.name)
       }

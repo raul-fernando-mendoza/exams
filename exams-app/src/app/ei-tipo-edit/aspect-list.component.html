@@ -1,6 +1,5 @@
 @for( a of aspects(); track a.aspect.id ; let i=$index){
     <form class="aspect" [formGroup]="a.fg">
-            index = {{i}} {{ a.aspect.idx}}
             <mat-form-field >
                 <input matInput  resizeToFitContent  formControlName="label" placeholder="Escriba lo que debe ocurrir" (change)="onChangeAspect(a.fg)">
             </mat-form-field> 

@@ -10,7 +10,7 @@
 @if( exams() ){
     <mat-list  *ngFor="let ei of exams()">
         <mat-list-item>
-            <span class="exam-label">{{ ei.exam.label }}</span>
+            <span class="exam-label" (click)="onEditExam(ei.exam.id)">{{ ei.exam.label }}</span>
             <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
                 <mat-icon>more_vert</mat-icon>
             </button>

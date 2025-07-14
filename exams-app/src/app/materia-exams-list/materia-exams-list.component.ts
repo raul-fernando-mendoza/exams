@@ -169,7 +169,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   }
 
   onEditExam(exam_id){
-    this.router.navigate(['/ei-tipo-edit',{materia_id:this.materiaid, exam_id:exam_id}]);
+    this.router.navigate(['/materia',this.materiaid,'exam', exam_id]);
   }
 
   createExam(label:string):Promise<Exam>{
@@ -203,7 +203,7 @@ export class MateriaExamsListComponent implements OnInit, OnDestroy {
   
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
-      if( data != undefined ){
+      if( data ){
         console.debug( data )
         this.createExam(data.name).then( (exam)=>{
           this.onEditExam(exam.id)

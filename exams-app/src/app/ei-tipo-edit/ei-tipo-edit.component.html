@@ -1,3 +1,4 @@
+<a [routerLink]="['../../']"><mat-icon>arrow_back</mat-icon></a>
 <span>Editar Tipo Examen</span>
 @if( materia() ){
     <h1>Materia:{{materia().materia_name}}</h1>
@@ -6,7 +7,7 @@
         <p>
         <mat-form-field appearance="fill">
             <mat-label>Nombre del Examen</mat-label>
-            <input matInput formControlName="label" width="80%" (change)="onChangeExam(e)">
+            <input matInput formControlName="label" width="80%" (change)="fs.onPropertyChange(this.collection, this.exam_id, $event)">
         </mat-form-field>
         </p> 
         <div class="textcontainer">
@@ -15,10 +16,10 @@
             <textarea class="description"  matInput
             cdkTextareaAutosize
             cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="5" formControlName="description" (change)="onChangeExam(e)"></textarea>
+            cdkAutosizeMaxRows="5" formControlName="description" (change)="fs.onPropertyChange(this.collection, this.exam_id, $event)"></textarea>
         </mat-form-field> 
-        </div>    
-        <mat-checkbox formControlName="isRequired" (change)="onChangeExam(e)">Es requerido</mat-checkbox>            
+        </div> 
+        <mat-checkbox formControlName="isRequired" name="isRequired" (change)="fs.onCheckboxChange(this.collection, this.exam_id, $event)">Es requerido</mat-checkbox>            
        </form> 
       
     }

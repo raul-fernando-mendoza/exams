@@ -30,25 +30,6 @@
       <mat-card-header>
         <mat-card-title-group>
           <mat-card-title class="enroll-card"><span (click)="onEditMateria(mi.materia)">{{ mi.materia.materia_name }}</span>
-            <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" >
-
-              <button mat-menu-item (click)="onEditMateria(mi.materia)" [disabled]="submitting()">
-                <mat-icon>edit</mat-icon>
-                <span>Editar</span>
-              </button>
-
-              <button mat-menu-item (click)="onRemoveMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting()">
-                <mat-icon>delete</mat-icon>
-                <span>Borrar</span>
-              </button>            
-              <button mat-menu-item (click)="onDuplicateMateria(mi.materia.id, mi.materia.materia_name)" [disabled]="submitting()">
-                <mat-icon>library_add</mat-icon>
-                <span>Duplicate</span>
-              </button>            
-            </mat-menu>  
           </mat-card-title>  
           <img mat-card-sm-image *ngIf="mi.materia.materiaIconUrl" (click)="onEditMateria(mi.materia)" src="{{ mi.materia.materiaIconUrl }}"> 
         </mat-card-title-group>

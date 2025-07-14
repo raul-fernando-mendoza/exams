@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild, OnInit, signal, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
 import { CdkTextareaAutosize, TextFieldModule} from '@angular/cdk/text-field';
 import { take} from 'rxjs/operators';
@@ -29,12 +29,14 @@ import { db } from 'src/environments/environment';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { ParameterListComponent } from './parameter-list.component';
+import { ExamFormService } from '../exam-form.service';
 
 @Component({
   selector: 'app-ei-tipo-edit',
   standalone: true,
   imports: [
     CommonModule
+    ,RouterModule
     ,MatIconModule
     ,MatButtonModule   
    
@@ -83,6 +85,7 @@ export class EiTipoEditComponent implements OnInit , OnDestroy{
   materia = signal<Materia|null>(null)
   exam = signal<Exam|null>(null)
   unsubscribe: () => void;
+  collection = ""
 
 
 
@@ -94,9 +97,12 @@ export class EiTipoEditComponent implements OnInit , OnDestroy{
     , private formBuilder: UntypedFormBuilder
     , private _ngZone: NgZone
     , public dialog: MatDialog
-    , private userLoginService: UserLoginService) {
+    , private userLoginService: UserLoginService
+    , public fs:ExamFormService) {
       this.materia_id = this.route.snapshot.paramMap.get('materia_id')
       this.exam_id = this.route.snapshot.paramMap.get('exam_id')
+      this.collection = ["materias",this.materia_id, "exams"].join("/")
+
   }
   ngOnDestroy(): void {
     this.unsubscribe;

@@ -16,7 +16,7 @@ import { CareerListComponent } from './career-list/career-list.component';
 import { CareerEditComponent } from './career-edit/career-edit.component';
 import { MateriaCertificatesComponent } from './materia-certificates/materia-certificates.component';
 import { MateriaListComponent } from './materia-list/materia-list.component';
-import { DialogMateriaDialog } from './materia-edit/materia-edit';
+import { DialogMateriaDialog } from './materia-edit/materia-edit..component';
 import { CareerUserComponent } from './career-user/career-user.component';
 import { CertificateTypeListComponent } from './certificate-type-list/certificate-type-list.component';
 import { CertificateTypeEditComponent } from './certificate-type-edit/certificate-type-edit.component';
@@ -44,7 +44,11 @@ export const routes: Routes = [
   { path: 'ExamenesImprovisacion', component: ExamenesImprovisacionComponent },
   { path: 'ei-tipo-edit', component: EiTipoEditComponent },
   { path: 'materia-list', component: MateriaListComponent },  
-  { path: 'materia-edit/:materia_id', component: DialogMateriaDialog },  
+  
+  { path: 'materia/:materia_id/exam/:exam_id', component: EiTipoEditComponent }, 
+    
+  { path: 'materia/:materia_id', component: DialogMateriaDialog }, 
+   
   { path: 'user-list', component: UsersListComponent },
  
   { path: 'register', component: LoginFormComponent },

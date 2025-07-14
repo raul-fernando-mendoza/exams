@@ -28,10 +28,13 @@ Certificados
               <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
             </button>
             {{ row.materia.materia_name}} 
-          </div>    
-          <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Exam'">
-            {{row.exam.label }} <span *ngIf="row.examGrade">{{ printDate(row.examGrade.applicationDate) }}</span> <span class="waiver-text" *ngIf="row.examGrade && row.examGrade.isWaiver">acreditacion</span>
-          </div>           
+          </div> 
+          @if( row.nodeClass=='Exam' ){   
+          <div [class]="row.nodeClass">
+            {{row.exam.label}}
+            <span *ngIf="row.examGrade">{{ printDate(row.examGrade.applicationDate) }}</span> <span class="waiver-text" *ngIf="row.examGrade && row.examGrade.isWaiver">acreditacion</span>
+          </div> 
+          }                
           <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Career'">
             <button mat-button (click)="onCareerClick(row)">{{ row.career.career_name }}</button> 
           </div>           
@@ -46,17 +49,23 @@ Certificados
           </div>
           <div *ngIf="row.nodeClass=='MateriaEnrollment'"> 
             
-            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>link</mat-icon></a>       
-            <button mat-icon-button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>content_copy</mat-icon></button>
+            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>content_copy</mat-icon></a>       
+            <button mat-icon-button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>link</mat-icon></button>
           </div>    
-          <div *ngIf="row.nodeClass=='Exam'; else missing">
-            <div *ngIf="row.examGrade && row.examGrade.isReleased">
-              <button mat-button (click)="onExamGrade(row)">completado</button>
-            </div>
-            <ng-template #missing>
-              Faltante.
-            </ng-template>          
-          </div>           
+          @if(row.nodeClass=='Exam'){
+            @if(row.examGrade){
+              @if( row.examGrade.isReleased ){
+                <button mat-button (click)="onExamGrade(row)">completado</button>
+              }
+              @else{
+                en progreso
+              }
+            }
+            @else{
+              Faltante.        
+            }
+          }
+           
         </td>
       </ng-container>
 

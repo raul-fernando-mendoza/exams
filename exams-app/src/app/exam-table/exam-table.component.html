@@ -15,6 +15,7 @@ Calificaciones
       <!--<mat-label>selecciona estudiante</mat-label>-->
       <app-user-selector formControlName="studentUid" (userselected)="examStudentChange($event)"></app-user-selector>
     </mat-form-field> 
+    <button mat-icon-button (click)="onClearName()"><mat-icon>cancel</mat-icon></button>
   
   </form>
  
@@ -62,7 +63,7 @@ Calificaciones
     </ng-container>    
 
     <ng-container matColumnDef="completed">
-      <th mat-header-cell *matHeaderCellDef >Completed</th>
+      <th mat-header-cell *matHeaderCellDef >Completado</th>
       <td mat-cell *matCellDef="let row">
         <ng-template [ngIf]="row.obj.isCompleted" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
         <ng-template #notCompleted>

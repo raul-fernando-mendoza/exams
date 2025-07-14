@@ -593,6 +593,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         console.log("changes are pending:" + doc.metadata.hasPendingWrites)
         db.collection("materiaEnrollments").doc( row.materiaEnrollment.id ).get().then(doc =>{
           row.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
+          this.update()
         })
       })
     setTimeout(observer, 10000);
@@ -630,6 +631,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         console.log("changes are pending:" + doc.metadata.hasPendingWrites)
         db.collection("materiaEnrollments").doc( row.materiaEnrollment.id ).get().then(doc =>{
           row.materiaEnrollment.certificateUrl = doc.data().certificateUrl 
+          this.update();
         })
       })
     setTimeout(observer, 10000);
@@ -664,8 +666,17 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
   onExamGrade( row:NodeTableRow ){
     console.log( row.materia.id, row.exam.id, row.examGrade.id )
+    if( row.examGrade ){
+      if(row.examGrade.isReleased ){
+        this.router.navigate(['report',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+      }
+      else{
+        this.router.navigate(['examGrade-parameterGrade-apply',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+        //http://localhost:4200/examGrade-parameterGrade-apply;examGrade_id=e3278d6f-a7b6-46ce-adb7-97a1bda62243;parameterGrade_id=e2ee9726-ed25-4cbc-b7cc-f96da69a9bff_1
+      }
+    }
     //report;materia_id=d3af3ad2-50f6-47ea-adcb-1bc84e940b27;exam_id=ea574882-1b9b-45dc-b1b4-12637379db07;examGrade_id=09bb0018-0ba4-4515-b4e7-e72f4af21f8e
-    this.router.navigate(['report',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+    
 
   }
 }
