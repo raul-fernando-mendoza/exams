@@ -82,6 +82,8 @@ def hasCompletedMateria(db, materia_id, student_uid ):
                 optionalReleased +=1
                 break
             
+    log.debug("*** student_uid:" + student_uid + " materia_id" + materia_id + " requiredCount:" + str(requiredCount) + " requiredReleased:" + str(requiredReleased)) 
+    log.debug("*** student_uid:" + student_uid + " materia_id" + materia_id + " optionalCount:" + str(optionalCount) + " optionalReleased:" + str(optionalReleased)) 
             
     if requiredCount == requiredReleased and (
         optionalCount == 0 or optionalReleased > 0):
@@ -149,6 +151,7 @@ def createCertificate(db, organization_id, materia_id, student_uid):
     }
 
     materiaEnrollmentRef.reference.update(json)
+    log.debug("*** badge generated :" + data["certificateBadgeUrl"])  
     log.debug("*** certificate generated :" + data["certificateUrl"])  
     
 def removeCertificate(db, organization_id, materia_id, student_uid):

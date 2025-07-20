@@ -15,7 +15,7 @@ class TestFireStore(unittest.TestCase):
 
     def test01_addDocument(self):
         db = firestore.client()
-        main.createCertificateExamGrade(db, 'c164a25b-99ff-4e10-9d39-dbd58d45717a')
+        main.createCertificateExamGrade(db, 'dfba3e9b-670e-4f6a-bab5-e756c78a2878')
 
 
 if __name__ == '__main__':

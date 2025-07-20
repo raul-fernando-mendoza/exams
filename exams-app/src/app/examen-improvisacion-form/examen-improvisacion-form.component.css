@@ -34,3 +34,11 @@
   margin: 5px;
 }
 
+.personIcon{
+    vertical-align:middle;
+    display:inline-block;
+}
+
+.persons{
+    list-style-type: none;
+}

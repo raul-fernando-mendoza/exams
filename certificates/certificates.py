@@ -138,46 +138,39 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
 
 
 
-        #add the logo
+        #add the logo circles
+        
+        seal_im =Image.new("RGB", size=(500,500), color="white")
+        sealDraw = ImageDraw.Draw(seal_im)
+        line_size = 40   #height of text  
+        offset = (int((w - seal_im.size[0] - 100)), int((h - seal_im.size[1]) - 100)) #position of the seal into the certificate   
+        
+        #now add the logo  to the seal       
         blob = bucket.blob(logo_name)
         bytes = blob.download_as_bytes()
         b = io.BytesIO(bytes)
         img_logo = Image.open(b) 
-        logoDraw = ImageDraw.Draw(img_logo) 
+        #resize to the seal image
+        final_size = (300 , 300 )
+        img_logo = img_logo.resize( final_size )
+        seal_im.paste(img_logo, (100,100))
+        img_logo.close()
 
-        #img_logo = Image.open('rax_logo_no_text_500.jpg', 'r')
-        logo_w, logo_h = img_logo.size
 
-        line_size = 40
 
         #draw the circles
         if color1 != None and color1 != "":
-                shape = [(0,0), ( logo_w,  logo_h)]
-                logoDraw.arc(shape, start = 0, end = 360, fill = color1, width = line_size+2) 
+                shape = [(0,0), seal_im.size]
+                sealDraw.arc(shape, start = 0, end = 360, fill = color1, width = line_size+2) 
 
         if color2 != None and color2 != "":
-                shape2 = [(line_size,  line_size), ( logo_w - line_size,  logo_h - line_size)]
-                logoDraw.arc(shape2, start = 0, end = 360, fill = color2, width = line_size) 
+                shape2 = [(line_size,  line_size), ( seal_im.width - line_size,  seal_im.height - line_size)]
+                sealDraw.arc(shape2, start = 0, end = 360, fill = color2, width = line_size) 
 
+        #create mask for texts
+        mask_im =Image.new("L", seal_im.size, 0)
 
-        
-        offset = (int((w - img_logo.size[0] - 100)), int((h - img_logo.size[1]) - 100))
-
-        shape = [(0, 0), (logo_w, logo_h)]
-    
-        #create mask for logo
-        
-        #mask_im = Image.new('RGBA', img_logo.size, (255, 255, 255, 0))
-        mask_im =Image.new("L", img_logo.size, 0)
-
-        #maskDraw = ImageDraw.Draw(mask_im)
-
-        #maskDraw.ellipse((100, 100, 400, 400), fill=255)
-        #maskDraw.ellipse((line_size * 2,  line_size * 2,logo_w - line_size * 2,  logo_h - line_size * 2), fill=0)
-
-
-
-        #now continue with the text
+        #white the text into the mask 
         if t1 != "":
                 mask_im = draw_text_angle(t1,mask_im,1,down=False)
         if t2 != "":        
@@ -186,29 +179,21 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
                 mask_im = draw_text_angle(t3,mask_im,2,down=True)
         if t4 != "":        
                 mask_im = draw_text_angle(t4,mask_im,1,down=True)
-        
-        #setup in final size and position
-        final_size = img_logo.size
-        #img_logo = img_logo.resize( final_size )
-        #mask_final = mask_im.resize( final_size )
+
 
         if color1 != "" or color2 != "":
-                white_im =Image.new("RGB", size=img_logo.size, color="white")
-                img_logo.paste(white_im, (0,0), mask_im)
-
-        image.paste(img_logo, offset)
+                white_im =Image.new("RGB", size=seal_im.size, color="white")
+                seal_im.paste(white_im, (0,0), mask_im)
+                
+        #now paste the seal into the certificate
+        image.paste(seal_im, offset)
         #image.save('certificate.png') 
 
+        #save the seal to cloud storage
         badge_b = io.BytesIO()
-        mask_im.save(badge_b,'jpeg')
-        #mask_im.save('mask.png')
-        mask_im.close()
-        
-        #save the badge to cloud storage
-        badge_b = io.BytesIO()
-        img_logo.save(badge_b,'jpeg')
-        #img_logo.save('logo.png')
-        img_logo.close()     
+        seal_im.save(badge_b,'jpeg')
+        seal_im.close()
+            
 
 
         blob_logo = bucket.blob(file_name + "_badge" + ".jpeg") 

@@ -6,15 +6,17 @@ Editar Examen
           <app-user-selector formControlName="student_uid"  required></app-user-selector>
         </mat-form-field>
         <button mat-button (click)="onAddStudent()">add</button>
-        <ul>
+
+        <ul >
         @for( u of selectedStudents() ; track u.uid; let i=$index){
-          <li> {{ u.displayName }} <button mat-icon-button (click)="onRemoveStudent(u)"><mat-icon>delete</mat-icon></button></li> 
+          <li class="persons"> <mat-icon class="personIcon">person</mat-icon> {{ u.displayName }} <button mat-icon-button (click)="onRemoveStudent(u)"><mat-icon>delete</mat-icon></button></li> 
 
         }
         @empty{
           no hay estudiantes seleccionados
         }
         </ul>
+
       </div>   
 
 <form [formGroup]="examGradeFG" novalidate (ngSubmit)="onSubmit()">
