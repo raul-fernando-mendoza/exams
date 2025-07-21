@@ -458,7 +458,6 @@ export class ExamenImprovisacionFormComponent {
       applicationMonth:this.dateFormatService.getMonthId(applicationDate),
       applicationYear: this.dateFormatService.getYearId(applicationDate),    
       student_uid:"", 
-      students:this.selectedStudents(),
       studentUids:studentUids,
       title:this.examGradeFG.controls.title.value,
       expression:this.examGradeFG.controls.expression.value,

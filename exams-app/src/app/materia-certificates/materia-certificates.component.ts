@@ -470,6 +470,9 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
   
   
   onMateriaUnEnroll(row:NodeTableRow){
+    if( !confirm("Esta seguro de querer eliminar el enrollamiento de:" +  this.userLoginService.getDisplayNameForUser(row.user)) ){
+      return
+    }        
     db.collection("materiaEnrollments").doc(row.materiaEnrollment.id).delete().then( () =>{
       console.log("removing materiaEnrollment:")
       this.loadEnrollmentForRow(row.parent).then( ()=>{
@@ -533,13 +536,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         isApproved: true,
         isWaiver: true,
         created_on: new Date(),
-        updated_on: new Date(),
-        students: [
-          { //row.user.uid
-            uid:row.user.uid,
-            displayName:row.user.displayName ? row.user.displayName: row.user.email
-          }
-        ]
+        updated_on: new Date()
       }
       db.collection("examGrades").doc(id ).set( examGrade ).then( ()=>{
         row.examGrade = examGrade    

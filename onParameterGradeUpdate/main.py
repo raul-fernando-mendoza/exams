@@ -58,7 +58,7 @@ def closeExamGrade(db, documentId):
                 if isCompleted == True: 
                     grade = total / numScores
                     isApproved = False
-                    if grade> 7:
+                    if grade>= 7:
                         isApproved = True
 
 

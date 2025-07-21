@@ -50,16 +50,7 @@ def hasCompletedMateria(db, materia_id, student_uid ):
             requiredCount += 1
         else: optionalCount += 1
 
-        examGradeSetV1 = db.collection("examGrades") \
-            .where("materia_id", "==", materia_id) \
-            .where("exam_id", "==", examDoc.get("id")) \
-            .where("student_uid","==", student_uid) \
-            .where("isDeleted","==", False) \
-            .where("isCompleted","==", True) \
-            .where("isReleased","==",True) \
-            .where("isApproved","==",True) \
-            .get()
-            
+           
         examGradeSetV2 = db.collection("examGrades") \
             .where("materia_id", "==", materia_id) \
             .where("exam_id", "==", examDoc.get("id")) \
@@ -69,11 +60,9 @@ def hasCompletedMateria(db, materia_id, student_uid ):
             .where("isReleased","==",True) \
             .where("isApproved","==",True) \
             .get()
-            
-        #join both results 
-        examGradeSetV1.extend(examGradeSetV2)
+
                 
-        for examGradeDoc in examGradeSetV1:
+        for examGradeDoc in examGradeSetV2:
             #if found then count it
             if "isRequired" in exam and exam["isRequired"]:  
                 requiredReleased +=1 
@@ -178,19 +167,11 @@ def createCertificateExamGrade(db, examGrade_id):
     #exam = db.collection("exams").document(examGrade["exam_id"]).get().to_dict()
     materia = db.collection("materias").document(materia_id).get().to_dict()
     
-    students = None
-    
-    if "students" in examGrade:
-        students = examGrade["students"]
-    else:
-        student = auth.get_user(examGrade["student_uid"])
-        students = [student]
-    
-    for s in students:
-        if hasCompletedMateria(db, materia_id, s['uid']):
-            createCertificate(db, organization_id,materia_id,s['uid'])
+    for student_uid in examGrade["studentUids"]:
+        if hasCompletedMateria(db, materia_id, student_uid):
+            createCertificate(db, organization_id,materia_id,student_uid)
         else:
-            removeCertificate(db, organization_id, materia_id, s['uid'])
+            removeCertificate(db, organization_id, materia_id,student_uid)
             
 #********************************* URL ************************
 def createCertificateMateriaEnrollmentPost(request):

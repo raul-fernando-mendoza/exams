@@ -76,13 +76,15 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
   fg = this.fb.group({
     filter: [""],
-    enrolledOnly:[false]
+    enrolledOnly:[false],
+    useCards:[true]
   })
 
 
   destroyed = new Subject<void>();
   currentScreenSize: string;
   numCols = signal(1)
+  useCards = signal(true)
 
   // Create a map to display breakpoint names for demonstration purposes.
   displayNameMap = new Map([
@@ -118,18 +120,20 @@ export class MateriaListComponent implements OnInit , OnDestroy{
         .subscribe(result => {
           for (const query of Object.keys(result.breakpoints)) {
             if (result.breakpoints[query]) {
-              this.currentScreenSize = this.displayNameMap.get(query) ?? 'Unknown';
-              switch( this.currentScreenSize ){
-                case  'XSmall': this.numCols.set(1);
-                      break;
-                case  'Small': this.numCols.set(2);
-                      break;
-                case  'Medium':this.numCols.set(3);
-                      break;
-                case  'Large':this.numCols.set(4);
-                      break;
-                case  'XLarge':this.numCols.set(5);
-                      break;               
+              if( this.useCards() ){
+                this.currentScreenSize = this.displayNameMap.get(query) ?? 'Unknown';
+                switch( this.currentScreenSize ){
+                  case  'XSmall': this.numCols.set(1);
+                        break;
+                  case  'Small': this.numCols.set(2);
+                        break;
+                  case  'Medium':this.numCols.set(3);
+                        break;
+                  case  'Large':this.numCols.set(4);
+                        break;
+                  case  'XLarge':this.numCols.set(5);
+                        break;               
+                }
               }
             }
           }
@@ -287,5 +291,14 @@ export class MateriaListComponent implements OnInit , OnDestroy{
   onRemoveFilter(){
     this.fg.controls.filter.setValue("")
     this.applyFilter()
+  }
+
+  onUseCards(){
+    if( this.fg.controls.useCards.value ){
+      this.useCards.set(true)
+    }
+    else{
+      this.useCards.set(false)
+    }
   }
 }

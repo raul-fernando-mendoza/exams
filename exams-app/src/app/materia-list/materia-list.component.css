@@ -24,11 +24,7 @@ mat-progress-bar{
     justify-self: center;
     margin-right: 20px;
 }
-.verticalbar{
-    display:inline;
-    height: 100px; /* Set a fixed height or use flexbox for dynamic height */
-    width: 5px;
-    margin-right: 1em;
+.materia-card-1{
+    width:90%;
 }
-
 

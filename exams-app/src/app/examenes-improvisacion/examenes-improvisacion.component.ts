@@ -279,6 +279,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       this.parameterUnsubscribes.set(examGrade.id, parameterUnsubscribe)
     }) 
   } 
+  
   retriveDetails( obj:ExamenesImprovisacionItem):Promise<void>{
     return new Promise<void>( (resolve, reject) =>{
       console.log("retrive detail:" + obj.examGrade.exam_id)
@@ -302,22 +303,16 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       transactions.push(m)
 
       console.log("retrive user" + obj.examGrade.student_uid)
-      if( "students" in  obj.examGrade ){
-        let studentNames = new Array<string>
-        obj.examGrade.students.forEach( e =>{
+
+      let studentNames = new Array<string>
+      obj.examGrade.studentUids.forEach( e =>{
+        let t = this.examImprovisacionService.getUser( e ).then( e =>{
           studentNames.push( e.displayName?e.displayName:e.email)
         })
-        obj.studentDisplayName = studentNames
-      }
-      else{
-        let u = this.getUser(obj.examGrade.student_uid).then(student =>{
-          obj.studentDisplayName = [this.getDisplayNameForUser(student)]
-        },
-        reason =>{
-          console.log("ERROR student cannot be read:" + reason)
-        })
-        transactions.push(u)
-      } 
+        transactions.push(t)
+      })
+      obj.studentDisplayName = studentNames
+
       Promise.all( transactions ).then( ()=>{
         resolve()
       },

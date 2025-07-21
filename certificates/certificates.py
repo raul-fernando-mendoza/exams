@@ -123,7 +123,7 @@ def createStorageCertificate( storage_client, master_name:string, logo_name:stri
         left_t = ( w/2 ) - (calculateWidthString(title, font)/2)
         top_t = (h * (title_top))
         
-        draw.text((left_t, top_t), title, fill =color1, font = font, align ="center") 
+        draw.text((left_t, top_t), title, fill ="black", font = font, align ="center") 
 
         #writing expiration date
         today = datetime.date.today()

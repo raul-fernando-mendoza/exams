@@ -61,8 +61,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
 
-  examGradeList = [new Array<NodeTableRow>(),new Array<NodeTableRow>()]
-  examGradeListAll:NodeTableRow[] = []
+  examGradeList = new Array<NodeTableRow>()
 
   dataSource = signal<NodeTableDataSource>(null);
 
@@ -105,7 +104,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     }
     else{
       num = Math.trunc(num*100)/100
-      return num
+      return num.toFixed(fixed)
     }
   }
 
@@ -133,16 +132,8 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     }) 
   }
   updateList(){
-
-    console.log("merge both versions")
-    this.examGradeListAll.length = 0
-    this.examGradeList.forEach( v => {
-      v.forEach( a =>{
-        this.examGradeListAll.push( a )
-      })
-    })
     //now sort all versions
-    this.examGradeListAll.sort( (a,b) =>{
+    this.examGradeList.sort( (a,b) =>{
       if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
         if ( a.obj["title"] ){
           return a.obj["title"] > b.obj["title"] ? 1 : -1
@@ -158,7 +149,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     })
 
     this.changeDetectorRef.detectChanges()
-    let nodeTableDataSource = new NodeTableDataSource(this.examGradeListAll)
+    let nodeTableDataSource = new NodeTableDataSource(this.examGradeList)
     this.dataSource.set(nodeTableDataSource);
     
     this.dataSource().paginator = this.paginator;
@@ -166,36 +157,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   }
 
   loadExamGrades():Promise<void>{
-    return new Promise<void>((resolve, reject) =>{ 
-
-      //remove any existing snapshots
-      if( this.snapshots.length > 0){
-        this.snapshots.map( func =>{
-          func()
-        })
-        this.snapshots.length = 0
-      }      
-
-
-      let transactions = [] 
-      let v1 = this.loadExamGradesVersion(0)
-      transactions.push(v1)
-      let v2 = this.loadExamGradesVersion(1)
-      transactions.push(v2)
-      Promise.all(transactions).then( ()=>{
-          resolve()
-        },
-        reason =>{
-          reject()
-        })
-      
-    })
-  }
-
-  loadExamGradesVersion(version:number):Promise<void>{
     return new Promise<void>((resolve, reject) =>{  
-      this.examGradeList[version].length = 0
-
       var qry = db.collection("examGrades")
       .where("organization_id", "==", this.organization_id)
       .where( "isDeleted", "==", false)
@@ -209,30 +171,19 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
       
       var studentUid = this.filterForm.controls.studentUid.value
-      if( version == 1 ){
-        if( studentUid ){ //if version = 1 and there is a search then add the query 
-          qry = qry.where("studentUids","array-contains", studentUid)
-        }
-      }
-      else{
-        if( studentUid ){
-          qry = qry.where("student_uid","==", studentUid)
-        }
-        else{ //there is not any search by uuid so nothing to do.
-          resolve()
-          return ;
-        }         
+      if( studentUid ){ //if version = 1 and there is a search then add the query 
+        qry = qry.where("studentUids","array-contains", studentUid)
       }
 
       if( !this.applicationDate && !studentUid){
         qry = qry.orderBy("applicationDate", "desc")
-        qry = qry.limit(100)
+        qry = qry.limit(1000)
       }
 
       this.submitting.set(true)
       var unsubscribe = qry.onSnapshot( set =>{
         this.submitting.set(false)
-        this.examGradeList[version].length = 0
+        this.examGradeList.length = 0
 
         let transactions = []
         set.docs.map( doc =>{
@@ -246,9 +197,9 @@ export class ExamTableComponent implements OnInit, OnDestroy {
               "materia_id":examGrade.materia_id,
               "materia_name":null,
               "student_uid":examGrade.student_uid,
-              "students":null,
+              "students":[],
               "title":examGrade.title,
-              "score":this.toFixed(examGrade.score,2),
+              "score":this.toFixed(examGrade.score,1),
               "isReleased":examGrade.isReleased,
               "isCompleted":examGrade.isCompleted
             },
@@ -259,7 +210,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
             
           }
-          this.examGradeList[version].push(node)
+          this.examGradeList.push(node)
 
           
           let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
@@ -269,11 +220,8 @@ export class ExamTableComponent implements OnInit, OnDestroy {
           })
           transactions.push(m)
 
-          if( "students" in examGrade ){
-            node.obj['students'] = Array.isArray(examGrade.students) ? examGrade.students: [examGrade.students]
-          }
-          else{
-            let u = this.examImprovisacionService.getUser(examGrade.student_uid).then( user =>{
+          examGrade.studentUids.forEach( e =>{
+            let u = this.examImprovisacionService.getUser(e).then( user =>{
               if( user == null ){
                 let newUser:User = {
                   uid: "",
@@ -284,11 +232,12 @@ export class ExamTableComponent implements OnInit, OnDestroy {
               }
               else{
                 let displayName = this.userLoginService.getDisplayNameForUser(user)
-                node.obj['students'] = [user]
+                console.log( displayName )
+                node.obj['students'].push(user)
               }
             })
             transactions.push(u)
-          }
+          })
 
           let p = this.loadParameterGrades(examGrade.id,node.children)
           transactions.push(p)
@@ -330,7 +279,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
               "examGrade_id":examGrade_id,
               "parameterGrade_id":parameterGrade.id,
               "label":parameterGrade.label,
-              "score":this.toFixed( parameterGrade.score,2),
+              "score":this.toFixed( parameterGrade.score,1),
               "isCompleted":parameterGrade.isCompleted,
               "idx":parameterGrade.idx
             },

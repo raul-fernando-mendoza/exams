@@ -101,16 +101,22 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         scores[i] = p.score
       } 
 
-      let students:Array<User>
-      
-      students = examGrade.students as Array<User>
-      let studentNames:Array<string> = []
-      for( let i=0 ; i<students.length ; i++){
-        studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
-      }
-      
-      this.createGraph(this.examGrade_id, studentNames, labels, scores)        
-
+      let students = new Array<User>()
+      let transactions = []
+      examGrade.studentUids.forEach( user_id =>{
+        let t = this.examenesImprovisacionService.getUser(user_id).then( user =>{
+          students.push( user )
+        })
+        transactions.push(t)      
+      })
+      Promise.all(transactions).then( ()=>{
+        let studentNames:Array<string> = []
+        for( let i=0 ; i<students.length ; i++){
+          studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
+        }
+        
+        this.createGraph(this.examGrade_id, studentNames, labels, scores)        
+      })
     })
   }
 
@@ -186,7 +192,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
           exam_id:data.exam_id,
           title:data.title,
           student_uid:data.student_uid,
-          students:data.students,
+          studentUids:data.studentUids,
           materia_id:data.materia_id,
           isReleased:data.isReleased,
           applicationDate:data.applicationDate,
@@ -195,20 +201,6 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         }
         
         let transactions = []
-
-        if ( !examGrade.students  ){ //is version 1
-
-          let u = this.examenesImprovisacionService.getUser(examGrade.student_uid).then( user =>{
-            examGrade.students = [{
-              uid:user.uid,
-              displayName: user.claims["displayName"] ? user.claims["displayName"] : user.displayName,
-            }]
-          },
-          reason=>{
-            reject()
-          })
-          transactions.push(u)
-        }
 
         let p = db.collection("examGrades/" + this.examGrade_id + "/parameterGrades")
           .where("isCurrentVersion", "==", true).get().then( set =>{

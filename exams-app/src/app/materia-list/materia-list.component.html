@@ -14,19 +14,24 @@
 
   </div>
   <div class="searchForm">
-    <div class="spacer"></div>
+    
     <mat-button-toggle-group  formControlName="enrolledOnly" (change)="onEnrolledOnly()" aria-label="Show only enrolled">
       <mat-button-toggle class="enrolledoption" [value]="true">Mis materias</mat-button-toggle>
       <mat-button-toggle class="enrolledoption" [value]="false">Todas</mat-button-toggle> 
-    </mat-button-toggle-group>    
+    </mat-button-toggle-group>  
+    <div class="spacer"></div>
+    <mat-button-toggle-group  formControlName="useCards" (change)="onUseCards()" aria-label="columns">
+      <mat-button-toggle class="enrolledoption" [value]="true"><mat-icon>dashboard</mat-icon></mat-button-toggle>
+      <mat-button-toggle class="enrolledoption" [value]="false"><mat-icon>table_rows_narrow</mat-icon></mat-button-toggle> 
+    </mat-button-toggle-group>       
   </div>
 </div>
 
 @if(materiasList()){
-  <mat-grid-list [cols]="numCols()" rowHeight="2:1">
+  <mat-grid-list [cols]="useCards() ? numCols():1" rowHeight="11em">
   @for(mi of materiasList(); track mi.materia.id){  
     <mat-grid-tile>
-    <mat-card class="{{mi.materia.color1}} materia-card" appearance="outlined">
+    <mat-card class="{{mi.materia.color1}} materia-card-{{useCards()?2:1}}" appearance="outlined">
       <mat-card-header>
         <mat-card-title-group>
           <mat-card-title class="enroll-card"><span (click)="onEditMateria(mi.materia)">{{ mi.materia.materia_name }}</span>
@@ -36,8 +41,6 @@
       </mat-card-header>
       
       <mat-card-content>
-
-
             @if( mi.materiaEnrollment ){
               @if( mi.materiaEnrollment.certificateUrl ){
                 <mat-icon>check</mat-icon>

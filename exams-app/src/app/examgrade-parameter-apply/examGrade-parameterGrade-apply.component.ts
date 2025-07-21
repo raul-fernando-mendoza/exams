@@ -71,19 +71,19 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
   update(){
     db.collection("examGrades").doc(this.examGrade_id).get().then( doc => {
         this.examGrade.set(doc.data() as ExamGrade)
+        let users:Array<User> = []
+        let transactions = []
 
-        if( this.examGrade().students ){
-          this.userDisplayName.set( this.examGrade().students )
-          
-        }
-        else{
-          this.examImprovisacionService.getUser(this.examGrade().student_uid).then( user =>{
-            this.userDisplayName.set([user]) 
-          },
-          reason =>{
-            console.log("ERROR: reading student user data:" + reason)
-          })  
-        } 
+        this.examGrade().studentUids.forEach( user_uid =>{
+          let t = this.examImprovisacionService.getUser(user_uid).then( user =>{
+            users.push( user )
+          })
+          transactions.push( t )
+        })
+        Promise.all( transactions ).then( ()=>{
+          this.userDisplayName.set(users)
+        })
+
         
         this.examImprovisacionService.getMateria( this.examGrade().materia_id).then( materia =>{
           this.materia.set(materia)
