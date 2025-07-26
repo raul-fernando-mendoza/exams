@@ -36,7 +36,6 @@ export var environment = {
 
   recaptcha: {
     siteKey: '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq',
-    secretKey:'6LcV24krAAAAAIfYMIhxasBoniJ18UNWJO_m6Qxz',
     //url:'http://localhost:3000/your-page.html'
     url:'https://us-central1-thoth-dev-346022.cloudfunctions.net/captchaserver'
   },  

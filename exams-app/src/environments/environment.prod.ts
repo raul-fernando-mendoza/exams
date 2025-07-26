@@ -38,7 +38,6 @@ export const environment = {
 
   recaptcha: {
     siteKey: '6Ld8-I4rAAAAABuRxywFcpvvt8-ckbonfl0KgjD4',
-    secretKey:'6Ld8-I4rAAAAALRjI96B5V3RDObU-Wf39db0BAEK',
     //url:'http://localhost:3000/your-page.html'
     url:'https://us-central1-thoth-qa.cloudfunctions.net/captchaserver'
   },  

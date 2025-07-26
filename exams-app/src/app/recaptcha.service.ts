@@ -17,9 +17,8 @@ export class RecaptchaService {
   public validateCaptchaToken(recaptchaToken:string): Observable<Object> {
 
     var url = environment.recaptcha.url
-    var secret = environment.recaptcha.secretKey
     
-    var body = "secret=" + secret + "&response=" + recaptchaToken
+    var body = "siteKey=" + environment.recaptcha.siteKey + "&response=" + recaptchaToken
 
     var myparams = {
       
