@@ -41,3 +41,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background: linear-gradient(90deg, darkmagenta 0 1%, white 5% 100%);
   }
  
+.grecaptcha-badge { 
+    visibility: hidden !important;
+}  

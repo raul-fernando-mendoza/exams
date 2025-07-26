@@ -35,8 +35,11 @@ export var environment = {
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 
   recaptcha: {
-    siteKey: '6LcFB7ohAAAAAMBJx7mf6-49OMW2JYbLuVgLl3d2',
-  },
+    siteKey: '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq',
+    secretKey:'6LcV24krAAAAAIfYMIhxasBoniJ18UNWJO_m6Qxz',
+    //url:'http://localhost:3000/your-page.html'
+    url:'https://us-central1-thoth-dev-346022.cloudfunctions.net/captchaserver'
+  },  
   computeURL:'https://us-central1-thoth-dev-346022.cloudfunctions.net/computeRequest',
   zone:'us-central1-a',
   OPENVIDU_INSTANCE_NAME:'openvidu-test'

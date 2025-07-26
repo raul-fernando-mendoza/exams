@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import  {MatDividerModule } from '@angular/material/divider';
+import { RecaptchaService } from '../recaptcha.service';
 
 @Component({
   selector: 'app-login-form',
@@ -32,7 +33,7 @@ import  {MatDividerModule } from '@angular/material/divider';
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.css']
 })
-export class LoginFormComponent {
+export class LoginFormComponent implements OnInit,OnDestroy{
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -42,8 +43,7 @@ export class LoginFormComponent {
 
   loginForm = this.fb.group({
     username: [null, Validators.required],
-    password: [null, Validators.required],
-    //recaptchaReactive:[null, Validators.required],
+    password: [null, Validators.required]
   });
   isRegister = false
   hide = true;
@@ -57,16 +57,20 @@ export class LoginFormComponent {
     private breakpointObserver: BreakpointObserver,
     private fb: UntypedFormBuilder, private route: ActivatedRoute, 
     private router: Router, 
-    private userLoginService:UserLoginService) {
+    private userLoginService:UserLoginService,
+    private recaptchaService:RecaptchaService) {
       this.isRegister = ( this.route.snapshot.paramMap.get('isRegister') == "true" )
       this.token = undefined;
       if( this.route.snapshot.paramMap.get('intendedPath') ){
         this.intendedPath = this.route.snapshot.paramMap.get('intendedPath')
       }
   }
+  ngOnDestroy(): void {
+    this.recaptchaService.hideRecaptcha()
+  }
 
   ngOnInit() {
-
+    this.recaptchaService.showRecaptcha();  
   }
   navigateIntended(){
     var intendedParameters = {}
@@ -77,29 +81,36 @@ export class LoginFormComponent {
     this.router.navigate([this.intendedPath, intendedParameters]);    
   }
   onLoginWithEmail(){
-    if( this.loginForm.valid ){
-        var user = this.loginForm.controls.username.value
-        var password = this.loginForm.controls.password.value
+    this.recaptchaService.validateCaptcha("loginWithEmail").then( isHuman=>{
+      if(isHuman){
+        if( this.loginForm.valid ){
+          var user = this.loginForm.controls.username.value
+          var password = this.loginForm.controls.password.value
 
-        this.userLoginService.loginWithEmail(user, password).then( () =>{
-          if( this.intendedPath ){
-            this.navigateIntended()
+          this.userLoginService.loginWithEmail(user, password).then( () =>{
+            if( this.intendedPath ){
+              this.navigateIntended()
+            }
+            else{
+              this.router.navigate(['/']);
+            }
+          },
+          reason => {
+            alert("ERROR: " + reason)
+          })
+        }
+        else{
+          let msg =  "ERROR: usuario o password son incorrectos"
+          if( this.loginForm.controls["recaptchaReactive"].valid == false){
+            msg = "ERROR: por favor complete el captcha"
           }
-          else{
-            this.router.navigate(['/']);
-          }
-        },
-        reason => {
-          alert("ERROR: " + reason)
-        })
-    }
-    else{
-      let msg =  "ERROR: usuario o password son incorrectos"
-      if( this.loginForm.controls["recaptchaReactive"].valid == false){
-        msg = "ERROR: por favor complete el captcha"
+          alert( msg )
+        }
       }
-      alert( msg )
-    }
+      else{
+        alert("usted es un robot")
+      }
+    })
   }
 
   register(){

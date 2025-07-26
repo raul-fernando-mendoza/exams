@@ -37,7 +37,10 @@ export const environment = {
   //apiURL:"https://celtic-bivouac-307316.uc.r.appspot.com/api"
 
   recaptcha: {
-    siteKey: '6LcFB7ohAAAAAMBJx7mf6-49OMW2JYbLuVgLl3d2',
+    siteKey: '6Ld8-I4rAAAAABuRxywFcpvvt8-ckbonfl0KgjD4',
+    secretKey:'6Ld8-I4rAAAAALRjI96B5V3RDObU-Wf39db0BAEK',
+    //url:'http://localhost:3000/your-page.html'
+    url:'https://us-central1-thoth-dev-346022.cloudfunctions.net/captchaserver'
   },  
   computeURL:'https://us-central1-thoth-qa.cloudfunctions.net/computeRequest',
   zone:'us-central1-a',
