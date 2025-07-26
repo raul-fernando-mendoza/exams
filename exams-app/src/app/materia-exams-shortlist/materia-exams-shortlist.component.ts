@@ -64,20 +64,24 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     }
   }
   loadExamItems(){
+    console.log("load exam items")
     this.submitting.set(true)
     this.unsubscribe = db.collection("materias/" + this.materia.id + "/exams")
     .where("isDeleted","==", false).onSnapshot( snapshot =>{
+      console.log("process snapshot:" + snapshot.docs.length )
       this.submitting.set(false)
       let exams = new Array<ExamExamGradeItem>()
       let transactions = []
       snapshot.docs.map( doc =>{
         const exam = doc.data() as Exam
+        console.log("exam:" + exam.label )
         var ei:ExamExamGradeItem={
           exam:exam,
           examGrade:null
         }
         exams.push(ei)
         let t = this.examImprovisacionService.getLastExamGrade( this.organization_id, this.materia.id, this.materiaEnrollment.student_uid, exam.id ).then( examGrade =>{
+          console.log("found examgrade:" + examGrade)
           ei.examGrade = examGrade
         },
         reason =>{
@@ -86,7 +90,9 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
         transactions.push(t)
       })
       Promise.all( transactions ).then( ()=>{
+        console.log("transactions completed:" + exams.length )
         exams = exams.filter( ei => !this.hideExam( ei ))
+        console.log("transactions filtered:" + exams.length )
         exams.sort( (a,b) => {
           return a.exam.label > b.exam.label ? 1:-1
         })
@@ -102,7 +108,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
           let avg = total / count
           this.average.set( avg.toFixed(1) )
         }
-
+        console.log("set exams" )
         this.exams.set(exams)
       })
 

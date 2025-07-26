@@ -60,13 +60,13 @@ service cloud.firestore {
         return request.auth.uid in get(/databases/$(database)/documents/examGrades/$(examGrade)).data.evaluators 
       }  
       function isExamGradeStudent() {
-        return request.auth.uid == get(/databases/$(database)/documents/examGrades/$(examGrade)).data.student_uid
+        return request.auth.uid in get(/databases/$(database)/documents/examGrades/$(examGrade)).data.studentUids
       }
       function isAdmin(request) {
       	return ('role-admin-' + get(/databases/$(database)/documents/examGrades/$(examGrade)).data.organization_id) in request.auth.token
       }
       allow read: if request.auth.uid in resource.data.evaluators
-      allow read: if request.auth.uid == resource.data.student_uid 
+      allow read: if request.auth.uid in resource.data.studentUids 
 			allow read, write: if ( ('role-admin-' + resource.data.organization_id) in request.auth.token  )
       allow read, write: if ( ('role-admin-' + request.resource.data.organization_id) in request.auth.token  )
 

@@ -590,7 +590,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }  
-  getLastExamGradeV2( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
+  getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
     return new Promise<ExamGrade>( (resolve, reject) =>{
       const qry = db.collection("examGrades")
       .where("organization_id", "==", organization_id )
@@ -602,9 +602,10 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
          
 
       qry.get().then( set => {
+          console.log("getLastExamGrade:" + set.docs.length)
           var examGrades = Array<ExamGrade>()
           if( set.docs.length > 0){
-          set.docs.map( examGradeDoc =>{
+            set.docs.map( examGradeDoc =>{
                 let examGrade = examGradeDoc.data() as ExamGrade
                 examGrades.push(examGrade)
             })
@@ -621,16 +622,6 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }  
-
-  getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
-    return new Promise<ExamGrade>( (resolve, reject) =>{
-      this.getLastExamGradeV2( organization_id, materia_id, student_uid, exam_Id ).then( examGradeV2 =>{
-        resolve(examGradeV2)
-      })
-    })
-  }
-    
-
 
   getExamGrades(organization_id, materia_id, student_uid):Promise<Array<ExamExamGradeItem>>{
     return new Promise<Array<ExamExamGradeItem>>( (resolve,reject)=>{
