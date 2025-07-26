@@ -1,4 +1,5 @@
-gcloud projects list
+gcloud config list
+
 gcloud config set project thoth-qa
 gcloud config set project thoth-dev-346022
 
@@ -13,6 +14,7 @@ gcloud functions deploy createCertificateOnExamGradeEventWrite --region=us-centr
 
 #deploy function to cloud functions
 gcloud functions deploy createCertificateMateriaEnrollmentPost --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional --project thoth-dev-346022
+gcloud functions deploy createCertificateMateriaEnrollmentPost --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional --project thoth-qa
 gcloud functions deploy deleteCertificateMateriaEnrollmentPost --runtime python39 --trigger-http --allow-unauthenticated --security-level=secure-optional
 
 ***** cerficate generation process ********
