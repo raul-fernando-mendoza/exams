@@ -1,5 +1,6 @@
 const {RecaptchaEnterpriseServiceClient} = require('@google-cloud/recaptcha-enterprise');
-const valid_siteKey= '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq'
+const VALID_SITE_KEY= '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq'
+const PROJECT_ID= "thoth-dev-346022"
 
 async function createAssessment({
    projectID = "your-project-id",
@@ -91,8 +92,6 @@ async function createAssessment({
         res.send(200);
     }    
     else{
-        const siteKeyValid= '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq'
-
         action = req.body.action || req.query.action
         token = req.body.token || req.query.token
         siteKey = req.body.siteKey || req.query.siteKey
@@ -105,10 +104,10 @@ async function createAssessment({
             'Access-Control-Allow-Origin':'*'
         })        
 
-        if( valid_siteKey == siteKey ){
+        if( VALID_SITE_KEY == siteKey ){
             const url = 'https://www.google.com/recaptcha/api/siteverify'
             const data = {
-            projectID:"thoth-dev-346022",
+            projectID:PROJECT_ID,
             recaptchaKey:siteKey,
             token:token,
             recaptchaAction:action,

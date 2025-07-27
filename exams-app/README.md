@@ -60,10 +60,8 @@ site key development
 secretkey development
 6LcV24krAAAAAIfYMIhxasBoniJ18UNWJO_m6Qxz
 
-PROD recaptcha
-
-site key
+PROD recaptcha site key
 6Ld8-I4rAAAAABuRxywFcpvvt8-ckbonfl0KgjD4
 
-secretkey
+PROD recaptcha secretkey
 6Ld8-I4rAAAAALRjI96B5V3RDObU-Wf39db0BAEK
