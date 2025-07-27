@@ -13,7 +13,8 @@
   "author": "Raul Mendoza",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/recaptcha-enterprise": "^6.3.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.21.2"
   }
 }

@@ -1,8 +1,7 @@
 # ExamsApp
-
-
 #to execute use
 npm start
+
 #helpful commands
 firebase help
 firebase login
@@ -15,6 +14,7 @@ firebase init
 
 
 #use to deploy the app first compile for deployment
+#first change the enterprise.js key to the production key
 ng build --configuration="production"
 firebase deploy
 

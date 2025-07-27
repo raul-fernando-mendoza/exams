@@ -14,39 +14,37 @@ export class RecaptchaService {
 
   constructor(private http: HttpClient) { }
 
-  public validateCaptchaToken(recaptchaToken:string): Observable<Object> {
+  public validateCaptchaToken(action:string, recaptchaToken:string): Observable<Object> {
 
     var url = environment.recaptcha.url
     
-    var body = "siteKey=" + environment.recaptcha.siteKey + "&response=" + recaptchaToken
-
     var myparams = {
-      
-      siteKey : environment.recaptcha.siteKey,
-      response: recaptchaToken
+      "siteKey": environment.recaptcha.siteKey ,
+      "token": recaptchaToken,
+      "action": action      
     }
     
 
     var myheaders = new HttpHeaders({
-      Accept: "application/json"}
-    );
+      Accept: "application/json"
+    });
 
-    console.log(url + "?" + body)
     return this.http.get(url, {params : myparams, headers: myheaders})
   }  
   validateCaptcha(action:string):Promise<boolean> {
     return new Promise( (resolve, reject) =>{
       var thiz = this
-      grecaptcha.ready(() => {
+      grecaptcha.enterprise.ready(() => {
         grecaptcha
-          .execute(environment.recaptcha.siteKey, { action: action })
+          .enterprise.execute(environment.recaptcha.siteKey, { action: action })
           .then((token: string) => {
             /*Here, your service sends the token and other information to the backend and waits for the response.*/
             console.log("token:" + token)
-            thiz.validateCaptchaToken( token ).subscribe( {
+            thiz.validateCaptchaToken( action, token ).subscribe( {
               next: (data:any)=>{
                 console.log( data )
-                if(data["success"]==true && data["score"] >= 0.6){
+                //alert( data["score"] )
+                if(data["score"] <= 0.5){
                   resolve(true)
                 }
                 else{

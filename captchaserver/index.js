@@ -1,3 +1,76 @@
+const {RecaptchaEnterpriseServiceClient} = require('@google-cloud/recaptcha-enterprise');
+const valid_siteKey= '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq'
+
+async function createAssessment({
+   projectID = "your-project-id",
+   recaptchaKey = "your-recaptcha-key",
+   token = "action-token",
+   recaptchaAction = "action-name",
+   userIpAddress = "user-ip-address",
+   userAgent = "user-agent",
+   ja4 = "ja4",
+   ja3 = "ja3"
+ }) {
+   // Create the reCAPTCHA client & set the project path. There are multiple
+   // ways to authenticate your client. For more information see:
+   // https://cloud.google.com/docs/authentication
+   // TODO: To avoid memory issues, move this client generation outside
+   // of this example, and cache it (recommended) or call client.close()
+   // before exiting this method.
+   const client = new RecaptchaEnterpriseServiceClient();
+   const projectPath = client.projectPath(projectID);
+
+   // Build the assessment request.
+   const request = ({
+     assessment: {
+       event: {
+         token: token,
+         siteKey: recaptchaKey,
+         userIpAddress: userIpAddress,
+         userAgent: userAgent,
+         ja4: ja4,
+         ja3: ja3,
+       },
+     },
+     parent: projectPath,
+   });
+
+   // client.createAssessment() can return a Promise or take a Callback
+   const [ response ] = await client.createAssessment(request);
+   console.log( "response:" , response )
+
+   // Check if the token is valid.
+   if (!response.tokenProperties.valid) {
+    console.log("The CreateAssessment call failed because the token was: " +
+      response.tokenProperties.invalidReason);
+
+    return null;
+   }
+
+   // Check if the expected action was executed.
+   // The `action` property is set by user client in the
+   // grecaptcha.enterprise.execute() method.
+   if (response.tokenProperties.action === recaptchaAction) {
+
+    // Get the risk score and the reason(s).
+    // For more information on interpreting the assessment,
+    // see: https://cloud.google.com/recaptcha/docs/interpret-assessment
+    console.log("The reCAPTCHA score is: " +
+      response.riskAnalysis.score);
+
+    response.riskAnalysis.reasons.forEach((reason) => {
+      console.log(reason);
+    });
+    return response.riskAnalysis.score;
+   } else {
+    console.log("The action attribute in your reCAPTCHA tag " +
+      "does not match the action you are expecting to score");
+    return null;
+   }
+ }
+
+
+
 /**
  * use first gen 
  *
@@ -20,45 +93,41 @@
     else{
         const siteKeyValid= '6LcV24krAAAAANUPjBJ4tGKQ16C06auSvpQp_Rkq'
 
-        siteKey = req.body.siteKey || req.query.siteKey 
-        response = req.body.response || req.query.response
+        action = req.body.action || req.query.action
+        token = req.body.token || req.query.token
+        siteKey = req.body.siteKey || req.query.siteKey
 
         console.log("***********siteKey:" + siteKey)
-        console.log("***********response:" + response)
+        console.log("***********action:" + action)
 
         res.set({
             'Content-Type': 'text/html',
             'Access-Control-Allow-Origin':'*'
         })        
 
-        if( siteKeyValid == siteKey ){
-            console.log("***********calling captcha")
+        if( valid_siteKey == siteKey ){
             const url = 'https://www.google.com/recaptcha/api/siteverify'
             const data = {
-            "secret" : "6LcV24krAAAAAIfYMIhxasBoniJ18UNWJO_m6Qxz",
-            "response": response
+            projectID:"thoth-dev-346022",
+            recaptchaKey:siteKey,
+            token:token,
+            recaptchaAction:action,
+            userIpAddress:req.ip,
+            userAgent:req.headers['user-agent'],
+            ja4:"ja4",
+            ja3:"ja3"        
             };
             const customHeaders = {
                 "Content-Type": 'application/x-www-form-urlencoded'
             }
             
-            fetch(url, {
-                method: "POST",
-                headers: customHeaders,
-                body: `secret=${data.secret}&response=${data.response}`
+            createAssessment( data ).then( result =>{
+            console.log( "result:", result)
+            res.send({"score":result});
             })
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(data);
-                    res.send(data);
-                });
         }
         else{
             res.send({"error":"invalid siteKey"});
         }
-
-
-    //  let message = req.query.message || req.body.message || 'Hello World!';
-    //  res.status(200).send(message);
     }
 };
