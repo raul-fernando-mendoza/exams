@@ -33,8 +33,8 @@ import { MateriaExamsShortListComponent } from "../materia-exams-shortlist/mater
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReferenceComponent } from "../reference-list/reference-list"
 import { MatMenuModule } from "@angular/material/menu"
-import { canCopyImagesToClipboard, copyImageToClipboard } from 'copy-image-clipboard'
 import { Clipboard } from '@angular/cdk/clipboard';
+import { DownloadService } from "../download.service"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -141,6 +141,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       ,private navigationService: NavigationService
       ,public dialog: MatDialog
       ,private clipboard: Clipboard
+      ,private downloads: DownloadService
       ) {
     
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -172,9 +173,6 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.loadMastersList()
     this.update()
-    const canCopy = canCopyImagesToClipboard()
-    this.canCopyImages.set( canCopy )
-    console.log('Can Copy Images To Clipboard:', canCopy)
   }
 
   
@@ -392,19 +390,20 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     }) 
        
   }
-  onCopyToClipboard(url){
-
-    copyImageToClipboard(url).then(() => {
-      console.log('Image Copied')
-      this._snackBar.open("imagen copiada al clipboard", "X",{
-        duration: 3000
-      });         
-    })
-    .catch((e) => {
-      console.log('Error: ', e.message)
-    })    
-
-  } 
+  download(url): void {
+    let user_name= this.userLoginService.getDisplayNameForUser(this.user).replace(" ","_")
+    let materia_name = this.materia().materia_name.replace(" ","_")
+    this.downloads
+      .download(url)
+      .subscribe(blob => {
+        const a = document.createElement('a')
+        const objectUrl = URL.createObjectURL(blob)
+        a.href = objectUrl
+        a.download = user_name + "_" + materia_name + '.jpeg';
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+      })
+  }  
 
 }
 

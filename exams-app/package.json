@@ -25,7 +25,6 @@
     "angular-canvas-painter": "^0.6.0",
     "chart.js": "^2.9.4",
     "chartjs": "^0.3.24",
-    "copy-image-clipboard": "^2.1.2",
     "firebase": "^8.6.8",
     "firebase-admin": "^9.11.1",
     "rxjs": "^7.8.2",

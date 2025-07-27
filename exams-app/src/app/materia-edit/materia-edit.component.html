@@ -207,9 +207,8 @@ Materia
           <mat-card-content>
           </mat-card-content>
           <mat-card-actions>
-            @if( canCopyImages() ){
-            <button mat-icon-button (click)="onCopyToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>content_copy</mat-icon></button>
-            }
+
+            <button mat-icon-button (click)="download(materiaEnrollment().certificateUrl)"><mat-icon>download</mat-icon></button>
             <button mat-icon-button (click)="onCopyUrlToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>link</mat-icon></button>
           </mat-card-actions>    
         </mat-card>  

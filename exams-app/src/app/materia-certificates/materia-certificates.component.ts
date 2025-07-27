@@ -23,10 +23,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
-
-import { canCopyImagesToClipboard, copyImageToClipboard } from 'copy-image-clipboard'
-import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { DownloadService } from "../download.service"
 
 @Component({
   selector: 'app-materia-certificates',
@@ -88,13 +87,12 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     , private router: Router
     , private dateFormatService:DateFormatService
     , private changeDetectorRef: ChangeDetectorRef
-    , private clipboard: Clipboard
+    ,private clipboard: Clipboard
+    ,private downloads: DownloadService
   ){
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
   }
   ngOnInit() {
-    const canCopy = canCopyImagesToClipboard()
-    this.canCopyImages.set( canCopy )  
   }
 
   ngAfterViewInit() {
@@ -684,23 +682,21 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     this._snackBar.open("copiado al clipboard", "X",{
       duration: 3000
     });
-  } 
-    
-  onCopyToClipboard(url){
-    
-
-    copyImageToClipboard(url).then(() => {
-      console.log('Image Copied')
-      this._snackBar.open("imagen copiada al clipboard", "X",{
-        duration: 3000
-      });         
-    })
-    .catch((e) => {
-      console.log('Error: ', e.message)
-    })    
-
   }   
-
+  download( url:string,row:NodeTableRow): void {
+    let user_name= this.userLoginService.getDisplayNameForUser(row.user).replace(" ","_")
+    let materia_name = row.materia.materia_name
+    this.downloads
+      .download(url)
+      .subscribe(blob => {
+        const a = document.createElement('a')
+        const objectUrl = URL.createObjectURL(blob)
+        a.href = objectUrl
+        a.download = user_name + "_" + materia_name + '.jpeg';
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+      })
+  } 
 }
 
 /****** student dlg */

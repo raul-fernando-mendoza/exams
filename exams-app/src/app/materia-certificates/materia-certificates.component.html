@@ -21,7 +21,7 @@ Certificados
             <button  mat-button  (click)="onCareersClick(row)">
               <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
             </button>
-            Carreras
+            Oferta Educativa
           </div>        
           <div [class]="row.nodeClass" *ngIf="row.nodeClass=='MateriaEnrollment'">
             <button  mat-button  (click)="onMateriaClick(row)">
@@ -48,13 +48,9 @@ Certificados
             {{row.user.id}}
           </div>
           <div *ngIf="row.nodeClass=='MateriaEnrollment'"> 
-            
-            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>image</mat-icon></a>       
-            @if( canCopyImages() ){
-            <button mat-icon-button (click)="onCopyToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>content_copy</mat-icon></button>
-            }
-            <button mat-icon-button (click)="onCopyUrlToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>link</mat-icon></button>
 
+            <button mat-icon-button (click)="download(row.materiaEnrollment.certificateUrl, row)"><mat-icon>download</mat-icon></button>
+            <button mat-icon-button (click)="onCopyUrlToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>link</mat-icon></button>
           </div>    
           @if(row.nodeClass=='Exam'){
             @if(row.examGrade){

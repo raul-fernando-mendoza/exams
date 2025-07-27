@@ -1,3 +1,11 @@
-.careercard{
-  max-width: 400px;
+mat-card{
+    width:400px;
+    margin:0em;
+    margin:4px;
+}
+mat-card-header{
+    height: 6em;
+}
+mat-card-content{
+    height: 2em;
 }

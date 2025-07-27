@@ -107,12 +107,13 @@ export interface Laboratory{
 }
 
 export const COLORS = [
-  "aquamarine",
-  "darkblue",
-  "brown",
-  "darkgreen",
-  "lightsalmon",
-  "darkmagenta"
+  "limegreen",
+  "yellow",
+  "aqua",
+  "blue",
+  "magenta",
+  "red",
+  "sandybrown"
 ]
 
 export interface Materia{

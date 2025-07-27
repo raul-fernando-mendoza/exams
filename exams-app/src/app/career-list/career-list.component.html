@@ -1,11 +1,11 @@
-<h1>Lista de Carreras</h1>
+<h1>Oferta educativa</h1>
 @if(careers()){
 
 <mat-grid-list [cols]="numCols()" rowHeight="1:1">
   @for( c of careers(); track c.id; let i=$index){  
   <div class="item">   
     <mat-grid-tile>
-    <mat-card class="careercard">
+    <mat-card>
       <mat-card-title-group>
           <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
               <mat-icon>more_vert</mat-icon>
