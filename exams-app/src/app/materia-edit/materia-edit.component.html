@@ -207,7 +207,10 @@ Materia
           <mat-card-content>
           </mat-card-content>
           <mat-card-actions>
-            <button matButton [cdkCopyToClipboard]="materiaEnrollment().certificateUrl" (click)="onCopyToClipboard()"><mat-icon>link</mat-icon></button>
+            @if( canCopyImages() ){
+            <button mat-icon-button (click)="onCopyToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>content_copy</mat-icon></button>
+            }
+            <button mat-icon-button (click)="onCopyUrlToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>link</mat-icon></button>
           </mat-card-actions>    
         </mat-card>  
   </mat-expansion-panel>

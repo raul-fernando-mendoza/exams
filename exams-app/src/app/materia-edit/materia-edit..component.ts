@@ -7,15 +7,10 @@ import { CertificateType, COLORS, Exam, Laboratory, Materia, MateriaEnrollment, 
 import { UserLoginService } from "../user-login.service"
 import { db } from 'src/environments/environment';
 
-
-
 import { ActivatedRoute, Router, RouterModule } from "@angular/router"
-import * as uuid from 'uuid';
 import { NavigationService } from "../navigation.service"
 import { UserPreferencesService } from "../user-preferences.service"
-import { Observable, Observer } from "rxjs"
-import { FileLoadObserver } from "../load-observers/load-observers.module"
-import { DialogNameDialog } from "../name-dialog/name-dlg"
+import { Observable } from "rxjs"
 import { FileLoadedEvent, FileLoaderComponent } from "../file-loader/file-loader.component"
 
 
@@ -35,15 +30,11 @@ import { MatCardModule } from "@angular/material/card"
 import { MateriaExamsListComponent } from "../materia-exams-list/materia-exams-list.component"
 import { MatExpansionModule } from "@angular/material/expansion"
 import { MateriaExamsShortListComponent } from "../materia-exams-shortlist/materia-exams-shortlist.component"
-import {
-  MatSnackBar,
-  MatSnackBarAction,
-  MatSnackBarActions,
-  MatSnackBarLabel,
-  MatSnackBarRef
-} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReferenceComponent } from "../reference-list/reference-list"
 import { MatMenuModule } from "@angular/material/menu"
+import { canCopyImagesToClipboard, copyImageToClipboard } from 'copy-image-clipboard'
+import { Clipboard } from '@angular/cdk/clipboard';
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -137,6 +128,8 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   colors = COLORS
 
   hasExamGrades = signal(false)
+
+  canCopyImages = signal(false)
   constructor(
       private activatedRoute: ActivatedRoute
       ,private fb: FormBuilder
@@ -147,6 +140,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       ,private userPreferencesService: UserPreferencesService
       ,private navigationService: NavigationService
       ,public dialog: MatDialog
+      ,private clipboard: Clipboard
       ) {
     
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -178,6 +172,9 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.loadMastersList()
     this.update()
+    const canCopy = canCopyImagesToClipboard()
+    this.canCopyImages.set( canCopy )
+    console.log('Can Copy Images To Clipboard:', canCopy)
   }
 
   
@@ -312,7 +309,8 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   fileDeleted(e:FileLoadedEvent){
     this.examImprovisacionService.fileDeleted('materias', this.materia().id, e)
   }
-  onCopyToClipboard(){
+  onCopyUrlToClipboard(url){
+    this.clipboard.copy(url);
     this._snackBar.open("copiado al clipboard", "X",{
       duration: 3000
     });
@@ -394,5 +392,19 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     }) 
        
   }
+  onCopyToClipboard(url){
+
+    copyImageToClipboard(url).then(() => {
+      console.log('Image Copied')
+      this._snackBar.open("imagen copiada al clipboard", "X",{
+        duration: 3000
+      });         
+    })
+    .catch((e) => {
+      console.log('Error: ', e.message)
+    })    
+
+  } 
+
 }
 

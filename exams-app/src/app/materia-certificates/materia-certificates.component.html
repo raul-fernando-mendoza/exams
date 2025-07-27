@@ -49,8 +49,12 @@ Certificados
           </div>
           <div *ngIf="row.nodeClass=='MateriaEnrollment'"> 
             
-            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>content_copy</mat-icon></a>       
-            <button mat-icon-button *ngIf="row.materiaEnrollment.certificateUrl" [cdkCopyToClipboard]="row.materiaEnrollment.certificateUrl" (click)="onCopyToClipboard()"><mat-icon>link</mat-icon></button>
+            <a *ngIf="row.materiaEnrollment.certificateUrl" href="{{row.materiaEnrollment.certificateUrl}}"><mat-icon>image</mat-icon></a>       
+            @if( canCopyImages() ){
+            <button mat-icon-button (click)="onCopyToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>content_copy</mat-icon></button>
+            }
+            <button mat-icon-button (click)="onCopyUrlToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>link</mat-icon></button>
+
           </div>    
           @if(row.nodeClass=='Exam'){
             @if(row.examGrade){
