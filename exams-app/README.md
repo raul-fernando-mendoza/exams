@@ -13,8 +13,9 @@ firebase use <project_id>
 firebase init
 
 
-#use to deploy the app first compile for deployment
-#first change the enterprise.js key to the production key
+#use to deploy the app 
+#first change the enterprise.js key to the production key in index.html
+#then compile for deployment with --configuration = production
 ng build --configuration="production"
 firebase deploy
 

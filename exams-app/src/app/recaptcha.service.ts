@@ -42,9 +42,10 @@ export class RecaptchaService {
             console.log("token:" + token)
             thiz.validateCaptchaToken( action, token ).subscribe( {
               next: (data:any)=>{
-                console.log( data )
+                console.log( data["score"] )
                 //alert( data["score"] )
-                if(data["score"] <= 0.5){
+                if( data["score"] >= 0.5 
+                  ){
                   resolve(true)
                 }
                 else{
