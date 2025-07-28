@@ -44,8 +44,7 @@ export class RecaptchaService {
               next: (data:any)=>{
                 console.log( data["score"] )
                 //alert( data["score"] )
-                if( data["score"] >= 0.5 
-                  ){
+                if( data["score"] >= 0.5 ){
                   resolve(true)
                 }
                 else{

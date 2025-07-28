@@ -17,7 +17,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     font-size: x-small; 
     margin-right: 10px;
     color:white;
-    color:sandybrown
+    color:midnightblue
 }  
 .example{
   background: linear-gradient(to left bottom, white 70%, blue );
@@ -43,6 +43,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   } 
   .sandybrown{
     background: linear-gradient(to left bottom, white 70%, sandybrown   );
+  }     
+  .black{
+    background: linear-gradient(to left bottom, white 70%, black 30%  );
   }     
  
 .grecaptcha-badge { 

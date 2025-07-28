@@ -113,7 +113,8 @@ export const COLORS = [
   "blue",
   "magenta",
   "red",
-  "sandybrown"
+  "sandybrown",
+  "black"
 ]
 
 export interface Materia{

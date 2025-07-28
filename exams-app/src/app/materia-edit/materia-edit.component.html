@@ -58,7 +58,7 @@ Materia
         <mat-label><span [class]="materia().color1">&nbsp;&nbsp;&nbsp;</span>Color1</mat-label>
         <mat-select formControlName="color1"  name="color1" (selectionChange)="onSelectChange($event, m)">
           <mat-option *ngFor="let c of colors" [value]="c">
-            <span [class]="c">&nbsp;</span>{{c}}
+            <span [class]="c">&nbsp;{{c}}</span>
           </mat-option>
         </mat-select>
     </mat-form-field>    
