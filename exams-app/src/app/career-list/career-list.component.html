@@ -1,5 +1,5 @@
-<h1>Oferta educativa</h1>
-@if(careers()){
+<h1>Oferta educativa<button *ngIf="isAdmin" mat-button mat-raised-button (click)="onCreateCareer()"><mat-icon>add</mat-icon></button></h1>
+@if(careers()){ 
 
 <mat-grid-list [cols]="numCols()" rowHeight="1:1">
   @for( c of careers(); track c.id; let i=$index){  

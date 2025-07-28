@@ -182,7 +182,7 @@ export class CareerListComponent implements OnInit, OnDestroy {
       console.log('The dialog was closed');
       if( result != undefined ){
         console.debug( result )
-        this.createMateria(result.career_name).then( ()=>{
+        this.createCareer(result.career_name).then( ()=>{
           console.log("carrer create")
         })
       }
@@ -192,7 +192,7 @@ export class CareerListComponent implements OnInit, OnDestroy {
     });
   }
   
-  createMateria(career_name:string):Promise<void>{
+  createCareer(career_name:string):Promise<void>{
     return new Promise<void>((resolve, reject)=>{
       var id = uuid.v4()
 
