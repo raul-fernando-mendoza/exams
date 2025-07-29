@@ -54,6 +54,26 @@ export class ExamFormService {
     }      
   }
 
+  onSelectChange(collection_path:string, id:string, event:MatSelectChange){
+    console.log("onSelectChange")
+    var propertyName = event.source.ngControl.name
+    var value = event.source.ngControl.value      
+
+    
+    var values = {}
+
+    if( id ){ 
+      var values = {}
+      values[propertyName]=value                                  
+      db.collection(collection_path).doc(id).update(values).then( () =>{
+        console.log("property has been update:" + collection_path + "/"+ propertyName + " " + value)
+      },
+      reason =>{
+        alert("ERROR: writing property:" + reason)
+      })   
+    }
+  }    
+
   onSlideToggleChange(collection_path:string, id:string, event:MatSlideToggleChange){
     console.log("onSelectChange")
     var propertyName = event.source.name
@@ -73,6 +93,6 @@ export class ExamFormService {
       })   
     }
   }  
-  
+
 
 }
