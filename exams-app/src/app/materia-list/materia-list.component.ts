@@ -170,8 +170,8 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
     if( filter ){
       newMateriaList = newMateriaList.filter( (e) =>{
-        let materiaName = e.materia.materia_name.toLowerCase()
-        return (materiaName.search(filter.toLowerCase()) !== -1 )
+        let materiaName = e.materia.materia_name.toLowerCase().normalize("NFD")
+        return (materiaName.search(filter.toLowerCase().normalize("NFD")) !== -1 )
       })
     }  
     newMateriaList.sort( (a,b) => {return a.materia.materia_name > b.materia.materia_name? 1:-1})
