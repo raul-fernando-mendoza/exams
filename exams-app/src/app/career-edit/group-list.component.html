@@ -5,9 +5,9 @@
         <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + career.id + '/levels/' + level.id + '/groups', g.fg.controls.id.value, $event)">
     </mat-form-field>  
     <mat-toolbar-row *ngIf="!isAdmin" >
-        <span>{{ g.controls.group_name.value }}</span>
+        <span>{{ g.group.group_name }}</span>
         <span class="example-spacer"></span>
-        <span>{{ getGroupGradeDescription( g.controls.group_grade_type_id.value ) }} </span>
+        <span>{{ getGroupGradeDescription( g.group.group_grade_type_id ) }} </span>
     </mat-toolbar-row> 
     <mat-form-field *ngIf="isAdmin" appearance="fill" >
         <mat-label>selecciona tipo de evaluacion</mat-label>

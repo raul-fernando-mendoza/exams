@@ -192,6 +192,7 @@ export interface Career{
   videoUrl?:string
   videoPath?:string
   videoDescription?:string
+  isPublished?:boolean
   isDeleted?:boolean
 }
 

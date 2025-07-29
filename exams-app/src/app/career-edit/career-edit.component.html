@@ -19,7 +19,10 @@ Carrera
                 <mat-form-field *ngIf="isAdmin" appearance="outline">
                     <mat-label>description</mat-label>
                     <textarea  matInput maxlength="2000" rows="3" formControlName="description" (change)="onPropertyChange($event)"></textarea>
-                </mat-form-field> 
+                </mat-form-field>
+                <div>
+                <mat-slide-toggle *ngIf="isAdmin" name="isPublished" formControlName="isPublished" (change)="formService.onSlideToggleChange(collection, id, $event, c.controls.isPublished )">Publicar</mat-slide-toggle>                
+                </div> 
             </mat-card-content>
         </mat-card>  
         <mat-card>
@@ -50,7 +53,7 @@ Carrera
                 <mat-form-field *ngIf="isAdmin" appearance="outline">
                     <mat-label>description del video</mat-label>
                     <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
-                </mat-form-field>          
+                </mat-form-field>         
 
             </mat-card-content> 
         </mat-card>

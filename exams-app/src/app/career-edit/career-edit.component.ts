@@ -30,6 +30,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { LevelListComponent } from './level-list.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-career-edit',
@@ -52,6 +53,7 @@ import { LevelListComponent } from './level-list.component';
 
 
     ,LevelListComponent
+    ,MatSlideToggleModule
   ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']
@@ -59,7 +61,7 @@ import { LevelListComponent } from './level-list.component';
 export class CareerEditComponent implements OnInit, OnDestroy {
 
   id = null
-
+  collection = "careers"
   organization_id = null
 
   career = signal<Career>(null)
@@ -85,6 +87,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     iconUrl:[""],
     videoUrl:[""],  
     videoDescription:[""],
+    isPublished:[true],
     levels:new FormArray([])
   })
 
@@ -140,6 +143,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       this.c.controls.pictureDescription.setValue(career.pictureDescription)
       this.c.controls.videoUrl.setValue(career.videoUrl)
       this.c.controls.videoDescription.setValue(career.videoDescription)
+      this.c.controls.isPublished.setValue(career.isPublished)
       this.career.set( career )
       //this.loadLevels(career.id, this.c.controls.levels as UntypedFormArray).then( () =>{
       //})

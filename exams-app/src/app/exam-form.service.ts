@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { UntypedFormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { UntypedFormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { Aspect, AspectGrade, Criteria, CriteriaGrade, Exam, ExamGrade, Parameter, ParameterGrade } from './exams/exams.module';
 import { db, environment } from 'src/environments/environment';
 import { MatSelectChange } from '@angular/material/select';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Injectable({
   providedIn: 'root'
@@ -53,10 +54,10 @@ export class ExamFormService {
     }      
   }
 
-  onSelectChange(collection_path:string, id:string, event:MatSelectChange){
+  onSlideToggleChange(collection_path:string, id:string, event:MatSlideToggleChange){
     console.log("onSelectChange")
-    var propertyName = event.source.ngControl.name
-    var value = event.source.ngControl.value      
+    var propertyName = event.source.name
+    var value = event.checked      
 
     
     var values = {}
