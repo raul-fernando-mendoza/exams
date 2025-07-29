@@ -153,7 +153,23 @@ export class MateriaListComponent implements OnInit , OnDestroy{
     this.loadMaterias()
   }
 
+  removeDiacritics(input){
+      var output = "";
 
+      var normalized = input.normalize("NFD");
+      var i=0;
+      var j=0;
+
+      while (i<input.length)
+      {
+          output += normalized[j];
+
+          j += (input[i] == normalized[j]) ? 1 : 2;
+          i++;
+      }
+
+      return output;    
+  }
   applyFilter(){
     let filter = this.fg.controls.filter.value
     let newMateriaList = [...this.materiaListOriginal]
@@ -170,8 +186,8 @@ export class MateriaListComponent implements OnInit , OnDestroy{
 
     if( filter ){
       newMateriaList = newMateriaList.filter( (e) =>{
-        let materiaName = e.materia.materia_name.toLowerCase().normalize("NFD")
-        return (materiaName.search(filter.toLowerCase().normalize("NFD")) !== -1 )
+        let materiaName = this.removeDiacritics(e.materia.materia_name.toLowerCase())
+        return (materiaName.search(this.removeDiacritics(filter.toLowerCase())) !== -1 )
       })
     }  
     newMateriaList.sort( (a,b) => {return a.materia.materia_name > b.materia.materia_name? 1:-1})
