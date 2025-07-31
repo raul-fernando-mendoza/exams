@@ -35,6 +35,7 @@ import { ReferenceComponent } from "../reference-list/reference-list"
 import { MatMenuModule } from "@angular/material/menu"
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DownloadService } from "../download.service"
+import { HtmlService } from "../html-service.service"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -73,6 +74,9 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   materia_observable: Observable<Materia> 
 
   materia = signal<Materia>(null)
+  descriptionHtml = signal<string>(null)
+  pictureDescriptionHtml = signal<string>(null)
+  videoDescriptionHtml = signal<string>(null)
 
   examenes:Array<Exam>=[]
 
@@ -142,6 +146,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       ,public dialog: MatDialog
       ,private clipboard: Clipboard
       ,private downloads: DownloadService
+      ,private htmlService: HtmlService
       ) {
     
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -190,10 +195,13 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
         this.m.controls.certificateTypeId.setValue(m.certificateTypeId)
 
         this.m.controls.description.setValue(m.description)
+        this.descriptionHtml.set( this.htmlService.replace_html(m.description) )
         this.m.controls.videoUrl.setValue(m.videoUrl)
         this.m.controls.videoDescription.setValue(m.videoDescription)
+        this.videoDescriptionHtml.set( this.htmlService.replace_html(m.videoDescription) )
         this.m.controls.pictureUrl.setValue(m.pictureUrl)
         this.m.controls.pictureDescription.setValue(m.pictureDescription)
+        this.pictureDescriptionHtml.set( this.htmlService.replace_html(m.pictureDescription) )
         this.m.controls.isEnrollmentActive.setValue(m.isEnrollmentActive)
         this.m.controls.label1.setValue(m.label1) 
         this.m.controls.label2.setValue(m.label2) 

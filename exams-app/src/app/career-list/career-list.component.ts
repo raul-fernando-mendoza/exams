@@ -26,6 +26,13 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import { HtmlService } from '../html-service.service';
+
+interface CareerItem{
+  career:Career
+  descriptionHtml:string
+}
+
 
 @Component({
   selector: 'app-career-list',
@@ -52,7 +59,8 @@ import {takeUntil} from 'rxjs/operators';
 })
 export class CareerListComponent implements OnInit, OnDestroy {
 
-  careers = signal<Array<Career>>( null )
+  careers = signal<Array<CareerItem>>( null )
+  
 
   submitting = false
   unsubscribe = null
@@ -77,6 +85,7 @@ export class CareerListComponent implements OnInit, OnDestroy {
     , public dialog: MatDialog
     , private userPreferencesService:UserPreferencesService
     , private userLoginService:UserLoginService
+    , private htmlService:HtmlService
     ) { 
       this.organization_id =  this.userPreferencesService.getCurrentOrganizationId()
       if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -139,15 +148,19 @@ export class CareerListComponent implements OnInit, OnDestroy {
       this.unsubscribe =query.onSnapshot( 
         set =>{
           this.submitting = false
-          let careers = new Array<Career>()
+          let careers = new Array<CareerItem>()
+
           set.docs.map(doc =>{
             var career:Career = doc.data() as Career           
             careers.push(
-              career
+              {
+                career:career,
+                descriptionHtml:this.htmlService.replace_html(career.description)
+              }
             )
           })
           careers.sort( (a,b)=>{
-            return a.career_name > b.career_name ? 1 : 0
+            return a.career.career_name > b.career.career_name ? 1 : 0
           })
           
           console.log( "***DONE careers***" )

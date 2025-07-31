@@ -42,3 +42,8 @@ mat-form-field {
 app-level-list{
     margin-left: 4em;
 }
+
+.description{
+    margin:1em;
+    width:80%;
+}

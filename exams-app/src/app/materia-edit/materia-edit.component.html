@@ -89,7 +89,7 @@ Materia
     
     }
     @else{
-      <div class="description">{{m.controls.description.value}}</div>       
+      <div class="description" [innerHTML]="descriptionHtml()"></div>       
     }  
   </mat-card-content>
   <mat-card-actions>
@@ -113,7 +113,7 @@ Materia
             </mat-form-field> 
             }
             @else{
-              <p>{{m.controls.pictureDescription.value}}</p>       
+              <div class="description" [innerHTML]="pictureDescriptionHtml()"></div>        
             }
           </mat-card-content>
         </mat-card>
@@ -149,7 +149,7 @@ Materia
             </mat-form-field>
             }
             @else{
-              <p>{{materia().videoDescription}}</p> 
+              <div class="description" [innerHTML]="videoDescriptionHtml()"></div>  
             }
           </mat-card-content>
         </mat-card>

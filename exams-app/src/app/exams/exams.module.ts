@@ -183,12 +183,15 @@ export interface Career{
 
   id:string
   career_name?:string
+  description?:string  
   iconUrl?:string
   iconPath?:string
-  description?:string
   pictureUrl?:string
   picturePath?:string
   pictureDescription?:string
+  picture2Url?:string
+  picture2Path?:string
+  picture2Description?:string
   videoUrl?:string
   videoPath?:string
   videoDescription?:string

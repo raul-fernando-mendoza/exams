@@ -9,3 +9,8 @@ mat-card-header{
 mat-card-content{
     height: 2em;
 }
+
+.description{
+    margin:1em;
+    width:80%;
+}

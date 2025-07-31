@@ -31,6 +31,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { LevelListComponent } from './level-list.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HtmlService } from '../html-service.service';
 
 @Component({
   selector: 'app-career-edit',
@@ -66,7 +67,12 @@ export class CareerEditComponent implements OnInit, OnDestroy {
 
   career = signal<Career>(null)
 
-  snapshots:Array<any> = []
+  description = signal<string>(null)
+  pictureDescription = signal<string>(null)
+  picture2Description = signal<string>(null)
+  videoDescription = signal<string>(null)
+
+  unsubscribe
 
   player: videojs.Player;
 
@@ -82,8 +88,10 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     id: ["", Validators.required],
     career_name:["", Validators.required], 
     description:[""],
-    pictureUrl:[""],
+
     pictureDescription:[""],
+    picture2Description:[""],   
+
     iconUrl:[""],
     videoUrl:[""],  
     videoDescription:[""],
@@ -107,6 +115,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     , public dialog: MatDialog
     , public router:Router
     , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private htmlService:HtmlService
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
       this.organization_id = userPreferencesService.getCurrentOrganizationId()
@@ -125,24 +134,30 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       
   }
   ngOnDestroy(): void {
-    this.snapshots.map( func =>{
-      func()
-    })
+    if(this.unsubscribe){
+      this.unsubscribe()
+    }
   }
-
-
  
   ngOnInit(): void {
-    const unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
+    console.log("reading career")
+    this.unsubscribe = db.collection('careers').doc(this.id).onSnapshot( doc =>{
+      console.log("career received")
       let career = doc.data() as Career
   
       this.c.controls.id.setValue(career.id ? career.id:"" )  
       this.c.controls.career_name.setValue(career.career_name)
       this.c.controls.description.setValue(career.description)
-      this.c.controls.pictureUrl.setValue(career.pictureUrl)
+      this.description.set( this.htmlService.replace_html( career.description) )
+      
       this.c.controls.pictureDescription.setValue(career.pictureDescription)
-      this.c.controls.videoUrl.setValue(career.videoUrl)
+      this.pictureDescription.set( this.htmlService.replace_html( career.pictureDescription))
+
+      this.c.controls.picture2Description.setValue(career.picture2Description)
+      this.picture2Description.set( this.htmlService.replace_html( career.picture2Description ))
+
       this.c.controls.videoDescription.setValue(career.videoDescription)
+      this.videoDescription.set( this.htmlService.replace_html( career.videoDescription ))
       this.c.controls.isPublished.setValue(career.isPublished)
       this.career.set( career )
       //this.loadLevels(career.id, this.c.controls.levels as UntypedFormArray).then( () =>{
@@ -151,8 +166,6 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     reason =>{
       alert("ERROR: reading career" + reason)
     })
-    this.snapshots.push(unsubscribe)  
-
   }
 
   getBasePath():string{
@@ -185,6 +198,8 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       })
     }      
   }
+
+
 
 
 /*

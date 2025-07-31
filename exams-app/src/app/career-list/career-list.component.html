@@ -7,15 +7,15 @@
     <mat-grid-tile>
     <mat-card>
       <mat-card-title-group>
-          <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.id)">{{ c.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
+          <mat-card-title class="enroll-card"><span (click)="onCareerDetails(c.career.id)">{{ c.career.career_name }}</span><button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="career commands">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu" >
-              <button mat-menu-item (click)="onEdit(c.id)">
+              <button mat-menu-item (click)="onEdit(c.career.id)">
                 <mat-icon>edit</mat-icon>
                 <span>editar</span>
               </button>              
-              <button mat-menu-item (click)="onDelete(c)">
+              <button mat-menu-item (click)="onDelete(c.career)">
                 <mat-icon>delete</mat-icon>
                 <span>Borrar</span>
               </button>      
@@ -24,9 +24,9 @@
         <img mat-card-sm-image *ngIf="iconUrl" src="https://storage.googleapis.com/certificates-thoth-qa/certificates_logos/{{organization_id}}/{{ c.iconUrl }}">      
 
       </mat-card-title-group>
-      <img mat-card-image  *ngIf="c.pictureUrl" (click)="onCareerDetails(c.id)" src="{{ c.pictureUrl }}"> 
+      <img mat-card-image  *ngIf="c.career.pictureUrl" (click)="onCareerDetails(c.career.id)" src="{{ c.career.pictureUrl }}"> 
       <mat-card-content>
-        {{ c.description }}  
+        <div class="description" [innerHTML]="c.descriptionHtml"></div> 
       </mat-card-content>
     </mat-card> 
     </mat-grid-tile>
