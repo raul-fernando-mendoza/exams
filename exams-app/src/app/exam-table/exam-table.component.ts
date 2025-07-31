@@ -29,6 +29,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserSelectorComponent } from '../user-selector/user-selector.component';
 import { MatSortModule } from '@angular/material/sort';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-exam-table',
@@ -52,6 +53,8 @@ import { MatSortModule } from '@angular/material/sort';
     ,MatMenuModule
     ,UserSelectorComponent
     ,MatSortModule
+    ,MatSlideToggleModule
+
   ],    
   templateUrl: './exam-table.component.html',
   styleUrls: ['./exam-table.component.css'],
@@ -66,7 +69,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   dataSource = signal<NodeTableDataSource>(null);
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release', 'unrelease','delete'];
+  displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release','delete'];
 
   released = false
   periodicRefresh = false
