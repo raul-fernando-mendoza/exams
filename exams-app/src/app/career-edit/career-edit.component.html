@@ -49,6 +49,7 @@ Carrera
                 }             
             </mat-card-content>
         </mat-card> 
+        @if( isAdmin || career().picture2Url || picture2Description()){
         <mat-card>
             <mat-card-title-group>
                <mat-card-title>Mapa Curricular</mat-card-title>
@@ -66,7 +67,8 @@ Carrera
                     <div class="description" [innerHTML]="picture2Description()"></div>
                 }                           
             </mat-card-content>
-        </mat-card>           
+        </mat-card> 
+        }          
         <mat-card *ngIf="isAdmin || (career().videoDescription || career()['videoUrl'])">
             <mat-card-title-group>
             <mat-card-title>Experiencias</mat-card-title>      
