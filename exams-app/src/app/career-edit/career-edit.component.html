@@ -1,14 +1,38 @@
 Carrera 
 @if(career()){
-    <div  [formGroup]="c" >
+    <!--
+    <div class="bar header">
+        <span>
+            @if( isAdmin ){
+                <mat-form-field class="name">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
+                </mat-form-field>    
+            }
+            @else{
+                <h1>{{ career().career_name }}</h1>
+            }            
+        </span>
+        <span class="spacer"></span>
+        <span><img mat-card-sm-image src="{{career().iconUrl}}"></span>
+    </div>
+    <div class="imagecenter">
+    <img src="{{career().pictureUrl}}" alt="Paris" style="width:90%">
+    </div>    
+-->
+    <div [formGroup]="c" >
         <mat-card >
             <mat-card-title-group>
-                <mat-card-title *ngIf="!isAdmin">{{ career().career_name }}</mat-card-title>
-                    <mat-card-title *ngIf="isAdmin">
+                <mat-card-title>
+                @if( isAdmin ){
                     <mat-form-field class="name">
                         <mat-label>Nombre</mat-label>
                         <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
-                    </mat-form-field>      
+                    </mat-form-field>    
+                }
+                @else{
+                    {{ career().career_name }}
+                }
                 </mat-card-title>
                 <img mat-card-sm-image src="{{career().iconUrl}}">
             </mat-card-title-group>
@@ -16,7 +40,7 @@ Carrera
                 
         
                 @if( isAdmin ){ 
-                    <app-file-loader *ngIf="isAdmin" label="Icono" property="icon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+                    <app-file-loader *ngIf="isAdmin" label="Icono" property="icon" [filename]="career().iconPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
                     <mat-form-field appearance="outline">
                         <mat-label>descripcion</mat-label>
                         <input matInput placeholder="descripción corta" formControlName="description" (change)="onPropertyChange($event)">
@@ -38,7 +62,7 @@ Carrera
             <img mat-card-image src="{{career().pictureUrl}}">
             <mat-card-content>
                 @if( isAdmin ){                   
-                    <app-file-loader label="Imagen" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
+                    <app-file-loader label="Imagen" property="picture" [filename]="career().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
                     <mat-form-field appearance="outline">
                     <mat-label>description de la imagen</mat-label>
                     <textarea  matInput maxlength="2000" rows="3" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
@@ -49,7 +73,7 @@ Carrera
                 }             
             </mat-card-content>
         </mat-card> 
-        @if( isAdmin || career().picture2Url || picture2Description()){
+        @if( isAdmin || career().picture2Url || picture2Description() ){
         <mat-card>
             <mat-card-title-group>
                <mat-card-title>Mapa Curricular</mat-card-title>
@@ -57,7 +81,7 @@ Carrera
             <img mat-card-image src="{{career().picture2Url}}">
             <mat-card-content>
                 @if( isAdmin ){ 
-                    <app-file-loader label="Imagen" property="picture2" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
+                    <app-file-loader label="Imagen" property="picture2" [filename]="career().picture2Path" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
                     <mat-form-field appearance="outline">    
                     <mat-label>description mapa curricular</mat-label>
                     <textarea  matInput maxlength="2000" rows="3" formControlName="picture2Description" (change)="onPropertyChange($event)"></textarea>
@@ -68,18 +92,20 @@ Carrera
                 }                           
             </mat-card-content>
         </mat-card> 
-        }          
-        <mat-card *ngIf="isAdmin || (career().videoDescription || career()['videoUrl'])">
+        }      
+        @if( isAdmin || career().videoDescription || career().videoUrl ){    
+        <mat-card>
             <mat-card-title-group>
             <mat-card-title>Experiencias</mat-card-title>      
             </mat-card-title-group>
             <mat-card-content >
-                <video *ngIf="career() && career().videoUrl">
+                @if(career().videoUrl){
+                <video controls>
                     <source src="{{ career().videoUrl }}" type='video/mp4' />
                 </video>               
-                @if( isAdmin ){      
-                    <app-file-loader *ngIf="isAdmin && career()" label="Video" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                    
-                    <span *ngIf="!isAdmin">{{career().videoDescription}}</span>
+                }
+                @if( isAdmin ){ 
+                    <app-file-loader label="Video" property="video" [filename]="career().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
                     <mat-form-field appearance="outline">
                         <mat-label>description del video</mat-label>
                         <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
@@ -90,6 +116,7 @@ Carrera
                 }        
             </mat-card-content> 
         </mat-card>
+        }
     </div>
         <!--
         <app-career()-user *ngIf="!isAdmin && hasEnrollments" [useruid]="userUid" [career()]="career()"></app-career()-user> 

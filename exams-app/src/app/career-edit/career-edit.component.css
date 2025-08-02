@@ -1,7 +1,3 @@
-div{
-    margin-left:4em;
-}
-
 mat-card .group{
     margin:5px;
     border-color:green;
@@ -47,3 +43,13 @@ app-level-list{
     margin:1em;
     width:80%;
 }
+
+div .imagecenter{
+  display: flex;
+  justify-content: center;
+}
+
+div .imagecenter img{
+  width: 90%;
+}
+

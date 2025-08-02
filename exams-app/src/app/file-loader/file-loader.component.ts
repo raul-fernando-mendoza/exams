@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -71,7 +71,8 @@ export class FileLoaderComponent implements AfterViewInit{
   @Output() onload = new EventEmitter<FileLoadedEvent>();
   @Output() ondelete = new EventEmitter<FileLoadedEvent>();
 
-  fullpath:string = null
+  display_name = signal<string>(null)
+
 
   @ViewChild('status', {static: true}) statusElement: ElementRef;
   @ViewChild('fileName', {static: true}) inputFileElement: ElementRef;
@@ -81,7 +82,10 @@ export class FileLoaderComponent implements AfterViewInit{
   }
   ngAfterViewInit(): void {
     if( this.filename ){
-      this.label = this.filename.split("/").reverse()[0] 
+      this.display_name.set( this.filename.split("/").reverse()[0] )
+    }
+    else{
+      this.display_name.set( this.label )
     } 
   }
 
@@ -97,40 +101,32 @@ export class FileLoaderComponent implements AfterViewInit{
       return
     }
 
-    this.fullpath = this.basepath + "/"+ file.name.replace(" ","_")
+    var fullpath = this.basepath + "/"+ file.name.replace(" ","_")
 
-    this.label = this.fullpath.split("/").reverse()[0] 
+    this.label = fullpath.split("/").reverse()[0] 
 
-    var storageRef = storage.ref( this.fullpath )
+    var storageRef = storage.ref( fullpath )
 
     var uploadTask = storageRef.put(file)
-    var fileLoadObserver = new FileLoadObserver(this.property, this.fullpath, this.statusElement.nativeElement,this.inputFileElement.nativeElement, this.onload);
+    var fileLoadObserver = new FileLoadObserver(this.property, fullpath, this.statusElement.nativeElement,this.inputFileElement.nativeElement, this.onload);
     uploadTask.on("state_change", fileLoadObserver)
   }   
 
   removePropertyValue(){
 
-    var storageRef = storage.ref( this.fullpath )
+    var storageRef = storage.ref( this.filename )
     
     storageRef.delete().then( () =>{
       var event:FileLoadedEvent={
         property:this.property,
         fileFullPath:storageRef.fullPath
       }      
-      this.ondelete.emit(event)
-      this.fullpath = null
+      this.display_name.set( null )     
       this.inputFileElement.nativeElement.innerText = this.label
+      this.ondelete.emit(event)
     })
     .catch( reason => {
-      console.log("file was not deleted")      
+      console.log("file was not deleted:" + reason)      
     })
   }
-
-  getFileName(){
-    if( this.fullpath ){
-      return this.fullpath.split("/").reverse()[0] 
-    }
-    else return this.label
-  }
-    
 }
