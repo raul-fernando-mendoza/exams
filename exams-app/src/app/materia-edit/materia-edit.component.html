@@ -45,7 +45,7 @@ Materia
 
   <mat-card-content>
     @if( isAdmin() ){
-    <app-file-loader label="Icono" property="materiaIcon" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
+    <app-file-loader label="Icono" property="materiaIcon" [filename]="materia().materiaIconPath"  [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                        
     
     <mat-form-field class="description" appearance="outline">
       <mat-label>description</mat-label>
@@ -103,10 +103,12 @@ Materia
       <mat-panel-title> Objectivos </mat-panel-title>
     </mat-expansion-panel-header>
         <mat-card>
+          @if( materia().pictureUrl ){
           <img mat-card-image  src="{{materia().pictureUrl}}"> 
+          }
           <mat-card-content>
             @if( isAdmin() ){
-            <app-file-loader label="Imagen Principal" property="picture" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
+            <app-file-loader label="Imagen Principal" property="picture" [filename]="materia().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                  
             <mat-form-field class="description" appearance="outline">
               <mat-label>description de la imagen</mat-label>
               <textarea matInput class="description" formControlName="pictureDescription" (change)="onBlur('pictureDescription', $event)"  placeholder="Descripción de la imagen"></textarea>
@@ -133,15 +135,15 @@ Materia
           </mat-card-header>
           <mat-card-content>
             @if( materia().videoUrl ){
-            <video class="video-js vjs-default-skin" controls preload="auto"
-            vjs-video vjs-setup="options">
-              <source src="{{ materia().videoUrl }}" type='video/mp4' />
-            </video>
+              <video class="video-js vjs-default-skin" controls preload="auto"
+              vjs-video vjs-setup="options">
+                <source src="{{ materia().videoUrl }}" type='video/mp4' />
+              </video>
             }
 
             @if(isAdmin()){
             
-            <app-file-loader label="Carga un video" property="video" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
+            <app-file-loader label="Carga un video" property="video" [filename]="materia().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                           
 
             <mat-form-field class="description del video" appearance="outline">
             <mat-label>description del video</mat-label>
