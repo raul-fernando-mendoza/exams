@@ -53,7 +53,7 @@ import { HtmlService } from '../html-service.service';
     ,MatCardModule
 
 
-    ,LevelListComponent
+    //,LevelListComponent
     ,MatSlideToggleModule
   ],   
   templateUrl: './career-edit.component.html',
