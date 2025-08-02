@@ -100,7 +100,8 @@ Carrera
             </mat-card-title-group>
             <mat-card-content >
                 @if(career().videoUrl){
-                <video controls>
+                <video class="video-js vjs-default-skin" controls preload="auto"
+              vjs-video vjs-setup="options">
                     <source src="{{ career().videoUrl }}" type='video/mp4' />
                 </video>               
                 }
