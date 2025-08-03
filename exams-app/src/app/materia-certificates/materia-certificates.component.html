@@ -48,9 +48,10 @@ Certificados
             {{row.user.id}}
           </div>
           <div *ngIf="row.nodeClass=='MateriaEnrollment'"> 
-
-            <button mat-icon-button (click)="download(row.materiaEnrollment.certificateUrl, row)"><mat-icon>download</mat-icon></button>
-            <button mat-icon-button (click)="onCopyUrlToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>link</mat-icon></button>
+            @if(row.materiaEnrollment.certificateUrl){
+              <button mat-icon-button (click)="download(row.materiaEnrollment.certificateUrl, row)"><mat-icon>download</mat-icon></button>
+              <button mat-icon-button (click)="onCopyUrlToClipboard(row.materiaEnrollment.certificateUrl)"><mat-icon>link</mat-icon></button>
+            }
           </div>    
           @if(row.nodeClass=='Exam'){
             @if(row.examGrade){
