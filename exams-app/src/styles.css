@@ -88,6 +88,7 @@ app-file-loader{
     width: 90%;
     object-fit: cover; /* Scales the image to fill the container while maintaining aspect ratio */
     align-self:center;
+    margin-bottom: 1em;
 }
 .htmltext{
   width:90%;
@@ -97,4 +98,5 @@ app-file-loader{
 .video-cover {
     max-width: 90%;
     align-self:center;
+    margin-bottom: 1em;
 }
