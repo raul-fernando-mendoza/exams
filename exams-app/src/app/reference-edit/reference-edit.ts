@@ -6,7 +6,7 @@ import { Reference } from "../exams/exams.module";
 import { UserLoginService } from "../user-login.service";
 import { UserPreferencesService } from "../user-preferences.service";
 import * as uuid from 'uuid';
-import { ExamenesImprovisacionService } from "../examenes-improvisacion.service";
+import { BusinessService } from "../business.service";
 import { FileLoadedEvent, FileLoaderComponent } from "../file-loader/file-loader.component";
 
 import { CommonModule } from '@angular/common';
@@ -58,7 +58,7 @@ import { MatDialogModule } from '@angular/material/dialog'
       private fb: FormBuilder,
       private userLoginService: UserLoginService,
       private userPreferencesService: UserPreferencesService,
-      private examenesImprovisacionService:ExamenesImprovisacionService
+      private businessService:BusinessService
     ) 
     {
         this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -92,13 +92,13 @@ import { MatDialogModule } from '@angular/material/dialog'
         this.mr.controls.filePath.setValue( null )        
     }
     fileLoaded(e){
-        this.examenesImprovisacionService.fileLoaded(this.collection, this.id, e).then( fileLoaded =>{
+        this.businessService.fileLoaded(this.collection, this.id, e).then( fileLoaded =>{
             this.mr.controls.filePath.setValue( fileLoaded.path )
             this.mr.controls.fileUrl.setValue( fileLoaded.url )
         })
     }  
     fileDeleted(e){
-        this.examenesImprovisacionService.fileDeleted(this.collection, this.id, e)
+        this.businessService.fileDeleted(this.collection, this.id, e)
     }    
     onSubmit(){
         var materiaReference:Reference = {

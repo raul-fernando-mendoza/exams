@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, OnDestroy, Input } from '@angular/core';
 import {  FormGroup, FormBuilder } from '@angular/forms';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
+import { BusinessService} from '../business.service';
 import { TextFieldModule} from '@angular/cdk/text-field';
 import { UserLoginService } from '../user-login.service';
 import { CriteriaRequest, Criteria, Aspect, AspectRequest} from 'src/app/exams/exams.module'
@@ -72,7 +72,7 @@ export class AspectListComponent implements OnInit , OnDestroy{
   unsubscribe: () => void;
 
   constructor(private fb:FormBuilder
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , public dialog: MatDialog
     , private userLoginService: UserLoginService) {
   }
@@ -140,7 +140,7 @@ export class AspectListComponent implements OnInit , OnDestroy{
     }
 
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
+      this.businessService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("aspect has been erased")
           this.submitting.set(false); 
@@ -180,7 +180,7 @@ onChangeAspect(c:FormGroup){
 
   this.userLoginService.getUserIdToken().then( token => {
     this.submitting.set(true)
-    this.examImprovisacionService.firestoreApiInterface("update",token, req).subscribe(
+    this.businessService.firestoreApiInterface("update",token, req).subscribe(
       data => {
         this.submitting.set(false)
         console.log("aspect update completed:" + c.controls.label.value + " " + c.controls.initiallySelected.value)
@@ -219,7 +219,7 @@ upAspect(c:FormGroup, idx:number) {
     }
     this.userLoginService.getUserIdToken().then( token => { 
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           this.submitting.set(false)
           console.log("completing up aspect")
@@ -259,7 +259,7 @@ upAspect(c:FormGroup, idx:number) {
     
     this.userLoginService.getUserIdToken().then( token => { 
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           this.submitting.set(false)
           console.log("aspecto down completed")
@@ -322,7 +322,7 @@ newAspect( label:string  ){
     }
     this.userLoginService.getUserIdToken().then( token => {
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("addSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("addSubCollection", token, req).subscribe(
         data => {
           this.submitting.set(false)
           console.log(" aspect add has completed")
@@ -360,7 +360,7 @@ newAspect( label:string  ){
     
     this.userLoginService.getUserIdToken().then( token => {
       this.submitting.set(true);
-      this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
         data => {
           console.log(" duplicate aspect has completed")
           this.submitting.set(false);         

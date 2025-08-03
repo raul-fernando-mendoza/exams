@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
@@ -44,7 +44,7 @@ export class WelcomeComponent implements OnInit {
   constructor(
       private router: Router
     , private userLoginService:UserLoginService
-    , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private businessService:BusinessService
     , private dateFormatService:DateFormatService
     , private sortingService:SortingService
     , private userPreferencesService:UserPreferencesService

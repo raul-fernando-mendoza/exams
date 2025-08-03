@@ -5,7 +5,7 @@ import { db } from 'src/environments/environment';
 import { Career, CareerAdvance, Group, GroupGrade, GROUP_GRADES_TYPES, Level, Materia, MateriaEnrollment, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { ExamenImprovisacionFormComponent } from '../examen-improvisacion-form/examen-improvisacion-form.component';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -66,7 +66,7 @@ export class CareerUserComponent implements OnInit {
     private route:ActivatedRoute,
     private userPreferences:UserPreferencesService,
     private userLogin:UserLoginService,
-    private examImprovisationService:ExamenesImprovisacionService,
+    private businessService:BusinessService,
     private router:Router
   ) { 
 
@@ -83,7 +83,7 @@ export class CareerUserComponent implements OnInit {
   }
 
   update(){
-    this.examImprovisationService.getUser(this.useruid).then( user =>{
+    this.businessService.getUser(this.useruid).then( user =>{
       this.user_displayName = user.displayName
       this.load()
     })    
@@ -254,7 +254,7 @@ export class CareerUserComponent implements OnInit {
     }
     this.submitting.set(true)
     var thiz = this
-    this.examImprovisationService.examServiceApiInterface("careerAdvanceStudentUpdate","", data).subscribe( {
+    this.businessService.examServiceApiInterface("careerAdvanceStudentUpdate","", data).subscribe( {
       next(response) { 
         alert(response["result"])
         thiz.submitting.set(false)

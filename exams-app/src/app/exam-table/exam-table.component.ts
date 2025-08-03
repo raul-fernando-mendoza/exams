@@ -3,7 +3,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { CriteriaGrade, ExamGrade, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 
@@ -91,7 +91,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private examImprovisacionService: BusinessService
     , private userPreferencesService:UserPreferencesService
     , public dateFormatService:DateFormatService
     , public fb:FormBuilder

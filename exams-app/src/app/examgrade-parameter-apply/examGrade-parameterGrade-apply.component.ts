@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 
 @Component({
   selector: 'app-examgrade-parameter-apply',
@@ -47,7 +47,7 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
     ,private userPreferencesService: UserPreferencesService
     ,private userLoginService:UserLoginService
     , private router:Router
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     
     ){ 
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -75,7 +75,7 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
         let transactions = []
 
         this.examGrade().studentUids.forEach( user_uid =>{
-          let t = this.examImprovisacionService.getUser(user_uid).then( user =>{
+          let t = this.businessService.getUser(user_uid).then( user =>{
             users.push( user )
           })
           transactions.push( t )
@@ -85,7 +85,7 @@ export class ExamgradeParameterGradeApplyComponent implements OnInit{
         })
 
         
-        this.examImprovisacionService.getMateria( this.examGrade().materia_id).then( materia =>{
+        this.businessService.getMateria( this.examGrade().materia_id).then( materia =>{
           this.materia.set(materia)
         },
         reason =>{

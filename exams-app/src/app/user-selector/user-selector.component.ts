@@ -2,7 +2,7 @@ import {Component, EventEmitter, forwardRef, HostBinding, Input, OnDestroy, OnIn
 import {AbstractControlDirective, FormControl, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {Observable, Subject} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
+import { BusinessService} from '../business.service'
 import { UserLoginService } from '../user-login.service';
 import { User } from '../exams/exams.module';
 import { MatFormFieldControl as MatFormFieldControl } from '@angular/material/form-field';
@@ -51,7 +51,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
   userUid = null
 
   constructor(
-     private examImprovisacionService:ExamenesImprovisacionService
+     private businessService:BusinessService
     ,private userLoginService:UserLoginService
     ,@Optional() @Self() public ngControl: NgControl
   ){
@@ -69,7 +69,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
   writeValue(useruid: any): void {
     console.log( "writevalue:" +useruid)
     if( useruid ){
-      this.examImprovisacionService.getUser( useruid ).then( user=>{
+      this.businessService.getUser( useruid ).then( user=>{
         let displayName = this.userLoginService.getDisplayNameForUser(user)
         let obj:User = {
           "uid":user.uid,
@@ -170,7 +170,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
   }
   ngOnInit() {
     this.userLoginService.getUserIdToken().then( token =>{
-      this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
+      this.businessService.authApiInterface("getUserList", token, {}).then(data => {
         let students = data["result"] as Array<any>;
         this.students = []
         for( let i =0; i<students.length; i++){

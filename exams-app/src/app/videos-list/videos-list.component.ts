@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit  } from '@angular/core';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { UserLoginService } from '../user-login.service';
 
 @Component({
@@ -12,7 +12,7 @@ export class VideosListComponent implements OnInit {
 
   constructor(
      private userLoginService: UserLoginService
-    ,private examImprovisacionService: ExamenesImprovisacionService) { }
+    ,private businessService: BusinessService) { }
 
   urls = ["one", "two"]
   
@@ -30,7 +30,7 @@ export class VideosListComponent implements OnInit {
     var req ={
       "path":"videos/"
     }
-    this.examImprovisacionService.gsApiInterface("list", token, req).subscribe(
+    this.businessService.gsApiInterface("list", token, req).subscribe(
       data => {
         var urls = data["result"] 
         console.log("delete compled successfully")

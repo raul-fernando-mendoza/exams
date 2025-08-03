@@ -5,7 +5,7 @@ import { Revision, RevisionStatus, RevisionStatusNames, User } from '../exams/ex
 import { RevisionCreateDialog } from '../revision-create-dialog/revision-create-component';
 import * as uuid from 'uuid';
 import { db , storage  } from 'src/environments/environment';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { MatTable } from '@angular/material/table';
 import { DateFormatService } from '../date-format.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -49,7 +49,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
     ,private dateFormatService:DateFormatService
     , public dialog: MatDialog
     , private fb:FormBuilder
-    ,private examImprovisacionService: ExamenesImprovisacionService
+    ,private businessService: BusinessService
     ) { 
       this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
       if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){
@@ -101,7 +101,7 @@ export class RevisionListComponent implements OnInit, OnDestroy {
           revision:revision,
           student:null
         } 
-        var userTransaction = this.examImprovisacionService.getUser( revision.student_uid).then(user =>{
+        var userTransaction = this.businessService.getUser( revision.student_uid).then(user =>{
           item.student = user          
         })
         this.dataSource.push( item )

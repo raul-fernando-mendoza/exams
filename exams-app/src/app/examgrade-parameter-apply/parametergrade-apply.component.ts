@@ -7,7 +7,7 @@ import { CriteriaGrade, ParameterGrade } from '../exams/exams.module';
 import { CriteriaGradeApplyChange, CriteriaGradeApplyComponent } from './criteriagrade-apply.component';
 import { MatDialog, MatDialogModule  } from '@angular/material/dialog';
 import { ParameterGradeCommentDialog } from './parameterGrade-comment-dlg';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -63,7 +63,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     ,private userPreferencesService: UserPreferencesService
     ,private userLoginService:UserLoginService
     ,public dialog: MatDialog
-    ,private examImprovisacionService: ExamenesImprovisacionService
+    ,private businessService: BusinessService
     ,private router:Router    
     ){ 
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
@@ -80,7 +80,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     db.collection(this.collection).doc(this.parameterGrade_id).get().then( doc =>{
       this.parameterGrade.set(doc.data() as ParameterGrade)
 
-      this.examImprovisacionService.getUser(this.parameterGrade().evaluator_uid).then( evaluator =>{
+      this.businessService.getUser(this.parameterGrade().evaluator_uid).then( evaluator =>{
         this.evaluatorDisplayName.set(this.userLoginService.getDisplayNameForUser(evaluator)) 
         
       })     
@@ -242,7 +242,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
         exceptions:[]
       }
       this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisacionService.firestoreApiInterface("createDocumentNewVersion", token, req, options).subscribe(
+        this.businessService.firestoreApiInterface("createDocumentNewVersion", token, req, options).subscribe(
           {
             next(data){ 
               var parameterGrade:ParameterGrade = data["result"] as ParameterGrade

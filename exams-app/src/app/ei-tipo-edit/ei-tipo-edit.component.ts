@@ -1,7 +1,7 @@
 import { Component, NgZone, ViewChild, OnInit, signal, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
+import { BusinessService} from '../business.service';
 import { CdkTextareaAutosize, TextFieldModule} from '@angular/cdk/text-field';
 import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -93,7 +93,7 @@ export class EiTipoEditComponent implements OnInit , OnDestroy{
   constructor(private fb: UntypedFormBuilder
     , private route: ActivatedRoute
     , private router: Router
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , private formBuilder: UntypedFormBuilder
     , private _ngZone: NgZone
     , public dialog: MatDialog

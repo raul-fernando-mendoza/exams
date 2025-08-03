@@ -13,7 +13,7 @@ import { DialogListSelectDialog } from '../list-select/list-select-dialog';
 import { Observer } from 'rxjs';
 import videojs from 'video.js';
 import { FileLoadObserver, VideoLoadObserver  } from '../load-observers/load-observers.module';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { FileLoadedEvent, FileLoaderComponent } from '../file-loader/file-loader.component';
 
 import { CommonModule } from '@angular/common';
@@ -121,7 +121,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     , private userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
     , public router:Router
-    , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private businessService:BusinessService
     , private htmlService:HtmlService
     ) { 
       this.id = this.route.snapshot.paramMap.get('id')
@@ -134,7 +134,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         this.userUid = this.userLoginService.getUserUid()
         this.isLoggedIn = true
 
-        this.examenesImprovisacionService.hasEnrollments(this.organization_id, this.userUid).then( hasEnrollments =>{
+        this.businessService.hasEnrollments(this.organization_id, this.userUid).then( hasEnrollments =>{
           this.hasEnrollments = true
         })
       }
@@ -181,11 +181,11 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
   fileLoaded(e:FileLoadedEvent){
 
-    this.examenesImprovisacionService.fileLoaded('careers', this.career().id, e)
+    this.businessService.fileLoaded('careers', this.career().id, e)
 
   }  
   fileDeleted(e:FileLoadedEvent){
-    this.examenesImprovisacionService.fileDeleted('careers', this.career().id, e)
+    this.businessService.fileDeleted('careers', this.career().id, e)
   }
 
   onPropertyChange(event){
@@ -209,7 +209,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     let request:Career = {
       isDeleted:true
     }
-    this.examenesImprovisacionService.updateDoc( this.collection, this.id, request).then( ()=>{
+    this.businessService.updateDoc( this.collection, this.id, request).then( ()=>{
       console.log("delete completed")
       this.router.navigate(['/career-list'])
     },

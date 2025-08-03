@@ -4,7 +4,7 @@ import { db   } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { DateFormatService } from '../date-format.service';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import * as uuid from 'uuid';
@@ -68,9 +68,9 @@ export class LaboratoryGradeListComponent implements OnInit{
      private router: Router
     ,private userLoginService:UserLoginService
     ,private userPreferencesService: UserPreferencesService
-    ,private examenesImprovisacionService:ExamenesImprovisacionService
+    ,private businessService:BusinessService
     ,private dateFormatService:DateFormatService
-    ,private examenesImprovisationService:ExamenesImprovisacionService
+    ,private examenesImprovisationService:BusinessService
   ) { 
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
   }
@@ -80,7 +80,7 @@ export class LaboratoryGradeListComponent implements OnInit{
   }
   getUser( userUid ):Promise<User>{
     return new Promise<User>((resolve, reject) =>{
-      return this.examenesImprovisacionService.getUser(userUid).then( user =>{
+      return this.businessService.getUser(userUid).then( user =>{
         resolve(user)
       },
       reason =>{

@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { Chart } from 'node_modules/chart.js'
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Materia, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
@@ -72,7 +72,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   constructor(
     private route: ActivatedRoute
-    ,private examenesImprovisacionService:ExamenesImprovisacionService
+    ,private businessService:BusinessService
     ,private navigationService:NavigationService
     ,private dateFormatService:DateFormatService
     ,private changeDetectorRef: ChangeDetectorRef
@@ -104,7 +104,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
       let students = new Array<User>()
       let transactions = []
       examGrade.studentUids.forEach( user_id =>{
-        let t = this.examenesImprovisacionService.getUser(user_id).then( user =>{
+        let t = this.businessService.getUser(user_id).then( user =>{
           students.push( user )
         })
         transactions.push(t)      

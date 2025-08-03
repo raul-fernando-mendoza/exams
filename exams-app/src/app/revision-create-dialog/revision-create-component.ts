@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import { FormBuilder } from '@angular/forms';
 import { UserLoginService } from '../user-login.service';
 import { db , storage} from 'src/environments/environment';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { Revision, RevisionStatus, VideoMarker } from '../exams/exams.module';
 import { DateFormatService } from '../date-format.service';
 
@@ -35,7 +35,7 @@ export class RevisionCreateDialog {
     ,private userPreferencesService: UserPreferencesService
     ,private userLoginService: UserLoginService
     ,private fb:FormBuilder
-    ,private examImprovisacionService: ExamenesImprovisacionService
+    ,private businessService: BusinessService
     ,private df:DateFormatService
     ,@Inject(MAT_DIALOG_DATA) public data:string) 
   {
@@ -83,14 +83,14 @@ export class RevisionCreateDialog {
         status:RevisionStatus.requested,
         isDeleted:false     
       }
-      this.examImprovisacionService.saveObject( "Revision", revision ).then(()=>{
+      this.businessService.saveObject( "Revision", revision ).then(()=>{
         var videoMarker:VideoMarker= {
           id:this.markerId,
           videoUrl:url,
           videoPath:videoPath,
           isDeleted:false           
         }
-        this.examImprovisacionService.saveObject( "Revision/" + revision.id + "/VideoMarker", videoMarker ).then( ()=>{
+        this.businessService.saveObject( "Revision/" + revision.id + "/VideoMarker", videoMarker ).then( ()=>{
           this.dialogRef.close(this.id)
         })
       })

@@ -10,7 +10,7 @@ import * as uuid from 'uuid';
 import { MatDialog } from '@angular/material/dialog';
 import { TitleStrategy } from '@angular/router';
 import { VideoMarker, Marker, MarkerPath, MarkerPoint } from '../exams/exams.module';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -142,7 +142,7 @@ export class VideoMarksComponent implements OnInit , AfterViewInit, OnDestroy{
     ,private userLoginService: UserLoginService
     , private http: HttpClient
     , public dialog: MatDialog
-    , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private businessService:BusinessService
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){

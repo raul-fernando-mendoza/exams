@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { AbstractControl, EmailValidator, FormGroup, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { CommonModule } from '@angular/common';
@@ -55,7 +55,7 @@ export class UsersListComponent implements OnInit {
   userList = signal(new Array<UserItem>())
   
 
-  constructor(private examImprovisacionService: ExamenesImprovisacionService
+  constructor(private businessService: BusinessService
     , private userLoginService: UserLoginService
     , private fb: UntypedFormBuilder
     , private router: Router
@@ -91,7 +91,7 @@ export class UsersListComponent implements OnInit {
     }
     let thiz = this
 
-    this.examImprovisacionService.authApi("getUserList", token, request).subscribe({
+    this.businessService.authApi("getUserList", token, request).subscribe({
       next(data){
         thiz.submitting.set(false)
         var users = data["result"]
@@ -152,7 +152,7 @@ export class UsersListComponent implements OnInit {
     let thiz = this
 
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.authApiInterface("addClaim", token, reques_addroles).then(
+      this.businessService.authApiInterface("addClaim", token, reques_addroles).then(
         data => {
           let claims = user.claims()
           claims.push( role_id )
@@ -174,7 +174,7 @@ export class UsersListComponent implements OnInit {
         claim:role
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("removeClaim", token, request).then(
+      this.businessService.authApiInterface("removeClaim", token, request).then(
         data => {
         
           let claims = user.claims()
@@ -204,7 +204,7 @@ export class UsersListComponent implements OnInit {
         }
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("addClaim", token, req).then(
+      this.businessService.authApiInterface("addClaim", token, req).then(
         data => {
           console.log("displayName changed")
         },
@@ -226,7 +226,7 @@ export class UsersListComponent implements OnInit {
         email:userEmail
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.authApiInterface("removeUser", token, request).then(
+      this.businessService.authApiInterface("removeUser", token, request).then(
         data => {
           console.log("user removed")
           this.reloadUserList(token)

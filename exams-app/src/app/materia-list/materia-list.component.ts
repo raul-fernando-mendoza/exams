@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Exam, Materia, MateriaEnrollment } from '../exams/exams.module';
 import { db } from 'src/environments/environment';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { UserLoginService } from '../user-login.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -100,7 +100,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
       private router: Router
     , private userPreferenceService:UserPreferencesService
     , private userLoginService:UserLoginService
-    , private examImprovisationService:ExamenesImprovisacionService
+    , private businessService:BusinessService
     , private dialog: MatDialog
     , private fb: FormBuilder
   ) { 
@@ -216,7 +216,7 @@ export class MateriaListComponent implements OnInit , OnDestroy{
           }
           this.materiaListOriginal.push(materiaItem)
           //fill details
-          let e = this.examImprovisationService.getMateriaEnrollment( this.organization_id, materia.id, this.userUid).then( materiaEnrollement =>{
+          let e = this.businessService.getMateriaEnrollment( this.organization_id, materia.id, this.userUid).then( materiaEnrollement =>{
             materiaItem.materiaEnrollment = materiaEnrollement
           }
           ,reason=>{

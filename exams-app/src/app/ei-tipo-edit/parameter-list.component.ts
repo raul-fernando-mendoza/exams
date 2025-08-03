@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import {  FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
+import { BusinessService} from '../business.service';
 import { CdkTextareaAutosize, TextFieldModule} from '@angular/cdk/text-field';
 import { take} from 'rxjs/operators';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -78,7 +78,7 @@ export class ParameterListComponent implements OnInit , OnDestroy{
   constructor(private fb:FormBuilder
     , private route: ActivatedRoute
     , private router: Router
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , public dialog: MatDialog
     , private userLoginService: UserLoginService) {
   }
@@ -139,7 +139,7 @@ export class ParameterListComponent implements OnInit , OnDestroy{
     }
 
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
+      this.businessService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("parameter has been erased")
           this.submitting.set(false);
@@ -173,7 +173,7 @@ export class ParameterListComponent implements OnInit , OnDestroy{
     }
 
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("update", token, req).subscribe(
+      this.businessService.firestoreApiInterface("update", token, req).subscribe(
         data => {
           console.log(" parameter update has completed")
         },
@@ -205,7 +205,7 @@ upParameter(p:FormGroup, index:number){
     }
 
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           console.log("aspect upParameter has completed from:" + index + " to:" + (index-1))
         },
@@ -239,7 +239,7 @@ upParameter(p:FormGroup, index:number){
     }
 
     this.userLoginService.getUserIdToken().then( token => { 
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           console.log("downParameter has completed from index:" + index + " to:" + (index+1))
         },
@@ -295,7 +295,7 @@ upParameter(p:FormGroup, index:number){
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.firestoreApiInterface("addSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("addSubCollection", token, req).subscribe(
         data => {
           console.log(" parameter add has completed")              
         },
@@ -328,7 +328,7 @@ upParameter(p:FormGroup, index:number){
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
         data => {
           console.log(" parameter add has completed")
           this.submitting.set(false);      

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { Organization } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -52,7 +52,7 @@ export class UserProfileEditComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userLogin: UserLoginService,
-    private examImprovisation: ExamenesImprovisacionService,
+    private businessService: BusinessService,
     private router: Router,
     private userPreferencesService: UserPreferencesService
     , private userLoginService: UserLoginService    
@@ -78,7 +78,7 @@ export class UserProfileEditComponent implements OnInit {
         }
     }
     this.userLogin.getUserIdToken().then( token => {
-      this.examImprovisation.authApiInterface("addClaim", token, req).then(
+      this.businessService.authApiInterface("addClaim", token, req).then(
         data => {
           console.log("displayName changed")
           this.userLogin.setLocalClaim("displayName",newName)

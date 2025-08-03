@@ -4,7 +4,7 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
 import { MatDialog  } from '@angular/material/dialog';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { Router } from '@angular/router';
 import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
@@ -47,7 +47,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
     private userPreferenceService:UserPreferencesService
     , private userLoginService:UserLoginService
     , public dialog: MatDialog
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , private router: Router    
   ) {
     this.organization_id = this.userPreferenceService.getCurrentOrganizationId()
@@ -80,7 +80,7 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
           examGrade:null
         }
         exams.push(ei)
-        let t = this.examImprovisacionService.getLastExamGrade( this.organization_id, this.materia.id, this.materiaEnrollment.student_uid, exam.id ).then( examGrade =>{
+        let t = this.businessService.getLastExamGrade( this.organization_id, this.materia.id, this.materiaEnrollment.student_uid, exam.id ).then( examGrade =>{
           console.log("found examgrade:" + examGrade)
           ei.examGrade = examGrade
         },

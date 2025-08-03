@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from "@angular/core"
 import { FormGroup, Validators, FormBuilder } from "@angular/forms"
 import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatSelectChange as MatSelectChange, MatSelectModule } from "@angular/material/select"
-import { ExamenesImprovisacionService } from "../examenes-improvisacion.service"
+import { BusinessService } from "../business.service"
 import { CertificateType, COLORS, Exam, Laboratory, Materia, MateriaEnrollment, User } from "../exams/exams.module"
 import { UserLoginService } from "../user-login.service"
 import { db } from 'src/environments/environment';
@@ -141,7 +141,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       ,private fb: FormBuilder
       ,private route: ActivatedRoute
       ,private router: Router
-      ,private examImprovisacionService: ExamenesImprovisacionService
+      ,private businessService: BusinessService
       ,private userLoginService: UserLoginService
       ,private userPreferencesService: UserPreferencesService
       ,private navigationService: NavigationService
@@ -218,11 +218,11 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
       alert("ERROR:" + reason)
     }) 
 
-    this.examImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( isEnrolled =>{
+    this.businessService.hasMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( isEnrolled =>{
       this.isEnrolled = isEnrolled
 
       if( this.isEnrolled ){
-        this.examImprovisacionService.getMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( materiaEnrollment =>{
+        this.businessService.getMateriaEnrollment(this.organization_id, this.materia_id, this.userUid).then( materiaEnrollment =>{
           this.materiaEnrollment.set( materiaEnrollment )
         },
         reason=>{
@@ -311,11 +311,11 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   }  
   fileLoaded(e:FileLoadedEvent){
 
-    this.examImprovisacionService.fileLoaded('materias', this.materia().id, e)
+    this.businessService.fileLoaded('materias', this.materia().id, e)
 
   }  
   fileDeleted(e:FileLoadedEvent){
-    this.examImprovisacionService.fileDeleted('materias', this.materia().id, e)
+    this.businessService.fileDeleted('materias', this.materia().id, e)
   }
   onCopyUrlToClipboard(url){
     this.clipboard.copy(url);
@@ -328,7 +328,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
   }  
 
   getExamGrades(){
-    this.examImprovisacionService.getExamGrades(this.organization_id, this.materia_id, this.userUid ).then( examExamGrades =>{
+    this.businessService.getExamGrades(this.organization_id, this.materia_id, this.userUid ).then( examExamGrades =>{
       examExamGrades.forEach( e=>{
         if( e.examGrade && e.examGrade.isReleased ){
           this.hasExamGrades.set(true)
@@ -382,7 +382,7 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
         exceptions:["Reference","references","laboratory","Path","Url"]
       }
       this.userLoginService.getUserIdToken().then( token => {
-        this.examImprovisacionService.firestoreApiInterface("dupDocument", token, req, options).subscribe(
+        this.businessService.firestoreApiInterface("dupDocument", token, req, options).subscribe(
           data => { 
             var exam:Exam = data["result"]
             _resolve()

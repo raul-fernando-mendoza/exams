@@ -10,7 +10,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ExamenesImprovisacionDataSource, ExamenesImprovisacionItem } from './examenes-improvisacion-datasource';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
+import { BusinessService} from '../business.service'
 import { Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { copyObj, ExamGrade, ExamGradeMultipleRequest, Exam, Materia, ParameterGrade, ParameterGradeRequest, User } from '../exams/exams.module';
@@ -80,7 +80,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
   constructor( 
       private router: Router
     , private userLoginService: UserLoginService
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , private userPreferencesService: UserPreferencesService
     , private dateFormatService: DateFormatService
     , private changeDetectorRef: ChangeDetectorRef
@@ -285,7 +285,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       console.log("retrive detail:" + obj.examGrade.exam_id)
       obj.approverDisplayName = this.userLoginService.getDisplayName()
       let transactions = []
-      let e = this.examImprovisacionService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
+      let e = this.businessService.getExam( obj.examGrade.materia_id, obj.examGrade.exam_id).then( exam =>{
         obj.exam = exam
       }
       ,reason =>{
@@ -294,7 +294,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       transactions.push(e)
 
       console.log("retrive materia:" + obj.examGrade.materia_id)
-      let m = this.examImprovisacionService.getMateria( obj.examGrade.materia_id).then( materia =>{
+      let m = this.businessService.getMateria( obj.examGrade.materia_id).then( materia =>{
         obj.materia = materia
       },
       reason =>{
@@ -306,7 +306,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
 
       let studentNames = new Array<string>
       obj.examGrade.studentUids.forEach( e =>{
-        let t = this.examImprovisacionService.getUser( e ).then( e =>{
+        let t = this.businessService.getUser( e ).then( e =>{
           studentNames.push( e.displayName?e.displayName:e.email)
         })
         transactions.push(t)
@@ -378,7 +378,7 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       var userReq = {
         "uid":uid
       }      
-      this.examImprovisacionService.authApiInterface("getUser", null, userReq).then( response =>{
+      this.businessService.authApiInterface("getUser", null, userReq).then( response =>{
         const user = response["result"]
         resolve( user )
       },

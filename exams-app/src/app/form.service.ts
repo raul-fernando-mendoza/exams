@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UntypedFormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
-import { Aspect, AspectGrade, Criteria, CriteriaGrade, Exam, ExamGrade, Parameter, ParameterGrade } from './exams/exams.module';
-import { db, environment } from 'src/environments/environment';
+import { db } from 'src/environments/environment';
 import { MatSelectChange } from '@angular/material/select';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
@@ -10,7 +8,7 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 })
 export class ExamFormService {
 
-  constructor(private fb: UntypedFormBuilder) { }
+  constructor() { }
   
   
 

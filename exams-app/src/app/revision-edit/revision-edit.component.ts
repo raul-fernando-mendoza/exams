@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from "../user-login.service"
 import * as uuid from 'uuid';
 import { UserPreferencesService } from '../user-preferences.service';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { FileLoadedEvent } from '../file-loader/file-loader.component';
 import { Revision, RevisionStatus, VideoMarker } from '../exams/exams.module';
 import { db , storage} from 'src/environments/environment';
@@ -43,7 +43,7 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
     ,private fb:FormBuilder
     ,private userLoginService: UserLoginService
     ,private userPreferencesService: UserPreferencesService
-    ,private examImprovisacionService: ExamenesImprovisacionService
+    ,private businessService: BusinessService
 
   ) {
     this.organizationId = this.userPreferencesService.getCurrentOrganizationId()
@@ -115,7 +115,7 @@ export class RevisionEditComponent implements OnInit, OnDestroy{
   onSubmit(){
     console.log("form submit")
 
-    this.examImprovisacionService.updateRevision( { id:this.revision.id, status:RevisionStatus.completed } ).then(()=>{
+    this.businessService.updateRevision( { id:this.revision.id, status:RevisionStatus.completed } ).then(()=>{
       this.router.navigate(['revision-list',{  }])
     })
   }

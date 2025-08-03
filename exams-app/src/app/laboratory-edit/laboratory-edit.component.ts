@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, signal } from '@angular/co
 import { FormBuilder } from '@angular/forms';
 import { MatDialog  } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { NavigationService } from '../navigation.service';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -52,7 +52,7 @@ export class LaboratoryEditComponent implements OnInit , OnDestroy{
     ,private userLoginService: UserLoginService
     ,private userPreferencesService: UserPreferencesService
     ,public dialog: MatDialog    
-    ,private examImprovisacionService:ExamenesImprovisacionService
+    ,private examImprovisacionService:BusinessService
   ) {
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organization_id) ){

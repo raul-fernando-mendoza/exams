@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
+import { BusinessService} from '../business.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { Aspect, copyFromForm, Criteria, Exam, ExamGrade, Materia, Parameter, ParameterGrade, User, CriteriaGrade, AspectGrade } from '../exams/exams.module';
@@ -103,7 +103,7 @@ export class ExamenImprovisacionFormComponent {
 
   constructor(private fb: UntypedFormBuilder,private route: ActivatedRoute
     , private router: Router
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , private formBuilder: UntypedFormBuilder
     , private userLoginService:UserLoginService
     , private examFormService:ExamFormService
@@ -150,7 +150,7 @@ export class ExamenImprovisacionFormComponent {
 
   initialize(token){
 
-    this.examImprovisacionService.authApiInterface("getUserList", token, {}).then(data => {
+    this.businessService.authApiInterface("getUserList", token, {}).then(data => {
       let set = data["result"] as Array<any>;
       let studentsOnly:Array<User> = []
       
@@ -176,7 +176,7 @@ export class ExamenImprovisacionFormComponent {
       "claims":"role-evaluador-" + this.organization_id
     }      
 
-    this.examImprovisacionService.authApiInterface("getUserListForClaim", token, evaluator_req).then(data => {
+    this.businessService.authApiInterface("getUserListForClaim", token, evaluator_req).then(data => {
       let users:User[] = data["result"] as Array<any>;
       this.evaluators = []
       for( let i =0; i<users.length; i++){
@@ -237,7 +237,7 @@ export class ExamenImprovisacionFormComponent {
    
     let selectedStudentsArray:Array<User> = this.selectedStudents()
     let transactions = selectedStudentsArray.map( e =>{
-      return this.examImprovisacionService.getMateriasEnrolled( this.organization_id, e.uid ).then( materias =>{
+      return this.businessService.getMateriasEnrolled( this.organization_id, e.uid ).then( materias =>{
         all_arrays.push(materias)
       })
     })
@@ -266,7 +266,7 @@ export class ExamenImprovisacionFormComponent {
 
   loadExams(materiaId){
     this.exams.set([])
-    this.examImprovisacionService.getExams(materiaId).then( exams =>{
+    this.businessService.getExams(materiaId).then( exams =>{
         this.exams.set( exams )
       },
       reason =>{
@@ -285,7 +285,7 @@ export class ExamenImprovisacionFormComponent {
 
     var materiaId = this.examGradeFG.controls.materia_id.value
     var parameterGradesFA:FormArray= this.examGradeFG.controls.parameterGradesFA as FormArray
-    this.examImprovisacionService.getParameters(materiaId, examId).then( parameters =>{
+    this.businessService.getParameters(materiaId, examId).then( parameters =>{
       parameterGradesFA.clear()     
       parameters.forEach( parameter =>{
         let parameterFG = this.examGradeFG.controls.parameterGradesFA as FormArray
@@ -331,7 +331,7 @@ export class ExamenImprovisacionFormComponent {
     
     //now get the criterias and add them too
     var criteriaGradeFA = g.controls.criteriaGradeFA as FormArray
-    this.examImprovisacionService.getCriteria(materiaId, examId, p.id).then( criterias =>{
+    this.businessService.getCriteria(materiaId, examId, p.id).then( criterias =>{
       criterias.forEach( criteria =>{
         this.addCriteria( materiaId, examId, p.id, criteria, criteriaGradeFA )
       })
@@ -368,7 +368,7 @@ export class ExamenImprovisacionFormComponent {
 
     var aspectGradesFA = g.controls.aspectGradesFA as FormArray
 
-    this.examImprovisacionService.getAspect( materiaId,examId,parameterId, criteria.id).then( aspects =>{
+    this.businessService.getAspect( materiaId,examId,parameterId, criteria.id).then( aspects =>{
       aspects.forEach( a => {
         
         this.addAspect( a, aspectGradesFA)

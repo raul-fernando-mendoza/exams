@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, OnDestroy, Input } from '@angular/core';
 import {  FormGroup, FormBuilder } from '@angular/forms';
-import { ExamenesImprovisacionService} from '../examenes-improvisacion.service';
+import { BusinessService} from '../business.service';
 import { TextFieldModule} from '@angular/cdk/text-field';
 import { UserLoginService } from '../user-login.service';
 import { CriteriaRequest, Criteria} from 'src/app/exams/exams.module'
@@ -73,7 +73,7 @@ export class CriteriaListComponent implements OnInit , OnDestroy{
   unsubscribe: () => void;
 
   constructor(private fb:FormBuilder
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , public dialog: MatDialog
     , private userLoginService: UserLoginService) {
   }
@@ -137,7 +137,7 @@ export class CriteriaListComponent implements OnInit , OnDestroy{
     }
 
     this.userLoginService.getUserIdToken().then( token => {
-      this.examImprovisacionService.firestoreApiInterface("delete", token, req).subscribe(
+      this.businessService.firestoreApiInterface("delete", token, req).subscribe(
         data => {
           console.log("criteria has been erased")
           this.submitting.set(false); 
@@ -175,7 +175,7 @@ onChangeCriteria(c:FormGroup){
 
   this.userLoginService.getUserIdToken().then( token => {
     this.submitting.set(true)
-    this.examImprovisacionService.firestoreApiInterface("update",token, req).subscribe(
+    this.businessService.firestoreApiInterface("update",token, req).subscribe(
       data => {
         this.submitting.set(false)
         console.log("criteria update completed:" + c.controls.label.value + " " + c.controls.initiallySelected.value)
@@ -213,7 +213,7 @@ upCriteria(c:FormGroup, idx:number) {
     
     this.userLoginService.getUserIdToken().then( token => { 
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           this.submitting.set(false)
           console.log("completing up criteria")
@@ -253,7 +253,7 @@ upCriteria(c:FormGroup, idx:number) {
     
     this.userLoginService.getUserIdToken().then( token => { 
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
+      this.businessService.firestoreApiInterface("moveSubCollectionIndex", token, req).subscribe(
         data => {
           this.submitting.set(false)
         },
@@ -313,7 +313,7 @@ newCriteria( label:string  ){
     }
     this.userLoginService.getUserIdToken().then( token => {
       this.submitting.set(true)
-      this.examImprovisacionService.firestoreApiInterface("addSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("addSubCollection", token, req).subscribe(
         data => {
           this.submitting.set(false)
           console.log(" criteria add has completed")
@@ -348,7 +348,7 @@ newCriteria( label:string  ){
     
     this.userLoginService.getUserIdToken().then( token => {
       this.submitting.set(true);
-      this.examImprovisacionService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
+      this.businessService.firestoreApiInterface("dupSubCollection", token, req).subscribe(
         data => {
           console.log(" criteria duplicate has completed")
           this.submitting.set(false);         

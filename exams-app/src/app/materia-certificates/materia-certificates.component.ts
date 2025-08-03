@@ -9,7 +9,7 @@ import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
 import { UserLoginService } from '../user-login.service';
 import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam, Career } from '../exams/exams.module';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 
 import * as uuid from 'uuid';
 import { Router } from '@angular/router';
@@ -82,7 +82,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     , private sortingService:SortingService
     , private userLoginService:UserLoginService
     , public dialog: MatDialog
-    , private examImprovisacionService: ExamenesImprovisacionService
+    , private businessService: BusinessService
     , private userPreferencesServide: UserPreferencesService
     , private router: Router
     , private dateFormatService:DateFormatService
@@ -118,7 +118,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       }
 
       this.userLoginService.getUserIdToken().then( token =>{
-        this.examImprovisacionService.authApiInterface("getUserList", token, request).then(
+        this.businessService.authApiInterface("getUserList", token, request).then(
           data => {
             var users = data["result"]
             for( const user of users){
@@ -457,7 +457,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       console.log('The dialog was closed');
       if( result != undefined ){
         console.debug( result )
-        this.examImprovisacionService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), result.materia_id, result.student_uid).then( ()=>{
+        this.businessService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), result.materia_id, result.student_uid).then( ()=>{
           this.loadEnrollmentForRow(row).then(()=>{
             this.update()
           },
@@ -605,7 +605,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.certificateDeleteInterface("create", token, req).subscribe(data => {
+      this.businessService.certificateDeleteInterface("create", token, req).subscribe(data => {
         if( data["result"] ){
           console.log("certification deleted")
 
@@ -643,7 +643,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     
     this.userLoginService.getUserIdToken().then( token => {
 
-      this.examImprovisacionService.certificateCreateInterface("create", token, req).subscribe(data => {
+      this.businessService.certificateCreateInterface("create", token, req).subscribe(data => {
         if( data["result"] ){
           console.log("certification created")
 

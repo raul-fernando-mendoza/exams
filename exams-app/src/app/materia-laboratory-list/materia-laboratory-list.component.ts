@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import * as uuid from 'uuid';
 import { Router } from '@angular/router';
 import { DateFormatService } from '../date-format.service';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -51,7 +51,7 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
     , public dialog: MatDialog 
     , private router: Router 
     , private dateFormatService:DateFormatService  
-    , private examenesImprovisacionService:ExamenesImprovisacionService
+    , private businessService:BusinessService
   ) { 
     this.organization_id = this.userPreferenceService.getCurrentOrganizationId()
     this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
@@ -69,7 +69,7 @@ export class MateriaLaboratoryListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     
     if( this.materiaid != null){
-      this.examenesImprovisacionService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled => {
+      this.businessService.hasMateriaEnrollment(this.organization_id, this.materiaid, this.userUid).then( isEnrolled => {
         this.isEnrolled.set(isEnrolled)
         this.loadLaboratories(this.materiaid).then( (laboratoryList)=>{
           this.laboratoryList.set( laboratoryList )

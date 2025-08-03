@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder,Validators } from '@angular/forms';
 import { MatDialog  } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExamenesImprovisacionService } from '../examenes-improvisacion.service';
+import { BusinessService } from '../business.service';
 import { NavigationService } from '../navigation.service';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
@@ -77,7 +77,7 @@ export class LaboratoryGradeEditComponent implements OnInit {
     ,private userPreferencesService: UserPreferencesService
     ,public dialog: MatDialog
     ,private router:Router
-    ,private examenesImprovisacionService:ExamenesImprovisacionService
+    ,private businessService:BusinessService
   ) {
     this.organizationId = this.userPreferencesService.getCurrentOrganizationId()
     if( this.userLoginService.hasRole("role-admin-" + this.organizationId) ){
@@ -243,10 +243,10 @@ export class LaboratoryGradeEditComponent implements OnInit {
 
   }  
   fileDeleted(e:FileLoadedEvent){
-    this.examenesImprovisacionService.fileDeleted('laboratoryGrades/' + this.laboratoryGradeId + "/VideoMarker", "practiceData", e)
+    this.businessService.fileDeleted('laboratoryGrades/' + this.laboratoryGradeId + "/VideoMarker", "practiceData", e)
   }
 
   getVideoId(url){
-    return this.examenesImprovisacionService.getVideoId(url)
+    return this.businessService.getVideoId(url)
   }
 }

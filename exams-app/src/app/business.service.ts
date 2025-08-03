@@ -16,7 +16,7 @@ export interface FileLoaded{
 @Injectable({
   providedIn: 'root'
 })
-export class ExamenesImprovisacionService {
+export class BusinessService {
   
   
 
