@@ -47,66 +47,69 @@ Materia
         <div class="htmltext" [innerHTML]="descriptionHtml()"></div>
       } 
 
+    <mat-accordion multi="true">
     @if( isAdmin() || materia().pictureUrl || pictureDescriptionHtml() ){
-      <h2>Objetivos</h2>
-      <img class="image-cover" src="{{materia().pictureUrl}}">
-      @if( isAdmin() ){ 
-        <app-file-loader label="Imagen" property="picture" [filename]="materia().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
-        <mat-form-field class="text" appearance="outline">    
-          <mat-label>Description imagen</mat-label>
-          <textarea matInput
-              cdkTextareaAutosize
-              #pictureDescription="cdkTextareaAutosize"
-              cdkAutosizeMinRows="1"
-              cdkAutosizeMaxRows="30" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
-        </mat-form-field>
-      } 
-      @else{ 
-        <div class="htmltext" [innerHTML]="pictureDescriptionHtml()"></div>
-      } 
+      <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Objetivos </mat-panel-title>
+        </mat-expansion-panel-header>
+          <div class="container">
+            <img class="image-cover" src="{{materia().pictureUrl}}">
+            @if( isAdmin() ){ 
+              <app-file-loader label="Imagen" property="picture" [filename]="materia().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
+              <mat-form-field class="text" appearance="outline">    
+                <mat-label>Description imagen</mat-label>
+                <textarea matInput
+                  cdkTextareaAutosize
+                  #pictureDescription="cdkTextareaAutosize"
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="30" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
+              </mat-form-field>
+            } 
+            @else{ 
+              <div class="htmltext" [innerHTML]="pictureDescriptionHtml()"></div>
+            } 
+          </div>
+      </mat-expansion-panel> 
     }
 
-    <mat-accordion multi="true">
+   
 
     @if( isAdmin() || materia().videoDescription || materia().videoUrl ){
-  <mat-expansion-panel [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title> Experiencias </mat-panel-title>
-    </mat-expansion-panel-header>
-        <mat-card>
-          <mat-card-content>
-      @if(materia().videoUrl){
-          <video class="video-cover video-js vjs-default-skin" controls preload="auto"
-        vjs-video vjs-setup="options">
-              <source src="{{ materia().videoUrl }}" type='video/mp4' />
-          </video>
-      }
-      @if( isAdmin() ){ 
-
-          <app-file-loader label="Video" property="video" [filename]="materia().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
-          <mat-form-field class="text" appearance="outline">
-              <mat-label>description del video</mat-label>
-              <textarea   matInput
-      cdkTextareaAutosize
-      #videoDescription="cdkTextareaAutosize"
-      cdkAutosizeMinRows="1"
-      cdkAutosizeMaxRows="30" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
-          </mat-form-field> 
-      }
-      @else{
-          <div class="htmltext" [innerHTML]="videoDescriptionHtml()"></div>
-      }
-          </mat-card-content>
-        </mat-card>
-  </mat-expansion-panel>      
+      <mat-expansion-panel [expanded]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Experiencias </mat-panel-title>
+        </mat-expansion-panel-header>
+          <div class="container">
+            @if(materia().videoUrl){
+              <video class="video-cover video-js vjs-default-skin" controls preload="auto" vjs-video vjs-setup="options">
+                <source src="{{ materia().videoUrl }}" type='video/mp4' />
+              </video>
+            }
+            @if( isAdmin() ){ 
+              <app-file-loader label="Video" property="video" [filename]="materia().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+              <mat-form-field class="text" appearance="outline">
+                <mat-label>description del video</mat-label>
+                <textarea   matInput
+                  cdkTextareaAutosize
+                  #videoDescription="cdkTextareaAutosize"
+                  cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="30" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
+              </mat-form-field> 
+            }
+            @else{
+              <div class="htmltext" [innerHTML]="videoDescriptionHtml()"></div>
+            }
+          </div>
+      </mat-expansion-panel>      
          
-    } 
+  } 
 
   
   
 
   @if( isAdmin() || materiaEnrollment()){
-  <mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel [expanded]="false">
     <mat-expansion-panel-header>
       <mat-panel-title> Referencias </mat-panel-title>
     </mat-expansion-panel-header>
@@ -156,9 +159,10 @@ Materia
           <mat-card-content>
           </mat-card-content>
           <mat-card-actions>
-
-            <button mat-icon-button (click)="download(materiaEnrollment().certificateUrl)"><mat-icon>download</mat-icon></button>
-            <button mat-icon-button (click)="onCopyUrlToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>link</mat-icon></button>
+            @if(materiaEnrollment().certificateUrl){
+              <button mat-icon-button (click)="download(materiaEnrollment().certificateUrl)"><mat-icon>download</mat-icon></button>
+              <button mat-icon-button (click)="onCopyUrlToClipboard(materiaEnrollment().certificateUrl)"><mat-icon>link</mat-icon></button>
+            }
           </mat-card-actions>    
         </mat-card>  
   </mat-expansion-panel>
