@@ -81,8 +81,8 @@ export class LoginFormComponent implements OnInit,OnDestroy{
     this.router.navigate([this.intendedPath, intendedParameters]);    
   }
   onLoginWithEmail(){
-    this.recaptchaService.validateCaptcha("loginWithEmail").then( isHuman=>{
-      if(isHuman){
+    //this.recaptchaService.validateCaptcha("loginWithEmail").then( isHuman=>{
+      if(true){ //ishuman
         if( this.loginForm.valid ){
           var user = this.loginForm.controls.username.value
           var password = this.loginForm.controls.password.value
@@ -110,7 +110,7 @@ export class LoginFormComponent implements OnInit,OnDestroy{
       else{
         alert("usted es un robot")
       }
-    })
+    //})
   }
 
   register(){

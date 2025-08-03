@@ -1,208 +1,111 @@
 Carrera 
 @if(career()){
-    <!--
-    <div class="bar header">
-        <span>
-            @if( isAdmin ){
-                <mat-form-field class="name">
-                    <mat-label>Nombre</mat-label>
-                    <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
-                </mat-form-field>    
-            }
-            @else{
-                <h1>{{ career().career_name }}</h1>
-            }            
-        </span>
-        <span class="spacer"></span>
-        <span><img mat-card-sm-image src="{{career().iconUrl}}"></span>
-    </div>
-    <div class="imagecenter">
-    <img src="{{career().pictureUrl}}" alt="Paris" style="width:90%">
-    </div>    
--->
-    <div [formGroup]="c" >
-        <mat-card >
-            <mat-card-title-group>
-                <mat-card-title>
+    <div class="container" [formGroup]="c" >
+        <div class="header">
                 @if( isAdmin ){
-                    <mat-form-field class="name">
+                    <mat-form-field>
                         <mat-label>Nombre</mat-label>
                         <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
-                    </mat-form-field>    
+                    </mat-form-field>  
+                  <button mat-icon-button [matMenuTriggerFor]="menu" >
+                      <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" >
+                    <button  mat-menu-item (click)="onRemove()" [disabled]="submitting()">
+                        <mat-icon>delete</mat-icon>
+                        <span>Borrar</span>
+                    </button>         
+                  </mat-menu>                        
                 }
                 @else{
-                    {{ career().career_name }}
-                }
-                </mat-card-title>
-                <img mat-card-sm-image src="{{career().iconUrl}}">
-            </mat-card-title-group>
-            <mat-card-content>
-                
-        
-                @if( isAdmin ){ 
-                    <app-file-loader *ngIf="isAdmin" label="Icono" property="icon" [filename]="career().iconPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
-                    <mat-form-field appearance="outline">
-                        <mat-label>descripcion</mat-label>
-                        <input matInput placeholder="descripción corta" formControlName="description" (change)="onPropertyChange($event)">
-                    </mat-form-field>         
-                    <div>
-                        <mat-slide-toggle *ngIf="isAdmin" name="isPublished" formControlName="isPublished" (change)="formService.onSlideToggleChange(collection, id, $event, c.controls.isPublished )">Publicar</mat-slide-toggle>                
-                    </div>  
-                }
-                @else{  
-                    <div class="description" [innerHTML]="description()"></div>              
-                }    
 
-            </mat-card-content>
-        </mat-card>  
-        <mat-card>
-            <mat-card-title-group>
-               <mat-card-title>Objetivos</mat-card-title>
-            </mat-card-title-group>
-            <img mat-card-image src="{{career().pictureUrl}}">
-            <mat-card-content>
-                @if( isAdmin ){                   
-                    <app-file-loader label="Imagen" property="picture" [filename]="career().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
-                    <mat-form-field appearance="outline">
-                    <mat-label>description de la imagen</mat-label>
-                    <textarea  matInput maxlength="2000" rows="3" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
-                    </mat-form-field> 
-                }
-                @else{
-                    <div class="description" [innerHTML]="pictureDescription()"></div>
-                }             
-            </mat-card-content>
-        </mat-card> 
+                   <h1>{{ career().career_name }}</h1>
+                  
+                }            
+            <span class="spacer"></span>
+            <img class="image-icon" src="{{career().iconUrl}}">
+        </div>
+        
+        @if( isAdmin ){
+
+            <app-file-loader label="Icono" property="icon" [filename]="career().iconPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
+            <mat-form-field class="text" appearance="outline">
+                <mat-label>description de la carrera</mat-label>
+                <textarea matInput
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="30" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+            </mat-form-field> 
+            <mat-slide-toggle class="property" formControlName="isPublished" (change)="formService.onSlideToggleChange(collection, career().id, 'isPublished', $event)">Publicar</mat-slide-toggle>                  
+        }
+        @else{
+            <div class="htmltext" [innerHTML]="description()"></div>
+        }
+        @if( isAdmin || career().pictureUrl || pictureDescription() ){
+        <h2>Objetivos</h2>
+
+        <img class="image-cover" src="{{career().pictureUrl}}">
+            @if( isAdmin ){   
+                <app-file-loader label="Imagen" property="picture" [filename]="career().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
+                <mat-form-field class="text" appearance="outline">
+                <mat-label>description de la imagen</mat-label>
+                <textarea  matInput
+            cdkTextareaAutosize
+            #pictureDescription="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="30" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field> 
+            }
+            @else{
+                <div class="htmltext" [innerHTML]="pictureDescription()"></div>
+            } 
+        } 
         @if( isAdmin || career().picture2Url || picture2Description() ){
-        <mat-card>
-            <mat-card-title-group>
-               <mat-card-title>Mapa Curricular</mat-card-title>
-            </mat-card-title-group>
-            <img mat-card-image src="{{career().picture2Url}}">
-            <mat-card-content>
-                @if( isAdmin ){ 
-                    <app-file-loader label="Imagen" property="picture2" [filename]="career().picture2Path" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
-                    <mat-form-field appearance="outline">    
+            <h2>Mapa Curricular</h2>
+            <img class="image-cover" src="{{career().picture2Url}}">
+            @if( isAdmin ){ 
+                <app-file-loader label="Imagen" property="picture2" [filename]="career().picture2Path" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
+                <mat-form-field class="text" appearance="outline">    
                     <mat-label>description mapa curricular</mat-label>
-                    <textarea  matInput maxlength="2000" rows="3" formControlName="picture2Description" (change)="onPropertyChange($event)"></textarea>
-                    </mat-form-field>
-                } 
-                @else{ 
-                    <div class="description" [innerHTML]="picture2Description()"></div>
-                }                           
-            </mat-card-content>
-        </mat-card> 
-        }      
-        @if( isAdmin || career().videoDescription || career().videoUrl ){    
-        <mat-card>
-            <mat-card-title-group>
-            <mat-card-title>Experiencias</mat-card-title>      
-            </mat-card-title-group>
-            <mat-card-content >
-                @if(career().videoUrl){
-                <video class="video-js vjs-default-skin" controls preload="auto"
+                    <textarea matInput
+            cdkTextareaAutosize
+            #pictureDescription="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="30" formControlName="picture2Description" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field>
+            } 
+            @else{ 
+                <div class="htmltext" [innerHTML]="picture2Description()"></div>
+            } 
+        }    
+     
+        @if( isAdmin || career().videoDescription || career().videoUrl ){
+            <h2>Experiencias</h2>  
+            @if(career().videoUrl){
+                <video class="video-cover video-js vjs-default-skin" controls preload="auto"
               vjs-video vjs-setup="options">
                     <source src="{{ career().videoUrl }}" type='video/mp4' />
-                </video>               
-                }
-                @if( isAdmin ){ 
-                    <app-file-loader label="Video" property="video" [filename]="career().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
-                    <mat-form-field appearance="outline">
-                        <mat-label>description del video</mat-label>
-                        <textarea  matInput maxlength="2000" rows="3" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
-                    </mat-form-field> 
-                }
-                @else{
-                    <div class="description" [innerHTML]="videoDescription()"></div>
-                }        
-            </mat-card-content> 
-        </mat-card>
-        }
+                </video>
+            }
+            @if( isAdmin ){ 
+
+                <app-file-loader label="Video" property="video" [filename]="career().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+                <mat-form-field class="text" appearance="outline">
+                    <mat-label>description del video</mat-label>
+                    <textarea   matInput
+            cdkTextareaAutosize
+            #pictureDescription="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="30" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
+                </mat-form-field> 
+            }
+            @else{
+                <div class="htmltext" [innerHTML]="videoDescription()"></div>
+            }
+        } 
+
     </div>
-        <!--
-        <app-career()-user *ngIf="!isAdmin && hasEnrollments" [useruid]="userUid" [career()]="career()"></app-career()-user> 
-        -->
-        
-        <!--
-        <div *ngIf="isAdmin || !hasEnrollments">
-            <h1>Programa<button *ngIf="isAdmin && submitting==false" mat-button color="primary" (click)="onEnrollmentsUpdate()">Actualizar avance a todos los enrollados</button></h1>
-            <div *ngIf="submitting==false;  else spinnerBlock"></div>
-            <h2 *ngIf="isAdmin">Ciclos <button  (click)="onCreateLevel(c.controls.id.value )"><mat-icon>add</mat-icon></button> </h2>
-            <mat-accordion class="example-headers-align" multi>
-                <mat-expansion-panel [formGroup]="l" *ngFor='let l of getFormArrayControls(c,"levels"); let k=index'>
-                    <mat-expansion-panel-header>
-                        {{ l.controls.level_name.value }}
-                    </mat-expansion-panel-header> 
-                    <mat-expansion-panel-content>
-                        <mat-card>
-                            <mat-form-field *ngIf="isAdmin" class="example-full-width">
-                                <mat-label>Nivel</mat-label>
-                                <input matInput placeholder="nombre del nivel" formControlName="level_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels', l.controls.id.value, $event)">
-                            </mat-form-field> 
-                            <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menuLevel" >
-                                <mat-icon>more_vert</mat-icon>
-                            </button>                                    
-                            <mat-menu #menuLevel="matMenu" >
-                                <button mat-menu-item color="primary" (click)="onRemoveLevel(c.controls.id.value, l.controls.id.value )" [disabled]="submitting">
-                                    <mat-icon>remove</mat-icon>
-                                    <span>Borrar</span>
-                                </button> 
-                            </mat-menu>                         
-                                
-
-                            <h2 *ngIf="isAdmin" >Groups <button  (click)="onCreateGroup(c.controls.id.value, l.controls.id.value)"><mat-icon>add</mat-icon></button></h2>
-                            <mat-card  class="group" [formGroup]="g" *ngFor="let g of getFormArrayControls(l,'groups')">
-                                <mat-form-field *ngIf="isAdmin" class="example-full-width">
-                                    <mat-label>Grupo</mat-label>
-                                    <input matInput placeholder="nombre del grupo" formControlName="group_name" (change)="formService.onPropertyChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value, $event)">
-                                </mat-form-field>  
-                                <mat-toolbar-row *ngIf="!isAdmin" >
-                                    <span>{{ g.controls.group_name.value }}</span>
-                                    <span class="example-spacer"></span>
-                                    <span>{{ getGroupGradeDescription( g.controls.group_grade_type_id.value ) }} </span>
-                                </mat-toolbar-row> 
-                                <mat-form-field *ngIf="isAdmin" appearance="fill" >
-                                    <mat-label>selecciona tipo de evaluacion</mat-label>
-                                    <mat-select formControlName="group_grade_type_id" (selectionChange)="formService.onSelectChange('careers/' + c.controls.id.value + '/levels/' + l.controls.id.value + '/groups', g.controls.id.value,$event)">
-                                    <mat-option *ngFor="let ggt of getGroupGradeTypes()" [value]="ggt.id">
-                                        {{ ggt.description }}
-                                    </mat-option>
-                                    </mat-select>
-                                </mat-form-field>            
-                        
-                                <button *ngIf="isAdmin"  mat-icon-button [matMenuTriggerFor]="menuGroup" >
-                                    <mat-icon>more_vert</mat-icon>
-                                </button>                                    
-                                <mat-menu #menuGroup="matMenu" >
-                                    <button mat-menu-item color="primary" (click)="onRemoveGroup(c.controls.id.value, l.controls.id.value, g.controls.id.value)" [disabled]="submitting">
-                                        <mat-icon>remove</mat-icon>
-                                        <span>Borrar</span>
-                                    </button> 
-                                </mat-menu>             
-                                <h3 *ngIf="isAdmin">Habilidades <button  (click)="onAddMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value)"><mat-icon>add</mat-icon></button></h3>
-                                <mat-card class="materia" *ngFor="let m of getFormArrayControls(g,'materias')">
-                                    {{m.controls.materia_name.value }}
-                                    <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" >
-                                        <mat-icon>more_vert</mat-icon>
-                                    </button>                                    
-                                    <mat-menu #menu="matMenu" >
-                                        <button mat-menu-item color="primary" (click)="onRemoveMateria(c.controls.id.value, l.controls.id.value, g.controls.id.value, m.controls.id.value)" [disabled]="submitting">
-                                            <mat-icon>remove</mat-icon>
-                                            <span>Borrar</span>
-                                        </button> 
-                                    </mat-menu>         
-                            
-                                </mat-card>                        
-                            </mat-card>
-                        </mat-card>
-                    </mat-expansion-panel-content>
-                </mat-expansion-panel>
-            </mat-accordion>    
-        </div> 
-               
-       <app-level-list [career]="career()"></app-level-list> 
-       -->            
-
 }
 @else{
     Processando.

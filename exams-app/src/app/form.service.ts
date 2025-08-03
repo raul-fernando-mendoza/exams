@@ -74,14 +74,10 @@ export class ExamFormService {
     }
   }    
 
-  onSlideToggleChange(collection_path:string, id:string, event:MatSlideToggleChange){
+  onSlideToggleChange(collection_path:string, id:string, propertyName:string, event:MatSlideToggleChange){
     console.log("onSelectChange")
-    var propertyName = event.source.name
     var value = event.checked      
-
-    
-    var values = {}
-
+   
     if( id ){ 
       var values = {}
       values[propertyName]=value                                  

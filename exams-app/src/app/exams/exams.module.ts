@@ -181,7 +181,7 @@ export interface Level{
 export interface Career{
   organization_id?:string
 
-  id:string
+  id?:string
   career_name?:string
   description?:string  
   iconUrl?:string

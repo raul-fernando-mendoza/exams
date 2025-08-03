@@ -4,7 +4,7 @@ import { ExamenesImprovisacionService} from '../examenes-improvisacion.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { Aspect, copyFromForm, Criteria, Exam, ExamGrade, Materia, Parameter, ParameterGrade, User, CriteriaGrade, AspectGrade } from '../exams/exams.module';
-import { ExamFormService } from '../exam-form.service';
+import { ExamFormService } from '../form.service';
 import { db } from 'src/environments/environment';
 import * as uuid from 'uuid';
 import { PromiseType } from 'protractor/built/plugins';

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { db, storage } from 'src/environments/environment';
-import { ExamFormService } from '../exam-form.service';
+import { ExamFormService } from '../form.service';
 import { CertificateType } from '../exams/exams.module';
 import { UserPreferencesService } from '../user-preferences.service';
 import { FileLoadObserver } from "../load-observers/load-observers.module"

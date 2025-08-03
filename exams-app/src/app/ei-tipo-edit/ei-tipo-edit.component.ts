@@ -29,7 +29,7 @@ import { db } from 'src/environments/environment';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { ParameterListComponent } from './parameter-list.component';
-import { ExamFormService } from '../exam-form.service';
+import { ExamFormService } from '../form.service';
 
 @Component({
   selector: 'app-ei-tipo-edit',

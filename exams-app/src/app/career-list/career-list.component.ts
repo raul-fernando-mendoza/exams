@@ -174,19 +174,6 @@ export class CareerListComponent implements OnInit, OnDestroy {
       )  
     })
   }
-  onEdit(career_id){
-    this.router.navigate(['/career-edit',{id:career_id}]);
-  }
-
-  onDelete(career:Career){
-    if( !confirm("Esta seguro de querer borrar la carrera:" +  career.career_name) ){
-      return
-    }      
-    db.collection("careers").doc(career.id).update({"isDeleted":true}).then(()=>{
-        console.log("careers deleted")
-      }
-    )    
-  }
 
   onCreateCareer(){
     const dialogRef = this.dialog.open(CareerDialog, {

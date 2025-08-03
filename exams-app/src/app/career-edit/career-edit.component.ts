@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { afterNextRender, Component, inject, Injector, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, AbstractControl, FormControl, FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db, storage } from 'src/environments/environment';
 import { Career, Group, GROUP_GRADES_TYPES, Level, Materia } from '../exams/exams.module';
-import { ExamFormService } from '../exam-form.service';
+import { ExamFormService } from '../form.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import * as uuid from 'uuid';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
@@ -32,6 +32,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { LevelListComponent } from './level-list.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HtmlService } from '../html-service.service';
+import { CdkTextareaAutosize, TextFieldModule} from '@angular/cdk/text-field';
 
 @Component({
   selector: 'app-career-edit',
@@ -55,6 +56,7 @@ import { HtmlService } from '../html-service.service';
 
     //,LevelListComponent
     ,MatSlideToggleModule
+    ,TextFieldModule
   ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']
@@ -81,7 +83,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   userUid = null
 
   hasEnrollments = false
-  submitting = false
+  submitting = signal(false)
 
 
   c = this.fb.group({
@@ -97,6 +99,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     videoDescription:[""],
     isPublished:[true],
     levels:new FormArray([])
+    
   })
 
   pictureUrlStatus = {
@@ -105,6 +108,10 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   videoUrlStatus = {
     status:""
   }  
+
+  private _injector = inject(Injector);
+
+
 
   constructor(
       private fb: FormBuilder
@@ -197,6 +204,18 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         alert("ERROR: writing property:" + reason)
       })
     }      
+  }
+  onRemove(){
+    let request:Career = {
+      isDeleted:true
+    }
+    this.examenesImprovisacionService.updateDoc( this.collection, this.id, request).then( ()=>{
+      console.log("delete completed")
+      this.router.navigate(['/career-list'])
+    },
+    error =>{
+    alert( "ERROR:" + error)
+    })
   }
 
 

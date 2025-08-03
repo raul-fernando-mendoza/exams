@@ -1,4 +1,4 @@
-
+/*
 mat-form-field{
     display:block;
     width:90%;
@@ -12,6 +12,10 @@ mat-card{
 .bar mat-form-field {
     width:90%;
 }
+    */
+mat-accordion{
+    width:100%;
+}    
 
 .shortlist{
     width:80%;

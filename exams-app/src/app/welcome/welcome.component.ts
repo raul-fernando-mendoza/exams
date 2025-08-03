@@ -10,7 +10,7 @@ import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { map, shareReplay } from 'rxjs/operators';
 import * as uuid from 'uuid';
-import { ExamFormService } from '../exam-form.service';
+import { ExamFormService } from '../form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observable } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';

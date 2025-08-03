@@ -51,3 +51,50 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .grecaptcha-badge { 
     visibility: hidden !important;
 }  
+
+.container{
+    display:flex;
+    flex-direction:column;
+    justify-content: flex-start; /*does not have meaning here because the page is smaller than content*/
+    align-items:flex-start;
+}
+.header{
+  display:flex;
+  align-items:top;
+  flex-wrap:none;
+  width:100%;
+}
+.header mat-form-field{
+    flex-grow: 5;
+    max-width: 60%;
+}
+.property{
+  margin-left: 10%;
+}
+.image-icon{
+    width: 5em;
+    object-fit: cover; /* Scales the image to fill the container while maintaining aspect ratio */
+    margin:5px;
+    align-self:center
+}
+app-file-loader{
+  align-self:flex-end;
+}
+.text{
+    width:90%;
+    align-self:center;
+}
+.image-cover {
+    width: 90%;
+    object-fit: cover; /* Scales the image to fill the container while maintaining aspect ratio */
+    align-self:center;
+}
+.htmltext{
+  width:90%;
+  align-self:center;
+  margin-bottom: 1em;
+}
+.video-cover {
+    max-width: 90%;
+    align-self:center;
+}

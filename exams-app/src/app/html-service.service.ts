@@ -12,8 +12,10 @@ export class HtmlService {
       var regex
       regex = /^\-(.*)$/igm;
       phrase = phrase.replace(regex, "<li>$1</li>")
-      regex = /\<\/li\>\n/igm;
-      phrase = phrase.replace(regex, "</li>")    
+      regex = /<\/li>\n<li>/ig;
+      phrase = phrase.replace(regex, "<\/li><li>" )     
+      regex = /(<li>(.*)<\/li>)$/igm;
+      phrase = phrase.replace(regex, "<ul><li>$2</li></ul>")      
       regex = /\*(.*)\*/igm;
       phrase = phrase.replace(regex, "<b>$1</b>")    
       regex = /\n/igm;

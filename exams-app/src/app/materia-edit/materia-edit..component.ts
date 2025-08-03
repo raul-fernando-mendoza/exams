@@ -36,6 +36,7 @@ import { MatMenuModule } from "@angular/material/menu"
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DownloadService } from "../download.service"
 import { HtmlService } from "../html-service.service"
+import { TextFieldModule } from "@angular/cdk/text-field"
 
 /* do not forget to add the dialog to the app.module.ts*/
 @Component({
@@ -64,6 +65,7 @@ import { HtmlService } from "../html-service.service"
       ,ReferenceComponent
       ,RouterModule
       ,MatMenuModule
+      ,TextFieldModule
     ],      
     templateUrl: 'materia-edit.component.html',
     styleUrls: ['materia-edit.component.css']

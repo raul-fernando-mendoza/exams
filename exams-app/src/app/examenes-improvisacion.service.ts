@@ -576,8 +576,8 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       alert("ERROR: adding " + collection + reason)
     })
   }
-  getObject(collection:string, id:string):Promise<any>{
     
+  getObject(collection:string, id:string):Promise<any>{
     return new Promise<Revision>((resolve,reject) =>{
       db.collection(collection ).doc(id).get().then( doc => {
         if( doc.exists ){
@@ -588,6 +588,26 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
           reject( "revision:" + id + "not exist")
         }
       })
+    })
+  }  
+  setDoc(collection:string, id:string, obj:any):Promise<void>{
+    return db.collection(collection ).doc(id).set(
+      obj
+    ).then( ()=>{
+      console.log(collection, " set ", obj.id)
+    },
+    reason =>{
+      alert("ERROR: adding " + collection + reason)
+    })
+  }   
+  updateDoc(collection:string, id:string, obj:any):Promise<void>{
+    return db.collection(collection ).doc(id).update(
+      obj
+    ).then( ()=>{
+      console.log(collection, " updated ", obj.id)
+    },
+    reason =>{
+      alert("ERROR: adding " + collection + reason)
     })
   }  
   getLastExamGrade( organization_id, materia_id, student_uid, exam_Id ):Promise<ExamGrade>{
