@@ -31,7 +31,7 @@ Materia
           <img class="image-icon" src="{{materia().materiaIconUrl}}">
       </div>
       @if( isAdmin() ){
-        <app-file-loader label="Icono" property="icon" [filename]="materia().iconPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
+        <app-file-loader label="Icono" property="materiaIcon" [filename]="materia().materiaIconPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
       }  
       @if( isAdmin() ){ 
         <mat-form-field class="text" appearance="outline">    
@@ -65,9 +65,16 @@ Materia
         <div class="htmltext" [innerHTML]="pictureDescriptionHtml()"></div>
       } 
     }
-    @if( isAdmin() || materia().videoDescription || materia().videoUrl ){
 
-      <h2>Experiencias</h2>  
+    <mat-accordion multi="true">
+
+    @if( isAdmin() || materia().videoDescription || materia().videoUrl ){
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Experiencias </mat-panel-title>
+    </mat-expansion-panel-header>
+        <mat-card>
+          <mat-card-content>
       @if(materia().videoUrl){
           <video class="video-cover video-js vjs-default-skin" controls preload="auto"
         vjs-video vjs-setup="options">
@@ -89,13 +96,16 @@ Materia
       @else{
           <div class="htmltext" [innerHTML]="videoDescriptionHtml()"></div>
       }
+          </mat-card-content>
+        </mat-card>
+  </mat-expansion-panel>      
          
     } 
 
-  </div> 
   
-<mat-accordion multi="true">
-@if( isAdmin() || materiaEnrollment()){
+  
+
+  @if( isAdmin() || materiaEnrollment()){
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title> Referencias </mat-panel-title>
@@ -106,8 +116,9 @@ Materia
           </mat-card-content>
         </mat-card>
   </mat-expansion-panel>
-} 
-@if( isAdmin() || 
+  }
+
+  @if( isAdmin() || 
     (
     materiaEnrollment() && !(hasExamGrades()==false && materiaEnrollment().certificateUrl)
     ) 
@@ -152,7 +163,13 @@ Materia
         </mat-card>  
   </mat-expansion-panel>
   }
-</mat-accordion>   
+  </mat-accordion>
+  </div> <!-- container -->   
+}
+@else{
+  Cargando información.
+  <mat-spinner></mat-spinner>
+} 
 <!--
 
 <form  [formGroup]="m" >
@@ -371,11 +388,7 @@ Materia
 </mat-accordion>
 </form> 
 -->
-}
-@else{
-  Cargando información.
-  <mat-spinner></mat-spinner>
-}
+
 
 
 
