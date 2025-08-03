@@ -44,7 +44,7 @@ Materia
         </mat-form-field>
       } 
       @else{ 
-        <div class="htmltext" [innerHTML]="pictureDescriptionHtml()"></div>
+        <div class="htmltext" [innerHTML]="descriptionHtml()"></div>
       } 
 
     @if( isAdmin() || materia().pictureUrl || pictureDescriptionHtml() ){
