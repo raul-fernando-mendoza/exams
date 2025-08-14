@@ -194,7 +194,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
         );
       },
       error => {
-          alert( "Error retriving estudiante" + error )
+          alert( "Error retriving estudiante user selector" + error )
       }) 
     },
     error=>{

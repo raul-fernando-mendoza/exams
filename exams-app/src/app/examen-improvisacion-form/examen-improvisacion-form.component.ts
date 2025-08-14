@@ -168,7 +168,7 @@ export class ExamenImprovisacionFormComponent {
       this.allUsers.set(studentsOnly)
     },
     error => {
-        alert( "Error retriving estudiante" + error )
+        alert( "Error retriving estudiante exam improvisation" + error )
     }) 
     
     
