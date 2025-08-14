@@ -10,7 +10,7 @@ import { ActivatedRoute, RouteConfigLoadEnd, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { map, shareReplay } from 'rxjs/operators';
 import * as uuid from 'uuid';
-import { ExamFormService } from '../form.service';
+import { FormService } from '../form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observable } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -48,7 +48,7 @@ export class WelcomeComponent implements OnInit {
     , private dateFormatService:DateFormatService
     , private sortingService:SortingService
     , private userPreferencesService:UserPreferencesService
-    , private examFormService:ExamFormService
+    , private examFormService:FormService
     , private breakpointObserver: BreakpointObserver) { 
         this.organization = userPreferencesService.getCurrentOrganization()
     }

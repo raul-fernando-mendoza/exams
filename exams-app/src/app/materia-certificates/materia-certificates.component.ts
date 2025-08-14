@@ -83,14 +83,13 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     , private userLoginService:UserLoginService
     , public dialog: MatDialog
     , private businessService: BusinessService
-    , private userPreferencesServide: UserPreferencesService
     , private router: Router
     , private dateFormatService:DateFormatService
     , private changeDetectorRef: ChangeDetectorRef
     ,private clipboard: Clipboard
     ,private downloads: DownloadService
   ){
-    this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
+    this.organization_id = userPreferencesService.getCurrentOrganizationId()
   }
   ngOnInit() {
   }

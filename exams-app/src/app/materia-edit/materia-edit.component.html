@@ -35,7 +35,17 @@ Materia
       }  
       @if( isAdmin() ){ 
 
+          
+
         <div class="property">
+          <mat-form-field class="color">
+              <mat-label><span [class]="materia().color1">&nbsp;&nbsp;&nbsp;</span>Color1</mat-label>
+              <mat-select formControlName="color1"  name="color1" (selectionChange)="onSelectChange($event, m)">
+                <mat-option *ngFor="let c of colors" [value]="c">
+                  <span [class]="c">&nbsp;{{c}}</span>
+                </mat-option>
+              </mat-select>
+          </mat-form-field>            
           <mat-form-field >
               <mat-label>Certificado Maestro</mat-label>
               <mat-select formControlName="certificateTypeId"  name="certificateTypeId" (selectionChange)="onSelectChange($event, m)">

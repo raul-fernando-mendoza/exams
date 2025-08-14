@@ -29,7 +29,7 @@ import { db } from 'src/environments/environment';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { ParameterListComponent } from './parameter-list.component';
-import { ExamFormService } from '../form.service';
+import { FormService } from '../form.service';
 
 @Component({
   selector: 'app-ei-tipo-edit',
@@ -98,7 +98,7 @@ export class EiTipoEditComponent implements OnInit , OnDestroy{
     , private _ngZone: NgZone
     , public dialog: MatDialog
     , private userLoginService: UserLoginService
-    , public fs:ExamFormService) {
+    , public fs:FormService) {
       this.materia_id = this.route.snapshot.paramMap.get('materia_id')
       this.exam_id = this.route.snapshot.paramMap.get('exam_id')
       this.collection = ["materias",this.materia_id, "exams"].join("/")

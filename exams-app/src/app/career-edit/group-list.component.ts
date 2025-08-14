@@ -16,7 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
-import { ExamFormService } from '../form.service';
+import { FormService } from '../form.service';
 import { MateriaGroupListComponent } from './materiagroup-list.component';
 
 interface GroupItem{
@@ -59,7 +59,7 @@ export class GroupListComponent implements OnInit,OnDestroy{
     , private userLoginService:UserLoginService
     , private userPreferencesService:UserPreferencesService
     , public dialog: MatDialog
-    , public formService:ExamFormService
+    , public formService:FormService
   ){
 
     this.organization_id = userPreferencesService.getCurrentOrganizationId()

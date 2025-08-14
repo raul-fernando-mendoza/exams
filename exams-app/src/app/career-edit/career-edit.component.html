@@ -7,20 +7,20 @@ Carrera
                         <mat-label>Nombre</mat-label>
                         <input matInput placeholder="" formControlName="career_name" (change)="onPropertyChange($event)">
                     </mat-form-field>  
-                  <button mat-icon-button [matMenuTriggerFor]="menu" >
-                      <mat-icon>more_vert</mat-icon>
-                  </button>
-                  <mat-menu #menu="matMenu" >
+                    <button mat-icon-button [matMenuTriggerFor]="menu" >
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu" >
                     <button  mat-menu-item (click)="onRemove()" [disabled]="submitting()">
                         <mat-icon>delete</mat-icon>
                         <span>Borrar</span>
                     </button>         
-                  </mat-menu>                        
+                    </mat-menu>                        
                 }
                 @else{
 
-                   <h1>{{ career().career_name }}</h1>
-                  
+                    <h1>{{ career().career_name }}</h1>
+                    
                 }            
             <span class="spacer"></span>
             <img class="image-icon" src="{{career().iconUrl}}">
@@ -35,77 +35,224 @@ Carrera
             cdkTextareaAutosize
             #autosize="cdkTextareaAutosize"
             cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="30" formControlName="description" (change)="onPropertyChange($event)"></textarea>
+            cdkAutosizeMaxRows="30" formControlName="description" (change)="formService.onPropertyChange(collection,id,$event)"></textarea>
             </mat-form-field> 
             <mat-slide-toggle class="property" formControlName="isPublished" (change)="formService.onSlideToggleChange(collection, career().id, 'isPublished', $event)">Publicar</mat-slide-toggle>                  
         }
         @else{
             <div class="htmltext" [innerHTML]="description()"></div>
         }
-        @if( isAdmin || career().pictureUrl || pictureDescription() ){
-        <h2>Objetivos</h2>
 
-        <img class="image-cover" src="{{career().pictureUrl}}">
-            @if( isAdmin ){   
-                <app-file-loader label="Imagen" property="picture" [filename]="career().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
-                <mat-form-field class="text" appearance="outline">
-                <mat-label>description de la imagen</mat-label>
-                <textarea  matInput
-            cdkTextareaAutosize
-            #pictureDescription="cdkTextareaAutosize"
-            cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="30" formControlName="pictureDescription" (change)="onPropertyChange($event)"></textarea>
-                </mat-form-field> 
+        <mat-accordion multi="true">
+            @if( isAdmin || career().pictureUrl || pictureDescription() ){
+                <mat-expansion-panel [expanded]="false">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title> Objetivos </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-expansion-panel-content class="container">            
+                        <img class="image-cover" src="{{career().pictureUrl}}">
+                        @if( isAdmin ){   
+                            <app-file-loader label="Imagen" property="picture" [filename]="career().picturePath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                
+                            <mat-form-field class="text" appearance="outline">
+                                <mat-label>description de la imagen</mat-label>
+                                <textarea  matInput
+                                    cdkTextareaAutosize
+                                    #pictureDescription="cdkTextareaAutosize"
+                                    cdkAutosizeMinRows="1"
+                                    cdkAutosizeMaxRows="30" 
+                                    formControlName="pictureDescription" 
+                                    (change)="onPropertyChange($event)">
+                                </textarea>
+                            </mat-form-field> 
+                        }
+                        @else{
+                            <div class="htmltext" [innerHTML]="pictureDescription()"></div>
+                        } 
+                    </mat-expansion-panel-content>
+                </mat-expansion-panel>    
+            } 
+
+            @if( isAdmin || career().picture2Url || picture2Description() ){
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>Mapa Curricular</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-expansion-panel-content class="container">
+                        <img class="image-cover" src="{{career().picture2Url}}">
+                        @if( isAdmin ){ 
+                            <app-file-loader label="Imagen" property="picture2" [filename]="career().picture2Path" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
+                            <mat-form-field class="text" appearance="outline">    
+                                <mat-label>description mapa curricular</mat-label>
+                                <textarea matInput
+                        cdkTextareaAutosize
+                        #pictureDescription="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="30" formControlName="picture2Description" (change)="formService.onPropertyChange(collection,id,$event)"></textarea>
+                            </mat-form-field>
+                        } 
+                        @else{ 
+                            <div class="htmltext" [innerHTML]="picture2Description()"></div>
+                        }
+                    </mat-expansion-panel-content> 
+                </mat-expansion-panel>
             }
-            @else{
-                <div class="htmltext" [innerHTML]="pictureDescription()"></div>
-            } 
-        } 
-        @if( isAdmin || career().picture2Url || picture2Description() ){
-            <h2>Mapa Curricular</h2>
-            <img class="image-cover" src="{{career().picture2Url}}">
-            @if( isAdmin ){ 
-                <app-file-loader label="Imagen" property="picture2" [filename]="career().picture2Path" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>                      
-                <mat-form-field class="text" appearance="outline">    
-                    <mat-label>description mapa curricular</mat-label>
-                    <textarea matInput
-            cdkTextareaAutosize
-            #pictureDescription="cdkTextareaAutosize"
-            cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="30" formControlName="picture2Description" (change)="onPropertyChange($event)"></textarea>
-                </mat-form-field>
-            } 
-            @else{ 
-                <div class="htmltext" [innerHTML]="picture2Description()"></div>
-            } 
-        }    
+                        
      
-        @if( isAdmin || career().videoDescription || career().videoUrl ){
-            <h2>Experiencias</h2>  
-            @if(career().videoUrl){
-                <video class="video-cover video-js vjs-default-skin" controls preload="auto"
-              vjs-video vjs-setup="options">
-                    <source src="{{ career().videoUrl }}" type='video/mp4' />
-                </video>
-            }
-            @if( isAdmin ){ 
+            @if( isAdmin || career().videoDescription || career().videoUrl ){
+                <mat-expansion-panel [expanded]="false">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>Experiencias</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-expansion-panel-content class="container">            
+                        @if(career().videoUrl){
+                            <video class="video-cover video-js vjs-default-skin" controls preload="auto"
+                        vjs-video vjs-setup="options">
+                                <source src="{{ career().videoUrl }}" type='video/mp4' />
+                            </video>
+                        }
+                        @if( isAdmin ){ 
 
-                <app-file-loader label="Video" property="video" [filename]="career().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
-                <mat-form-field class="text" appearance="outline">
-                    <mat-label>description del video</mat-label>
-                    <textarea   matInput
-            cdkTextareaAutosize
-            #pictureDescription="cdkTextareaAutosize"
-            cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="30" formControlName="videoDescription" (change)="onPropertyChange($event)"></textarea>
-                </mat-form-field> 
+                            <app-file-loader label="Video" property="video" [filename]="career().videoPath" [basepath]="getBasePath()" (onload)="fileLoaded($event)" (ondelete)="fileDeleted($event)"></app-file-loader>
+                            <mat-form-field class="text" appearance="outline">
+                                <mat-label>description del video</mat-label>
+                                <textarea   matInput
+                                    cdkTextareaAutosize
+                                    #pictureDescription="cdkTextareaAutosize"
+                                    cdkAutosizeMinRows="1"
+                                    cdkAutosizeMaxRows="30" 
+                                    formControlName="videoDescription" 
+                                    (change)="formService.onPropertyChange(collection,id,$event)">
+                                </textarea>
+                            </mat-form-field> 
+                        }
+                        @else{
+                            <div class="htmltext" [innerHTML]="videoDescription()"></div>
+                        }
+                    </mat-expansion-panel-content>
+                </mat-expansion-panel>
             }
-            @else{
-                <div class="htmltext" [innerHTML]="videoDescription()"></div>
-            }
-        } 
-
+        </mat-accordion>  
     </div>
+
+
+
+    
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                <mat-panel-title>Mapa Curricular</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-expansion-panel-content class="container">
+                    <span class="cycle-container">
+                        @for( c of cycles(); track c.id; let i=$index){ 
+                            <span class="cycle">
+                                @if( editComponentId() == c.id ){
+                                    <span [formGroup]="nameForm" >
+                                    <mat-form-field>
+                                        <mat-label>Ciclo</mat-label>
+                                        <input matInput placeholder="" formControlName="object_name" (change)="onNameChange(c,'cycleName')" (blur)="onNameChange(c, 'cycleName')">
+                                    </mat-form-field> 
+                                    </span>
+                                }
+                                @else{
+                                    <span>
+                                    <span (click)="onRenameStart(c,'cycleName')">{{c.cycleName}}</span>
+                                    <button *ngIf="isAdmin" matButton="tonal" (click)="removeCycle(c)"><mat-icon>delete</mat-icon></button>
+                                    </span>
+                                }
+                                <span class="objective-container">
+                                    @for( o of c.objectives; track o.id; let i=$index){                                                                    
+                                        <span class="objective">
+                                            @if( editComponentId() == o.id ){
+                                                <span [formGroup]="nameForm" >
+                                                <mat-form-field>
+                                                    <mat-label>Objectivo</mat-label>
+                                                    <input matInput placeholder="" formControlName="object_name" (change)="onNameChange(o, 'objectiveName')" (blur)="onNameChange(c, 'objectiveName')">
+                                                </mat-form-field> 
+                                                </span>
+                                            }
+                                            @else{
+                                                <span>
+                                                    <span (click)="onRenameStart(o,'objectiveName')">{{ o.objectiveName }}</span>
+                                                    <button *ngIf="isAdmin" mat-icon-button (click)="removeObjective(c,o)"><mat-icon>delete</mat-icon></button>
+                                                </span>
+                                            }
+                                            <span class="semester-container">
+                                                @for( s of o.semesters; track s.id; let i=$index){
+                                                    <span class="semester">
+                                                        @if( editComponentId() == s.id ){
+                                                            <span [formGroup]="nameForm" >
+                                                            <mat-form-field class="semester_input">
+                                                                <mat-label>Semestre</mat-label>
+                                                                <input   matInput maxlength="2" placeholder="" formControlName="object_name" (change)="onNameChange(s, 'semesterName')" (blur)="onNameChange(s, 'semesterName')">
+                                                            </mat-form-field> 
+                                                            </span>
+                                                        }
+                                                        @else{
+                                                            <span>
+                                                                <span class="semestre-label" (click)="onRenameStart(s,'semesterName')">{{s.semesterName}}</span>
+                                                                <button *ngIf="isAdmin" mat-icon-button (click)="removeSemester(o,s)"><mat-icon>delete</mat-icon></button>
+                                                            </span>
+                                                        }
+                                                        <span class="materia-container">
+                                                            
+                                                            @for( m of s.materias; track m.id; let i=$index){
+                                                                    @if(m.hasOwnProperty('materias')){
+                                                                        <span class="optional-container">
+                                                                            @for( mo of m.materias; track mo.id; let i=$index){
+                                                                                <span class="{{mo.color1}} materia">
+                                                                                    {{mo.materia_name}}
+                                                                                    <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m, mo)"><mat-icon>close</mat-icon></button>
+                                                                                </span>                                                                                
+                                                                            }
+                                                                            <button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional(m)"><mat-icon>add_diamond</mat-icon></button>
+                                                                            <button *ngIf="isAdmin" mat-icon-button (click)="removeMateriaToOptional(s,m)"><mat-icon>delete</mat-icon></button>
+                                                                        </span> 
+                                                                    }
+                                                                    @else{
+                                                                        <span class="{{m.color1}} materia">
+                                                                            {{m.materia_name}}
+                                                                            @if( this.materiasApproved().get(m.id) ){
+                                                                                <mat-icon>done</mat-icon>
+                                                                            }
+                                                                            <button *ngIf="isAdmin" mat-icon-button (click)="removeMateria(s, m)"><mat-icon>delete</mat-icon></button>
+                                                                        </span>
+                                                                    }
+                                                            
+                                                            }
+                                                            
+                                                            <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="opcional" >
+                                                                <mat-icon>more_vert</mat-icon>
+                                                            </button>
+                                                            <mat-menu #opcional="matMenu" >
+                                                            <button mat-menu-item (click)="addMateria(s)">
+                                                                <mat-icon>add</mat-icon>
+                                                                <span>Materia</span>
+                                                            </button>
+                                                            <button mat-menu-item (click)="addMateriaOptional(s)">
+                                                                <mat-icon>add_box</mat-icon>
+                                                                <span>Materia Opcional</span>
+                                                            </button>
+                                                            </mat-menu>
+                                                            
+                                                        </span>
+                                                    </span>
+                                                }
+                                                <button *ngIf="isAdmin" mat-icon-button (click)="addSemester(o)"><mat-icon>add</mat-icon></button>
+                                            </span>
+                                        </span>
+                                    }
+                                    <button *ngIf="isAdmin" mat-icon-button (click)="addObjective(c)"><mat-icon>add</mat-icon></button>                          
+                                </span>
+                            </span>
+                        }
+                        <button *ngIf="isAdmin" matButton="tonal"  (click)="addCycle()"><mat-icon>add</mat-icon></button>                          
+                    </span> 
+                    
+                </mat-expansion-panel-content>
+            </mat-expansion-panel>  
+        </mat-accordion>    
+   
 }
 @else{
     Processando.

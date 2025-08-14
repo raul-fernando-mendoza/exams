@@ -17,7 +17,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     font-size: x-small; 
     margin-right: 10px;
     color:white;
-    color:midnightblue
 }  
 .example{
   background: linear-gradient(to left bottom, white 70%, blue );

@@ -178,6 +178,30 @@ export interface Level{
   isDeleted?:boolean
 }
 
+export interface OptionalContainer{
+  id:string
+  materias:Array<Materia>
+}
+
+export interface Semester{
+  id:string
+  semesterName:string
+  materias:Array<Materia|OptionalContainer>
+}
+
+export interface Objective{
+  id:string
+  objectiveName:string
+  semesters:Array<Semester>
+
+}
+export interface Cycle{
+  id:string
+  cycleName:string
+  objectives:Array<Objective>
+}
+
+
 export interface Career{
   organization_id?:string
 
@@ -197,6 +221,8 @@ export interface Career{
   videoDescription?:string
   isPublished?:boolean
   isDeleted?:boolean
+
+  cycles?:Array<Cycle>
 }
 
 export interface MateriaEnrollment{

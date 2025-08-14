@@ -6,7 +6,7 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 @Injectable({
   providedIn: 'root'
 })
-export class ExamFormService {
+export class FormService {
 
   constructor() { }
   

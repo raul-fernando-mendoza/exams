@@ -1,3 +1,81 @@
-li{
-  color: blue; /* Sets the text color of all list items to blue */
+mat-accordion{
+    width:100%;
+}   
+
+.cycle-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    row-gap:1em;
+    /*border:2px solid black;*/
+}
+.cycle{
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left:1em;
+    background-color: lightgray;
+    border:1px solid black;
+}
+.objective-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;
+    /*border:2px solid blue;    */
+}
+.objective{
+    display:flex;
+    flex-direction: column;    
+    align-items: center;
+    background-color: white; /*this background is the only one required*/
+    border:1px solid black;
+} 
+.semester-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    /*border:2px solid yellow;    */
+}
+.semester{
+    display:flex;
+    flex-direction: column;  
+    align-items: center; 
+    background-color:lightgray; 
+    /*border:1px solid black;*/
+} 
+.materia-container{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;
+    /*border:2px solid red;    */
+}
+.materia{
+    padding: 1px;
+    margin:1px;
+} 
+.optional-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;  
+    background-color: lightyellow;  
+    /*border:2px solid indigo;  */
+
+}
+.semester_input{
+    width:8em;
+}
+.semestre-label{
+    min-width:2em;
+    margin-right:1em;
 }

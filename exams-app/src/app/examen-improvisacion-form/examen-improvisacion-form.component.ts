@@ -4,7 +4,7 @@ import { BusinessService} from '../business.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { Aspect, copyFromForm, Criteria, Exam, ExamGrade, Materia, Parameter, ParameterGrade, User, CriteriaGrade, AspectGrade } from '../exams/exams.module';
-import { ExamFormService } from '../form.service';
+import { FormService } from '../form.service';
 import { db } from 'src/environments/environment';
 import * as uuid from 'uuid';
 import { PromiseType } from 'protractor/built/plugins';
@@ -106,7 +106,7 @@ export class ExamenImprovisacionFormComponent {
     , private businessService: BusinessService
     , private formBuilder: UntypedFormBuilder
     , private userLoginService:UserLoginService
-    , private examFormService:ExamFormService
+    , private examFormService:FormService
     , private userPreferencesService:UserPreferencesService
     , private dateFormatService:DateFormatService 
     , private navigationService:NavigationService 

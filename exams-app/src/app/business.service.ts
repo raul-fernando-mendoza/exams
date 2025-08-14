@@ -531,6 +531,27 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
     })
   }
 
+  getMaterias(organization_id:string):Promise<Materia[]>{
+    return new Promise<Materia[]>( (resolve,reject) =>{
+      db.collection('materias')
+      .where("isDeleted", "==", false)
+      .where("organization_id","==", organization_id )
+      .get().then( set =>{
+        let materias= new Array<Materia>()
+        set.docs.forEach( e =>{
+           var materia = e.data() as Materia
+           materias.push(materia)
+        })
+       
+        resolve( materias )
+      },
+      reason =>{
+        console.log("ERROR getMaterias:" + reason)
+        reject(reason)
+      })
+    })
+  }  
+
   createRevision(revision:Revision):Promise<void>{    
     return db.collection("Revision" ).doc(revision.id).set(
       revision

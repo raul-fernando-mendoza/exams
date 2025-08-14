@@ -129,7 +129,7 @@ export class UsersListComponent implements OnInit {
         thiz.userList.set(newUserItems)
       },
       error(reason){
-        alert("error retriving the users:" + reason.error)
+        alert("error llamando a users list:" + reason.error)
       }
     });
   }
@@ -187,7 +187,7 @@ export class UsersListComponent implements OnInit {
         
         },
         error => {
-          alert("error retriving the users:" + error.error)
+          alert("error borrando el rol:" + error.error)
         }
       )
     },

@@ -8,7 +8,7 @@ import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db , storage  } from 'src/environments/environment';
 import { getLaboratoryStatusName, Laboratory, LaboratoryGrade, LaboratoryGradeStatus, LaboratoryGradeStudentData, Marker, VideoMarker } from '../exams/exams.module';
-import { ExamFormService } from '../form.service';
+import { FormService } from '../form.service';
 import { DateFormatService } from '../date-format.service';
 import { Observer } from 'rxjs';
 import { FileLoadObserver } from '../load-observers/load-observers.module';
