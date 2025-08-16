@@ -86,7 +86,7 @@ export class BusinessService {
     return this.http.post(url, request_data, {headers: myheaders})
   }
 
-  public authApiInterface(action, token, data): Promise<Object> {
+  public authApiInterface(action, token, data): Observable<Object> {
 
     var url = environment.authURL
 
@@ -100,7 +100,7 @@ export class BusinessService {
     var myheaders = new HttpHeaders({'Content-Type': 'application/json'});
 
 
-    return this.http.post(url, request_data, {headers: myheaders}).toPromise()
+    return this.http.post(url, request_data, {headers: myheaders})
   }
 
 

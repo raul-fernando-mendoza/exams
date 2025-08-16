@@ -378,13 +378,15 @@ export class ExamenesImprovisacionComponent implements  OnInit, OnDestroy {
       var userReq = {
         "uid":uid
       }      
-      this.businessService.authApiInterface("getUser", null, userReq).then( response =>{
-        const user = response["result"]
-        resolve( user )
-      },
-      reason =>{
-        console.log("Error retriving user:" + reason)
-        reject(null)
+      this.businessService.authApiInterface("getUser", null, userReq).subscribe({ 
+        next(response){
+          const user = response["result"]
+          resolve( user )
+        },
+        error(reason){
+          console.log("Error retriving user:" + reason.errorMessage)
+          reject(null)
+        }
       })
     
     })

@@ -149,50 +149,60 @@ export class ExamenImprovisacionFormComponent {
   }
 
   initialize(token){
+    let thiz = this
 
-    this.businessService.authApiInterface("getUserList", token, {}).then(data => {
-      let set = data["result"] as Array<any>;
-      let studentsOnly:Array<User> = []
-      
-      for( let i =0; i<set.length; i++){
-        let estudiante = set[i]
-        let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
-        let obj:User = {
-          "uid":estudiante.uid,
-          "email":estudiante.email,
-          "displayName":displayName,
-          "claims":estudiante.claims
+    this.businessService.authApiInterface("getUserList", token, {}).subscribe({
+      next(data){
+        let set = data["result"] as Array<any>;
+        let studentsOnly:Array<User> = []
+        
+        for( let i =0; i<set.length; i++){
+          let estudiante = set[i]
+          let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
+          let obj:User = {
+            "uid":estudiante.uid,
+            "email":estudiante.email,
+            "displayName":displayName,
+            "claims":estudiante.claims
+          }
+          studentsOnly.push(obj)
         }
-        studentsOnly.push(obj)
+        thiz.allUsers.set(studentsOnly)
+      },
+      error(reason){
+         alert( "Error retriving estudiante exam improvisation" + reason.errorMessage )
+      },
+      complete(){
+        console.log("never called")
       }
-      this.allUsers.set(studentsOnly)
-    },
-    error => {
-        alert( "Error retriving estudiante exam improvisation" + error )
-    }) 
+    })
     
     
     var evaluator_req = {
       "claims":"role-evaluador-" + this.organization_id
-    }      
+    }  
+    
+    
 
-    this.businessService.authApiInterface("getUserListForClaim", token, evaluator_req).then(data => {
-      let users:User[] = data["result"] as Array<any>;
-      this.evaluators = []
-      for( let i =0; i<users.length; i++){
-        var user = users[i]
-        let obj:User = {
-          "uid":user.uid,
-          "email":user.email,
-          "displayName":(user.displayName != null && user.displayName.trim() != "")? user.displayName : user.email,
-          "claims":user.claims
+    this.businessService.authApiInterface("getUserListForClaim", token, evaluator_req).subscribe({
+      next( data ){
+        let users:User[] = data["result"] as Array<any>;
+        this.evaluators = []
+        for( let i =0; i<users.length; i++){
+          var user = users[i]
+          let obj:User = {
+            "uid":user.uid,
+            "email":user.email,
+            "displayName":(user.displayName != null && user.displayName.trim() != "")? user.displayName : user.email,
+            "claims":user.claims
+          }
+          console.log("user:" + obj.uid + " " + obj.displayName)
+          thiz.evaluators.push(obj)            
         }
-        console.log("user:" + obj.uid + " " + obj.displayName)
-        this.evaluators.push(obj)            
+      },
+      error(reason){
+          alert( "Error retriving evaluador" + reason.errorMessage )
       }
-    },
-    error => {
-        alert( "Error retriving evaluador" + error )
     })     
   }  
   

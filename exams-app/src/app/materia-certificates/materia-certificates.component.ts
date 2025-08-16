@@ -116,41 +116,44 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       var request = {
       }
 
-      this.userLoginService.getUserIdToken().then( token =>{
-        this.businessService.authApiInterface("getUserList", token, request).then(
-          data => {
-            var users = data["result"]
-            for( const user of users){
-              var u:User =
-              {
-                uid:user.uid,
-                displayName:user.claims ? user.claims["displayName"] || user.displayName || user.email : "not found",
-                email:user.email,
-                claims:user.claims ? user.claims : {}
+      var thiz = this
 
-              }
-              var userNode:NodeTableRow = {
-                user:u,
-                opened:false,
-                children:[],
-                nodeClass:"User",
-                isLeaf:false,
-                parent:null
-              }
+      this.userLoginService.getUserIdToken().then( 
+        token =>{
+          this.businessService.authApiInterface("getUserList", token, request).subscribe({
+            next(data){
+              var users = data["result"]
+              for( const user of users){
+                var u:User =
+                {
+                  uid:user.uid,
+                  displayName:user.claims ? user.claims["displayName"] || user.displayName || user.email : "not found",
+                  email:user.email,
+                  claims:user.claims ? user.claims : {}
 
-              this.nodeList.push(userNode)
+                }
+                var userNode:NodeTableRow = {
+                  user:u,
+                  opened:false,
+                  children:[],
+                  nodeClass:"User",
+                  isLeaf:false,
+                  parent:null
+                }
+
+                thiz.nodeList.push(userNode)
+              }
+              thiz.nodeList.sort( (a,b) =>{ return a.user.displayName>b.user.displayName?1:-1})
+              resolve()
+            },
+            error(reason){
+              alert("error retriving the users:" + reason.errorMessage)
+              reject()
             }
-            this.nodeList.sort( (a,b) =>{ return a.user.displayName>b.user.displayName?1:-1})
-            resolve()
-          },
-          error => {
-            alert("error retriving the users:" + error.error)
-            reject()
-          }
-        );
-      },
-      reason =>{
-        console.error("token invalido")
+          })
+        },
+        reason =>{
+          console.error("token invalido")
       })
     })
     

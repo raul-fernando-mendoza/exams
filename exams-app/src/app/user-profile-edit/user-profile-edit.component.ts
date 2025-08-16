@@ -77,14 +77,16 @@ export class UserProfileEditComponent implements OnInit {
           displayName:newName
         }
     }
+    let thiz = this
     this.userLogin.getUserIdToken().then( token => {
-      this.businessService.authApiInterface("addClaim", token, req).then(
-        data => {
+      this.businessService.authApiInterface("addClaim", token, req).subscribe({
+        next(data){
           console.log("displayName changed")
-          this.userLogin.setLocalClaim("displayName",newName)
+          thiz.userLogin.setLocalClaim("displayName",newName)
         },
-        error => {
-          alert("error changing user name:" + error.error)
+        error(reason){
+          alert("error changing user name:" + reason.errorMessage)
+        }
       })
     },
     error => {

@@ -169,36 +169,40 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
     this.stateChanges.next( )
   }
   ngOnInit() {
-    this.userLoginService.getUserIdToken().then( token =>{
-      this.businessService.authApiInterface("getUserList", token, {}).then(data => {
-        let students = data["result"] as Array<any>;
-        this.students = []
-        for( let i =0; i<students.length; i++){
-          let estudiante = students[i]
-          let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
-          let obj:User = {
-            "uid":estudiante.uid,
-            "email":estudiante.email,
-            "displayName":displayName,
-            "claims":estudiante.claims
+    let thiz = this
+    this.userLoginService.getUserIdToken().then( 
+      token =>{
+        this.businessService.authApiInterface("getUserList", token, {}).subscribe({
+          next(data){
+            let students = data["result"] as Array<any>;
+            this.students = []
+            for( let i =0; i<students.length; i++){
+              let estudiante = students[i]
+              let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
+              let obj:User = {
+                "uid":estudiante.uid,
+                "email":estudiante.email,
+                "displayName":displayName,
+                "claims":estudiante.claims
+              }
+              thiz.students.push(obj)
+            }
+            thiz.students.sort( (a,b)=> a.displayName.toUpperCase() > b.displayName.toUpperCase() ?  1 : -1 )
+            thiz.filteredOptions = thiz.myControl.valueChanges.pipe(
+              startWith(''),
+              map(value => {
+                const name = typeof value === 'string' ? value : value?.displayName;
+                return name ? thiz._filter(name as string) : this.students.slice();
+              }),
+            )
+          },
+          error(reason){
+              alert( "Error retriving estudiante user selector" + reason.errorMessage )
           }
-          this.students.push(obj)
-        }
-        this.students.sort( (a,b)=> a.displayName.toUpperCase() > b.displayName.toUpperCase() ?  1 : -1 )
-        this.filteredOptions = this.myControl.valueChanges.pipe(
-          startWith(''),
-          map(value => {
-            const name = typeof value === 'string' ? value : value?.displayName;
-            return name ? this._filter(name as string) : this.students.slice();
-          }),
-        );
+        }) 
       },
-      error => {
-          alert( "Error retriving estudiante user selector" + error )
-      }) 
-    },
-    error=>{
-      console.log("error en el token")
+      error=>{
+        console.log("error en el token")
     })
 
 

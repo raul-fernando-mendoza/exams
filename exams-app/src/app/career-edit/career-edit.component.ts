@@ -174,7 +174,6 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       this.videoDescription.set( this.htmlService.replace_html( career.videoDescription ))
       this.c.controls.isPublished.setValue(career.isPublished)
 
-
       this.cycles.set(career.cycles)
 
       this.findMateriasApproved( career.cycles )
@@ -386,6 +385,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }
 
   findMateriasApproved( cycles:Cycle[]){
+    console.log("findMateriasApproved started")
     let materiasApproved:Map<string, boolean> = new Map()
     let transactions = []
 
@@ -411,7 +411,9 @@ export class CareerEditComponent implements OnInit, OnDestroy {
         })
       })
     })
+    console.log("waiting for enrollments to end")
     Promise.all( transactions ).then( ()=>{
+      console.log("all enrollments processed")
       this.materiasApproved.set(materiasApproved)
     })
 

@@ -152,16 +152,16 @@ export class UsersListComponent implements OnInit {
     let thiz = this
 
     this.userLoginService.getUserIdToken().then( token => { 
-      this.businessService.authApiInterface("addClaim", token, reques_addroles).then(
-        data => {
+      this.businessService.authApiInterface("addClaim", token, reques_addroles).subscribe({
+        next(data){
           let claims = user.claims()
           claims.push( role_id )
           user.claims.set(claims.slice())
         },
-        error => {
-          alert("error retriving the users:" + error.errorCode + " " + error.errorMessage)
+        error(reason){
+          alert("error retriving the users:" + reason.errorCode + " " + reason.errorMessage)
         }
-      ); 
+      }) 
     },
     error =>{
       alert("token error:" + error.errorCode + " " + error.errorMessage)
@@ -174,8 +174,8 @@ export class UsersListComponent implements OnInit {
         claim:role
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.businessService.authApiInterface("removeClaim", token, request).then(
-        data => {
+      this.businessService.authApiInterface("removeClaim", token, request).subscribe({
+        next(data){
         
           let claims = user.claims()
           for( let i =0 ; i< user.claims().length; i++){
@@ -186,10 +186,10 @@ export class UsersListComponent implements OnInit {
           user.claims.set(claims.slice())
         
         },
-        error => {
-          alert("error borrando el rol:" + error.error)
+        error(reason){
+          alert("error borrando el rol:" + reason.errorMessage)
         }
-      )
+      })
     },
     error => {
       alert("token error:" + error.errorCode + " " + error.errorMessage)
@@ -204,12 +204,13 @@ export class UsersListComponent implements OnInit {
         }
     }
     this.userLoginService.getUserIdToken().then( token => {
-      this.businessService.authApiInterface("addClaim", token, req).then(
-        data => {
+      this.businessService.authApiInterface("addClaim", token, req).subscribe({
+        next(data){
           console.log("displayName changed")
         },
-        error => {
-          alert("error changing user name:" + error.error)
+        error(reason){
+          alert("error changing user name:" + reason.errorMessage)
+        }
       })
     },
     error => {
@@ -225,16 +226,18 @@ export class UsersListComponent implements OnInit {
     var request = {
         email:userEmail
     }
+
+    var thiz = this
     this.userLoginService.getUserIdToken().then( token => {
-      this.businessService.authApiInterface("removeUser", token, request).then(
-        data => {
+      this.businessService.authApiInterface("removeUser", token, request).subscribe({
+        next(data){
           console.log("user removed")
-          this.reloadUserList(token)
+          thiz.reloadUserList(token)
         },
-        error => {
-          alert("error changing user name:" + error.error)
+        error(reason){
+          alert("error changing user name:" + reason.errorMessage)
         }
-      )  
+      })  
     },
     error => {
       alert("token error:" + error.errorCode + " " + error.errorMessage)
