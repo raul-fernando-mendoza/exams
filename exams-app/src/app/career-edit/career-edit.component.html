@@ -210,6 +210,10 @@ Carrera
                                                                             @else{
                                                                                 <span>
                                                                                     <span (click)="onOptionalClick(m,'label')">{{m.label}}</span>
+                                                                                    
+                                                                                    @if( this.isOptionalApproved(m) ){
+                                                                                        <mat-icon>done</mat-icon>
+                                                                                    }                                                                                    
                                                                                     <button *ngIf="isAdmin" mat-icon-button (click)="editOptionalMateria(m)"><mat-icon>edit</mat-icon></button>
                                                                                     <button *ngIf="isAdmin" mat-icon-button (click)="removeMateria(s, m)"><mat-icon>delete</mat-icon></button>
 

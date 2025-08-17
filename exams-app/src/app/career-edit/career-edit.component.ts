@@ -415,14 +415,25 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
       if( this.isAdmin && data != null ){
-          om.materias = [...data.materias]
+          om.materias = [...data["optionalContainer"].materias]
           this.updateCycles()
       }
       else{
         console.debug("dialog was canceled")
       }
     });
-
   }
+
+  isOptionalApproved( op:OptionalContainer ){
+    let approved = op.materias.find( e => this.materiasApproved().get(e.id))
+    if( approved ){
+      return true
+    }
+    else{
+      return false
+    }
+  }
+
+  
 }
 

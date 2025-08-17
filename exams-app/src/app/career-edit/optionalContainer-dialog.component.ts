@@ -53,7 +53,7 @@ export class OptionalContainerDialogComponent {
   ngOnInit(): void {
   }
 
-addMateriaToOptional(mo:OptionalContainer){
+addMateriaToOptional(){
     const dialogRef = this.dialog.open(MateriaSelectDialogComponent, {
       height: '400px',
       width: '250px',
@@ -63,7 +63,7 @@ addMateriaToOptional(mo:OptionalContainer){
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
       if( data != null ){
-        let idx = mo.materias.findIndex( e => e.id == data.id )
+        let idx = this.data["optionalContainer"].materias.findIndex( e => e.id == data.id )
         if( idx < 0){
           this.data["optionalContainer"].materias.push(data)
           this.materias.set( [...this.data["optionalContainer"].materias])

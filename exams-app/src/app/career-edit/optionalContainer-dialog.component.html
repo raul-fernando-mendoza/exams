@@ -8,7 +8,7 @@
         <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m)"><mat-icon>close</mat-icon></button>
     </span>                                                                                
 }
-<button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional(data)"><mat-icon>add_diamond</mat-icon></button>
+<button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional()"><mat-icon>add_diamond</mat-icon></button>
 <span class="bar">
   <span class="spacer"></span>
   <button *ngIf="isAdmin" mat-button [mat-dialog-close]="null">Cancel</button> 
