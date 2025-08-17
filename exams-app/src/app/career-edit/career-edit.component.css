@@ -68,8 +68,7 @@ mat-accordion{
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: normal;  
-    background-color: lightyellow;  
-    /*border:2px solid indigo;  */
+    border:2px solid indigo;  
 
 }
 .semester_input{

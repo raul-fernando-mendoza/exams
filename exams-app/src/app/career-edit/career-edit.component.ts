@@ -32,6 +32,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HtmlService } from '../html-service.service';
 import { TextFieldModule} from '@angular/cdk/text-field';
 import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-select-dialog.component';
+import { OptionalContainerDialogComponent } from './optionalContainer-dialog.component';
 
 
 
@@ -310,6 +311,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   addMateriaOptional( s:Semester ){
     let newMateriaOptional:OptionalContainer = {
       id: uuid.v4(),
+      label:"opcional",
       materias: []
     }
     s.materias.push(newMateriaOptional)
@@ -324,32 +326,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
   }     
   
   
-  addMateriaToOptional(mo:OptionalContainer){
-    const dialogRef = this.dialog.open(MateriaSelectDialogComponent, {
-      height: '400px',
-      width: '250px',
-      data: {id:null, materia_name:null}
-    });
   
-    dialogRef.afterClosed().subscribe(data => {
-      console.log('The dialog was closed');
-      if( data != null ){
-        let idx = mo.materias.findIndex( e => e.id == data.id )
-        if( idx < 0){
-          mo.materias.push(data)
-          this.updateCycles()
-        }
-        else{
-          alert( "la materia ya existe")
-        }
-      }
-      else{
-        console.debug("none")
-      }
-    });
-
-   
-  }
   removeMateria( s:Semester , m:Materia){
     let idx =s.materias.findIndex( e => e.id == m.id )
     if( idx >= 0){
@@ -358,14 +335,16 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       this.updateCycles()      
     }
   } 
-  removeMateriaOptional(mo:OptionalContainer, m:Materia){
-    let idx =mo.materias.findIndex( e => e.id == m.id )
-    if( idx >= 0){
-      mo.materias.splice(idx,1)
 
-      this.updateCycles()      
-    }    
-  } 
+  onOptionalClick(c:any, propertyName){
+    if( this.isAdmin ){
+      this.onRenameStart(c, propertyName )
+    }
+    else{
+      this.editOptionalMateria(c)
+    }
+  }
+
   onRenameStart(c:any, propertyName){
     if( this.isAdmin ){
       this.nameForm.reset()
@@ -416,9 +395,34 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       console.log("all enrollments processed")
       this.materiasApproved.set(materiasApproved)
     })
-
-    
-
   }  
+
+  editOptionalMateria( om:OptionalContainer){
+
+    let optionalContainerCopy:OptionalContainer = {
+      id: om.id,
+      label: om.label,
+      materias: [...om.materias]
+    }
+
+    const dialogRef = this.dialog.open(OptionalContainerDialogComponent, {
+      data: { 
+        optionalContainer:optionalContainerCopy, 
+        materiasApproved:this.materiasApproved()
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(data => {
+      console.log('The dialog was closed');
+      if( this.isAdmin && data != null ){
+          om.materias = [...data.materias]
+          this.updateCycles()
+      }
+      else{
+        console.debug("dialog was canceled")
+      }
+    });
+
+  }
 }
 

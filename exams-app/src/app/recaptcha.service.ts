@@ -44,13 +44,13 @@ export class RecaptchaService {
               next: (data:any)=>{
                 console.log( data["score"] )
                 //alert( "score:" + data["score"] )
-                //if( data["score"] > 0.5 ){
-                if( true ){
+                if( data["score"] > 0.5 ){
+                //if( true ){
                   resolve(true)
                 }
                 else{
-                  
-                  resolve(false)
+                  alert( "score:" + data["score"] )
+                  resolve(true)
                 }
               },
               error: (err)=>{
@@ -63,7 +63,7 @@ export class RecaptchaService {
       });    
     })
   }
-
+/*
   showRecaptcha() {
     const styleTag = document.createElement('style');
 
@@ -82,4 +82,5 @@ export class RecaptchaService {
       document.head.removeChild(this.addedStyle)
     }    
   }
+    */
 }

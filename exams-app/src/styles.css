@@ -46,10 +46,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .black{
     background: linear-gradient(to left bottom, white 70%, black 30%  );
   }     
- 
+
+/*
 .grecaptcha-badge { 
     visibility: hidden !important;
 }  
+*/
 
 .container{
     display:flex;

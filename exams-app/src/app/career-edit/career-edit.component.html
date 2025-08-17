@@ -199,15 +199,23 @@ Carrera
                                                             @for( m of s.materias; track m.id; let i=$index){
                                                                     @if(m.hasOwnProperty('materias')){
                                                                         <span class="optional-container">
-                                                                            @for( mo of m.materias; track mo.id; let i=$index){
-                                                                                <span class="{{mo.color1}} materia">
-                                                                                    {{mo.materia_name}}
-                                                                                    <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m, mo)"><mat-icon>close</mat-icon></button>
-                                                                                </span>                                                                                
+                                                                            @if( editComponentId() == m.id ){
+                                                                                <span [formGroup]="nameForm" >
+                                                                                <mat-form-field>
+                                                                                    <mat-label>nombre materia opcional</mat-label>
+                                                                                    <input   matInput placeholder="" formControlName="object_name" (change)="onNameChange(m, 'label')" (blur)="onNameChange(m, 'label')">
+                                                                                </mat-form-field> 
+                                                                                </span>
                                                                             }
-                                                                            <button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional(m)"><mat-icon>add_diamond</mat-icon></button>
-                                                                            <button *ngIf="isAdmin" mat-icon-button (click)="removeMateriaToOptional(s,m)"><mat-icon>delete</mat-icon></button>
-                                                                        </span> 
+                                                                            @else{
+                                                                                <span>
+                                                                                    <span (click)="onOptionalClick(m,'label')">{{m.label}}</span>
+                                                                                    <button *ngIf="isAdmin" mat-icon-button (click)="editOptionalMateria(m)"><mat-icon>edit</mat-icon></button>
+                                                                                    <button *ngIf="isAdmin" mat-icon-button (click)="removeMateria(s, m)"><mat-icon>delete</mat-icon></button>
+
+                                                                                </span>
+                                                                            } 
+                                                                        </span>                                                                       
                                                                     }
                                                                     @else{
                                                                         <span class="{{m.color1}} materia">

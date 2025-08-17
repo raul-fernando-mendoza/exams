@@ -180,6 +180,7 @@ export interface Level{
 
 export interface OptionalContainer{
   id:string
+  label:string
   materias:Array<Materia>
 }
 
