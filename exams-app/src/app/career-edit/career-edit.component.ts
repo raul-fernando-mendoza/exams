@@ -1,16 +1,13 @@
-import { Component, inject, Injector, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { Component,  OnDestroy, OnInit, signal } from '@angular/core';
 import { Validators,  FormBuilder, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
-import { Career, Cycle, Group, GROUP_GRADES_TYPES, Level, Materia, OptionalContainer, Objective, Semester } from '../exams/exams.module';
+import { Career, Cycle, Materia, OptionalContainer, Objective, Semester } from '../exams/exams.module';
 import { FormService } from '../form.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import * as uuid from 'uuid';
-import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogListSelectDialog } from '../list-select/list-select-dialog';
-import { Observer } from 'rxjs';
 import videojs from 'video.js';
 import { BusinessService } from '../business.service';
 import { FileLoadedEvent, FileLoaderComponent } from '../file-loader/file-loader.component';
@@ -19,7 +16,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatInputModule } from '@angular/material/input';
@@ -433,7 +430,6 @@ export class CareerEditComponent implements OnInit, OnDestroy {
       return false
     }
   }
-
   
 }
 

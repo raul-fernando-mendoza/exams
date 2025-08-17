@@ -66,11 +66,11 @@ export class LoginFormComponent implements OnInit,OnDestroy{
       }
   }
   ngOnDestroy(): void {
-    this.recaptchaService.hideRecaptcha()
+    //this.recaptchaService.hideRecaptcha()
   }
 
   ngOnInit() {
-    this.recaptchaService.showRecaptcha();  
+    //this.recaptchaService.showRecaptcha();  
   }
   navigateIntended(){
     var intendedParameters = {}
@@ -81,7 +81,7 @@ export class LoginFormComponent implements OnInit,OnDestroy{
     this.router.navigate([this.intendedPath, intendedParameters]);    
   }
   onLoginWithEmail(){
-    //this.recaptchaService.validateCaptcha("loginWithEmail").then( isHuman=>{
+    this.recaptchaService.validateCaptcha("loginWithEmail").then( isHuman=>{
       if(true){ //ishuman
         if( this.loginForm.valid ){
           var user = this.loginForm.controls.username.value
@@ -110,7 +110,7 @@ export class LoginFormComponent implements OnInit,OnDestroy{
       else{
         alert("usted es un robot")
       }
-    //})
+    })
   }
 
   register(){

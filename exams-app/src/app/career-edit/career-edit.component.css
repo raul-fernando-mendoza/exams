@@ -5,7 +5,7 @@ mat-accordion{
 .cycle-container{
     display:flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
     justify-content: flex-start;
     align-items: baseline;
     row-gap:1em;
@@ -52,8 +52,18 @@ mat-accordion{
     /*border:1px solid red;*/
 } 
 .semester-label{
+    display:flex;
+    flex-direction: row;  
+    flex-wrap: nowrap;  
     background-color: gray;
+    align-items: baseline; 
     text-align: center;
+}
+.semester-label span{
+    margin-left: 1em;
+}
+.semester-label button{
+    margin-left: 0.5em;
 }
 .materia-container{
     display:flex;
@@ -78,8 +88,12 @@ mat-accordion{
     border:2px solid black;  
 }
 .optional-materia{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;    
     padding-right: 2em;
     padding-top: 0.5em;
+    white-space: nowrap;
     background-color: indigo; 
     color: white;
 }

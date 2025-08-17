@@ -24,6 +24,7 @@
   margin-bottom: 20px;
 }
 
+/*
 re-captcha{
   display:flex;
   justify-content: center;
@@ -32,6 +33,7 @@ re-captcha{
   margin-top:20px;
   margin-bottom: 20px;
 }
+*/
 
 .divider{
   position: relative;
@@ -78,10 +80,13 @@ re-captcha{
   margin-right: 0;
 }
 
+/*
 re-captcha.is-invalid > div {
   border: 1px solid #dc3545 !important;
   border-radius: 0.2rem;
 }
+*/
+
 .spacer {
   flex: 1 1 auto;
 }

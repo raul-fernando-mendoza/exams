@@ -21,6 +21,7 @@
 
 
   <form [formGroup]="loginForm">
+    <!--
     <mat-card class="login-card">
       <mat-card-header>
         
@@ -29,16 +30,19 @@
       <mat-card-content>
         <div class="row">
           <div class="col">
+            -->
             <mat-form-field appearance="outline" class="full-width">
               <input matInput placeholder="email" formControlName="username" >
               <mat-error *ngIf="loginForm.controls['username'].hasError('required')">
                 login is <strong>required</strong>
               </mat-error>            
             </mat-form-field>
+            <!--
           </div>
         </div>
         <div class="row">
           <div class="col">
+            -->
             <mat-form-field appearance="outline" class="full-width">
               <input matInput [type]="hide ? 'password' : 'text'" placeholder="password" formControlName="password">
               <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
@@ -48,18 +52,19 @@
                 login is <strong>required</strong>
               </mat-error>
             </mat-form-field>
+            <!--
           </div>
         </div>
       </mat-card-content> 
 
-      <mat-card-actions>
+      <mat-card-actions>-->
         <button mat-raised-button color="primary" (click)="onLoginWithEmail()" *ngIf="!isRegister">Login</button>
         <button mat-raised-button color="warn" (click)="register()" *ngIf="isRegister" [disabled]="loginForm.invalid">Registrar</button>
         <button mat-button color="warn" (click)="onPasswordResetEmail()" *ngIf="!isRegister">Olvide mi password</button>
-
+<!--
       </mat-card-actions>
 
-    </mat-card>
+    </mat-card>-->
   </form>
 </div>
 
