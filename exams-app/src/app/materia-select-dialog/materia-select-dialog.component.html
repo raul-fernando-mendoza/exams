@@ -1,15 +1,32 @@
-<h1 mat-dialog-title>Enrolar en materia</h1>
+<h1 mat-dialog-title>Seleccionar materia</h1>
 <form [formGroup]="materiaForm">
+
 <mat-dialog-content>
+
+  <input type="text"
+       placeholder="nombre de la materia"
+       aria-label="materia"
+       matInput
+       formControlName="materiaId"
+       [matAutocomplete]="auto">
+
+  <mat-autocomplete  #auto="matAutocomplete" [displayWith]="displayFn">
+    @for (m of filteredOptions | async; track m.id) {
+      <mat-option [value]="m">{{m.materia_name}}</mat-option>
+    }
+  </mat-autocomplete>
+
+<!--
   <mat-select formControlName="materiaId" (selectionChange)="onSelectChange($event)">
     <mat-option *ngFor="let m of materiasList()" [value]="m.id" >
       {{m.materia_name}} 
     </mat-option>
-  </mat-select>     
+  </mat-select>    
+  --> 
 </mat-dialog-content>
 </form>
 <mat-dialog-actions>
   <button mat-button [mat-dialog-close]="null">Cancel</button> 
    
-  <button [disabled]="!materiaForm.valid" mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+  <button [disabled]="!isValidSelection()" mat-button [mat-dialog-close]="materiaForm.controls.materiaId.value">Ok</button>
 </mat-dialog-actions>

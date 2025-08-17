@@ -1,10 +1,12 @@
 <h1 mat-dialog-title>{{ data["optionalContainer"].label }}</h1>
 @for( m of materias(); track m.id; let i=$index){
     <span class="{{m.color1}} materia">
-        {{m.materia_name}}
         @if( this.materiasApproved.get(m.id) ){
-            <mat-icon>done</mat-icon>
-        }        
+            <span matBadge="&#8730;" matBadgeOverlap="false">{{m.materia_name}}</span>
+        }
+        @else{
+            <span>{{m.materia_name}}</span>
+        }                
         <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m)"><mat-icon>close</mat-icon></button>
     </span>                                                                                
 }

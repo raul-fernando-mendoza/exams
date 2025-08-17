@@ -1,0 +1,11 @@
+h1{
+    white-space: nowrap;
+}
+.materia{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;    
+    padding-right: 2em;
+    padding-top: 0.5em;
+    white-space: nowrap;
+} 

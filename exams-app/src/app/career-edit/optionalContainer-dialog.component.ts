@@ -10,6 +10,7 @@ import { BusinessService } from '../business.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-select-dialog.component';
 import { UserLoginService } from '../user-login.service';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
   selector: 'app-optionalContainer-dialog',
@@ -19,7 +20,8 @@ import { UserLoginService } from '../user-login.service';
     ,MatButtonModule 
     ,MatDialogModule
     ,MatSelectModule 
-    ,ReactiveFormsModule     
+    ,ReactiveFormsModule 
+    ,MatBadgeModule    
   ],
   templateUrl: './optionalContainer-dialog.component.html',
   styleUrl: './optionalContainer-dialog.component.css'
@@ -57,13 +59,13 @@ addMateriaToOptional(){
     const dialogRef = this.dialog.open(MateriaSelectDialogComponent, {
       height: '400px',
       width: '250px',
-      data: {id:null, materia_name:null}
+      data: {}
     });
   
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
       if( data != null ){
-        let idx = this.data["optionalContainer"].materias.findIndex( e => e.id == data.id )
+        let idx = this.data["optionalContainer"].materias.findIndex( e => e.id == data["id"] )
         if( idx < 0){
           this.data["optionalContainer"].materias.push(data)
           this.materias.set( [...this.data["optionalContainer"].materias])
@@ -83,7 +85,7 @@ addMateriaToOptional(){
   removeMateriaOptional(m:Materia){
     let idx =this.data["optionalContainer"].materias.findIndex( e => e.id == m.id )
     if( idx >= 0){
-      this.data.materias.splice(idx,1)
+      this.data["optionalContainer"].materias.splice(idx,1)
       this.materias.set([...this.data["optionalContainer"].materias])
     }    
   } 

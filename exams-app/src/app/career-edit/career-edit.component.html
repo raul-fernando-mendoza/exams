@@ -189,8 +189,8 @@ Carrera
                                                             </span>
                                                         }
                                                         @else{
-                                                            <span>
-                                                                <span class="semestre-label" (click)="onRenameStart(s,'semesterName')">{{s.semesterName}}</span>
+                                                            <span class="semester-label">
+                                                                <span  (click)="onRenameStart(s,'semesterName')">{{s.semesterName}}</span>
                                                                 <button *ngIf="isAdmin" mat-icon-button (click)="removeSemester(o,s)"><mat-icon>delete</mat-icon></button>
                                                             </span>
                                                         }
@@ -208,25 +208,27 @@ Carrera
                                                                                 </span>
                                                                             }
                                                                             @else{
-                                                                                <span>
-                                                                                    <span (click)="onOptionalClick(m,'label')">{{m.label}}</span>
-                                                                                    
+                                                                                <span class="optional-materia">
                                                                                     @if( this.isOptionalApproved(m) ){
-                                                                                        <mat-icon>done</mat-icon>
+                                                                                        <span matBadge="&#8730;" matBadgeOverlap="false" (click)="onOptionalClick(m,'label')">{{m.label}}</span>
+                                                                                    }
+                                                                                    @else{
+                                                                                        <span (click)="onOptionalClick(m,'label')">{{m.label}}</span>
                                                                                     }                                                                                    
                                                                                     <button *ngIf="isAdmin" mat-icon-button (click)="editOptionalMateria(m)"><mat-icon>edit</mat-icon></button>
                                                                                     <button *ngIf="isAdmin" mat-icon-button (click)="removeMateria(s, m)"><mat-icon>delete</mat-icon></button>
-
                                                                                 </span>
                                                                             } 
                                                                         </span>                                                                       
                                                                     }
                                                                     @else{
                                                                         <span class="{{m.color1}} materia">
-                                                                            {{m.materia_name}}
                                                                             @if( this.materiasApproved().get(m.id) ){
-                                                                                <mat-icon>done</mat-icon>
+                                                                                <span matBadge="&#8730;" matBadgeOverlap="false">{{m.materia_name}}</span>
                                                                             }
+                                                                            @else{
+                                                                                <span (click)="onOptionalClick(m,'label')">{{m.materia_name}}</span>
+                                                                            }                                                                             
                                                                             <button *ngIf="isAdmin" mat-icon-button (click)="removeMateria(s, m)"><mat-icon>delete</mat-icon></button>
                                                                         </span>
                                                                     }

@@ -40,41 +40,49 @@ mat-accordion{
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: normal;
+    
     /*border:2px solid yellow;    */
 }
 .semester{
     display:flex;
     flex-direction: column;  
-    align-items: center; 
-    background-color:lightgray; 
-    /*border:1px solid black;*/
+    align-items: normal ; 
+    background-color:white; 
+    /*border:1px solid red;*/
 } 
+.semester-label{
+    background-color: gray;
+    text-align: center;
+}
 .materia-container{
     display:flex;
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: normal;
-    /*border:2px solid red;    */
+    align-items: normal;  
 }
 .materia{
-    padding: 1px;
-    margin:1px;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;    
+    padding-right: 2em;
+    padding-top: 0.5em;
 } 
 .optional-container{
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: normal;  
-    border:2px solid indigo;  
-
+    border:2px solid black;  
+}
+.optional-materia{
+    padding-right: 2em;
+    padding-top: 0.5em;
+    background-color: indigo; 
+    color: white;
 }
 .semester_input{
     width:8em;
-}
-.semestre-label{
-    min-width:2em;
-    margin-right:1em;
 }

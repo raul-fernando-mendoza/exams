@@ -34,7 +34,7 @@ import { TextFieldModule} from '@angular/cdk/text-field';
 import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-select-dialog.component';
 import { OptionalContainerDialogComponent } from './optionalContainer-dialog.component';
 
-
+import {MatBadgeModule} from '@angular/material/badge';
 
 
 @Component({
@@ -60,6 +60,7 @@ import { OptionalContainerDialogComponent } from './optionalContainer-dialog.com
     ,MatSlideToggleModule
     ,TextFieldModule
     ,MatExpansionModule
+    ,MatBadgeModule
   ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']
@@ -286,13 +287,13 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(MateriaSelectDialogComponent, {
       height: '400px',
       width: '250px',
-      data: {id:null, materia_name:null}
+      data: {}
     });
   
     dialogRef.afterClosed().subscribe(data => {
       console.log('The dialog was closed');
       if( data != null ){
-        let idx = s.materias.findIndex( e => e.id == data.id )
+        let idx = s.materias.findIndex( e => e.id == data["id"] )
         if( idx < 0){
           s.materias.push(data)
           this.updateCycles()
@@ -356,8 +357,7 @@ export class CareerEditComponent implements OnInit, OnDestroy {
     if( this.nameForm.dirty ){
       var value = this.nameForm.controls.object_name.value
       c[propertyName] = value
-      
-      
+      this.editComponentId.set("")
       this.updateCycles() 
     }  
     this.editComponentId.set(null)  
