@@ -3,7 +3,7 @@ import { MatPaginator  } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTable, MatTableModule } from '@angular/material/table';
 import { MateriaCertificatesDataSource, NodeTableRow } from './materia-certificates-datasource';
-import { MatDialog , MatDialogRef as MatDialogRef,  MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import { MatDialog , MatDialogModule} from '@angular/material/dialog';
 import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
@@ -18,7 +18,6 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -26,6 +25,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DownloadService } from "../download.service"
+import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-select-dialog.component';
 
 @Component({
   selector: 'app-materia-certificates',
@@ -449,17 +449,17 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
       materia_id:null
     }
 
-    const dialogRef = this.dialog.open(DialogEnrollMateriaDialog, {
+    const dialogRef = this.dialog.open(MateriaSelectDialogComponent, {
       height: '400px',
       width: '250px',
-      data: materiaEnrollment
+      data: {}
     });
   
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(materia => {
       console.log('The dialog was closed');
-      if( result != undefined ){
-        console.debug( result )
-        this.businessService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), result.materia_id, result.student_uid).then( ()=>{
+      if( materia != undefined ){
+        console.debug( materia )
+        this.businessService.createMateriaEnrollment(this.userPreferencesService.getCurrentOrganizationId(), materia.id, row.user.uid).then( ()=>{
           this.loadEnrollmentForRow(row).then(()=>{
             this.update()
           },
@@ -468,7 +468,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           })
         },
         reason =>{
-          alert("ERROR enroll en materia faile:" + reason)
+          alert("ERROR enroll en materia:" + reason)
         })
              
       }
@@ -699,53 +699,5 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         URL.revokeObjectURL(objectUrl);
       })
   } 
-}
-
-/****** student dlg */
-/* do not forget to add the dialog to the app.module.ts*/
-@Component({
-  selector: 'enroll-materia-dlg',
-  standalone: true,
-  imports: [
-    CommonModule
-    ,MatIconModule
-    ,MatButtonModule 
-    ,FormsModule  
-    ,MatDialogModule
-    ,MatSelectModule   
-  ],   
-  templateUrl: 'enroll-materia-dlg.html',
-})
-export class DialogEnrollMateriaDialog implements OnInit{ 
-
-  materiasList:Array<Materia> = null
-  constructor(
-    private userLoginService: UserLoginService
-    ,public dialogRef: MatDialogRef<DialogEnrollMateriaDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: MateriaEnrollment) {}
-
-  ngOnInit(): void {
-    this.LoadMaterias()
-  }
-
-  async LoadMaterias(){
-    this.materiasList = []
-    const query = db.collection("materias").
-    where("organization_id","==", this.data.organization_id ).
-    where("isDeleted","==",false)
-
-    var listMaterias = await query.get()
-      
-    listMaterias.forEach(doc =>{
-      var materia:Materia = {
-        id:doc.data().id,
-        organization_id:this.data.organization_id,
-        materia_name:doc.data().materia_name
-      }
-      this.materiasList.push(materia)
-    })
-    this.materiasList.sort((a,b) => {return a.materia_name > b.materia_name ? 1:-1})
-  }
-
 }
 

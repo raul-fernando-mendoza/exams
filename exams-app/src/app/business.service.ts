@@ -308,7 +308,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
           })
         }
         else{
-          _reject()
+          _reject("El estudiante ya esta registrado en esa materia")
         }
       },
       reason =>{
