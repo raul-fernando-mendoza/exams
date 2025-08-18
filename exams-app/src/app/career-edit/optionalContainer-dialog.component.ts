@@ -3,14 +3,13 @@ import { Component, Inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { Materia, OptionalContainer } from '../exams/exams.module';
+import { MatSelectModule } from '@angular/material/select';
+import { Materia } from '../exams/exams.module';
 import { UserPreferencesService } from '../user-preferences.service';
 import { BusinessService } from '../business.service';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-select-dialog.component';
 import { UserLoginService } from '../user-login.service';
-import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
   selector: 'app-optionalContainer-dialog',
@@ -20,8 +19,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     ,MatButtonModule 
     ,MatDialogModule
     ,MatSelectModule 
-    ,ReactiveFormsModule 
-    ,MatBadgeModule    
+    ,ReactiveFormsModule     
   ],
   templateUrl: './optionalContainer-dialog.component.html',
   styleUrl: './optionalContainer-dialog.component.css'

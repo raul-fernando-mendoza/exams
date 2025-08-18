@@ -9,3 +9,7 @@ h1{
     padding-top: 0.5em;
     white-space: nowrap;
 } 
+.mat-badge-content {
+  background-color: gray; /* Custom background color */
+  color: white; /* Custom text color */
+}

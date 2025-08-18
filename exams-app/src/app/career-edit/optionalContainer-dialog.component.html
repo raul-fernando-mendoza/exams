@@ -1,16 +1,14 @@
 <h1 mat-dialog-title>{{ data["optionalContainer"].label }}</h1>
 @for( m of materias(); track m.id; let i=$index){
     <span class="{{m.color1}} materia">
+        <span>{{m.materia_name}}</span>
         @if( this.materiasApproved.get(m.id) ){
-            <span matBadge="&#8730;" matBadgeOverlap="false">{{m.materia_name}}</span>
-        }
-        @else{
-            <span>{{m.materia_name}}</span>
-        }                
-        <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m)"><mat-icon>close</mat-icon></button>
+            <mat-icon>done</mat-icon>
+        }               
+        <button  *ngIf="isAdmin" mat-icon-button (click)="removeMateriaOptional(m)"><mat-icon>delete</mat-icon></button>
     </span>                                                                                
 }
-<button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional()"><mat-icon>add_diamond</mat-icon></button>
+<button *ngIf="isAdmin" mat-icon-button (click)="addMateriaToOptional()"><mat-icon>add</mat-icon></button>
 <span class="bar">
   <span class="spacer"></span>
   <button *ngIf="isAdmin" mat-button [mat-dialog-close]="null">Cancel</button> 

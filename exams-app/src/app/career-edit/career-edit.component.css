@@ -47,20 +47,18 @@ mat-accordion{
 .semester{
     display:flex;
     flex-direction: column;  
-    align-items: normal ; 
+    align-items: stretch ; 
     background-color:white; 
+    
     /*border:1px solid red;*/
 } 
 .semester-label{
     display:flex;
-    flex-direction: row;  
+    flex-direction: row; 
+    align-items: stretch ; 
     flex-wrap: nowrap;  
-    background-color: gray;
-    align-items: baseline; 
-    text-align: center;
-}
-.semester-label span{
-    margin-left: 1em;
+    justify-content:center;
+    background-color: lightgray;
 }
 .semester-label button{
     margin-left: 0.5em;
@@ -85,7 +83,7 @@ mat-accordion{
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: normal;  
-    border:2px solid black;  
+    /*border:2px solid black;  */
 }
 .optional-materia{
     display:flex;
@@ -94,8 +92,6 @@ mat-accordion{
     padding-right: 2em;
     padding-top: 0.5em;
     white-space: nowrap;
-    background-color: indigo; 
-    color: white;
 }
 .semester_input{
     width:8em;
