@@ -178,7 +178,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
             this.students = []
             for( let i =0; i<students.length; i++){
               let estudiante = students[i]
-              let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
+              let displayName = thiz.userLoginService.getDisplayNameForUser(estudiante)
               let obj:User = {
                 "uid":estudiante.uid,
                 "email":estudiante.email,
@@ -192,7 +192,7 @@ export class UserSelectorComponent implements OnInit,OnDestroy,MatFormFieldContr
               startWith(''),
               map(value => {
                 const name = typeof value === 'string' ? value : value?.displayName;
-                return name ? thiz._filter(name as string) : this.students.slice();
+                return name ? thiz._filter(name as string) : thiz.students.slice();
               }),
             )
           },

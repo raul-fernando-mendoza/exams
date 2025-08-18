@@ -158,7 +158,7 @@ export class ExamenImprovisacionFormComponent {
         
         for( let i =0; i<set.length; i++){
           let estudiante = set[i]
-          let displayName = this.userLoginService.getDisplayNameForUser(estudiante)
+          let displayName = thiz.userLoginService.getDisplayNameForUser(estudiante)
           let obj:User = {
             "uid":estudiante.uid,
             "email":estudiante.email,
@@ -187,7 +187,7 @@ export class ExamenImprovisacionFormComponent {
     this.businessService.authApiInterface("getUserListForClaim", token, evaluator_req).subscribe({
       next( data ){
         let users:User[] = data["result"] as Array<any>;
-        this.evaluators = []
+        thiz.evaluators = []
         for( let i =0; i<users.length; i++){
           var user = users[i]
           let obj:User = {
