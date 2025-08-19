@@ -170,7 +170,7 @@ export class ExamenImprovisacionFormComponent {
         thiz.allUsers.set(studentsOnly)
       },
       error(reason){
-         alert( "Error retriving estudiante exam improvisation" + reason.errorMessage )
+         console.log( "Error retriving estudiante exam improvisation" + reason.errorMessage )
       },
       complete(){
         console.log("never called")
