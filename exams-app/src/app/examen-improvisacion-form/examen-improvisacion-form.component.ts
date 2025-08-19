@@ -201,7 +201,7 @@ export class ExamenImprovisacionFormComponent {
         }
       },
       error(reason){
-          alert( "Error retriving evaluador" + reason.errorMessage )
+          console.log( "Error retriving evaluador" + reason.errorMessage )
       }
     })     
   }  
