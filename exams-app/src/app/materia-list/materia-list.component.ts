@@ -21,8 +21,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, startWith, takeUntil} from 'rxjs/operators';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { StringService } from '../string.service';
@@ -94,7 +94,9 @@ export class MateriaListComponent implements OnInit , OnDestroy{
     [Breakpoints.Medium, 'Medium'],
     [Breakpoints.Large, 'Large'],
     [Breakpoints.XLarge, 'XLarge'],
-  ]);   
+  ]);  
+  
+  filteredOptions;
 
   constructor(
  
@@ -144,10 +146,14 @@ export class MateriaListComponent implements OnInit , OnDestroy{
   }
   ngOnDestroy(): void {
     this.unsubscribe()
+    this.filteredOptions.unsubscribe()
   }
 
   ngOnInit(): void {
-
+    this.filteredOptions = this.fg.controls.filter.valueChanges.pipe(
+      startWith(''),
+      map(value => this.applyFilter())
+    ).subscribe()
     this.update()
   }
 

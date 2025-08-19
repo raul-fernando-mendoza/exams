@@ -4,7 +4,7 @@
   <div class="searchForm" >
     <div class="spacer"></div>    
     <mat-form-field class="search-box">
-    <input matInput placeholder="Search" name= "search" (change)="onApplyFilter()" formControlName="filter">
+    <input matInput placeholder="Search" name= "search" formControlName="filter">
     <button matSuffix mat-button (click)="onApplyFilter()"><mat-icon >search</mat-icon></button>
     @if( fg.controls.filter.value ){
     <button matSuffix mat-button (click)="onRemoveFilter()"><mat-icon >clear</mat-icon></button>
