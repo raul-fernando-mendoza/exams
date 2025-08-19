@@ -371,6 +371,18 @@ export class CareerEditComponent implements OnInit, OnDestroy {
           semester.materias.forEach( materia =>{
             if( materia.hasOwnProperty('materias') ){
               let optionalContainer:OptionalContainer = materia as OptionalContainer
+              optionalContainer.materias.forEach( e =>{
+                //let t1 = this.businessService.getMateria( e.id ).then( materia =>{
+                  let t = this.businessService.getMateriaEnrollment( this.organization_id, e.id, this.userLoginService.getUserUid() ).then( enrollment =>{
+                    if( enrollment && enrollment.certificateUrl ){
+                      materiasApproved.set( e.id, true)
+                    }
+                  })
+                  transactions.push( t )
+                //})
+                //transactions.push( t1 )
+               
+              })
 
 
             }
