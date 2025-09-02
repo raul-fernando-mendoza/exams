@@ -7,6 +7,7 @@ import * as uuid from 'uuid';
 import { FileLoadedEvent } from './file-loader/file-loader.component';
 import { UserLoginService } from './user-login.service';
 import { UserPreferencesService } from './user-preferences.service';
+import { firstValueFrom} from 'rxjs';
 
 export interface FileLoaded{
   path:string
@@ -145,7 +146,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       "uid":uid
     }      
 
-    const response = await this.authApiInterface("getUser", null, userReq)
+    const response = await firstValueFrom(this.authApiInterface("getUser", null, userReq))
     if( response["result"] ){
       const user = response["result"]
       result = {

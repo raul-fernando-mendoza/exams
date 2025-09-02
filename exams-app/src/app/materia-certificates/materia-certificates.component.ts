@@ -535,6 +535,7 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
         applicationDate: today,
         applicationDay: this.dateFormatService.getDayId(today),
         student_uid: row.user.uid,
+        studentUids:[row.user.uid],
         title: "acreditado por:" + this.userLoginService.getDisplayName(),
         expression: "ninguna",
         score: 10,
