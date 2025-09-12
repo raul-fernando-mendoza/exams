@@ -234,8 +234,7 @@ export class ExamTableComponent implements OnInit, OnDestroy {
                 node.obj['students'] = [newUser]
               }
               else{
-                let displayName = this.userLoginService.getDisplayNameForUser(user)
-                console.log( displayName )
+                user.displayName = this.userLoginService.getDisplayNameForUser(user)
                 node.obj['students'].push(user)
               }
             })
