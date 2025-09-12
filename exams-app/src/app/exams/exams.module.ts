@@ -500,17 +500,6 @@ export interface OrganizationMultipleRequest{
   }
 }
 
-export interface CareerAdvance{
-  id:string
-  organization_id:string
-  career_id:string
-  student_uid:string
-  career_materias_required:number
-  career_materias_approved:number
-  career_completed:boolean
-
-}
-
 export interface GroupGrade{
   id:string
   group_materias_required:number
