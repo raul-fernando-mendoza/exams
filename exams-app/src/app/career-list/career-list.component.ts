@@ -229,9 +229,6 @@ export class CareerListComponent implements OnInit, OnDestroy {
   isLoggedIn() : boolean{
     return this.userLoginService.getIsloggedIn()
   }  
-  onCareerMyProgress(career_id:string){
-    this.router.navigate(['career-user',{ user_uid:this.userLoginService.getUserUid(), career_id:career_id }])
-  }   
   onCareerDetails(career_id:string){
     this.router.navigate(['career-edit',{ id:career_id }])
   }   
