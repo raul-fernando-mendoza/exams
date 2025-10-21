@@ -1,5 +1,8 @@
 import logging
+from cloudevents.http import CloudEvent
+import functions_framework
 from google.cloud import firestore
+from google.events.cloud import firestore as firestoredata
 import datetime
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.DEBUG)
@@ -7,20 +10,21 @@ logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.D
 log = logging.getLogger("exams")
 log.setLevel(logging.DEBUG)
 
-def examGradeScoreUpdate(event, context):
-    """Triggered by a change to a Firestore document.
-    Args:
-         event (dict): Event payload.
-         context (google.cloud.functions.Context): Metadata for the event.
-    """
-    resource_string = context.resource
-    # print out the resource string that triggered the function
-    log.debug("*** Function triggered by change to: {resource_string}.")
-    # now print out the entire event object
-    log.debug("*** event:" + str(event))
-    log.debug("*** context:" + str(context))
-    resource_arr = resource_string.split("/")
-    documentId = resource_arr[6]
+@functions_framework.cloud_event
+def examGradeScoreUpdate(cloud_event: CloudEvent):
+    firestore_payload = firestore.DocumentEventData()
+    firestore_payload._pb.ParseFromString(cloud_event.data)
+
+    path_parts = firestore_payload.value.name.split("/")
+    separator_idx = path_parts.index("documents")
+    collection_path = path_parts[separator_idx + 1]
+    document_path = "/".join(path_parts[(separator_idx + 2) :])
+
+    print(f"Collection path: {collection_path}")
+    print(f"Document path: {document_path}")
+
+    resource_arr = collection_path
+    documentId = document_path
     log.debug("*** documentId:" + documentId)  
 
     db = firestore.Client()
