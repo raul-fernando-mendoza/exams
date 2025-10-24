@@ -73,7 +73,7 @@ export class WelcomeComponent implements OnInit {
     const query = db.collection("careers")
     .where("isDeleted","==",false)
     .where("organization_id","==",this.organization.id)
-    .where("career_name","==","Ejecutante")
+    .where("career_name","==","EJECUTANTE")
     
     this.submitting = true
     query.get().then( resultSet =>{
