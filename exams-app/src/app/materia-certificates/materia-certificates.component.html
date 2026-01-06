@@ -15,7 +15,7 @@ Certificados
             <button  mat-button  (click)="onMateriasClick(row)">
               <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span> 
             </button>
-            Habilidades
+            Materias
           </div>
           <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Careers'">
             <button  mat-button  (click)="onCareersClick(row)">
@@ -80,7 +80,7 @@ Certificados
           <mat-menu #menu="matMenu" >
             <button *ngIf="row.nodeClass=='Materias'" mat-menu-item (click)="onMateriaEnroll(row)" [disabled]="submitting()">
               <mat-icon>library_add</mat-icon>
-              <span>Enrolar en Habilidad</span>
+              <span>Enrolar en Materia</span>
             </button> 
             <button *ngIf="row.nodeClass=='MateriaEnrollment'" mat-menu-item (click)="onMateriaUnEnroll(row)" [disabled]="submitting()">
               <mat-icon>delete</mat-icon>

@@ -23,7 +23,7 @@ Editar Examen
   <mat-card >
     <mat-card-content > 
       <mat-form-field appearance="fill" > 
-        <mat-label>Habilidad</mat-label>
+        <mat-label>Materia</mat-label>
         <mat-select formControlName="materia_id" (selectionChange)="materiaChange($event)">
           <mat-option *ngFor="let m of materias()" [value]="m.id" >
             {{m.materia_name}} 
@@ -49,7 +49,7 @@ Editar Examen
 
 
       <mat-form-field class="example-full-width">
-        <mat-label>Titulo</mat-label>
+        <mat-label>Titulo/Tipo Coreografia</mat-label>
         <input matInput placeholder="" value="" formControlName="title" required>
       </mat-form-field>       
 
