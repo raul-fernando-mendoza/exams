@@ -1,0 +1,18 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.homework-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+
+.label-field {
+  flex: 1 1 auto;
+}
+
+.score-field {
+  width: 120px;
+}

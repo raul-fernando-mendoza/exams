@@ -1,0 +1,31 @@
+Tareas
+@if(homeworks() === null){
+  <mat-toolbar>Cargando...</mat-toolbar>
+}
+@for(h of homeworks(); track h.homework.id; let i = $index){
+  <form class="homework-row" [formGroup]="h.fg">
+    <mat-form-field class="label-field">
+      <mat-label>Etiqueta</mat-label>
+      <input matInput formControlName="label" (change)="onChangeHomework(h.fg)">
+    </mat-form-field>
+<span class="example-spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opciones">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="delHomework(h.fg)" [disabled]="submitting()">
+        <mat-icon>delete</mat-icon>
+        <span>borrar</span>
+      </button>
+    </mat-menu>
+  </form>
+}
+@empty{
+  No hay tareas
+}
+<div>
+  <mat-toolbar>
+    <span class="example-spacer"></span>
+    <button mat-raised-button color="primary" [disabled]="submitting()" (click)="onNewHomework()">Nueva Tarea</button>
+  </mat-toolbar>
+</div>

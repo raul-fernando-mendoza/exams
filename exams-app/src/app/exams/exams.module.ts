@@ -571,5 +571,21 @@ export interface VideoMarker{
 
 export interface ExamExamGradeItem{
   exam:Exam
-  examGrade:ExamGrade  
+  examGrade:ExamGrade
+}
+
+export interface Homework{
+  id:string
+  idx?:number
+  label?:string
+}
+
+export interface HomeworkRequest{
+  materias:{
+    id:string
+    exams:{
+      id:string
+      homeworks:Homework
+    }
+  }
 }

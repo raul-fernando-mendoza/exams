@@ -29,6 +29,7 @@ import { db } from 'src/environments/environment';
 import { DialogNameDialog } from '../name-dialog/name-dlg';
 import { MatDialog } from '@angular/material/dialog';
 import { ParameterListComponent } from './parameter-list.component';
+import { HomeworkListComponent } from './homework-list.component';
 import { FormService } from '../form.service';
 
 @Component({
@@ -57,6 +58,7 @@ import { FormService } from '../form.service';
     ,MatInputModule 
 
     ,ParameterListComponent
+    ,HomeworkListComponent
 
   ],    
   templateUrl: './ei-tipo-edit.component.html',
