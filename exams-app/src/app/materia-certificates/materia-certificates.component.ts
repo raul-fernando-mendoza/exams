@@ -8,7 +8,7 @@ import { db } from 'src/environments/environment';
 import { UserPreferencesService } from '../user-preferences.service';
 import { SortingService } from '../sorting.service';
 import { UserLoginService } from '../user-login.service';
-import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam, Career } from '../exams/exams.module';
+import { copyObj, Materia, MateriaEnrollment, User, ExamGrade, Exam, Career, Homework } from '../exams/exams.module';
 import { BusinessService } from '../business.service';
 
 import * as uuid from 'uuid';
@@ -22,6 +22,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DownloadService } from "../download.service"
@@ -42,7 +45,10 @@ import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-s
     ,MatTableModule
     ,MatPaginatorModule 
     ,MatSortModule 
-    ,MatMenuModule 
+    ,MatMenuModule
+    ,MatInputModule
+    ,MatFormFieldModule
+    ,FormsModule
   ], 
 
   templateUrl: './materia-certificates.component.html',
@@ -239,6 +245,70 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
 
   }  
 
+  onExamClick(row:NodeTableRow){
+    if(this.submitting() == false && row.opened == false){
+      this.submitting.set(true)
+      row.opened = true
+      this.loadHomeworksForRow(row).then(()=>{
+        this.submitting.set(false)
+        this.update()
+      })
+    }
+    else if ( this.submitting() == false && row.opened == true) {
+      row.opened = false
+      row.children.length = 0
+      this.update()
+    }
+  }
+
+  loadHomeworksForRow(row:NodeTableRow):Promise<void>{
+    return new Promise((resolve, reject)=>{
+      if(row.children != null){
+        row.children.length = 0
+      }
+      else{
+        row.children = []
+      }
+
+      db.collection("materias/" + row.materia.id + "/exams/" + row.exam.id + "/homeworks")
+      .get().then(set => {
+        let children:NodeTableRow[] = []
+        let scoreLoads = set.docs.map(doc => {
+          let homework:Homework = doc.data() as Homework
+          let n:NodeTableRow = {
+            user:row.user,
+            materiaEnrollment:row.materiaEnrollment,
+            materia:row.materia,
+            exam:row.exam,
+            homework:homework,
+            opened:false,
+            nodeClass:"Homework",
+            children:null,
+            isLeaf:true,
+            parent:row
+          }
+          children.push(n)
+          return db.collection("materiaEnrollments").doc(row.materiaEnrollment.id)
+            .collection("homeworkScores").doc(homework.id).get().then(scoreDoc => {
+              if (scoreDoc.exists) {
+                n.homeworkScore = scoreDoc.data().homework_score
+              }
+            })
+        })
+        Promise.all(scoreLoads).then(() => {
+          children.sort((a,b) => { return a.homework.idx > b.homework.idx ? 1 : -1 })
+          row.opened = true
+          children.map(value => row.children.push(value))
+          resolve()
+        })
+      },
+      reason => {
+        console.log("ERROR loading homeworks:" + reason)
+        reject()
+      })
+    })
+  }
+
   loadExamsForRow(row:NodeTableRow):Promise<void>{
     return new Promise((resolve, reject)=>{
       if(row.children != null){
@@ -265,8 +335,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
             examGrade:null,
             opened:false,
             nodeClass:"Exam",
-            children:null,
-            isLeaf:true,
+            children:[],
+            isLeaf:false,
             parent:row
           }
           children.push(n)   
@@ -665,6 +735,24 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     
     })      
   }
+  saveHomeworkScore(row: NodeTableRow, value: string) {
+    const score = parseFloat(value)
+    if (isNaN(score) || score < 0 || score > 10) return
+    db.collection("materiaEnrollments").doc(row.materiaEnrollment.id).get().then(doc => {
+      if (!doc.exists || doc.data().isDeleted === true) {
+        alert("El enrolamiento no está activo")
+        return
+      }
+      db.collection("materiaEnrollments").doc(row.materiaEnrollment.id)
+        .collection("homeworkScores").doc(row.homework.id)
+        .set({ homework_score: score, updated_on: new Date() }, { merge: true })
+        .then(() => {
+          row.homeworkScore = score
+          this._snackBar.open("Calificación guardada", "X", { duration: 2000 })
+        })
+    })
+  }
+
   onCareerClick(row:NodeTableRow){
     this.router.navigate(["career-user",{ career_id:row.career.id , user_uid:row.user.uid}])
   }

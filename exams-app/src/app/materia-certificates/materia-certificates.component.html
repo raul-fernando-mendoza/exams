@@ -29,12 +29,26 @@ Certificados
             </button>
             {{ row.materia.materia_name}} 
           </div> 
-          @if( row.nodeClass=='Exam' ){   
+          @if( row.nodeClass=='Exam' ){
           <div [class]="row.nodeClass">
+            <button  mat-button  (click)="onExamClick(row)">
+              <span *ngIf="row.opened">-&nbsp;</span> <span *ngIf="!row.opened">&gt;&nbsp;</span>
+            </button>
             {{row.exam.label}}
             <span *ngIf="row.examGrade">{{ printDate(row.examGrade.applicationDate) }}</span> <span class="waiver-text" *ngIf="row.examGrade && row.examGrade.isWaiver">acreditacion</span>
-          </div> 
-          }                
+          </div>
+          }
+          @if( row.nodeClass=='Homework' ){
+          <div [class]="row.nodeClass" style="display:flex; align-items:center; gap:8px;">
+            {{row.homework.label}}
+            <mat-form-field appearance="outline" style="width:90px; margin-top:8px;">
+              <input matInput type="number" min="0" max="10" step="0.1"
+                [ngModel]="row.homeworkScore"
+                (change)="saveHomeworkScore(row, $any($event.target).value)"
+                placeholder="0.0">
+            </mat-form-field>
+          </div>
+          }
           <div [class]="row.nodeClass" *ngIf="row.nodeClass=='Career'">
             <button mat-button (click)="onCareerClick(row)">{{ row.career.career_name }}</button> 
           </div>           
