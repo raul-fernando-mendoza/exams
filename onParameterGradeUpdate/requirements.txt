@@ -1,3 +1,6 @@
 google-cloud-firestore
 firebase-admin
 google-cloud-core
+cloudevents
+functions_framework
+google-events

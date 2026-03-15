@@ -19,12 +19,32 @@ Reporte Examen
       <mat-grid-tile><div class="property">Fecha</div></mat-grid-tile>
       <mat-grid-tile><div class="propertyValue">{{ formatDate(examGrade().applicationDate) }}</div></mat-grid-tile>
       <mat-grid-tile><div class="property">Calificación</div></mat-grid-tile>    
-      <mat-grid-tile><div class="propertyValue">{{ formatDecimal(examGrade().score) }}</div></mat-grid-tile>
+      <mat-grid-tile><div class="propertyValue">{{ formatDecimal(totalScore) }}</div></mat-grid-tile>
     </mat-grid-list>
       
     <div id="report_container">
         <canvas #target ></canvas>
     </div>
+
+    @if(homeworkScores().length > 0){
+      <mat-accordion class="example-headers-align" multi>
+        <mat-expansion-panel class="parameter">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Tareas &mdash; Promedio: {{ formatDecimal(homeworkAvg) }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-expansion-panel-content>
+            <table class="criteria">
+              <tr *ngFor="let h of homeworkScores()">
+                <td class="aspect_label">{{ h.homework.label }}</td>
+                <td class="aspect_score">{{ h.score !== null ? formatDecimal(h.score) : '0.0' }}</td>
+              </tr>
+            </table>
+          </mat-expansion-panel-content>
+        </mat-expansion-panel>
+      </mat-accordion>
+    }
 
     <mat-accordion  class="example-headers-align" multi>
         <mat-expansion-panel class="parameter"  *ngFor="let p of examGrade().parameterGrades">

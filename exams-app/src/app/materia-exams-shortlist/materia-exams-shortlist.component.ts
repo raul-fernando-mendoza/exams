@@ -130,13 +130,8 @@ export class MateriaExamsShortListComponent implements OnInit, OnDestroy {
   }
 
   hideExam( ei:ExamExamGradeItem ):boolean{
-    if(  this.materiaEnrollment.certificateUrl ){
-      if( ei.examGrade == null ){
-        return true
-      }
-      if( ei.examGrade && ei.examGrade.isReleased == false) {
-        return true
-      }
+    if( ei.examGrade && ei.examGrade.isWaiver ){
+      return true
     }   
     return false; 
   }

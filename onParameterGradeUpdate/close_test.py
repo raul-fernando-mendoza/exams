@@ -10,7 +10,7 @@ from firebase_admin import firestore
 from main import closeExamGrade 
 
 logging.basicConfig(format='**** -- %(asctime)-15s %(message)s', level=logging.ERROR)
-log = logging.getLogger("careerAdvance")
+log = logging.getLogger("closetest")
 log.setLevel(logging.DEBUG)
 
 class TestExamenObservations(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestExamenObservations(unittest.TestCase):
     def testDeleteObject(self):
 
         db = firestore.client()
-        closeExamGrade( db, documentId="839746ec-21ec-419c-8d25-df1503cac3f7")
+        closeExamGrade( db, documentId="76568dbc-1f19-4102-9b93-b78a47f16fe8")
 
 if __name__ == '__main__':
     unittest.main()

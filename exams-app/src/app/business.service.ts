@@ -640,7 +640,7 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       .where("materia_id","==", materia_id)
       .where("exam_id","==",exam_Id)
       .where("isDeleted","==",false)
-      .where("isReleased","==",true)
+      //.where("isReleased","==",true)
          
 
       qry.get().then( set => {

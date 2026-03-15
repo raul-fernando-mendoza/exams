@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Chart } from 'node_modules/chart.js'
 import { BusinessService } from '../business.service';
-import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Materia, ParameterGrade, User } from '../exams/exams.module';
+import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Homework, Materia, MateriaEnrollment, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
@@ -66,8 +66,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   //exam_label:string
 
   examGrade=signal<ExamGrade>(null)
-
-
+  homeworkScores = signal<Array<{homework: Homework, score: number | null}>>([])
 
 
   constructor(
@@ -76,6 +75,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     ,private navigationService:NavigationService
     ,private dateFormatService:DateFormatService
     ,private changeDetectorRef: ChangeDetectorRef
+    ,private userLoginService:UserLoginService
   ) {
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.exam_id = this.route.snapshot.paramMap.get('exam_id')
@@ -86,6 +86,9 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
    }
 
   ngAfterViewInit(): void {
+
+    const userId = this.userLoginService.getUserUid()
+    const homeworksPromise = this.loadHomeworkScores(userId)
 
     this.getExam(this.exam_id).then( exam =>{
       this.exam.set( exam )
@@ -99,7 +102,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         let p = this.examGrade().parameterGrades[i]
         labels[i] = p.label
         scores[i] = p.score
-      } 
+      }
 
       let students = new Array<User>()
       let transactions = []
@@ -107,15 +110,16 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         let t = this.businessService.getUser(user_id).then( user =>{
           students.push( user )
         })
-        transactions.push(t)      
+        transactions.push(t)
       })
+      transactions.push(homeworksPromise)
       Promise.all(transactions).then( ()=>{
         let studentNames:Array<string> = []
         for( let i=0 ; i<students.length ; i++){
           studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
         }
-        
-        this.createGraph(this.examGrade_id, studentNames, labels, scores)        
+
+        this.createGraph(this.examGrade_id, studentNames, labels, scores)
       })
     })
   }
@@ -141,7 +145,8 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
       type: 'bar',
       data: {
           labels: labels,
-          datasets: [{
+          datasets: [
+            {
               label: label,
               data: data,
               backgroundColor: [
@@ -160,9 +165,9 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
                   'rgba(153, 102, 255, 1)',
                   'rgba(255, 159, 64, 1)'
               ],
-              borderWidth: 1     
-        
-          }]
+              borderWidth: 1
+            }
+          ]
       },
       options: {
         scales: {
@@ -278,11 +283,48 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     })
   }
 
+  get totalScore(): number {
+    return this.examGrade().score * 0.9 + this.homeworkAvg * 0.1
+  }
+
+  get homeworkAvg(): number {
+    const items = this.homeworkScores()
+    if (items.length === 0) return 0
+    const total = items.reduce((sum, h) => sum + (h.score ?? 0), 0)
+    return total / items.length
+  }
+
   formatDate(d:any){
     return this.dateFormatService.formatDate(d.toDate())
   }
   formatDecimal(value){
     return value.toFixed(1)
+  }
+
+  async loadHomeworkScores(userId: string): Promise<void> {
+    const enrollmentSet = await db.collection("materiaEnrollments")
+      .where("student_uid", "==", userId)
+      .where("materia_id", "==", this.materia_id)
+      .where("isDeleted", "==", false)
+      .get()
+    if (enrollmentSet.empty) return
+    const enrollment = enrollmentSet.docs[0].data() as MateriaEnrollment
+
+    const homeworkSet = await db.collection("materias/" + this.materia_id + "/exams/" + this.exam_id + "/homeworks").get()
+    const items: Array<{homework: Homework, score: number | null}> = []
+    const loads = homeworkSet.docs.map(async doc => {
+      const homework = doc.data() as Homework
+      const item = { homework, score: null as number | null }
+      items.push(item)
+      const scoreDoc = await db.collection("materiaEnrollments").doc(enrollment.id)
+        .collection("homeworkScores").doc(homework.id).get()
+      if (scoreDoc.exists) {
+        item.score = scoreDoc.data().homework_score
+      }
+    })
+    await Promise.all(loads)
+    items.sort((a, b) => a.homework.idx > b.homework.idx ? 1 : -1)
+    this.homeworkScores.set(items)
   }
 
   getExamCollection():string{
