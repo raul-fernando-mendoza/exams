@@ -14,6 +14,7 @@ import { Chart } from 'node_modules/chart.js'
 import { BusinessService } from '../business.service';
 import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Homework, Materia, MateriaEnrollment, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
+import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
 import { NavigationService } from '../navigation.service';
 import { FormService } from '../form.service';
@@ -61,6 +62,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
 
   materia_id:string
   exam_id:string
+  user_uid:string
   exam = signal<Exam>(null) 
   examGrade_id:string
   //exam_label:string
@@ -76,18 +78,22 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     ,private dateFormatService:DateFormatService
     ,private changeDetectorRef: ChangeDetectorRef
     ,private userLoginService:UserLoginService
+    ,private userPreferencesService:UserPreferencesService
   ) {
     this.materia_id = this.route.snapshot.paramMap.get('materia_id')
     this.exam_id = this.route.snapshot.paramMap.get('exam_id')
     if( this.route.snapshot.paramMap.get('examGrade_id') != 'null'){
-      this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id') 
+      this.examGrade_id = this.route.snapshot.paramMap.get('examGrade_id')
     }
+    this.user_uid = this.route.snapshot.paramMap.get('user_uid')
 
    }
 
   ngAfterViewInit(): void {
 
-    const userId = this.userLoginService.getUserUid()
+    const organization_id = this.userPreferencesService.getCurrentOrganizationId()
+    const isAdmin = this.userLoginService.hasRole("role-admin-" + organization_id)
+    const userId = isAdmin ? this.user_uid : this.userLoginService.getUserUid()
     const homeworksPromise = this.loadHomeworkScores(userId)
 
     this.getExam(this.exam_id).then( exam =>{

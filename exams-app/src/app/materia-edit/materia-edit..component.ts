@@ -178,8 +178,9 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     this.unsubscribe()
   }
   ngOnInit(): void {
-    this.loadMastersList()
-    this.update()
+    this.loadMastersList().then( () => {
+      this.update()
+    })
   }
 
   
@@ -238,8 +239,8 @@ export class DialogMateriaDialog implements OnInit, OnDestroy{
     this.getExamGrades()  
   }
 
-  loadMastersList(){
-    db.collection("organizations/" + this.organization_id + "/certificateTypes").get().then( typeCertificatesSet =>{
+  loadMastersList(): Promise<void>{
+    return db.collection("organizations/" + this.organization_id + "/certificateTypes").get().then( typeCertificatesSet =>{
       this.certificateTypes.length = 0
       typeCertificatesSet.docs.map( typeCertificatesDoc =>{
         const typeCertificate:CertificateType = typeCertificatesDoc.data() as CertificateType

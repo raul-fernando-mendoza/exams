@@ -160,7 +160,7 @@ Materia
     materiaEnrollment() && !(hasExamGrades()==false && materiaEnrollment().certificateUrl)
     ) 
   ){
-  <mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel [expanded]="materiaEnrollment() && !materiaEnrollment().certificateUrl">
     <mat-expansion-panel-header>
       <mat-panel-title> Calificaciones</mat-panel-title>
       <mat-panel-description>
@@ -182,7 +182,7 @@ Materia
   }
 
   @if( materiaEnrollment() && materiaEnrollment().certificateUrl ){  
-  <mat-expansion-panel [expanded]="hasExamGrades()==false">
+  <mat-expansion-panel [expanded]="materiaEnrollment() && materiaEnrollment().certificateUrl">
     <mat-expansion-panel-header>
       <mat-panel-title> Certificado</mat-panel-title>
       <mat-panel-description>

@@ -761,10 +761,10 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
     console.log( row.materia.id, row.exam.id, row.examGrade.id )
     if( row.examGrade ){
       if(row.examGrade.isReleased ){
-        this.router.navigate(['report',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+        this.router.navigate(['report',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id, user_uid:row.user.uid}])
       }
       else{
-        this.router.navigate(['examGrade-parameterGrade-apply',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id}])
+        this.router.navigate(['examGrade-parameterGrade-apply',{ materia_id:row.materia.id, exam_id:row.exam.id, examGrade_id:row.examGrade.id, user_uid:row.user.uid}])
       }
     }
   }
