@@ -380,6 +380,8 @@ export interface ExamGrade{
 
   evaluators?:Array<string>
 
+  homeworkGrades?:{student_uid:string, homework_id:string, homework_label:string, score:number, idx:number}[]
+
   created_on?:Date
   updated_on?:Date
 }

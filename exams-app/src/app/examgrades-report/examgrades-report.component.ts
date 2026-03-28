@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Chart } from 'node_modules/chart.js'
 import { BusinessService } from '../business.service';
-import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Homework, Materia, MateriaEnrollment, ParameterGrade, User } from '../exams/exams.module';
+import { Aspect, AspectGrade, copyObj, CriteriaGrade, Exam, ExamGrade, ExamGradeMultipleRequest, ExamGradeRequest, ExamRequest, Homework, Materia, ParameterGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 import { UserPreferencesService } from '../user-preferences.service';
 import { db } from 'src/environments/environment';
@@ -94,7 +94,6 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     const organization_id = this.userPreferencesService.getCurrentOrganizationId()
     const isAdmin = this.userLoginService.hasRole("role-admin-" + organization_id)
     const userId = isAdmin ? this.user_uid : this.userLoginService.getUserUid()
-    const homeworksPromise = this.loadHomeworkScores(userId, this.materia_id, this.exam_id, this.homeworkScores)
 
     this.getExam(this.exam_id).then( exam =>{
       this.exam.set( exam )
@@ -118,11 +117,28 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
         })
         transactions.push(t)
       })
-      transactions.push(homeworksPromise)
+
+      const userHomeworkGrades = (examGrade.homeworkGrades ?? []).filter( hg => hg.student_uid === userId )
+      const items: Array<{homework: Homework, score: number | null}> = userHomeworkGrades.map( hg =>({
+        homework: { id: hg.homework_id, label: hg.homework_label, idx: hg.idx } as Homework,
+        score: hg.score
+      }))
+      items.sort( (a, b) => (a.homework.idx ?? 0) > (b.homework.idx ?? 0) ? 1 : -1 )
+      this.homeworkScores.set(items)
+
       Promise.all(transactions).then( ()=>{
         let studentNames:Array<string> = []
         for( let i=0 ; i<students.length ; i++){
           studentNames.push( students[i].displayName?students[i].displayName:students[i].email)
+        }
+
+        const hwItems = this.homeworkScores()
+        const hwAvg = hwItems.length > 0
+          ? hwItems.reduce((sum, h) => sum + (h.score ?? 0), 0) / hwItems.length
+          : 0
+        if( hwItems.length > 0 ){
+          labels.push("Tareas")
+          scores.push(hwAvg)
         }
 
         this.createGraph(this.examGrade_id, studentNames, labels, scores)
@@ -208,7 +224,8 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
           isReleased:data.isReleased,
           applicationDate:data.applicationDate,
           score :data.score,
-          parameterGrades:[]
+          parameterGrades:[],
+          homeworkGrades:data.homeworkGrades ?? []
         }
         
         let transactions = []
@@ -305,47 +322,6 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
   }
   formatDecimal(value){
     return value.toFixed(1)
-  }
-
-  loadHomeworkScores(userId: string, materia_id: string, exam_id: string, homeworkScores: any): Promise<void> {
-    return db.collection("materiaEnrollments")
-      .where("student_uid", "==", userId)
-      .where("materia_id", "==", materia_id)
-      .where("isDeleted", "==", false)
-      .get()
-      .then(enrollmentSet => {
-        if (enrollmentSet.empty) return
-        const enrollment = enrollmentSet.docs[0].data() as MateriaEnrollment
-        return db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks").get()
-          .then(homeworkSet => {
-            const items: Array<{homework: Homework, score: number | null}> = []
-            const loads = homeworkSet.docs.map(doc => {
-              const homework = doc.data() as Homework
-              const item = { homework, score: null as number | null }
-              items.push(item)
-              return db.collection("materiaEnrollments").doc(enrollment.id)
-                .collection("homeworkScores").doc(homework.id).get()
-                .then(scoreDoc => {
-                  if (scoreDoc.exists) {
-                    item.score = scoreDoc.data().homework_score
-                  }
-                })
-                .catch(err => {
-                  console.log("Error loading homeworkScore for homework " + homework.id + ":", err)
-                })
-            })
-            return Promise.all(loads).then(() => {
-              items.sort((a, b) => a.homework.idx > b.homework.idx ? 1 : -1)
-              homeworkScores.set(items)
-            })
-          })
-          .catch(err => {
-            console.log("Error loading homeworks for exam " + exam_id + ":", err)
-          })
-      })
-      .catch(err => {
-        console.log("Error loading materiaEnrollments for user " + userId + ":", err)
-      })
   }
 
   getExamCollection():string{

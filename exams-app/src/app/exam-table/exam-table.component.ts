@@ -8,7 +8,7 @@ import { CriteriaGrade, ExamGrade, ParameterGrade, User } from '../exams/exams.m
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
-import { NodeTableRow,NodeTableDataSource } from '../node-table/node-table-datasource';
+import { NodeTableRow, NodeTableDataSource } from '../node-table/node-table-datasource';
 import { UserPreferencesService } from '../user-preferences.service';
 import { DateFormatService } from '../date-format.service';
 import { FormBuilder } from '@angular/forms';
@@ -21,41 +21,41 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { MatInputModule } from '@angular/material/input';
-import { MatTableModule} from '@angular/material/table';
-import { MatPaginatorModule} from '@angular/material/paginator';
-import { MatDatepickerModule} from '@angular/material/datepicker';
-import { MatToolbarModule} from '@angular/material/toolbar';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserSelectorComponent } from '../user-selector/user-selector.component';
 import { MatSortModule } from '@angular/material/sort';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-exam-table',
   standalone: true,
   imports: [
     CommonModule
-    ,MatIconModule
-    ,MatButtonModule   
-   
-    ,FormsModule
-    ,ReactiveFormsModule
-    ,MatFormFieldModule
-    ,MatInputModule 
+    , MatIconModule
+    , MatButtonModule
 
-    ,MatTableModule
-    ,MatPaginatorModule
-    ,MatDatepickerModule
-    ,MatToolbarModule
-    
-    ,MatProgressSpinnerModule
-    ,MatMenuModule
-    ,UserSelectorComponent
-    ,MatSortModule
-    ,MatSlideToggleModule
+    , FormsModule
+    , ReactiveFormsModule
+    , MatFormFieldModule
+    , MatInputModule
 
-  ],    
+    , MatTableModule
+    , MatPaginatorModule
+    , MatDatepickerModule
+    , MatToolbarModule
+
+    , MatProgressSpinnerModule
+    , MatMenuModule
+    , UserSelectorComponent
+    , MatSortModule
+    , MatSlideToggleModule
+
+  ],
   templateUrl: './exam-table.component.html',
   styleUrls: ['./exam-table.component.css'],
   changeDetection: ChangeDetectionStrategy.Default,
@@ -69,44 +69,44 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   dataSource = signal<NodeTableDataSource>(null);
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score',  'release','delete'];
+  displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score', 'release', 'delete'];
 
   released = false
   periodicRefresh = false
-  
-  applicationDate:Date = null
-  studentId:string|null = null
+
+  applicationDate: Date = null
+  studentId: string | null = null
 
   submitting = signal(true)
   showDeleted = false
 
   organization_id = null
 
-  snapshots:Array<any> = []
+  snapshots: Array<any> = []
 
   filterForm = this.fb.group({
-    studentUid:[""]
+    studentUid: [""]
   })
-  
-  constructor( 
-      private router: Router
+
+  constructor(
+    private router: Router
     , private userLoginService: UserLoginService
     , private examImprovisacionService: BusinessService
-    , private userPreferencesService:UserPreferencesService
-    , public dateFormatService:DateFormatService
-    , public fb:FormBuilder
-    ,private changeDetectorRef: ChangeDetectorRef
+    , private userPreferencesService: UserPreferencesService
+    , public dateFormatService: DateFormatService
+    , public fb: FormBuilder
+    , private changeDetectorRef: ChangeDetectorRef
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
   }
 
-  toFixed(num, fixed){
-    if(num == null){
+  toFixed(num, fixed) {
+    if (num == null) {
       return null
     }
-    else{
-      num = Math.trunc(num*100)/100
+    else {
+      num = Math.trunc(num * 100) / 100
       return num.toFixed(fixed)
     }
   }
@@ -114,39 +114,39 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     var saved_applicationDate = localStorage.getItem('applicationDate')
-    if (saved_applicationDate && saved_applicationDate != 'null'){
-      try{
-        this.applicationDate = new Date( saved_applicationDate )
+    if (saved_applicationDate && saved_applicationDate != 'null') {
+      try {
+        this.applicationDate = new Date(saved_applicationDate)
       }
-      catch(e){
+      catch (e) {
         this.applicationDate == null
       }
-    }  
+    }
     var studentUid = localStorage.getItem('studentUid')
-    if( studentUid ){
-      this.filterForm.controls.studentUid.setValue( studentUid )
+    if (studentUid) {
+      this.filterForm.controls.studentUid.setValue(studentUid)
     }
 
-    this.update()  
+    this.update()
   }
-  update(){
-    this.loadExamGrades().then( ()=>{
-      console.log("update completed") 
-    }) 
+  update() {
+    this.loadExamGrades().then(() => {
+      console.log("update completed")
+    })
   }
-  updateList(){
+  updateList() {
     //now sort all versions
-    this.examGradeList.sort( (a,b) =>{
-      if( this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"]) ){
-        if ( a.obj["title"] ){
+    this.examGradeList.sort((a, b) => {
+      if (this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"])) {
+        if (a.obj["title"]) {
           return a.obj["title"] > b.obj["title"] ? 1 : -1
         }
-        if( a.obj["label"] ){
+        if (a.obj["label"]) {
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         }
-        
+
       }
-      else{
+      else {
         return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
       }
     })
@@ -154,86 +154,87 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     this.changeDetectorRef.detectChanges()
     let nodeTableDataSource = new NodeTableDataSource(this.examGradeList)
     this.dataSource.set(nodeTableDataSource);
-    
+
     this.dataSource().paginator = this.paginator;
-    this.table.dataSource = this.dataSource();   
+    this.table.dataSource = this.dataSource();
   }
 
-  loadExamGrades():Promise<void>{
-    return new Promise<void>((resolve, reject) =>{  
+  loadExamGrades(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       var qry = db.collection("examGrades")
-      .where("organization_id", "==", this.organization_id)
-      .where( "isDeleted", "==", false)
+        .where("organization_id", "==", this.organization_id)
+        .where("isDeleted", "==", false)
 
       var saved_applicationDate = this.applicationDate?.toISOString()
-      if( saved_applicationDate && saved_applicationDate != 'null'){
-        var d:Date = new Date(saved_applicationDate)
+      if (saved_applicationDate && saved_applicationDate != 'null') {
+        var d: Date = new Date(saved_applicationDate)
         var dateId = this.dateFormatService.getDayId(d)
-        qry = qry.where( "applicationDay", "==", dateId )
+        qry = qry.where("applicationDay", "==", dateId)
       }
 
-      
+
       var studentUid = this.filterForm.controls.studentUid.value
-      if( studentUid ){ //if version = 1 and there is a search then add the query 
-        qry = qry.where("studentUids","array-contains", studentUid)
+      if (studentUid) { //if version = 1 and there is a search then add the query 
+        qry = qry.where("studentUids", "array-contains", studentUid)
       }
 
-      if( !this.applicationDate && !studentUid){
+      if (!this.applicationDate && !studentUid) {
         qry = qry.orderBy("applicationDate", "desc")
         qry = qry.limit(1000)
       }
 
       this.submitting.set(true)
-      var unsubscribe = qry.onSnapshot( set =>{
+      var unsubscribe = qry.onSnapshot(set => {
         this.submitting.set(false)
         this.examGradeList.length = 0
 
         let transactions = []
-        set.docs.map( doc =>{
-          let examGrade:ExamGrade = doc.data() as ExamGrade
-          var d:any = examGrade.applicationDate      
+        set.docs.map(doc => {
+          let examGrade: ExamGrade = doc.data() as ExamGrade
+          var d: any = examGrade.applicationDate
 
-          let node:NodeTableRow = {
-            obj:{
-              "id":examGrade.id,
-              "applicationDate":d.toDate(),
-              "materia_id":examGrade.materia_id,
-              "materia_name":null,
-              "student_uid":examGrade.student_uid,
-              "students":[],
-              "title":examGrade.title,
-              "score":this.toFixed(examGrade.score,1),
-              "isReleased":examGrade.isReleased,
-              "isCompleted":examGrade.isCompleted
+          let node: NodeTableRow = {
+            obj: {
+              "id": examGrade.id,
+              "exam_id": examGrade.exam_id,
+              "applicationDate": d.toDate(),
+              "materia_id": examGrade.materia_id,
+              "materia_name": null,
+              "student_uid": examGrade.student_uid,
+              "students": [],
+              "title": examGrade.title,
+              "score": this.toFixed(examGrade.score, 1),
+              "isReleased": examGrade.isReleased,
+              "isCompleted": examGrade.isCompleted
             },
-            opened:false,
-            children:[],
-            nodeClass:"examGrade",
-            isLeaf:false
+            opened: false,
+            children: [],
+            nodeClass: "examGrade",
+            isLeaf: false
 
-            
+
           }
           this.examGradeList.push(node)
 
-          
-          let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc=>{
-            if( doc.exists ){
+
+          let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc => {
+            if (doc.exists) {
               node.obj["materia_name"] = doc.data().materia_name
             }
           })
           transactions.push(m)
 
-          examGrade.studentUids.forEach( e =>{
-            let u = this.examImprovisacionService.getUser(e).then( user =>{
-              if( user == null ){
-                let newUser:User = {
+          examGrade.studentUids.forEach(e => {
+            let u = this.examImprovisacionService.getUser(e).then(user => {
+              if (user == null) {
+                let newUser: User = {
                   uid: "",
-                  email:"desconocido" ,
-                  displayName:"desconocido" ,        
+                  email: "desconocido",
+                  displayName: "desconocido",
                 }
                 node.obj['students'] = [newUser]
               }
-              else{
+              else {
                 user.displayName = this.userLoginService.getDisplayNameForUser(user)
                 node.obj['students'].push(user)
               }
@@ -241,303 +242,332 @@ export class ExamTableComponent implements OnInit, OnDestroy {
             transactions.push(u)
           })
 
-          let p = this.loadParameterGrades(examGrade.id,node.children)
+          let p = this.loadParameterGrades(examGrade.id, node.children)
           transactions.push(p)
-          
+
         })
-        Promise.all(transactions).then( () =>{
+        Promise.all(transactions).then(() => {
           this.updateList()
           resolve()
-          
-        }) 
-        .catch(reason =>{
-          console.error("Error waiting for parameters:" + reason)
-          reject()
-        }) 
+
+        })
+          .catch(reason => {
+            console.error("Error waiting for parameters:" + reason)
+            reject()
+          })
       },
-      reason =>{
-        console.log(reason)
-        alert("Error loading exams grades:" + reason)
-      })
-      this.snapshots.push( unsubscribe )
-    })        
-      
+        reason => {
+          console.log(reason)
+          alert("Error loading exams grades:" + reason)
+        })
+      this.snapshots.push(unsubscribe)
+    })
+
   }
 
-  loadParameterGrades(examGrade_id, parent:NodeTableRow[]):Promise<void>{
-    return new Promise<void>((resolve, reject) =>{  
+  loadParameterGrades(examGrade_id, parent: NodeTableRow[]): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       let qry = db.collection("examGrades/" + examGrade_id + "/parameterGrades")
-      .where("isCurrentVersion", "==",true)
+        .where("isCurrentVersion", "==", true)
 
 
-      var unsubscribe = qry.onSnapshot( set =>{
+      var unsubscribe = qry.onSnapshot(set => {
         parent.length = 0
-        let m = set.docs.map( doc =>{
+        let m = set.docs.map(doc => {
           console.log("loading ParameterGrades for:" + examGrade_id)
           let parameterGrade = doc.data() as ParameterGrade
 
-          let node:NodeTableRow = {
-            obj:{
-              "examGrade_id":examGrade_id,
-              "parameterGrade_id":parameterGrade.id,
-              "label":parameterGrade.label,
-              "score":this.toFixed( parameterGrade.score,1),
-              "isCompleted":parameterGrade.isCompleted,
-              "idx":parameterGrade.idx
+          let node: NodeTableRow = {
+            obj: {
+              "examGrade_id": examGrade_id,
+              "parameterGrade_id": parameterGrade.id,
+              "label": parameterGrade.label,
+              "score": this.toFixed(parameterGrade.score, 1),
+              "isCompleted": parameterGrade.isCompleted,
+              "idx": parameterGrade.idx
             },
-            opened:false,
-            children:[],
-            nodeClass:"parameterGrade",
-            isLeaf:true
+            opened: false,
+            children: [],
+            nodeClass: "parameterGrade",
+            isLeaf: true
           }
-          parent.push(node)          
+          parent.push(node)
         })
-        parent.sort( (a,b) =>{
+        parent.sort((a, b) => {
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
         console.log("End loading ParameterGrades")
         this.updateList()
         resolve()
-        
+
       },
-      reason =>{
-        alert( "error reading exams:" + reason)
-        reject(reason)
-      })
-     
-      this.snapshots.push( unsubscribe )
-    })        
-      
+        reason => {
+          alert("error reading exams:" + reason)
+          reject(reason)
+        })
+
+      this.snapshots.push(unsubscribe)
+    })
+
   }
 
 
-  onDelete(title, examGrade_id){
-    if( !confirm("Esta seguro de querer borrar todos los examenes de::" + title ) ){
+  onDelete(title, examGrade_id) {
+    if (!confirm("Esta seguro de querer borrar todos los examenes de::" + title)) {
       return
     }
-    else{
+    else {
       db.collection("examGrades").doc(examGrade_id).update({
-        isDeleted:true,
-        updated_on:new Date()
-      }).then(()=>{
+        isDeleted: true,
+        updated_on: new Date()
+      }).then(() => {
         console.log("examGrade has been deleted")
         db.collection("examGrades/" + examGrade_id + "/parameterGrades").get().then(
-          set =>{
-            var all_promises = set.docs.map( doc =>{
-              return doc.ref.update({"isDeleted":true})
+          set => {
+            var all_promises = set.docs.map(doc => {
+              return doc.ref.update({ "isDeleted": true })
             })
-            Promise.all( all_promises ).then(
+            Promise.all(all_promises).then(
               () => {
                 console.log("delete completed")
               }
             )
-            
+
           }
-        )        
+        )
       },
-      reason=>{
-        console.log("ERROR removing examGrade:" + reason)
-      })
+        reason => {
+          console.log("ERROR removing examGrade:" + reason)
+        })
     }
   }
-  
-  updateRelease(row:NodeTableRow, value:boolean){
 
- 
-    db.collection("examGrades").doc(row.obj["id"]).update({
-      isReleased:value,
-      updated_on:new Date()
-    }).then( ()=>{
-      console.log("examGrade was released")
-    },
-    reason =>{
-      console.log("Examgrade release failed:" + reason)
+  updateRelease(row: NodeTableRow, value: boolean) {
+    let examGrade = row.obj as ExamGrade
+    const examGradeId = examGrade["id"]
+    const materia_id = examGrade["materia_id"]
+    const exam_id = examGrade["exam_id"]
+
+    const studentUids: string[] = (examGrade["students"] as User[]).map(s => s.uid)
+
+    db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks").get().then(homeworkSet => {
+      const homeworks = homeworkSet.docs.map(d => ({ id: d.id, ...(d.data() as {label?:string, idx?:number}) }))
+
+      const studentPromises = studentUids.map(student_uid => {
+        return db.collection("materiaEnrollments")
+          .where("organization_id", "==", this.organization_id)
+          .where("isDeleted", "==", false)
+          .where("student_uid", "==", student_uid)
+          .where("materia_id", "==", materia_id)
+          .get().then(enrollSet => {
+            if (enrollSet.empty) return []
+            const enrollmentId = enrollSet.docs[0].id
+            return Promise.all(homeworks.map(homework => {
+              return db.collection("materiaEnrollments").doc(enrollmentId)
+                .collection("homeworkScores").doc(homework.id).get().then(scoreDoc => {
+                  const score = scoreDoc.exists ? (scoreDoc.data().homework_score ?? 0) : 0
+                  return { student_uid, homework_id: homework.id, homework_label: homework.label ?? '', score, idx: homework.idx ?? 0 }
+                })
+            }))
+          })
+      })
+
+      Promise.all(studentPromises).then(results => {
+        const homeworkGrades = results.flat()
+        db.collection("examGrades").doc(examGradeId).update({
+          isReleased: value,
+          homeworkGrades,
+          updated_on: new Date()
+        }).then(() => {
+          console.log("examGrade was released")
+        }, reason => {
+          console.log("Examgrade release failed:" + reason)
+        })
+      })
     })
-  
-
   }
-  isAdmin(){
+  isAdmin() {
     return this.userLoginService.hasRole("role-admin-" + this.organization_id)
   }
 
-  applicationFilterChange(e){
-    if ( e instanceof MatDatepickerInputEvent ){
-      if ( e.value == null ){
+  applicationFilterChange(e) {
+    if (e instanceof MatDatepickerInputEvent) {
+      if (e.value == null) {
         this.applicationDate = null
       }
       else this.applicationDate = e.value
     }
     console.log("date changed to:" + this.applicationDate)
-    localStorage.setItem('released' , this.released.toString())
-    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)  
-   
+    localStorage.setItem('released', this.released.toString())
+    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)
+
 
     this.userLoginService.getUserIdToken().then(
       token => {
         this.update()
       },
       error => {
-        if( error.status == 401 ){
+        if (error.status == 401) {
           this.router.navigate(['/loginForm']);
         }
-        else{
+        else {
           alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
         }
       }
-    )    
+    )
   }
 
-  
-  onCreate(){
-    this.router.navigate(['/ExamenImprovisacionFormComponent']);
-  }  
 
-  onEditParameterGrade(examGrade_id, parameterGrade_id){
-      this.router.navigate(['/examGrade-parameterGrade-apply',{examGrade_id:examGrade_id,parameterGrade_id:parameterGrade_id}]);
-  } 
+  onCreate() {
+    this.router.navigate(['/ExamenImprovisacionFormComponent']);
+  }
+
+  onEditParameterGrade(examGrade_id, parameterGrade_id) {
+    this.router.navigate(['/examGrade-parameterGrade-apply', { examGrade_id: examGrade_id, parameterGrade_id: parameterGrade_id }]);
+  }
   ngOnDestroy(): void {
-    this.snapshots.map( func =>{
+    this.snapshots.map(func => {
       func()
     })
-  }   
-  onReset(examGrade_id, parameterGrade_id, title){
-    if( !confirm("Esta seguro de querer limpiar:" +  title) ){
+  }
+  onReset(examGrade_id, parameterGrade_id, title) {
+    if (!confirm("Esta seguro de querer limpiar:" + title)) {
       return
-    }    
+    }
 
-    this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then( ()=>{
+    this.resetExamGradeParameter(examGrade_id, parameterGrade_id).then(() => {
       console.log("completed")
     })
-    .catch( ()=>{
-      console.log("ERROR: reseteando el examen")
-    })
+      .catch(() => {
+        console.log("ERROR: reseteando el examen")
+      })
 
-  }  
-  resetExamGradeParameter(examGrade_id, parameterGrade_id):Promise<void>{
+  }
+  resetExamGradeParameter(examGrade_id, parameterGrade_id): Promise<void> {
 
-    return new Promise<void>( (resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
 
-     
+
       let parameterGradeDoc = db.collection('examGrades/' + examGrade_id + '/parameterGrades').doc(parameterGrade_id)
 
 
-      parameterGradeDoc.collection('criteriaGrades').get().then( criteriaSet =>{
-        let criteriaMap = criteriaSet.docs.map( criteriaDoc =>{
+      parameterGradeDoc.collection('criteriaGrades').get().then(criteriaSet => {
+        let criteriaMap = criteriaSet.docs.map(criteriaDoc => {
           return this.resetCriteria(criteriaDoc)
         })
-        Promise.all( criteriaMap ).then( ()=>{
+        Promise.all(criteriaMap).then(() => {
           parameterGradeDoc.update({
-            isCompleted:false,
-            score:10, 
-            evaluator_comment:null     
-          }).then( () =>{
+            isCompleted: false,
+            score: 10,
+            evaluator_comment: null
+          }).then(() => {
             resolve()
-          })         
-          
+          })
+
         })
-        .catch( () =>{
+          .catch(() => {
+            reject()
+          })
+      })
+        .catch(() => {
           reject()
-        })        
-      })
-      .catch( () =>{
-        reject()
-      })
+        })
     })
 
-    
+
   }
 
 
-  resetCriteria(criteriaDoc):Promise<void>{
-    return new Promise<void>( (resolve, reject)=>{
-      let criteriaGrade:CriteriaGrade = criteriaDoc.data() as CriteriaGrade
+  resetCriteria(criteriaDoc): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let criteriaGrade: CriteriaGrade = criteriaDoc.data() as CriteriaGrade
       criteriaDoc.ref.update({
-        score:10,
-        earnedPoints:criteriaGrade.availablePoints
+        score: 10,
+        earnedPoints: criteriaGrade.availablePoints
       })
-      criteriaDoc.ref.collection('aspectGrades').get().then( aspectGradeSet =>{
-        let aspectMap = aspectGradeSet.docs.map( aspectGradeDoc=>{
+      criteriaDoc.ref.collection('aspectGrades').get().then(aspectGradeSet => {
+        let aspectMap = aspectGradeSet.docs.map(aspectGradeDoc => {
           return aspectGradeDoc.ref.update({
-            score:1,
-            missingElements:null
+            score: 1,
+            missingElements: null
           })
         })
-        Promise.all( aspectMap ).then( ()=>{
+        Promise.all(aspectMap).then(() => {
           resolve()
         })
-        .catch( () =>{
+          .catch(() => {
+            reject()
+          })
+      })
+        .catch(() => {
           reject()
         })
-      })
-      .catch( () =>{
-        reject()
-      })
 
     })
-  }  
+  }
 
-  onRemoveParameterGrade(examGrade_id, parameterGrade_id, title){
-    if( !confirm("Esta seguro de querer eliminar:" +  title) ){
+  onRemoveParameterGrade(examGrade_id, parameterGrade_id, title) {
+    if (!confirm("Esta seguro de querer eliminar:" + title)) {
       return
-    }    
-
-    var req = {
-      collection:"examGrades/" + examGrade_id + "/parameterGrades",
-      id:parameterGrade_id
     }
 
-    this.userLoginService.getUserIdToken().then( token => {
+    var req = {
+      collection: "examGrades/" + examGrade_id + "/parameterGrades",
+      id: parameterGrade_id
+    }
+
+    this.userLoginService.getUserIdToken().then(token => {
       this.examImprovisacionService.firestoreApiInterface("deleteCollectionObject", token, req).subscribe(
         {
-          next(data){ 
-            var res = data["result"] 
+          next(data) {
+            var res = data["result"]
             //now update the examGrade updated_on
 
-            db.collection("examGrades/").doc(examGrade_id).update({"updated_on": new Date()}).then(
-              ()=>{
+            db.collection("examGrades/").doc(examGrade_id).update({ "updated_on": new Date() }).then(
+              () => {
                 console.log("examgrade has been updated for updated_on")
               },
-              reason=>{
+              reason => {
                 alert("Error removiendo parameter:" + reason)
               }
-            ) 
-          },   
-          error(reason){  
-            alert( "ERROR: removiendo parameter:" + JSON.stringify(reason))
+            )
           },
-          complete(){
+          error(reason) {
+            alert("ERROR: removiendo parameter:" + JSON.stringify(reason))
+          },
+          complete() {
             console.log("never called")
           }
         }
       )
     },
-    error => {
-      alert("Error in token:" + error.errorCode + " " + error.errorMessage)
-    }) 
+      error => {
+        alert("Error in token:" + error.errorCode + " " + error.errorMessage)
+      })
   }
   examStudentChange(studentUid) {
     console.log("student selection:" + studentUid)
-    localStorage.setItem('studentUid', studentUid ? studentUid : "", )     
+    localStorage.setItem('studentUid', studentUid ? studentUid : "",)
     this.userLoginService.getUserIdToken().then(
       token => {
         this.update()
       },
       error => {
-        if( error.status == 401 ){
+        if (error.status == 401) {
           this.router.navigate(['/loginForm']);
         }
-        else{
+        else {
           alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
         }
       }
-    )    
-  }  
+    )
+  }
 
-  onClearName(){
+  onClearName() {
     this.filterForm.controls.studentUid.setValue("")
     this.examStudentChange("")
   }
-  onClearDate(){
+  onClearDate() {
     this.applicationDate = null
     this.applicationFilterChange(null)
   }
