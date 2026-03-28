@@ -94,7 +94,7 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     const organization_id = this.userPreferencesService.getCurrentOrganizationId()
     const isAdmin = this.userLoginService.hasRole("role-admin-" + organization_id)
     const userId = isAdmin ? this.user_uid : this.userLoginService.getUserUid()
-    const homeworksPromise = this.loadHomeworkScores(userId)
+    const homeworksPromise = this.loadHomeworkScores(userId, this.materia_id, this.exam_id, this.homeworkScores)
 
     this.getExam(this.exam_id).then( exam =>{
       this.exam.set( exam )
@@ -307,30 +307,45 @@ export class ExamgradesReportComponent implements OnInit, AfterViewInit {
     return value.toFixed(1)
   }
 
-  async loadHomeworkScores(userId: string): Promise<void> {
-    const enrollmentSet = await db.collection("materiaEnrollments")
+  loadHomeworkScores(userId: string, materia_id: string, exam_id: string, homeworkScores: any): Promise<void> {
+    return db.collection("materiaEnrollments")
       .where("student_uid", "==", userId)
-      .where("materia_id", "==", this.materia_id)
+      .where("materia_id", "==", materia_id)
       .where("isDeleted", "==", false)
       .get()
-    if (enrollmentSet.empty) return
-    const enrollment = enrollmentSet.docs[0].data() as MateriaEnrollment
-
-    const homeworkSet = await db.collection("materias/" + this.materia_id + "/exams/" + this.exam_id + "/homeworks").get()
-    const items: Array<{homework: Homework, score: number | null}> = []
-    const loads = homeworkSet.docs.map(async doc => {
-      const homework = doc.data() as Homework
-      const item = { homework, score: null as number | null }
-      items.push(item)
-      const scoreDoc = await db.collection("materiaEnrollments").doc(enrollment.id)
-        .collection("homeworkScores").doc(homework.id).get()
-      if (scoreDoc.exists) {
-        item.score = scoreDoc.data().homework_score
-      }
-    })
-    await Promise.all(loads)
-    items.sort((a, b) => a.homework.idx > b.homework.idx ? 1 : -1)
-    this.homeworkScores.set(items)
+      .then(enrollmentSet => {
+        if (enrollmentSet.empty) return
+        const enrollment = enrollmentSet.docs[0].data() as MateriaEnrollment
+        return db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks").get()
+          .then(homeworkSet => {
+            const items: Array<{homework: Homework, score: number | null}> = []
+            const loads = homeworkSet.docs.map(doc => {
+              const homework = doc.data() as Homework
+              const item = { homework, score: null as number | null }
+              items.push(item)
+              return db.collection("materiaEnrollments").doc(enrollment.id)
+                .collection("homeworkScores").doc(homework.id).get()
+                .then(scoreDoc => {
+                  if (scoreDoc.exists) {
+                    item.score = scoreDoc.data().homework_score
+                  }
+                })
+                .catch(err => {
+                  console.log("Error loading homeworkScore for homework " + homework.id + ":", err)
+                })
+            })
+            return Promise.all(loads).then(() => {
+              items.sort((a, b) => a.homework.idx > b.homework.idx ? 1 : -1)
+              homeworkScores.set(items)
+            })
+          })
+          .catch(err => {
+            console.log("Error loading homeworks for exam " + exam_id + ":", err)
+          })
+      })
+      .catch(err => {
+        console.log("Error loading materiaEnrollments for user " + userId + ":", err)
+      })
   }
 
   getExamCollection():string{

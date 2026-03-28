@@ -293,6 +293,8 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
               if (scoreDoc.exists) {
                 n.homeworkScore = scoreDoc.data().homework_score
               }
+            }).catch(err => {
+              console.log("homeworkScores not found for homework " + homework.id + ":", err)
             })
         })
         Promise.all(scoreLoads).then(() => {
@@ -750,6 +752,13 @@ export class MateriaCertificatesComponent implements AfterViewInit, OnInit {
           row.homeworkScore = score
           this._snackBar.open("Calificación guardada", "X", { duration: 2000 })
         })
+        .catch(err => {
+          console.log("Error saving homeworkScore:", err)
+          alert("Error al guardar la calificación")
+        })
+    }).catch(err => {
+      console.log("Error loading materiaEnrollment:", err)
+      alert("Error al verificar el enrolamiento")
     })
   }
 

@@ -47,6 +47,7 @@ gsutil cors set cors.json gs://thoth-qa.appspot.com
 #to export the indexes the file should be stored as firestore.indexes.json
 firebase firestore:indexes > firestore.indexes_export.json
 firebase deploy --only firestore:indexes
+firebase deploy --only firestore:rules
 
 #to verify the typescript version installed 
 cd node_modules\.bin\
