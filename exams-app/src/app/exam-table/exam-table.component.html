@@ -41,11 +41,15 @@ Calificaciones
     <ng-container matColumnDef="titulo">
       <th mat-header-cell *matHeaderCellDef >Titulo</th>
       <td mat-cell *matCellDef="let row">
-        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'examGrade'">
-          <div>{{row.obj.materia_name}}</div>
-          <div>{{row.obj.title }}</div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'examGrade'" style="display:flex;align-items:center;cursor:pointer;">
+          <mat-icon>{{ row.opened ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span>
+            <div>{{row.obj.materia_name}}</div>
+            <div>{{row.obj.title }}</div>
+          </span>
         </div>
-        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'parameterGrade'">{{ row.obj.label }}</div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'parameterGrade'"><mat-icon>fact_check</mat-icon>{{ row.obj.label }}</div>
+        <div [class]="row.nodeClass" *ngIf="row.nodeClass == 'homeworkGrade'"><mat-icon>video_file</mat-icon>{{ row.obj.label }}</div>
       </td>
     </ng-container>
     <ng-container matColumnDef="alumna">
@@ -59,21 +63,34 @@ Calificaciones
           </ul>
         </div>
       </td>
-    </ng-container>    
+    </ng-container>   
+<ng-container matColumnDef="completed">
+      <th mat-header-cell *matHeaderCellDef >Completado</th>
+      
+      <td mat-cell *matCellDef="let row">
+        @if( row.nodeClass == 'parameterGrade' ) {
+          <ng-template [ngIf]="row.obj.isCompleted" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
+          <ng-template #notCompleted>
+            <p>No completado</p>
+          </ng-template>
+        }
+        @else if(row.nodeClass == 'homeworkGrade' ){
+          @if( row.obj.score > 0){
+            <mat-icon>done</mat-icon>
+          }
+          @else{
+            <mat-icon>close</mat-icon>
+          }
+        }
+        
+      </td>
+    </ng-container>         
     <ng-container matColumnDef="score">
       <th mat-header-cell *matHeaderCellDef >score</th>
       <td mat-cell *matCellDef="let row">{{ row.obj.isCompleted?row.obj.score:"N/A" }}</td>
     </ng-container>    
 
-    <ng-container matColumnDef="completed">
-      <th mat-header-cell *matHeaderCellDef >Completado</th>
-      <td mat-cell *matCellDef="let row">
-        <ng-template [ngIf]="row.obj.isCompleted" [ngIfElse]="notCompleted"><p>Completado</p></ng-template>
-        <ng-template #notCompleted>
-          <p>No completado</p>
-        </ng-template>
-      </td>
-    </ng-container>    
+    
  
     <!-- Name Column -->
     <ng-container matColumnDef="release">
@@ -113,7 +130,9 @@ Calificaciones
 
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [class.exam-grade-row]="row.nodeClass == 'examGrade'"
+        (click)="row.nodeClass == 'examGrade' && onExpandExamGrade(row)"></tr>
   </table>
   
   <mat-paginator #paginator

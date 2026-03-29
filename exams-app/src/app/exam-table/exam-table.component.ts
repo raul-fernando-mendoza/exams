@@ -242,9 +242,6 @@ export class ExamTableComponent implements OnInit, OnDestroy {
             transactions.push(u)
           })
 
-          let p = this.loadParameterGrades(examGrade.id, node.children)
-          transactions.push(p)
-
         })
         Promise.all(transactions).then(() => {
           this.updateList()
@@ -265,6 +262,23 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
   }
 
+  onExpandExamGrade(row: NodeTableRow) {
+    if (row.nodeClass !== 'examGrade') return
+    if (row.opened) {
+      row.opened = false
+      row.children.length = 0
+      this.updateList()
+    } else {
+      row.opened = true
+      Promise.all([
+        this.loadParameterGrades(row.obj['id'], row.children),
+        this.loadHomeworkGrades(row, row.children)
+      ]).then(() => {
+        this.updateList()
+      })
+    }
+  }
+
   loadParameterGrades(examGrade_id, parent: NodeTableRow[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       let qry = db.collection("examGrades/" + examGrade_id + "/parameterGrades")
@@ -272,7 +286,9 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
 
       var unsubscribe = qry.onSnapshot(set => {
-        parent.length = 0
+        for (let i = parent.length - 1; i >= 0; i--) {
+          if (parent[i].nodeClass === 'parameterGrade') parent.splice(i, 1)
+        }
         let m = set.docs.map(doc => {
           console.log("loading ParameterGrades for:" + examGrade_id)
           let parameterGrade = doc.data() as ParameterGrade
@@ -297,7 +313,6 @@ export class ExamTableComponent implements OnInit, OnDestroy {
           return a.obj["label"] > b.obj["label"] ? 1 : -1
         })
         console.log("End loading ParameterGrades")
-        this.updateList()
         resolve()
 
       },
@@ -311,6 +326,61 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
   }
 
+
+  loadHomeworkGrades(row: NodeTableRow, parent: NodeTableRow[]): Promise<void> {
+    const materia_id = row.obj['materia_id']
+    const exam_id = row.obj['exam_id']
+    const students: User[] = row.obj['students'] as User[]
+
+    return db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks")
+      .get().then(homeworkSet => {
+        const homeworks = homeworkSet.docs.map(d => {
+          const data = d.data() as any
+          return { id: d.id, label: data.label ?? '', idx: data.idx ?? 0 }
+        })
+        homeworks.sort((a, b) => a.idx - b.idx)
+
+        return Promise.all(homeworks.map(homework => {
+          return Promise.all(students.map(student => {
+            return db.collection("materiaEnrollments")
+              .where("organization_id", "==", this.organization_id)
+              .where("isDeleted", "==", false)
+              .where("student_uid", "==", student.uid)
+              .where("materia_id", "==", materia_id)
+              .get().then(enrollSet => {
+                if (enrollSet.empty) return 0
+                const enrollmentId = enrollSet.docs[0].id
+                return db.collection("materiaEnrollments").doc(enrollmentId)
+                  .collection("homeworkScores").doc(homework.id).get().then(scoreDoc => {
+                    return scoreDoc.exists ? (scoreDoc.data().homework_score ?? 0) : 0
+                  })
+              })
+          })).then((scores: number[]) => {
+            const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
+            const node: NodeTableRow = {
+              obj: {
+                "label": homework.label,
+                "score": this.toFixed(avg, 1),
+                "idx": homework.idx,
+                "isCompleted": true
+              },
+              opened: false,
+              children: [],
+              nodeClass: "homeworkGrade",
+              isLeaf: true
+            }
+            parent.push(node)
+          })
+        })).then(() => {
+          const homeworkNodes = parent.filter(n => n.nodeClass === 'homeworkGrade')
+          homeworkNodes.sort((a, b) => a.obj['idx'] - b.obj['idx'])
+          for (let i = parent.length - 1; i >= 0; i--) {
+            if (parent[i].nodeClass === 'homeworkGrade') parent.splice(i, 1)
+          }
+          homeworkNodes.forEach(n => parent.push(n))
+        })
+      })
+  }
 
   onDelete(title, examGrade_id) {
     if (!confirm("Esta seguro de querer borrar todos los examenes de::" + title)) {
