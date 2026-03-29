@@ -23,9 +23,14 @@
                     <button mat-menu-item *ngFor="let role of roles" (click)="addRole(user, role + '-' +  organization_id)" [disabled]="submitting()">
                         <span>{{ role.split("-")[1] }}</span>
                     </button> 
-                    <button (click)="deleteUser( user.email )">
+                    <button mat-menu-item (click)="changePassword(user)" [disabled]="submitting()">
+                        <mat-icon>lock_reset</mat-icon>
+                        <span>cambiar contraseña</span>
+                    </button>
+                    <button mat-menu-item (click)="deleteUser( user.email )" [disabled]="submitting()">
                         <mat-icon>delete</mat-icon>
-                    </button>      
+                        <span>borrar</span>
+                    </button>
                               
                 </mat-menu>                   
             </mat-grid-tile>  

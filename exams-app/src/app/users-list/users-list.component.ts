@@ -217,6 +217,34 @@ export class UsersListComponent implements OnInit {
       alert("token error:" + error.errorCode + " " + error.errorMessage)
     })
   }
+  changePassword(user: UserItem){
+    const newPassword = prompt(`Nueva contraseña para ${user.email}:`)
+    if( !newPassword ){
+      return
+    }
+    if( newPassword.length < 6 ){
+      alert("La contraseña debe tener al menos 6 caracteres.")
+      return
+    }
+    const request = {
+      email: user.email,
+      password: newPassword
+    }
+    this.userLoginService.getUserIdToken().then( token => {
+      this.businessService.authApiInterface("changePassword", token, request).subscribe({
+        next(data){
+          alert(`Contraseña actualizada para ${user.email}`)
+        },
+        error(reason){
+          alert("Error al cambiar contraseña: " + reason.error)
+        }
+      })
+    },
+    error => {
+      alert("token error:" + error.errorCode + " " + error.errorMessage)
+    })
+  }
+
   deleteUser(userEmail){
 
     if( !confirm("Esta seguro de querer borrar el usuario:"+ userEmail) ){

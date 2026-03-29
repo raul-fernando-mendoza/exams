@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/projects/exams -name *.js -not -path */node_modules/* -not -path */exams-app/*)",
+      "Bash(xargs grep:*)"
+    ]
+  }
+}
