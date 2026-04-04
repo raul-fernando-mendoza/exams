@@ -143,6 +143,11 @@ Carrera
                 <mat-panel-title>Mapa Curricular</mat-panel-title>
                 </mat-expansion-panel-header>
                 <mat-expansion-panel-content class="container">
+
+                    @if( !isAdmin ){
+                        <app-career-user [career_id]="id" [user_uid]="userUid" [organization_id]="organization_id"></app-career-user>
+                    }
+                    @else{
                     <span class="cycle-container">
                         @for( c of cycles(); track c.id; let i=$index){ 
                             <span class="cycle">
@@ -258,6 +263,7 @@ Carrera
                         }
                         <button *ngIf="isAdmin" matButton="tonal"  (click)="addCycle()"><mat-icon>add</mat-icon></button>                          
                     </span> 
+                    }
                     
                 </mat-expansion-panel-content>
             </mat-expansion-panel>  

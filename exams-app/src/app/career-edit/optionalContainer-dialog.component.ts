@@ -28,6 +28,7 @@ export class OptionalContainerDialogComponent {
 
   organization_id = null
   isAdmin = false
+  isReadOnly = false
 
   materias = signal<Array<Materia>>([])
   materiasApproved:Map<string, boolean>
@@ -47,6 +48,7 @@ export class OptionalContainerDialogComponent {
       }
 
       this.materiasApproved = this.data["materiasApproved"]
+      this.isReadOnly = this.data["isReadOnly"]
       this.materias.set(data["optionalContainer"].materias)
   }
 

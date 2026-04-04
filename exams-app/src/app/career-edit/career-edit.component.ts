@@ -32,6 +32,7 @@ import { MateriaSelectDialogComponent } from '../materia-select-dialog/materia-s
 import { OptionalContainerDialogComponent } from './optionalContainer-dialog.component';
 
 import {MatBadgeModule} from '@angular/material/badge';
+import { CareerUserComponent } from '../career-user/career-user.component';
 
 
 @Component({
@@ -58,6 +59,7 @@ import {MatBadgeModule} from '@angular/material/badge';
     ,TextFieldModule
     ,MatExpansionModule
     ,MatBadgeModule
+    ,CareerUserComponent
   ],   
   templateUrl: './career-edit.component.html',
   styleUrls: ['./career-edit.component.css']

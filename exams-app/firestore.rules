@@ -46,7 +46,7 @@ service cloud.firestore {
         allow read, write: if isAdmin(request)
         allow read: if true
       }       
-		}
+		}       
     match /materiaEnrollments/{materiaEnrollmentId} {  
       function isAdmin(request) {
       	return ('role-admin-' + get(/databases/$(database)/documents/materiaEnrollments/$(materiaEnrollmentId)).data.organization_id) in request.auth.token

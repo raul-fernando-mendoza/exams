@@ -1,2 +1,76 @@
-<h2>Avance de carrera</h2>
-TBD
+@if( !career() ){
+    <span>loading</span>
+}
+@else{
+
+<h1>{{ career().career_name }}</h1>
+
+<div class=progress>
+    <mat-progress-bar mode="determinate"
+    [value]="((totalApprovedMaterias() + totalApprovedOptional()) / totalMaterias() ) * 100">
+    </mat-progress-bar>
+    <div>
+        {{ totalApprovedMaterias() + totalApprovedOptional() }} of {{ totalMaterias() }}
+    </div>
+</div>
+
+@if(user()){
+<h2>{{ user_display_name() }}</h2>
+}
+
+    <span class="cycle-container">
+        @for( c of career().cycles; track c.id; let i=$index){
+        <span class="cycle">
+            <span>
+                {{c.cycleName}}
+            </span>
+            
+            <span class="objective-container">
+                @for( o of c.objectives; track o.id; let i=$index){
+                <span class="objective">
+                    <span>
+                        {{ o.objectiveName }}
+                    </span>
+                    
+                    <span class="semester-container">
+                        @for( s of o.semesters; track s.id; let i=$index){
+                        <span class="semester">
+                            <span class="semester-label">
+                                <span>{{s.semesterName}}</span>
+                            </span>
+                            <span class="materia-container">
+                                @for( m of s.materias; track m.id; let i=$index){
+                                    @if(m.hasOwnProperty('materias')){
+                                    <span class="optional-container {{m.materias[0]?.color1}}">
+                                        <span class="optional-materia">
+                                            <span >{{m.label}}</span>
+                                            <button mat-icon-button (click)="editOptionalMateria(m)"><mat-icon>edit</mat-icon></button>
+                                            @if( this.isOptionalApproved(m) ){
+                                            <mat-icon>done</mat-icon>
+                                            
+                                            }
+                                        </span>
+                                    </span>
+                                    }
+                                    @else{
+                                        <span class="{{m.color1}} materia">
+                                            <span>{{m.materia_name}}</span>
+                                            @if( this.materiasApproved().get(m.id) ){
+                                                <mat-icon>done</mat-icon>
+                                            }
+                                        </span>
+                                    }
+                                }
+                            </span>
+                        </span>
+                        }
+                    </span>
+                </span>
+                }
+            </span>
+            
+        </span>
+        }
+    </span>
+    
+}

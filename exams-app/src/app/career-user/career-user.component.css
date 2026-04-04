@@ -1,10 +1,102 @@
-div{
-    margin-left:50px;
+mat-accordion{
+    width:100%;
+}   
+
+.progress{
+    width:50%;
+    margin:auto auto 1em 1em;
 }
 
-.example-icon {
-    padding: 0 14px;
+.cycle-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    row-gap:1em;
 }
-.example-spacer {
-    flex: 1 1 auto;
+.cycle{
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left:1em;
+    background-color: lightgray;
+    border:1px solid black;
+}
+.objective-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;
+    /*border:2px solid blue;    */
+}
+.objective{
+    display:flex;
+    flex-direction: column;    
+    align-items: center;
+    background-color: white; /*this background is the only one required*/
+    border:1px solid black;
+} 
+.semester-container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;
+    
+    /*border:2px solid yellow;    */
+}
+.semester{
+    display:flex;
+    flex-direction: column;  
+    align-items: stretch ; 
+    background-color:white; 
+    
+    /*border:1px solid red;*/
+} 
+.semester-label{
+    display:flex;
+    flex-direction: row; 
+    align-items: stretch ; 
+    flex-wrap: nowrap;  
+    justify-content:center;
+    background-color: lightgray;
+}
+.semester-label button{
+    margin-left: 0.5em;
+}
+.materia-container{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;  
+}
+.materia{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;    
+    padding-right: 2em;
+    padding-top: 0.5em;
+} 
+.optional-container{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: normal;  
+    /*border:2px solid black;  */
+}
+.optional-materia{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;    
+    padding-right: 2em;
+    padding-top: 0.5em;
+    white-space: nowrap;
+}
+.semester_input{
+    width:8em;
 }
