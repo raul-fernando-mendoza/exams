@@ -15,7 +15,22 @@
         <div class="spacer"></div>
         <div *ngIf="isAdmin && parameterGrade() && parameterGrade().isCompleted"><button mat-button (click)="onEditParameterGrade()" [disabled]="submitting"><mat-icon>edit</mat-icon>Modificar</button></div>
     </div> 
-    <div *ngIf="isAdmin && evaluatorDisplayName">Evaluador:{{evaluatorDisplayName()}}</div>
+
+    <div *ngIf="isAdmin">
+
+    Evaluator:
+    <form [formGroup]="fg">
+        <mat-form-field appearance="fill" >
+            <mat-label>selecciona evaluator</mat-label>
+            <mat-select formControlName="evaluator_uid" (selectionChange)="evaluatorChange($event)">
+            <mat-option *ngFor="let m of evaluators()" [value]="m.uid">
+                {{m.displayName}}
+            </mat-option>                 
+            </mat-select>
+        </mat-form-field>
+    </form>   
+    </div> 
+
 
     <div *ngFor="let criteriaGrade of criteriaGrades()">
         <criteriagrade-apply collection="{{collection}}/{{parameterGrade_id}}/criteriaGrades" criteriaGrade_id="{{criteriaGrade.id}}" scoreType="{{parameterGrade().scoreType}}" (change)="onCriteriaGradeChange($event)" [disabled]="parameterGrade().isCompleted">

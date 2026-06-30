@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserPreferencesService } from '../user-preferences.service';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
-import { CriteriaGrade, ParameterGrade } from '../exams/exams.module';
+import { CriteriaGrade, ParameterGrade, User } from '../exams/exams.module';
 import { CriteriaGradeApplyChange, CriteriaGradeApplyComponent } from './criteriagrade-apply.component';
 import { MatDialog, MatDialogModule  } from '@angular/material/dialog';
 import { ParameterGradeCommentDialog } from './parameterGrade-comment-dlg';
@@ -13,6 +13,11 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {MatGridListModule} from '@angular/material/grid-list';
+
+import { FormsModule, ReactiveFormsModule,FormBuilder, } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 export class ParameterGradeApplyChange{
   parameterGradeGrade_id:string
@@ -24,7 +29,6 @@ export class ParameterGradeApplyChange{
   }
 }
 
-
 @Component({
   selector: 'parametergrade-apply',
   standalone: true,
@@ -34,6 +38,12 @@ export class ParameterGradeApplyChange{
     ,MatButtonModule       
     ,MatGridListModule
     ,CriteriaGradeApplyComponent
+
+    ,FormsModule
+    ,ReactiveFormsModule
+    ,MatFormFieldModule
+    ,MatInputModule
+    ,MatSelectModule     
 
     ,MatDialogModule     
   ],    
@@ -47,16 +57,18 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   isDisabled = false
   submitting = false  
   
-  @Input() collection:string
-  @Input() parameterGrade_id:string
+  @Input() collection!:string
+  @Input() parameterGrade_id!:string
   @Output() change=new EventEmitter<ParameterGradeApplyChange>()
-  examGrade_id:string
+  examGrade_id!:string
   parameterGrade = signal<ParameterGrade|null>(null)
-  evaluatorDisplayName = signal("")  
+  evaluators = signal<Array<User>>([])
 
   criteriaGrades = signal<CriteriaGrade[]>([])
 
-  sample = [1,2,3]
+  fg = this.fb.group({
+    evaluator_uid:[""]
+  })  
 
   constructor(
     private activatedRoute: ActivatedRoute 
@@ -65,6 +77,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     ,public dialog: MatDialog
     ,private businessService: BusinessService
     ,private router:Router    
+    ,private fb: FormBuilder
     ){ 
     this.organization_id = this.userPreferencesService.getCurrentOrganizationId()
     this.isAdmin = this.userLoginService.hasRole("role-admin-" + this.organization_id)
@@ -74,16 +87,24 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.examGrade_id = this.collection.split("/").reverse()[1]
-    this.update() 
-  }
-  update(){
+
+
+
     db.collection(this.collection).doc(this.parameterGrade_id).get().then( doc =>{
       this.parameterGrade.set(doc.data() as ParameterGrade)
 
-      this.businessService.getUser(this.parameterGrade().evaluator_uid).then( evaluator =>{
-        this.evaluatorDisplayName.set(this.userLoginService.getDisplayNameForUser(evaluator)) 
-        
-      })     
+      this.userLoginService.getUserIdToken().then( token => {   
+        this.businessService.getEvaluators(this.organization_id, token).then( evaluators =>{
+          this.evaluators.set(evaluators)        
+          if( this.parameterGrade() ){
+            let parameterGrade:ParameterGrade = this.parameterGrade()!
+            if( parameterGrade.evaluator_uid ){
+              let evaluator_uid:string = parameterGrade.evaluator_uid
+              this.fg.controls.evaluator_uid.setValue( evaluator_uid )
+            }            
+          }        
+        })
+      })      
 
       this.loadCriterias()
     },
@@ -274,5 +295,19 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     }) 
         
   }  
+  evaluatorChange(event) {
+    var evaluatorId = event.value
 
+    let parameterGrade:ParameterGrade = {
+      evaluator_uid: evaluatorId,
+      evaluator: this.evaluators().find( e => e.uid == evaluatorId)
+    }
+    
+    db.collection(this.collection).doc(this.parameterGrade_id).update( parameterGrade  ).then( () =>{
+      console.log("updated evaluator")
+    },
+    reason =>{
+      alert("ERROR saving parameter update:" + reason )
+    })      
+  }  
 }

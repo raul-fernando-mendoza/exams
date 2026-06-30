@@ -701,6 +701,44 @@ curl -m 70 -X POST https://us-central1-thoth-qa.cloudfunctions.net/deleteCertifi
       })
     })
   }  
+  getEvaluators(organization_id:string, token:String ):Promise<Array<User>>{
+    return new Promise<Array<User>>( (resolve,reject)=>{
+      let evaluators:User[] = []
 
-  
+      var evaluator_req = {
+      "claims":"role-evaluador-" + organization_id
+      }  
+      this.authApiInterface("getUserListForClaim", token, evaluator_req).subscribe({
+        next( data:any ){
+          let users:User[] = data["result"] as Array<any>;
+          for( let i =0; i<users.length; i++){
+            var user = users[i]
+
+            let displayName = ""
+            if( user.claims && user.claims["displayName"]){
+              displayName = user.claims["displayName"].trim()
+            }
+            else if( user.displayName ){
+              displayName = user.displayName.trim()
+            }  
+
+            
+            let obj:User = {
+              "uid":user.uid,
+              "email":user.email,
+              "displayName":displayName? displayName : user.email,
+              "claims":user.claims
+            }
+            console.log("user:" + obj.uid + " " + obj.displayName)
+            evaluators.push(obj)            
+          }
+          resolve(evaluators)
+        },
+        error(reason){
+            console.log( "Error retriving evaluador" + reason.errorMessage )
+            reject(reason)
+        }
+      }) 
+    })
+  }
 }

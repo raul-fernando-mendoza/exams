@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { BusinessService} from '../business.service'
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
@@ -80,7 +80,7 @@ export class ExamenImprovisacionFormComponent {
   materias = signal<Array<Materia>>([])
   exams = signal<Array<Exam>>([])
 
-  organization_id = null
+  organization_id!:string
 
   
   examGradeFG = this.fb.group({
@@ -95,16 +95,15 @@ export class ExamenImprovisacionFormComponent {
     level:[null],
     parameterGradesFA: this.fb.array([],AllChildValid)
   });
-
   fg = this.fb.group({
     student_uid:[null]
   })
 
 
-  constructor(private fb: UntypedFormBuilder,private route: ActivatedRoute
+  constructor(private fb: FormBuilder,private route: ActivatedRoute
     , private router: Router
     , private businessService: BusinessService
-    , private formBuilder: UntypedFormBuilder
+    , private formBuilder: FormBuilder
     , private userLoginService:UserLoginService
     , private examFormService:FormService
     , private userPreferencesService:UserPreferencesService
@@ -117,15 +116,15 @@ export class ExamenImprovisacionFormComponent {
 
   
 
-  getFormGroupArray (fg:UntypedFormGroup, controlname:string): UntypedFormGroup[] {
+  getFormGroupArray (fg:FormGroup, controlname:string): FormGroup[] {
     if( fg == null){
       console.error("fg is null for:" + controlname)
     }
-    var fa:UntypedFormArray =  fg.controls[controlname] as UntypedFormArray
+    var fa:FormArray =  fg.controls[controlname] as FormArray
     if( fa == null){
       console.error("fa is null for::" + controlname)
     }
-    return fa.controls as UntypedFormGroup[]
+    return fa.controls as FormGroup[]
   }
   
 
@@ -176,34 +175,14 @@ export class ExamenImprovisacionFormComponent {
         console.log("never called")
       }
     })
-    
-    
-    var evaluator_req = {
-      "claims":"role-evaluador-" + this.organization_id
-    }  
-    
-    
 
-    this.businessService.authApiInterface("getUserListForClaim", token, evaluator_req).subscribe({
-      next( data ){
-        let users:User[] = data["result"] as Array<any>;
-        thiz.evaluators = []
-        for( let i =0; i<users.length; i++){
-          var user = users[i]
-          let obj:User = {
-            "uid":user.uid,
-            "email":user.email,
-            "displayName":(user.displayName != null && user.displayName.trim() != "")? user.displayName : user.email,
-            "claims":user.claims
-          }
-          console.log("user:" + obj.uid + " " + obj.displayName)
-          thiz.evaluators.push(obj)            
-        }
-      },
-      error(reason){
-          console.log( "Error retriving evaluador" + reason.errorMessage )
-      }
-    })     
+    this.businessService.getEvaluators(this.organization_id, token).then( evaluators =>{
+      thiz.evaluators = evaluators
+    },
+    error =>{
+      console.log("Error retrieving evaluators:" + error.errorMessage)
+    })
+
   }  
   
   onAddStudent() {

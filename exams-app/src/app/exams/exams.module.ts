@@ -57,7 +57,7 @@ export interface User{
   uid:string 
   email?:string 
   displayName?:string
-  claims?:{}
+  claims?:any
 }
 
 export interface Aspect{
@@ -320,7 +320,7 @@ export interface CriteriaGrade{
 export type ScoreType =  "starts" | "status"
 
 export interface ParameterGrade{
-  id:string 
+  id?:string 
   organization_id?:string  
   idx?: number 
   label?: string 
