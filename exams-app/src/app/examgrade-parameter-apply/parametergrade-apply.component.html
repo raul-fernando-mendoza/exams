@@ -17,8 +17,12 @@
     </div> 
 
     <div *ngIf="isAdmin">
+    Evaluador: 
+    @if( parameterGrade().isCompleted == true  ) {
+            {{ parameterGradeDisplayName() }}
+    } 
+    @else {
 
-    Evaluador:
     <form [formGroup]="fg">
         <mat-form-field appearance="fill" >
             <mat-label>selecciona evaluador</mat-label>
@@ -28,9 +32,10 @@
             </mat-option>                 
             </mat-select>
         </mat-form-field>
-    </form>   
-    </div> 
-
+    </form>  
+        
+    }
+    </div>  
 
     <div *ngFor="let criteriaGrade of criteriaGrades()">
         <criteriagrade-apply collection="{{collection}}/{{parameterGrade_id}}/criteriaGrades" criteriaGrade_id="{{criteriaGrade.id}}" scoreType="{{parameterGrade().scoreType}}" (change)="onCriteriaGradeChange($event)" [disabled]="parameterGrade().isCompleted">

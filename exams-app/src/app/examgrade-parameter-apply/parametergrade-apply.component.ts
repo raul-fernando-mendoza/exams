@@ -63,6 +63,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
   examGrade_id!:string
   parameterGrade = signal<ParameterGrade|null>(null)
   evaluators = signal<Array<User>>([])
+  parameterGradeDisplayName = signal<string>("")
 
   criteriaGrades = signal<CriteriaGrade[]>([])
 
@@ -101,6 +102,7 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
             if( parameterGrade.evaluator_uid ){
               let evaluator_uid:string = parameterGrade.evaluator_uid
               this.fg.controls.evaluator_uid.setValue( evaluator_uid )
+              this.parameterGradeDisplayName.set( this.evaluators().find( e => e.uid == evaluator_uid)?.displayName || "" )
             }            
           }        
         })
