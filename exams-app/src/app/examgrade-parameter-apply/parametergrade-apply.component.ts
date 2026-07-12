@@ -305,9 +305,29 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     
     db.collection(this.collection).doc(this.parameterGrade_id).update( parameterGrade  ).then( () =>{
       console.log("updated evaluator")
+      this.updateExamGradeEvaluators()
     },
     reason =>{
       alert("ERROR saving parameter update:" + reason )
     })      
   }  
+
+  private updateExamGradeEvaluators() {
+    db.collection("examGrades/" + this.examGrade_id + "/parameterGrades").get().then( snapshot => {
+      let evaluatorUids: string[] = []
+      snapshot.docs.forEach( doc => {
+        const pg = doc.data() as ParameterGrade
+        if (pg.evaluator_uid) {
+          evaluatorUids.push(pg.evaluator_uid)
+        }
+      })
+      // Remove duplicates
+      const uniqueEvaluators = [...new Set(evaluatorUids)]
+      // Update examGrade
+      db.collection("examGrades").doc(this.examGrade_id).update({ evaluators: uniqueEvaluators }).then(
+        () => console.log("ExamGrade evaluators updated"),
+        reason => alert("ERROR updating examGrade evaluators: " + reason)
+      )
+    })
+  }
 }

@@ -18,10 +18,10 @@
 
     <div *ngIf="isAdmin">
 
-    Evaluator:
+    Evaluador:
     <form [formGroup]="fg">
         <mat-form-field appearance="fill" >
-            <mat-label>selecciona evaluator</mat-label>
+            <mat-label>selecciona evaluador</mat-label>
             <mat-select formControlName="evaluator_uid" (selectionChange)="evaluatorChange($event)">
             <mat-option *ngFor="let m of evaluators()" [value]="m.uid">
                 {{m.displayName}}
