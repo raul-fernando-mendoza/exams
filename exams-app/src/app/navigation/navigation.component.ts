@@ -1,4 +1,4 @@
-import { Component ,OnInit, resolveForwardRef} from '@angular/core';
+import { Component ,OnInit, resolveForwardRef, signal} from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { async, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -36,7 +36,7 @@ import {MatListModule} from '@angular/material/list';
 })
 export class NavigationComponent {
 
-  organization:Organization = null
+  organization = signal<Organization | undefined>(undefined)
   
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -49,13 +49,14 @@ export class NavigationComponent {
     , private route: ActivatedRoute
     , private userLoginService: UserLoginService
     , private userPreferencesService: UserPreferencesService) {
+      this.organization.set( this.userPreferencesService.getCurrentOrganization())
     }
 
   ngOnInit() {
       this.userPreferencesService.onOrganizationChangeEvent().subscribe( organization =>{
-        this.organization = organization
+        this.organization.set(organization)
       })
-      this.organization = this.userPreferencesService.getCurrentOrganization()
+      
   }
 
   login(){
@@ -79,13 +80,13 @@ export class NavigationComponent {
     return this.userLoginService.getIsloggedIn()
   }
   isAdmin(){
-    return this.userLoginService.hasRole("role-admin-" + this.organization.id)
+    return this.userLoginService.hasRole("role-admin-" + this.organization()?.id)
   }
   isReadOnly(){
-    return this.userLoginService.hasRole('role-readonly-' + this.organization.id)
+    return this.userLoginService.hasRole('role-readonly-' + this.organization()?.id)
   }
   isEvaluator(){
-    return this.userLoginService.hasRole('role-evaluador-' + this.organization.id)
+    return this.userLoginService.hasRole('role-evaluador-' + this.organization()?.id)
   }  
   isStudent(){
     return true
@@ -93,10 +94,10 @@ export class NavigationComponent {
   getUserName(){
     return this.userLoginService.getDisplayName()
   }
-  getOrganizationName():string{
-    if( this.organization )
-      return this.organization.organization_name
-    else return null
+  getOrganizationName():string | undefined{
+    if( this.organization() )
+      return this.organization()?.organization_name
+    else return undefined
   }
 
   onConference(){

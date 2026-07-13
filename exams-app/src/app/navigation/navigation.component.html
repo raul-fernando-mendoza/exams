@@ -53,7 +53,7 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
      
-      <span *ngIf="(isHandset$ | async) === false" (click)="home()" class="organization-name">{{organization.organization_name}}</span>
+      <span *ngIf="(isHandset$ | async) === false && organization()" (click)="home()" class="organization-name">{{organization().organization_name}}</span>
 
       
       <span class="example-spacer"></span>
@@ -71,7 +71,7 @@
       </button>    
               
     </mat-toolbar>    
-    <router-outlet *ngIf="organization"></router-outlet>
+    <router-outlet *ngIf="organization()"></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
 </div>
