@@ -1,0 +1,436 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3D9720AD3026A4D600CE07BB /* thoth_examApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9720AC3026A4D600CE07BB /* thoth_examApp.swift */; };
+		3D9720AF3026A4D600CE07BB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9720AE3026A4D600CE07BB /* ContentView.swift */; };
+		3D9720B13026A4DA00CE07BB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D9720B03026A4DA00CE07BB /* Assets.xcassets */; };
+		3D9720B43026A4DA00CE07BB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D9720B33026A4DA00CE07BB /* Preview Assets.xcassets */; };
+		3D9720B63026A4DA00CE07BB /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9720B53026A4DA00CE07BB /* Persistence.swift */; };
+		3D9720B93026A4DA00CE07BB /* thoth_exam.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3D9720B73026A4DA00CE07BB /* thoth_exam.xcdatamodeld */; };
+		AB0001003026A4D600CE07BB /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001003026A4D600CE07BB /* Models.swift */; };
+		AB0002003026A4D600CE07BB /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002003026A4D600CE07BB /* APIService.swift */; };
+		AB0003003026A4D600CE07BB /* ParameterGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */; };
+		AB0004003026A4D600CE07BB /* CriteriaGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */; };
+		AB0005003026A4D600CE07BB /* AspectGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */; };
+		AB0006003026A4D600CE07BB /* ParameterGradeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */; };
+		AB0007003026A4D600CE07BB /* ParameterGradeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */; };
+		AB0008003026A4D600CE07BB /* CriteriaGradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */; };
+		AB0009003026A4D600CE07BB /* AspectGradeStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */; };
+		AB0010003026A4D600CE07BB /* AspectGradeStarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0010003026A4D600CE07BB /* AspectGradeStarsView.swift */; };
+		AB0011003026A4D600CE07BB /* PinEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0011003026A4D600CE07BB /* PinEntryView.swift */; };
+		AB0012003026A4D600CE07BB /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0012003026A4D600CE07BB /* AppState.swift */; };
+		AB0013003026A4D600CE07BB /* SelectedEvaluatorEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0013003026A4D600CE07BB /* SelectedEvaluatorEntity.swift */; };
+		AB0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */; };
+		AB0015003026A4D600CE07BB /* EvaluatorSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */; };
+		AB0016003026A4D600CE07BB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0016003026A4D600CE07BB /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3D9720A93026A4D600CE07BB /* thoth_exam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = thoth_exam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D9720AC3026A4D600CE07BB /* thoth_examApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = thoth_examApp.swift; sourceTree = "<group>"; };
+		3D9720AE3026A4D600CE07BB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3D9720B03026A4DA00CE07BB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3D9720B33026A4DA00CE07BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3D9720B53026A4DA00CE07BB /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		3D9720B83026A4DA00CE07BB /* thoth_exam.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = thoth_exam.xcdatamodel; sourceTree = "<group>"; };
+		AA0001003026A4D600CE07BB /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		AA0002003026A4D600CE07BB /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeEntity.swift; sourceTree = "<group>"; };
+		AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaGradeEntity.swift; sourceTree = "<group>"; };
+		AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeEntity.swift; sourceTree = "<group>"; };
+		AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeListView.swift; sourceTree = "<group>"; };
+		AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeEditView.swift; sourceTree = "<group>"; };
+		AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaGradeView.swift; sourceTree = "<group>"; };
+		AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeStatusView.swift; sourceTree = "<group>"; };
+		AA0010003026A4D600CE07BB /* AspectGradeStarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeStarsView.swift; sourceTree = "<group>"; };
+		AA0011003026A4D600CE07BB /* PinEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinEntryView.swift; sourceTree = "<group>"; };
+		AA0012003026A4D600CE07BB /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AA0013003026A4D600CE07BB /* SelectedEvaluatorEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedEvaluatorEntity.swift; sourceTree = "<group>"; };
+		AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudentDisplayNameEntity.swift; sourceTree = "<group>"; };
+		AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatorSelectionView.swift; sourceTree = "<group>"; };
+		AA0016003026A4D600CE07BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3D9720A63026A4D600CE07BB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3D9720A03026A4D600CE07BB = {
+			isa = PBXGroup;
+			children = (
+				3D9720AB3026A4D600CE07BB /* thoth_exam */,
+				3D9720AA3026A4D600CE07BB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3D9720AA3026A4D600CE07BB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3D9720A93026A4D600CE07BB /* thoth_exam.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D9720AB3026A4D600CE07BB /* thoth_exam */ = {
+			isa = PBXGroup;
+			children = (
+				3D9720AC3026A4D600CE07BB /* thoth_examApp.swift */,
+				3D9720AE3026A4D600CE07BB /* ContentView.swift */,
+				3D9720B03026A4DA00CE07BB /* Assets.xcassets */,
+				3D9720B53026A4DA00CE07BB /* Persistence.swift */,
+				3D9720B73026A4DA00CE07BB /* thoth_exam.xcdatamodeld */,
+				3D9720B23026A4DA00CE07BB /* Preview Content */,
+				AA0001003026A4D600CE07BB /* Models.swift */,
+				AA0002003026A4D600CE07BB /* APIService.swift */,
+				AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */,
+				AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */,
+				AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */,
+				AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */,
+				AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */,
+				AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */,
+				AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */,
+				AA0010003026A4D600CE07BB /* AspectGradeStarsView.swift */,
+				AA0011003026A4D600CE07BB /* PinEntryView.swift */,
+				AA0012003026A4D600CE07BB /* AppState.swift */,
+				AA0013003026A4D600CE07BB /* SelectedEvaluatorEntity.swift */,
+				AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */,
+				AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */,
+				AA0016003026A4D600CE07BB /* SettingsView.swift */,
+			);
+			path = thoth_exam;
+			sourceTree = "<group>";
+		};
+		3D9720B23026A4DA00CE07BB /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				3D9720B33026A4DA00CE07BB /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3D9720A83026A4D600CE07BB /* thoth_exam */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D9720BC3026A4DA00CE07BB /* Build configuration list for PBXNativeTarget "thoth_exam" */;
+			buildPhases = (
+				3D9720A53026A4D600CE07BB /* Sources */,
+				3D9720A63026A4D600CE07BB /* Frameworks */,
+				3D9720A73026A4D600CE07BB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = thoth_exam;
+			productName = thoth_exam;
+			productReference = 3D9720A93026A4D600CE07BB /* thoth_exam.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3D9720A13026A4D600CE07BB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					3D9720A83026A4D600CE07BB = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = 3D9720A43026A4D600CE07BB /* Build configuration list for PBXProject "thoth_exam" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3D9720A03026A4D600CE07BB;
+			productRefGroup = 3D9720AA3026A4D600CE07BB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3D9720A83026A4D600CE07BB /* thoth_exam */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3D9720A73026A4D600CE07BB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D9720B43026A4DA00CE07BB /* Preview Assets.xcassets in Resources */,
+				3D9720B13026A4DA00CE07BB /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3D9720A53026A4D600CE07BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D9720B93026A4DA00CE07BB /* thoth_exam.xcdatamodeld in Sources */,
+				3D9720B63026A4DA00CE07BB /* Persistence.swift in Sources */,
+				3D9720AF3026A4D600CE07BB /* ContentView.swift in Sources */,
+				3D9720AD3026A4D600CE07BB /* thoth_examApp.swift in Sources */,
+				AB0001003026A4D600CE07BB /* Models.swift in Sources */,
+				AB0002003026A4D600CE07BB /* APIService.swift in Sources */,
+				AB0003003026A4D600CE07BB /* ParameterGradeEntity.swift in Sources */,
+				AB0004003026A4D600CE07BB /* CriteriaGradeEntity.swift in Sources */,
+				AB0005003026A4D600CE07BB /* AspectGradeEntity.swift in Sources */,
+				AB0006003026A4D600CE07BB /* ParameterGradeListView.swift in Sources */,
+				AB0007003026A4D600CE07BB /* ParameterGradeEditView.swift in Sources */,
+				AB0008003026A4D600CE07BB /* CriteriaGradeView.swift in Sources */,
+				AB0009003026A4D600CE07BB /* AspectGradeStatusView.swift in Sources */,
+				AB0010003026A4D600CE07BB /* AspectGradeStarsView.swift in Sources */,
+				AB0011003026A4D600CE07BB /* PinEntryView.swift in Sources */,
+				AB0012003026A4D600CE07BB /* AppState.swift in Sources */,
+				AB0013003026A4D600CE07BB /* SelectedEvaluatorEntity.swift in Sources */,
+				AB0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift in Sources */,
+				AB0015003026A4D600CE07BB /* EvaluatorSelectionView.swift in Sources */,
+				AB0016003026A4D600CE07BB /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3D9720BA3026A4DA00CE07BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3D9720BB3026A4DA00CE07BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3D9720BD3026A4DA00CE07BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"thoth_exam/Preview Content\"";
+				DEVELOPMENT_TEAM = 96T37Y3JXY;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "raul.mendoza.huerta-icloud.com.thoth-exam";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3D9720BE3026A4DA00CE07BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"thoth_exam/Preview Content\"";
+				DEVELOPMENT_TEAM = 96T37Y3JXY;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "raul.mendoza.huerta-icloud.com.thoth-exam";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3D9720A43026A4D600CE07BB /* Build configuration list for PBXProject "thoth_exam" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D9720BA3026A4DA00CE07BB /* Debug */,
+				3D9720BB3026A4DA00CE07BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D9720BC3026A4DA00CE07BB /* Build configuration list for PBXNativeTarget "thoth_exam" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D9720BD3026A4DA00CE07BB /* Debug */,
+				3D9720BE3026A4DA00CE07BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		3D9720B73026A4DA00CE07BB /* thoth_exam.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				3D9720B83026A4DA00CE07BB /* thoth_exam.xcdatamodel */,
+			);
+			currentVersion = 3D9720B83026A4DA00CE07BB /* thoth_exam.xcdatamodel */;
+			path = thoth_exam.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 3D9720A13026A4D600CE07BB /* Project object */;
+}
