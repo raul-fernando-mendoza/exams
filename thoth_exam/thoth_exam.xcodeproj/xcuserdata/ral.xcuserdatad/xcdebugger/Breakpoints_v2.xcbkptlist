@@ -3,4 +3,100 @@
    uuid = "73632566-6960-43FA-868E-E93A66FF11BC"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F40DAAE3-471D-4175-A370-1CE18F57FDF5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "thoth_exam/ParameterGradeListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "10"
+            endingLineNumber = "10"
+            landmarkName = "ParameterGradeListView"
+            landmarkType = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6A9FE606-61F1-45BD-82BC-972083E24214"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "thoth_exam/ParameterGradeListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D476D0F5-34BC-4E6A-B2CD-9D1E5E15C35A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "thoth_exam/ParameterGradeListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "sortedParameterGrades"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "D476D0F5-34BC-4E6A-B2CD-9D1E5E15C35A - 2c453b1c38e626f9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "thoth_exam.ParameterGradeListView.sortedParameterGrades.getter : Swift.Array&lt;thoth_exam.ParameterGradeEntity&gt;"
+                  moduleName = "thoth_exam"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Data/exams/thoth_exam/thoth_exam/ParameterGradeListView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18">
+               </Location>
+               <Location
+                  uuid = "D476D0F5-34BC-4E6A-B2CD-9D1E5E15C35A - 54d0fd1327dc4959"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (thoth_exam.ParameterGradeEntity, thoth_exam.ParameterGradeEntity) -&gt; Swift.Bool in thoth_exam.ParameterGradeListView.sortedParameterGrades.getter : Swift.Array&lt;thoth_exam.ParameterGradeEntity&gt;"
+                  moduleName = "thoth_exam"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Data/exams/thoth_exam/thoth_exam/ParameterGradeListView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "64343707-ACD8-4660-BB10-948C0676E955"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "thoth_exam/ParameterGradeListView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "init(evaluator:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

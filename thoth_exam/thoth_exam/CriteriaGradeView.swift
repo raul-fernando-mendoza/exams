@@ -23,7 +23,7 @@ struct CriteriaGradeView: View {
             }
 
             ForEach(criteriaGrade.sortedAspectGrades) { aspect in
-                if scoreType == "stars" {
+                if scoreType == "starts" {
                     AspectGradeStarsView(aspectGrade: aspect, onChanged: {
                         recalculatePoints()
                         onScoreChanged()

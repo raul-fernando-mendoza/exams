@@ -20,12 +20,12 @@ struct AspectGradeStarsView: View {
             HStack(spacing: 8) {
                 ForEach(1...maxStars, id: \.self) { star in
                     Button {
-                        let newScore = Double(star) / Double(maxStars)
+                        let newScore = (Double(star) / 10.0) + 0.5
                         aspectGrade.score = newScore
                         aspectGrade.isGraded = true
                         onChanged()
                     } label: {
-                        Image(systemName: star <= Int(aspectGrade.score * Double(maxStars)) ? "star.fill" : "star")
+                        Image(systemName: star <= Int(aspectGrade.score * 10)-5 ? "star.fill" : "star")
                             .foregroundColor(.yellow)
                             .font(.title3)
                     }

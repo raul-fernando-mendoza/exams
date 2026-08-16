@@ -18,7 +18,7 @@ struct ContentView: View {
 
     @FetchRequest(
         sortDescriptors: [
-            NSSortDescriptor(keyPath: \ParameterGradeEntity.applicationDay, ascending: false),
+            NSSortDescriptor(keyPath: \ParameterGradeEntity.examGradeTitle, ascending: false),
             NSSortDescriptor(keyPath: \ParameterGradeEntity.label, ascending: true)
         ],
         animation: .default
@@ -32,6 +32,10 @@ struct ContentView: View {
 
     private var selectedEvaluator: SelectedEvaluatorEntity? {
         PersistenceController.shared.fetchSelectedEvaluator()
+    }
+    
+    private var sortedParameterGrades: [ParameterGradeEntity] {
+        parameterGrades.sorted { ($0.examGradeTitle ?? "") < ($1.examGradeTitle ?? "") }
     }
 
     var body: some View {
@@ -71,7 +75,7 @@ struct ContentView: View {
                     }
                     .frame(maxHeight: .infinity)
                 } else {
-                    List(parameterGrades) { pg in
+                    List(sortedParameterGrades) { pg in
                         NavigationLink(destination: ParameterGradeEditView(parameterGrade: pg)) {
                             ParameterGradeRow(
                                 parameterGrade: pg,
@@ -199,6 +203,7 @@ struct ParameterGradeRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
+                
                 Text(parameterGrade.label ?? "Parameter \(parameterGrade.idx)")
                     .font(.headline)
                 Spacer()
@@ -208,6 +213,7 @@ struct ParameterGradeRow: View {
                 }
             }
             if let title = parameterGrade.examGradeTitle {
+                
                 Text(title)
                     .font(.subheadline)
                     .foregroundColor(.secondary)

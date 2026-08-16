@@ -2,10 +2,22 @@ import Foundation
 
 class APIService {
     static let shared = APIService()
-    private let base = "https://us-central1-thoth-dev-346022.cloudfunctions.net"
+    private let base: String = {
+        guard let url = Bundle.main.infoDictionary?["BASE_URL"] as? String else {
+            fatalError("BASE_URL not found in Info.plist")
+        }
+        return url
+    }()
+    
+    private let organizationId: String = {
+        guard let url = Bundle.main.infoDictionary?["ORGANIZATION_ID"] as? String else {
+            fatalError("BASE_URL not found in Info.plist")
+        }
+        return url
+    }()
 
     func fetchEvaluators() async throws -> [EvaluatorUser] {
-        let url = URL(string: "\(base)/userlist?claim=role-evaluador-raxacademy")!
+        let url = URL(string: "\(base)/userlist?claim=role-evaluador-\(organizationId)")!
         let (data, _) = try await URLSession.shared.data(from: url)
         return try JSONDecoder().decode(UserListResponse.self, from: data).userlist
     }
@@ -16,7 +28,8 @@ class APIService {
             throw URLError(.badURL)
         }
         let (data, _) = try await URLSession.shared.data(from: url)
-        return try JSONDecoder().decode(ParameterGradesResponse.self, from: data).parameterGrades
+        let parameterGrades = try JSONDecoder().decode(ParameterGradesResponse.self, from: data).parameterGrades
+        return parameterGrades
     }
 
     func fetchStudentDisplayName(uid: String) async throws -> String? {

@@ -14,16 +14,22 @@ struct ParameterGradeListView: View {
     @State private var showPinForBack = false
     @State private var studentNames: [String: String] = [:]
 
+    private var sortedParameterGrades: [ParameterGradeEntity] {
+        parameterGrades.sorted { ($0.examGradeTitle ?? "") > ($1.examGradeTitle ?? "") }
+    }
+
     init(evaluator: EvaluatorUser) {
         self.evaluator = evaluator
+        
         _parameterGrades = FetchRequest(
             sortDescriptors: [
-                NSSortDescriptor(keyPath: \ParameterGradeEntity.applicationDay, ascending: false),
-                NSSortDescriptor(keyPath: \ParameterGradeEntity.label, ascending: true)
+                NSSortDescriptor(keyPath: \ParameterGradeEntity.examGradeTitle, ascending: false),
+                NSSortDescriptor(keyPath: \ParameterGradeEntity.label, ascending: false)
             ],
             predicate: NSPredicate(format: "evaluator_uid == %@", evaluator.uid),
             animation: .default
         )
+         
     }
 
     var body: some View {
@@ -48,7 +54,16 @@ struct ParameterGradeListView: View {
                     Text("No parameter grades found")
                 }
             } else {
-                List(parameterGrades) { pg in
+                Text("HOLA")
+                /*
+                List(sortedParameterGrades) { pg in
+                    
+                        Text("examGradeTitle: \(pg.examGradeTitle ?? "nil")")
+                    
+                }
+                 */
+                /*
+                List(sortedParameterGrades) { pg in
                     NavigationLink(destination: ParameterGradeEditView(parameterGrade: pg)) {
                         ParameterGradeRow(
                             parameterGrade: pg,
@@ -56,7 +71,13 @@ struct ParameterGradeListView: View {
                         )
                     }
                 }
+                */
                 .refreshable { await fetchFromAPI() }
+                .onAppear {
+                    for pg in sortedParameterGrades {
+                        print("examGradeTitle: \(pg.examGradeTitle ?? "nil")")
+                    }
+                }
             }
         }
         .navigationTitle(evaluator.displayName ?? "Grades")

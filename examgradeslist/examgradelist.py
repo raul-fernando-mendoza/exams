@@ -68,6 +68,8 @@ def gradesListByEvaluatorId(evaluator_id: str):
             param_data['criteriaGrades'] = criteria_list
             parameter_grades_list.append(param_data)
 
+    parameter_grades_list.sort(key=lambda x: x['examGradeTitle'].lower() if x['examGradeTitle'] else '')
+
     return json.dumps({'parameterGrades': parameter_grades_list}, indent=1)
 
 def updateParameterGrade(examGrade_id: str, parameter_grade: dict):
@@ -155,4 +157,5 @@ def userListByClaim(claim:str):
                     "claims":user.custom_claims
                     }
                 )
+    userlist.sort(key=lambda x: x['displayName'].lower() if x['displayName'] else '')
     return json.dumps({'userlist': userlist}, indent=1)
