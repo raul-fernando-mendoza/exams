@@ -38,6 +38,7 @@ def gradesListByEvaluatorId(evaluator_id: str):
     )
 
     parameter_grades_list = []
+    materia_cache = {}
 
     for exam_grade_doc in exam_grades_query.stream():
         param_grades_query = (
@@ -53,6 +54,16 @@ def gradesListByEvaluatorId(evaluator_id: str):
             param_data['examGrade_id'] = exam_grade_doc.id
             param_data['studentUids'] = exam_grade_data.get('studentUids', [])
             param_data['examGradeTitle'] = exam_grade_data.get('title')
+            param_data['expression'] = exam_grade_data.get('expression')
+            param_data['level'] = exam_grade_data.get('level')
+
+            materia_id = exam_grade_data.get('materia_id')
+            if materia_id:
+                if materia_id not in materia_cache:
+                    materia_doc = db.collection('materias').document(materia_id).get()
+                    materia_data = materia_doc.to_dict() or {}
+                    materia_cache[materia_id] = materia_data.get('materia_name')
+                param_data['materiaName'] = materia_cache.get(materia_id)
 
             criteria_list = []
             for criteria_doc in param_doc.reference.collection('criteriaGrades').stream():

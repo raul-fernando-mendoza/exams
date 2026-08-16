@@ -17,11 +17,6 @@ struct AspectGradeStatusView: View {
             HStack {
                 Text(aspectGrade.label ?? "Aspect \(aspectGrade.idx)")
                     .font(.subheadline)
-                Spacer()
-                Text(String(format: "%d", Int(aspectGrade.score * 10)))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(width: 30)
             }
 
             if let desc = aspectGrade.aspectDescription, !desc.isEmpty {

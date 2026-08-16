@@ -158,6 +158,9 @@ struct EvaluatorSelectionView: View {
             pg.isCompleted = dto.isCompleted ?? false
             pg.evaluator_comment = dto.evaluator_comment
             pg.examGradeTitle = dto.examGradeTitle
+            pg.expression = dto.expression
+            pg.materiaName = dto.materiaName
+            pg.level = dto.level
             pg.studentUids = dto.studentUids?.joined(separator: ",")
 
             for cgDTO in dto.criteriaGrades ?? [] {

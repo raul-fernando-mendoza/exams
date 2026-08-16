@@ -10,10 +10,7 @@ struct CriteriaGradeView: View {
             HStack {
                 Text(criteriaGrade.label ?? "Criteria \(criteriaGrade.idx)")
                     .font(.headline)
-                Spacer()
-                Text(String(format: "%.1f", criteriaGrade.earnedPoints * 10))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                
             }
 
             if let desc = criteriaGrade.criteriaDescription, !desc.isEmpty {

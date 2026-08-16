@@ -44,26 +44,69 @@ struct ParameterGradeEditView: View {
             if let label = parameterGrade.label {
                 Text(label).font(.title2).bold()
             }
-            if let title = parameterGrade.examGradeTitle {
-                Text(title)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
+            
             if !studentNames.isEmpty {
                 Text(studentNames.joined(separator: ", "))
                     .font(.subheadline)
                     .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 12)
             }
+            if let level = parameterGrade.level {
+                Text("Ciclo: \(level)")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+
+            // Grid table for Materia, Title, Expression
+            VStack(spacing: 0) {
+                if let materiaName = parameterGrade.materiaName {
+                    HStack(spacing: 0) {
+                        Text("Materia:")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 8)
+                        Text(materiaName)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                            .background(Color(.systemGray5))
+                    }
+                }
+                if let title = parameterGrade.examGradeTitle {
+                    HStack(spacing: 0) {
+                        Text("Título:")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 8)
+                        Text(title)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                            .background(Color(.systemGray5))
+                    }
+                }
+                if let expression = parameterGrade.expression {
+                    HStack(spacing: 0) {
+                        Text("Expresión:")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 8)
+                        Text(expression)
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 8)
+                            .background(Color(.systemGray5))
+                    }
+                }
+            }
+            .cornerRadius(8)
             if let desc = parameterGrade.paramDescription, !desc.isEmpty {
                 Text(desc).font(.body).foregroundColor(.secondary)
             }
             Divider()
             HStack {
-                VStack(alignment: .leading) {
-                    Text("Score").font(.caption).foregroundColor(.secondary)
-                    Text(String(format: "%.1f / 10", displayScore))
-                        .font(.title3).bold()
-                }
                 Spacer()
                 if parameterGrade.isCompleted {
                     Label("Completed", systemImage: "checkmark.circle.fill")
@@ -105,7 +148,7 @@ struct ParameterGradeEditView: View {
 
     private var submitButton: some View {
         Button(action: submit) {
-            Label("Submit Grade", systemImage: "checkmark")
+            Label("Salvar", systemImage: "checkmark")
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.accentColor)

@@ -23,6 +23,9 @@ extension ParameterGradeEntity {
     @NSManaged public var isCompleted: Bool
     @NSManaged public var evaluator_comment: String?
     @NSManaged public var examGradeTitle: String?
+    @NSManaged public var expression: String?
+    @NSManaged public var level: String?
+    @NSManaged public var materiaName: String?
     @NSManaged public var studentUids: String?
     @NSManaged public var criteriaGrades: NSSet?
 

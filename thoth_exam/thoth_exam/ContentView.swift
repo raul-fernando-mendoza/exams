@@ -98,7 +98,7 @@ struct ContentView: View {
                         Button {
                             Task { await saveAllGrades() }
                         } label: {
-                            Label("Save All Grades", systemImage: "icloud.and.arrow.up")
+                            Label("Sincronizar", systemImage: "icloud.and.arrow.up")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(isSaving || saveResult != nil ? Color.gray : Color.accentColor)
@@ -227,10 +227,7 @@ struct ParameterGradeRow: View {
                 Text(parameterGrade.scoreType ?? "")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Spacer()
-                Text(String(format: "%.1f / 10", parameterGrade.score))
-                    .font(.subheadline)
-                    .bold()
+                
             }
         }
         .padding(.vertical, 4)

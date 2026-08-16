@@ -31,6 +31,9 @@ struct ParameterGradeDTO: Codable, Identifiable {
     var isCompleted: Bool?
     var evaluator_comment: String?
     var examGradeTitle: String?
+    var expression: String?
+    var materiaName: String?
+    var level: String?
     var studentUids: [String]?
     var criteriaGrades: [CriteriaGradeDTO]?
 }

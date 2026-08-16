@@ -16,6 +16,9 @@
         <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="scoreType" optional="YES" attributeType="String"/>
         <attribute name="examGradeTitle" optional="YES" attributeType="String"/>
+        <attribute name="expression" optional="YES" attributeType="String"/>
+        <attribute name="level" optional="YES" attributeType="String"/>
+        <attribute name="materiaName" optional="YES" attributeType="String"/>
         <attribute name="studentUids" optional="YES" attributeType="String"/>
         <relationship name="criteriaGrades" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CriteriaGradeEntity" inverseName="parameterGrade" inverseEntity="CriteriaGradeEntity"/>
     </entity>
