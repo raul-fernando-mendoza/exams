@@ -18,7 +18,6 @@
 		AB0003003026A4D600CE07BB /* ParameterGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */; };
 		AB0004003026A4D600CE07BB /* CriteriaGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */; };
 		AB0005003026A4D600CE07BB /* AspectGradeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */; };
-		AB0006003026A4D600CE07BB /* ParameterGradeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */; };
 		AB0007003026A4D600CE07BB /* ParameterGradeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */; };
 		AB0008003026A4D600CE07BB /* CriteriaGradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */; };
 		AB0009003026A4D600CE07BB /* AspectGradeStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */; };
@@ -47,7 +46,6 @@
 		AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeEntity.swift; sourceTree = "<group>"; };
 		AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaGradeEntity.swift; sourceTree = "<group>"; };
 		AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeEntity.swift; sourceTree = "<group>"; };
-		AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeListView.swift; sourceTree = "<group>"; };
 		AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterGradeEditView.swift; sourceTree = "<group>"; };
 		AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CriteriaGradeView.swift; sourceTree = "<group>"; };
 		AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeStatusView.swift; sourceTree = "<group>"; };
@@ -102,7 +100,6 @@
 				AA0003003026A4D600CE07BB /* ParameterGradeEntity.swift */,
 				AA0004003026A4D600CE07BB /* CriteriaGradeEntity.swift */,
 				AA0005003026A4D600CE07BB /* AspectGradeEntity.swift */,
-				AA0006003026A4D600CE07BB /* ParameterGradeListView.swift */,
 				AA0007003026A4D600CE07BB /* ParameterGradeEditView.swift */,
 				AA0008003026A4D600CE07BB /* CriteriaGradeView.swift */,
 				AA0009003026A4D600CE07BB /* AspectGradeStatusView.swift */,
@@ -206,7 +203,6 @@
 				AB0003003026A4D600CE07BB /* ParameterGradeEntity.swift in Sources */,
 				AB0004003026A4D600CE07BB /* CriteriaGradeEntity.swift in Sources */,
 				AB0005003026A4D600CE07BB /* AspectGradeEntity.swift in Sources */,
-				AB0006003026A4D600CE07BB /* ParameterGradeListView.swift in Sources */,
 				AB0007003026A4D600CE07BB /* ParameterGradeEditView.swift in Sources */,
 				AB0008003026A4D600CE07BB /* CriteriaGradeView.swift in Sources */,
 				AB0009003026A4D600CE07BB /* AspectGradeStatusView.swift in Sources */,

@@ -45,6 +45,7 @@ def gradesListByEvaluatorId(evaluator_id: str):
                         .where('evaluator_uid', '==', evaluator_id)
                         .where("isCompleted", "==", False)
                         .where("isCurrentVersion", "==", True)
+                        .where("isDeleted", "==", False)
         )
 
         exam_grade_data = exam_grade_doc.to_dict() or {}
