@@ -70,10 +70,15 @@ struct SettingsView: View {
                                 if grade.isCompleted {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
-                                } else {
-                                    Image(systemName: "circle")
-                                        .foregroundColor(.secondary)
                                 }
+                                Button {
+                                    reiniciarGrade(grade)
+                                } label: {
+                                    Text("Reiniciar")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
                             }
                         }
                     } header: {
@@ -194,8 +199,7 @@ struct SettingsView: View {
                 titleVisibility: .visible
             ) {
                 Button("Reset", role: .destructive) {
-                    deleteAllData()
-                    Task { await loadAllEvaluatorData() }
+                    Task { await resetAndReloadData() }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
@@ -269,13 +273,121 @@ struct SettingsView: View {
     }
 
     private func deleteAllData() {
-        // Only delete grades and student names, preserve evaluators and selected evaluator
-        for entity in ["AspectGradeEntity", "CriteriaGradeEntity", "ParameterGradeEntity", "StudentDisplayNameEntity"] {
+        // Delete all grade data, evaluators, and selected evaluator
+        for entity in ["AspectGradeEntity", "CriteriaGradeEntity", "ParameterGradeEntity", "StudentDisplayNameEntity", "EvaluatorEntity", "SelectedEvaluatorEntity"] {
             let request = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
             let delete = NSBatchDeleteRequest(fetchRequest: request)
             _ = try? viewContext.execute(delete)
         }
         viewContext.reset()
+    }
+
+    private func reiniciarGrade(_ grade: ParameterGradeEntity) {
+        // Reset parameter grade
+        grade.isCompleted = false
+        grade.score = 0
+        grade.earnedPoints = 0
+        grade.evaluator_comment = nil
+
+        // Reset all criteria grades
+        for criteriaGrade in grade.sortedCriteriaGrades {
+            criteriaGrade.isSelected = false
+            criteriaGrade.score = 0
+            criteriaGrade.earnedPoints = 0
+
+            // Reset all aspect grades
+            for aspectGrade in criteriaGrade.sortedAspectGrades {
+                aspectGrade.isGraded = false
+                aspectGrade.score = 0
+                aspectGrade.hasMedal = false
+                aspectGrade.missingElements = nil
+            }
+        }
+
+        try? viewContext.save()
+    }
+
+    private func resetAndReloadData() async {
+        await MainActor.run {
+            isLoadingGrades = true
+            loadError = nil
+            loadProgress = "Fetching evaluators..."
+        }
+
+        do {
+            // Step 1: Fetch all data from API BEFORE deleting anything
+            let apiEvaluators = try await APIService.shared.fetchEvaluators()
+
+            var allGrades: [(EvaluatorUser, [ParameterGradeDTO])] = []
+            var allStudentUids: Set<String> = []
+
+            // Fetch grades for each evaluator
+            for (index, evaluator) in apiEvaluators.enumerated() {
+                await MainActor.run {
+                    loadProgress = "Fetching grades for evaluator \(index + 1)/\(apiEvaluators.count)..."
+                }
+                let dtos = try await APIService.shared.fetchParameterGrades(evaluatorId: evaluator.uid)
+                allGrades.append((evaluator, dtos))
+
+                // Collect student UIDs
+                for dto in dtos {
+                    if let uids = dto.studentUids {
+                        allStudentUids.formUnion(uids)
+                    }
+                }
+            }
+
+            // Fetch all student names
+            let totalStudents = allStudentUids.count
+            var studentNamesResult: [(String, String)] = []
+
+            for (index, uid) in allStudentUids.enumerated() {
+                await MainActor.run {
+                    loadProgress = "Fetching student names (\(index + 1)/\(totalStudents))..."
+                }
+                if let name = try? await APIService.shared.fetchStudentDisplayName(uid: uid) {
+                    studentNamesResult.append((uid, name))
+                }
+            }
+
+            let studentNames = Dictionary(studentNamesResult, uniquingKeysWith: { _, last in last })
+
+            // Step 2: All data fetched successfully - NOW delete existing data
+            await MainActor.run {
+                loadProgress = "Clearing old data..."
+                deleteAllData()
+            }
+
+            // Step 3: Save all new data to CoreData
+            await MainActor.run {
+                loadProgress = "Saving new data..."
+
+                // Save evaluators
+                for apiEval in apiEvaluators {
+                    let entity = EvaluatorEntity(context: viewContext)
+                    entity.uid = apiEval.uid
+                    entity.email = apiEval.email
+                    entity.displayName = apiEval.displayName
+                }
+                try? viewContext.save()
+
+                // Refresh evaluators list
+                evaluators = PersistenceController.shared.fetchEvaluators()
+
+                // Save grades for each evaluator
+                for (evaluator, grades) in allGrades {
+                    saveEvaluatorData(evaluator: evaluator, grades: grades, studentNames: studentNames)
+                }
+
+                isLoadingGrades = false
+                selectedEvaluatorUid = ""
+            }
+        } catch {
+            await MainActor.run {
+                isLoadingGrades = false
+                loadError = "Failed to fetch data: \(error.localizedDescription). Existing data was preserved."
+            }
+        }
     }
 
     private func loadAllEvaluatorData() async {

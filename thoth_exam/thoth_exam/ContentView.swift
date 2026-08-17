@@ -139,12 +139,6 @@ struct ParameterGradeRow: View {
                     .font(.subheadline)
                     .foregroundColor(.primary)
             }
-            HStack {
-                Text(parameterGrade.scoreType ?? "")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-            }
         }
         .padding(.vertical, 4)
     }
