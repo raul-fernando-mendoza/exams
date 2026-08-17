@@ -106,7 +106,7 @@ struct EvaluatorSelectionView: View {
                 }
             }
 
-            let studentNames = Dictionary(uniqueKeysWithValues: studentNamesResult)
+            let studentNames = Dictionary(studentNamesResult, uniquingKeysWith: { _, last in last })
 
             await MainActor.run {
                 loadProgress = "Saving data..."
@@ -128,20 +128,34 @@ struct EvaluatorSelectionView: View {
 
     private func saveAllData(evaluator: EvaluatorUser, grades: [ParameterGradeDTO], studentNames: [String: String]) {
         // Save selected evaluator
-        let selectedEvaluator = SelectedEvaluatorEntity(context: viewContext)
-        selectedEvaluator.uid = evaluator.uid
-        selectedEvaluator.email = evaluator.email
-        selectedEvaluator.displayName = evaluator.displayName
+        let selectedEvaluatorEntity = SelectedEvaluatorEntity(context: viewContext)
+        selectedEvaluatorEntity.uid = evaluator.uid
+        selectedEvaluatorEntity.email = evaluator.email
+        selectedEvaluatorEntity.displayName = evaluator.displayName
 
-        // Save student display names
+        // Get existing student UIDs to avoid duplicates
+        let existingStudents = PersistenceController.shared.fetchStudentDisplayNames()
+
+        // Save student display names (skip existing)
         for (uid, name) in studentNames {
-            let entity = StudentDisplayNameEntity(context: viewContext)
-            entity.uid = uid
-            entity.displayName = name
+            if existingStudents[uid] == nil {
+                let entity = StudentDisplayNameEntity(context: viewContext)
+                entity.uid = uid
+                entity.displayName = name
+            }
         }
 
-        // Save parameter grades
+        // Get existing parameter grade IDs to avoid duplicates
+        let request: NSFetchRequest<ParameterGradeEntity> = ParameterGradeEntity.fetchRequest()
+        let existingGrades = (try? viewContext.fetch(request)) ?? []
+        let existingGradeIds = Set(existingGrades.map { $0.id })
+
+        // Save parameter grades (skip existing)
         for dto in grades {
+            if existingGradeIds.contains(dto.id) {
+                continue
+            }
+
             let pg = ParameterGradeEntity(context: viewContext)
             pg.id = dto.id
             pg.examGradeId = dto.examGrade_id

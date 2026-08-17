@@ -76,4 +76,16 @@ struct PersistenceController {
         guard let entities = try? container.viewContext.fetch(request) else { return [:] }
         return Dictionary(uniqueKeysWithValues: entities.map { ($0.uid, $0.displayName) })
     }
+
+    func fetchEvaluators() -> [EvaluatorEntity] {
+        let request = EvaluatorEntity.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \EvaluatorEntity.displayName, ascending: true)]
+        return (try? container.viewContext.fetch(request)) ?? []
+    }
+
+    func hasEvaluators() -> Bool {
+        let request = EvaluatorEntity.fetchRequest()
+        request.fetchLimit = 1
+        return (try? container.viewContext.count(for: request)) ?? 0 > 0
+    }
 }

@@ -148,7 +148,7 @@ struct ParameterGradeEditView: View {
 
     private var submitButton: some View {
         Button(action: submit) {
-            Label("Salvar", systemImage: "checkmark")
+            Label("Enviar", systemImage: "checkmark")
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.accentColor)

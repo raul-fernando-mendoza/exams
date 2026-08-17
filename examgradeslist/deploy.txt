@@ -1,9 +1,9 @@
 #use get2 to keep the function running for long time
-gcloud functions deploy hello --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s
-gcloud functions deploy examgradeslist --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s
-gcloud functions deploy userlist --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s
-gcloud functions deploy updateparametergrade --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s
-gcloud functions deploy studentdisplayname --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s
+gcloud functions deploy hello --gen2 --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s --project  thoth-dev-346022
+gcloud functions deploy examgradeslist --gen2 --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s --project thoth-dev-346022
+gcloud functions deploy userlist --gen2 --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s --project thoth-dev-346022
+gcloud functions deploy updateparametergrade --gen2 --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s --project thoth-dev-346022
+gcloud functions deploy studentdisplayname --gen2 --runtime python314 --region=us-central1 --trigger-http --allow-unauthenticated --timeout 1800s --project thoth-dev-346022
 
 
 ##### deploy to qa
@@ -17,7 +17,7 @@ gcloud functions deploy studentdisplayname --gen2 --runtime python314 --region=u
 updateparametergrade
 
 //show the project app will apply to
+gcloud projects list 
 gcloud config list
 gcloud config set project thoth-dev-346022
 gcloud auth list
-gcloud projects list 

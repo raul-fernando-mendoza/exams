@@ -54,11 +54,17 @@
         <attribute name="uid" attributeType="String" defaultValueString=""/>
         <attribute name="displayName" attributeType="String" defaultValueString=""/>
     </entity>
+    <entity name="EvaluatorEntity" representedClassName="EvaluatorEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="uid" attributeType="String" defaultValueString=""/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+    </entity>
     <elements>
         <element name="ParameterGradeEntity" positionX="-63" positionY="-18" width="128" height="210"/>
         <element name="CriteriaGradeEntity" positionX="160" positionY="-18" width="128" height="195"/>
         <element name="AspectGradeEntity" positionX="383" positionY="-18" width="128" height="180"/>
         <element name="SelectedEvaluatorEntity" positionX="-63" positionY="200" width="128" height="90"/>
         <element name="StudentDisplayNameEntity" positionX="160" positionY="200" width="128" height="75"/>
+        <element name="EvaluatorEntity" positionX="-63" positionY="300" width="128" height="90"/>
     </elements>
 </model>

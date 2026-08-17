@@ -28,6 +28,7 @@
 		AB0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */; };
 		AB0015003026A4D600CE07BB /* EvaluatorSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */; };
 		AB0016003026A4D600CE07BB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0016003026A4D600CE07BB /* SettingsView.swift */; };
+		AB0017003026A4D600CE07BB /* EvaluatorEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0017003026A4D600CE07BB /* EvaluatorEntity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudentDisplayNameEntity.swift; sourceTree = "<group>"; };
 		AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatorSelectionView.swift; sourceTree = "<group>"; };
 		AA0016003026A4D600CE07BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AA0017003026A4D600CE07BB /* EvaluatorEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluatorEntity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				AA0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift */,
 				AA0015003026A4D600CE07BB /* EvaluatorSelectionView.swift */,
 				AA0016003026A4D600CE07BB /* SettingsView.swift */,
+				AA0017003026A4D600CE07BB /* EvaluatorEntity.swift */,
 				3D4B8A81302FEA010084E46C /* Config-dev.xcconfig */,
 				3D4B8A82302FEA190084E46C /* Config-prod.xcconfig */,
 			);
@@ -213,6 +216,7 @@
 				AB0014003026A4D600CE07BB /* StudentDisplayNameEntity.swift in Sources */,
 				AB0015003026A4D600CE07BB /* EvaluatorSelectionView.swift in Sources */,
 				AB0016003026A4D600CE07BB /* SettingsView.swift in Sources */,
+				AB0017003026A4D600CE07BB /* EvaluatorEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

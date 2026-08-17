@@ -13,6 +13,16 @@ struct PinEntryView: View {
 
     var body: some View {
         VStack(spacing: 32) {
+            if onFailed != nil {
+                HStack {
+                    Spacer()
+                    Button("Cancelar") {
+                        onFailed?()
+                    }
+                    .padding()
+                }
+            }
+
             Spacer()
 
             VStack(spacing: 16) {
