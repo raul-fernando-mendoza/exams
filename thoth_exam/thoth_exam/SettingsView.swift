@@ -285,20 +285,20 @@ struct SettingsView: View {
     private func reiniciarGrade(_ grade: ParameterGradeEntity) {
         // Reset parameter grade
         grade.isCompleted = false
-        grade.score = 0
-        grade.earnedPoints = 0
+        grade.score = 10
+        grade.earnedPoints = 1
         grade.evaluator_comment = nil
 
         // Reset all criteria grades
         for criteriaGrade in grade.sortedCriteriaGrades {
             criteriaGrade.isSelected = false
-            criteriaGrade.score = 0
-            criteriaGrade.earnedPoints = 0
+            criteriaGrade.score = 10
+            criteriaGrade.earnedPoints = 1
 
             // Reset all aspect grades
             for aspectGrade in criteriaGrade.sortedAspectGrades {
                 aspectGrade.isGraded = false
-                aspectGrade.score = 0
+                aspectGrade.score = 1
                 aspectGrade.hasMedal = false
                 aspectGrade.missingElements = nil
             }
