@@ -30,6 +30,10 @@ struct ParameterGradeEditView: View {
                 commentSection
 
                 submitButton
+
+                // Bottom spacer for keyboard visibility
+                Color.clear
+                    .frame(height: 300)
             }
             .padding(.vertical)
         }
