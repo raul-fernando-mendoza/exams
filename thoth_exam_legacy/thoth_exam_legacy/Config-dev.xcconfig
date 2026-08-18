@@ -1,0 +1,9 @@
+//
+//  Config-dev.xcconfig
+//  thoth_exam_legacy
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+BASE_URL = https:/$()/us-central1-thoth-dev-346022.cloudfunctions.net
+ORGANIZATION_ID = raxacademy

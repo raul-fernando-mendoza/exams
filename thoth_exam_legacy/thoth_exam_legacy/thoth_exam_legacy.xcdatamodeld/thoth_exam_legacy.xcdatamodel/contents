@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
+    <entity name="ParameterGradeEntity" representedClassName="ParameterGradeEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="applicationDay" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="availablePoints" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="earnedPoints" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="evaluator_comment" optional="YES" attributeType="String"/>
+        <attribute name="evaluator_uid" optional="YES" attributeType="String"/>
+        <attribute name="examGradeId" optional="YES" attributeType="String"/>
+        <attribute name="examGradeTitle" optional="YES" attributeType="String"/>
+        <attribute name="expression" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
+        <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isCompleted" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="label" optional="YES" attributeType="String"/>
+        <attribute name="level" optional="YES" attributeType="String"/>
+        <attribute name="materiaName" optional="YES" attributeType="String"/>
+        <attribute name="organization_id" optional="YES" attributeType="String"/>
+        <attribute name="paramDescription" optional="YES" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="scoreType" optional="YES" attributeType="String"/>
+        <attribute name="studentUids" optional="YES" attributeType="String"/>
+        <relationship name="criteriaGrades" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CriteriaGradeEntity" inverseName="parameterGrade" inverseEntity="CriteriaGradeEntity"/>
+    </entity>
+    <entity name="CriteriaGradeEntity" representedClassName="CriteriaGradeEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="availablePoints" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="criteriaDescription" optional="YES" attributeType="String"/>
+        <attribute name="earnedPoints" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
+        <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isSelected" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="label" optional="YES" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="aspectGrades" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="AspectGradeEntity" inverseName="criteriaGrade" inverseEntity="AspectGradeEntity"/>
+        <relationship name="parameterGrade" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ParameterGradeEntity" inverseName="criteriaGrades" inverseEntity="ParameterGradeEntity"/>
+    </entity>
+    <entity name="AspectGradeEntity" representedClassName="AspectGradeEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="aspectDescription" optional="YES" attributeType="String"/>
+        <attribute name="hasMedal" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
+        <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isGraded" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="label" optional="YES" attributeType="String"/>
+        <attribute name="missingElements" optional="YES" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="criteriaGrade" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CriteriaGradeEntity" inverseName="aspectGrades" inverseEntity="CriteriaGradeEntity"/>
+    </entity>
+    <entity name="SelectedEvaluatorEntity" representedClassName="SelectedEvaluatorEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="uid" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="StudentDisplayNameEntity" representedClassName="StudentDisplayNameEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="displayName" attributeType="String" defaultValueString=""/>
+        <attribute name="uid" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="EvaluatorEntity" representedClassName="EvaluatorEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="uid" attributeType="String" defaultValueString=""/>
+    </entity>
+    <elements>
+        <element name="ParameterGradeEntity" positionX="-63" positionY="-18" width="128" height="330"/>
+        <element name="CriteriaGradeEntity" positionX="160" positionY="-18" width="128" height="195"/>
+        <element name="AspectGradeEntity" positionX="383" positionY="-18" width="128" height="180"/>
+        <element name="SelectedEvaluatorEntity" positionX="-63" positionY="200" width="128" height="90"/>
+        <element name="StudentDisplayNameEntity" positionX="160" positionY="200" width="128" height="75"/>
+        <element name="EvaluatorEntity" positionX="-63" positionY="300" width="128" height="90"/>
+    </elements>
+</model>
