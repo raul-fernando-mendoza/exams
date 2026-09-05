@@ -27,7 +27,7 @@ struct PinEntryView: View {
 
             VStack(spacing: 16) {
                 Image(systemName: "lock.shield")
-                    .font(.system(size: 48))
+                    .font(.system(size: 57))
                     .foregroundColor(.accentColor)
 
                 Text("Enter your PIN")

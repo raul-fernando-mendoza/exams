@@ -28,7 +28,7 @@ class AspectGradeStarsView: UIView {
     private let labelLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 18)
         label.numberOfLines = 0
         return label
     }()
@@ -36,7 +36,7 @@ class AspectGradeStarsView: UIView {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 15)
         label.textColor = .gray
         label.numberOfLines = 0
         return label
@@ -57,7 +57,7 @@ class AspectGradeStarsView: UIView {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("✕", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 19)
         button.setTitleColor(.gray, for: .normal)
         button.isHidden = true
         return button
@@ -96,7 +96,7 @@ class AspectGradeStarsView: UIView {
             let button = UIButton(type: .system)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.setTitle("☆", for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 28)
             button.setTitleColor(UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0), for: .normal)
             button.tag = star
             button.addTarget(self, action: #selector(starTapped(_:)), for: .touchUpInside)

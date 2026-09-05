@@ -50,7 +50,7 @@ class ParameterGradeEditViewController: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 24)
         label.numberOfLines = 0
         return label
     }()
@@ -58,7 +58,7 @@ class ParameterGradeEditViewController: UIViewController {
     private let studentNamesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 18)
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -67,7 +67,7 @@ class ParameterGradeEditViewController: UIViewController {
     private let levelLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 18)
         label.textAlignment = .center
         return label
     }()
@@ -80,19 +80,10 @@ class ParameterGradeEditViewController: UIViewController {
         return sv
     }()
 
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = .gray
-        label.numberOfLines = 0
-        return label
-    }()
-
     private let completedLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.3, alpha: 1.0)
         label.textAlignment = .right
         label.text = "✓ Completed"
@@ -114,14 +105,14 @@ class ParameterGradeEditViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Evaluator Comment"
-        label.font = UIFont.boldSystemFont(ofSize: 17)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
         return label
     }()
 
     private let commentTextView: UITextView = {
         let tv = UITextView()
         tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.font = UIFont.systemFont(ofSize: 16)
+        tv.font = UIFont.systemFont(ofSize: 19)
         tv.layer.borderColor = UIColor.lightGray.cgColor
         tv.layer.borderWidth = 1
         tv.layer.cornerRadius = 8
@@ -134,7 +125,7 @@ class ParameterGradeEditViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Enviar", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 21)
         button.backgroundColor = UIColor(red: 0.0, green: 0.48, blue: 1.0, alpha: 1.0)
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
@@ -262,7 +253,6 @@ class ParameterGradeEditViewController: UIViewController {
         cardStack.addArrangedSubview(studentNamesLabel)
         cardStack.addArrangedSubview(levelLabel)
         cardStack.addArrangedSubview(infoStackView)
-        cardStack.addArrangedSubview(descriptionLabel)
         cardStack.addArrangedSubview(completedLabel)
 
         NSLayoutConstraint.activate([
@@ -304,13 +294,6 @@ class ParameterGradeEditViewController: UIViewController {
             addInfoRow(label: "Expresión:", value: expression)
         }
 
-        if let desc = parameterGrade.paramDescription, !desc.isEmpty {
-            descriptionLabel.text = desc
-            descriptionLabel.isHidden = false
-        } else {
-            descriptionLabel.isHidden = true
-        }
-
         completedLabel.isHidden = !parameterGrade.isCompleted
         commentTextView.text = parameterGrade.evaluator_comment ?? ""
     }
@@ -322,13 +305,13 @@ class ParameterGradeEditViewController: UIViewController {
 
         let labelView = UILabel()
         labelView.text = label
-        labelView.font = UIFont.systemFont(ofSize: 14)
+        labelView.font = UIFont.systemFont(ofSize: 16)
         labelView.textAlignment = .right
         labelView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
         let valueView = UILabel()
         valueView.text = value
-        valueView.font = UIFont.systemFont(ofSize: 14)
+        valueView.font = UIFont.systemFont(ofSize: 16)
         valueView.textAlignment = .center
         valueView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         valueView.numberOfLines = 0

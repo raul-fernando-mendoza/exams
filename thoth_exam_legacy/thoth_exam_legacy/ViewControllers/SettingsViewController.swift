@@ -400,6 +400,202 @@ class SettingsViewController: UIViewController {
         PersistenceController.shared.saveContext()
     }
 
+    // MARK: - Load All Evaluator Data (Retry)
+
+    private func loadAllEvaluatorData() {
+        isLoadingGrades = true
+        loadError = nil
+        loadProgress = "Loading evaluators..."
+        tableView.reloadData()
+
+        APIService.shared.fetchEvaluators { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case .success(let apiEvaluators):
+                self.saveEvaluatorsToCore(apiEvaluators)
+                self.evaluators = PersistenceController.shared.fetchEvaluators()
+                self.fetchGradesForAllEvaluators(apiEvaluators)
+            case .failure(let error):
+                self.isLoadingGrades = false
+                self.loadError = "Failed to load data: \(error.localizedDescription)"
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    private func saveEvaluatorsToCore(_ apiEvaluators: [EvaluatorUser]) {
+        let context = PersistenceController.shared.viewContext
+
+        // Delete existing evaluators
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "EvaluatorEntity")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        _ = try? context.execute(deleteRequest)
+
+        // Save new evaluators
+        for apiEval in apiEvaluators {
+            let entity = EvaluatorEntity(context: context)
+            entity.uid = apiEval.uid
+            entity.email = apiEval.email
+            entity.displayName = apiEval.displayName
+        }
+        PersistenceController.shared.saveContext()
+    }
+
+    private func fetchGradesForAllEvaluators(_ apiEvaluators: [EvaluatorUser]) {
+        var allGrades: [(EvaluatorUser, [ParameterGradeDTO])] = []
+        var allStudentUids: Set<String> = []
+        var currentIndex = 0
+
+        func fetchNextEvaluatorGrades() {
+            guard currentIndex < apiEvaluators.count else {
+                self.fetchStudentNamesForAllEvaluators(allGrades: allGrades, allStudentUids: Array(allStudentUids))
+                return
+            }
+
+            let evaluator = apiEvaluators[currentIndex]
+            loadProgress = "Loading grades for evaluator \(currentIndex + 1)/\(apiEvaluators.count)..."
+            tableView.reloadData()
+
+            APIService.shared.fetchParameterGrades(evaluatorId: evaluator.uid) { [weak self] result in
+                guard let self = self else { return }
+
+                switch result {
+                case .success(let dtos):
+                    allGrades.append((evaluator, dtos))
+                    for dto in dtos {
+                        if let uids = dto.studentUids {
+                            allStudentUids.formUnion(uids)
+                        }
+                    }
+                    currentIndex += 1
+                    fetchNextEvaluatorGrades()
+
+                case .failure(let error):
+                    self.isLoadingGrades = false
+                    self.loadError = "Failed to load data: \(error.localizedDescription)"
+                    self.tableView.reloadData()
+                }
+            }
+        }
+
+        fetchNextEvaluatorGrades()
+    }
+
+    private func fetchStudentNamesForAllEvaluators(allGrades: [(EvaluatorUser, [ParameterGradeDTO])], allStudentUids: [String]) {
+        var studentNames: [String: String] = [:]
+        var currentIndex = 0
+
+        func fetchNextStudentName() {
+            guard currentIndex < allStudentUids.count else {
+                self.saveAllLoadedData(allGrades: allGrades, studentNames: studentNames)
+                return
+            }
+
+            let uid = allStudentUids[currentIndex]
+            loadProgress = "Loading student names (\(currentIndex + 1)/\(allStudentUids.count))..."
+            tableView.reloadData()
+
+            APIService.shared.fetchStudentDisplayName(uid: uid) { result in
+                if case .success(let name) = result, let name = name {
+                    studentNames[uid] = name
+                }
+                currentIndex += 1
+                fetchNextStudentName()
+            }
+        }
+
+        if allStudentUids.isEmpty {
+            saveAllLoadedData(allGrades: allGrades, studentNames: studentNames)
+        } else {
+            fetchNextStudentName()
+        }
+    }
+
+    private func saveAllLoadedData(allGrades: [(EvaluatorUser, [ParameterGradeDTO])], studentNames: [String: String]) {
+        loadProgress = "Saving data..."
+        tableView.reloadData()
+
+        for (evaluator, grades) in allGrades {
+            saveEvaluatorDataSkippingDuplicates(evaluator: evaluator, grades: grades, studentNames: studentNames)
+        }
+
+        isLoadingGrades = false
+        loadData()
+    }
+
+    private func saveEvaluatorDataSkippingDuplicates(evaluator: EvaluatorUser, grades: [ParameterGradeDTO], studentNames: [String: String]) {
+        let context = PersistenceController.shared.viewContext
+
+        // Save student display names (skip existing)
+        let existingStudents = PersistenceController.shared.fetchStudentDisplayNames()
+        for (uid, name) in studentNames {
+            if existingStudents[uid] == nil {
+                let entity = StudentDisplayNameEntity(context: context)
+                entity.uid = uid
+                entity.displayName = name
+            }
+        }
+
+        // Save parameter grades (skip existing)
+        let existingGradeIds = Set(PersistenceController.shared.fetchAllParameterGrades().map { $0.id })
+
+        for dto in grades {
+            if existingGradeIds.contains(dto.id) {
+                continue
+            }
+
+            let pg = ParameterGradeEntity(context: context)
+            pg.id = dto.id
+            pg.examGradeId = dto.examGrade_id
+            pg.organization_id = dto.organization_id
+            pg.idx = Int32(dto.idx ?? 0)
+            pg.label = dto.label
+            pg.paramDescription = dto.description
+            pg.scoreType = dto.scoreType
+            pg.score = dto.score ?? 0
+            pg.earnedPoints = dto.earnedPoints ?? 0
+            pg.availablePoints = dto.availablePoints ?? 0
+            pg.evaluator_uid = dto.evaluator_uid ?? evaluator.uid
+            pg.applicationDay = Int32(dto.applicationDay ?? 0)
+            pg.isCompleted = dto.isCompleted ?? false
+            pg.evaluator_comment = dto.evaluator_comment
+            pg.examGradeTitle = dto.examGradeTitle
+            pg.expression = dto.expression
+            pg.materiaName = dto.materiaName
+            pg.level = dto.level
+            pg.studentUids = dto.studentUids?.joined(separator: ",")
+
+            for cgDTO in dto.criteriaGrades ?? [] {
+                let cg = CriteriaGradeEntity(context: context)
+                cg.id = cgDTO.id
+                cg.idx = Int32(cgDTO.idx ?? 0)
+                cg.label = cgDTO.label
+                cg.criteriaDescription = cgDTO.description
+                cg.isSelected = cgDTO.isSelected ?? false
+                cg.score = cgDTO.score ?? 0
+                cg.earnedPoints = cgDTO.earnedPoints ?? 0
+                cg.availablePoints = cgDTO.availablePoints ?? 0
+
+                for agDTO in cgDTO.aspectGrades ?? [] {
+                    let ag = AspectGradeEntity(context: context)
+                    ag.id = agDTO.id
+                    ag.idx = Int32(agDTO.idx ?? 0)
+                    ag.label = agDTO.label
+                    ag.aspectDescription = agDTO.description
+                    ag.isGraded = agDTO.isGraded ?? false
+                    ag.score = agDTO.score ?? 0
+                    ag.hasMedal = agDTO.hasMedal ?? false
+                    ag.missingElements = agDTO.missingElements
+                    cg.addToAspectGrades(ag)
+                }
+                pg.addToCriteriaGrades(cg)
+            }
+        }
+
+        PersistenceController.shared.saveContext()
+    }
+
     private func selectEvaluator(_ evaluator: EvaluatorEntity) {
         let context = PersistenceController.shared.viewContext
 
@@ -452,7 +648,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
             if isLoadingGrades {
                 return 1
             } else if loadError != nil {
-                return 1
+                return 2 // error message + retry
             } else {
                 return evaluators.count
             }
@@ -497,6 +693,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         } else if indexPath.section == gradesByEvaluator.count {
             // Sync section
             let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
+            cell.textLabel?.font = UIFont.systemFont(ofSize: 20)
 
             if isSaving {
                 cell.textLabel?.text = "Saving \(saveProgress.current) of \(saveProgress.total)..."
@@ -517,6 +714,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         } else if indexPath.section == gradesByEvaluator.count + 1 {
             // Reset section
             let cell = tableView.dequeueReusableCell(withIdentifier: "ActionCell", for: indexPath)
+            cell.textLabel?.font = UIFont.systemFont(ofSize: 20)
             cell.textLabel?.text = "Reset All Data"
             cell.textLabel?.textColor = .red
             cell.accessoryType = .none
@@ -525,16 +723,24 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         } else {
             // Change evaluator section
             let cell = tableView.dequeueReusableCell(withIdentifier: "EvaluatorCell", for: indexPath)
+            cell.textLabel?.font = UIFont.systemFont(ofSize: 20)
 
             if isLoadingGrades {
                 cell.textLabel?.text = loadProgress
                 cell.textLabel?.textColor = .gray
                 cell.accessoryType = .none
             } else if let error = loadError {
-                cell.textLabel?.text = error
-                cell.textLabel?.textColor = .red
-                cell.textLabel?.numberOfLines = 0
-                cell.accessoryType = .none
+                if indexPath.row == 0 {
+                    cell.textLabel?.text = error
+                    cell.textLabel?.textColor = .red
+                    cell.textLabel?.numberOfLines = 0
+                    cell.accessoryType = .none
+                } else {
+                    cell.textLabel?.text = "Retry"
+                    cell.textLabel?.textColor = view.tintColor
+                    cell.textLabel?.numberOfLines = 1
+                    cell.accessoryType = .none
+                }
             } else if indexPath.row < evaluators.count {
                 let evaluator = evaluators[indexPath.row]
                 cell.textLabel?.text = evaluator.displayName ?? "Unknown"
@@ -557,9 +763,16 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         } else if indexPath.section == gradesByEvaluator.count + 1 {
             // Reset tapped
             showResetAllConfirmation()
-        } else if indexPath.section == gradesByEvaluator.count + 2 && !isLoadingGrades && loadError == nil {
-            // Evaluator tapped
-            if indexPath.row < evaluators.count {
+        } else if indexPath.section == gradesByEvaluator.count + 2 {
+            // Change evaluator section
+            if isLoadingGrades {
+                return
+            } else if loadError != nil {
+                if indexPath.row == 1 {
+                    // Retry tapped
+                    loadAllEvaluatorData()
+                }
+            } else if indexPath.row < evaluators.count {
                 selectEvaluator(evaluators[indexPath.row])
             }
         }

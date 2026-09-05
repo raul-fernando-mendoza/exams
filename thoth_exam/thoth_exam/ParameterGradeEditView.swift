@@ -106,9 +106,6 @@ struct ParameterGradeEditView: View {
                 }
             }
             .cornerRadius(8)
-            if let desc = parameterGrade.paramDescription, !desc.isEmpty {
-                Text(desc).font(.body).foregroundColor(.secondary)
-            }
             Divider()
             HStack {
                 Spacer()

@@ -15,6 +15,7 @@ struct thoth_examApp: App {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(appState)
+                .dynamicTypeSize(.xxLarge)
                 .onAppear {
                     appState.hasSelectedEvaluator = persistenceController.hasSelectedEvaluator()
                 }

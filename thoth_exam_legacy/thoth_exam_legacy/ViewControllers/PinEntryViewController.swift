@@ -26,7 +26,7 @@ class PinEntryViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Cancelar", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
         return button
     }()
 
@@ -43,7 +43,7 @@ class PinEntryViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "🔒"
-        label.font = UIFont.systemFont(ofSize: 48)
+        label.font = UIFont.systemFont(ofSize: 57)
         label.textAlignment = .center
         return label
     }()
@@ -52,7 +52,7 @@ class PinEntryViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Enter your PIN"
-        label.font = UIFont.boldSystemFont(ofSize: 22)
+        label.font = UIFont.boldSystemFont(ofSize: 26)
         label.textAlignment = .center
         return label
     }()
@@ -61,7 +61,7 @@ class PinEntryViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .red
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .center
         label.numberOfLines = 0
         label.isHidden = true
@@ -196,7 +196,7 @@ class PinEntryViewController: UIViewController {
         let deleteButton = UIButton(type: .system)
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.setTitle("⌫", for: .normal)
-        deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+        deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 28)
         deleteButton.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
         NSLayoutConstraint.activate([
             deleteButton.widthAnchor.constraint(equalToConstant: 72),
@@ -211,7 +211,7 @@ class PinEntryViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(digit, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 33, weight: .medium)
         button.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
         button.layer.cornerRadius = 36
         button.tag = Int(digit) ?? 0

@@ -35,7 +35,7 @@ class AspectGradeStatusView: UIView {
     private let labelLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 18)
         label.numberOfLines = 0
         return label
     }()
@@ -43,7 +43,7 @@ class AspectGradeStatusView: UIView {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 15)
         label.textColor = .gray
         label.numberOfLines = 0
         return label
@@ -93,7 +93,7 @@ class AspectGradeStatusView: UIView {
             let button = UIButton(type: .system)
             button.translatesAutoresizingMaskIntoConstraints = false
             button.setTitle(option.icon, for: .normal)
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 22)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 26)
             button.tag = index
             button.layer.cornerRadius = 8
             button.addTarget(self, action: #selector(optionTapped(_:)), for: .touchUpInside)

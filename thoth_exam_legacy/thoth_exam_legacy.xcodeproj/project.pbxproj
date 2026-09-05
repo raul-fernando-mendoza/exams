@@ -27,10 +27,10 @@
 		E01000018 /* AspectGradeStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02000018 /* AspectGradeStatusView.swift */; };
 		E01000019 /* AspectGradeStarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02000019 /* AspectGradeStarsView.swift */; };
 		E01000020 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02000020 /* UIColor+Extensions.swift */; };
-		E01000024 /* SettingsGradeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02000028 /* SettingsGradeCell.swift */; };
 		E01000021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E02000021 /* Assets.xcassets */; };
 		E01000022 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E02000022 /* LaunchScreen.storyboard */; };
 		E01000023 /* thoth_exam_legacy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E02000023 /* thoth_exam_legacy.xcdatamodeld */; };
+		E01000024 /* SettingsGradeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02000028 /* SettingsGradeCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,13 +54,13 @@
 		E02000018 /* AspectGradeStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeStatusView.swift; sourceTree = "<group>"; };
 		E02000019 /* AspectGradeStarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectGradeStarsView.swift; sourceTree = "<group>"; };
 		E02000020 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
-		E02000028 /* SettingsGradeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGradeCell.swift; sourceTree = "<group>"; };
 		E02000021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E02000022 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E02000024 /* thoth_exam_legacy.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = thoth_exam_legacy.xcdatamodel; sourceTree = "<group>"; };
 		E02000025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E02000026 /* Config-dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Config-dev.xcconfig"; sourceTree = "<group>"; };
 		E02000027 /* Config-prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Config-prod.xcconfig"; sourceTree = "<group>"; };
+		E02000028 /* SettingsGradeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGradeCell.swift; sourceTree = "<group>"; };
 		E03000001 /* thoth_exam_legacy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = thoth_exam_legacy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -340,7 +340,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,7 +416,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -554,7 +554,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -574,7 +574,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

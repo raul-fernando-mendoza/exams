@@ -38,7 +38,7 @@ class EvaluatorSelectionViewController: UIViewController {
         label.textAlignment = .center
         label.textColor = .gray
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 19)
         return label
     }()
 
@@ -48,7 +48,7 @@ class EvaluatorSelectionViewController: UIViewController {
         label.textAlignment = .center
         label.textColor = .red
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.isHidden = true
         return label
     }()
@@ -57,7 +57,7 @@ class EvaluatorSelectionViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Retry", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 19)
         button.isHidden = true
         return button
     }()
@@ -323,7 +323,9 @@ extension EvaluatorSelectionViewController: UITableViewDataSource, UITableViewDe
         let cell = tableView.dequeueReusableCell(withIdentifier: "EvaluatorCell", for: indexPath)
         let evaluator = evaluators[indexPath.row]
 
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 20)
         cell.textLabel?.text = evaluator.displayName ?? "Unknown"
+        cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 16)
         cell.detailTextLabel?.text = evaluator.email
         cell.accessoryType = .disclosureIndicator
 

@@ -30,7 +30,7 @@ class GradesListViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "✓"
-        label.font = UIFont.systemFont(ofSize: 48)
+        label.font = UIFont.systemFont(ofSize: 57)
         label.textColor = .gray
         label.textAlignment = .center
         return label
@@ -43,7 +43,7 @@ class GradesListViewController: UIViewController {
         label.textColor = .gray
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 19)
         return label
     }()
 
