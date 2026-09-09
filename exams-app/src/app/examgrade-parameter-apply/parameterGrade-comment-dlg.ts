@@ -3,10 +3,6 @@ import {  MAT_DIALOG_DATA, MatDialogModule, MatDialogRef as MatDialogRef } from 
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-
-import { MatInputModule } from '@angular/material/input';
 import { SoundfileEditComponent } from "../soundfile-edit/soundfile-edit.component";
 
 export interface ParameterGradeCommentDialogData {
@@ -25,17 +21,13 @@ export interface ParameterGradeCommentDialogData {
     imports: [
       CommonModule
       ,MatIconModule
-      ,MatButtonModule   
-     
-      ,FormsModule
-      ,ReactiveFormsModule
-      ,MatFormFieldModule
-      ,MatInputModule 
+      ,MatButtonModule
+
       ,SoundfileEditComponent
 
-      ,MatDialogModule       
- 
-    ],      
+      ,MatDialogModule
+
+    ],
     templateUrl: './parameterGrade-comment-dlg.html',
     styleUrls: ['./parameterGrade-comment-dlg.css']
   })

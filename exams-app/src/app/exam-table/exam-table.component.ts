@@ -1,10 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, OnInit, signal, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { BusinessService } from '../business.service';
-import { CriteriaGrade, ExamGrade, ParameterGrade, User } from '../exams/exams.module';
+import { CriteriaGrade, User } from '../exams/exams.module';
 import { UserLoginService } from '../user-login.service';
 
 import { db } from 'src/environments/environment';
@@ -12,6 +12,7 @@ import { NodeTableRow, NodeTableDataSource } from '../node-table/node-table-data
 import { UserPreferencesService } from '../user-preferences.service';
 import { DateFormatService } from '../date-format.service';
 import { FormBuilder } from '@angular/forms';
+import { ExamTableModel } from './exam-table.model';
 
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,29 +61,21 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   styleUrls: ['./exam-table.component.css'],
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ExamTableComponent implements OnInit, OnDestroy {
+export class ExamTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatTable) table: MatTable<NodeTableRow>;
-
-  examGradeList = new Array<NodeTableRow>()
 
   dataSource = signal<NodeTableDataSource>(null);
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['applicationDate', 'titulo', 'alumna', 'completed', 'score', 'release', 'delete'];
 
-  released = false
-  periodicRefresh = false
-
-  applicationDate: Date = null
-  studentId: string | null = null
-
-  submitting = signal(true)
-  showDeleted = false
+  // data itself lives in examTableModel (a root-provided singleton) so it
+  // survives this component being dismissed and re-created; this component
+  // is just a thin, redrawn-on-change view over it.
+  submitting = computed(() => this.examTableModel.loading());
 
   organization_id = null
-
-  snapshots: Array<any> = []
 
   filterForm = this.fb.group({
     studentUid: [""]
@@ -96,9 +89,13 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     , public dateFormatService: DateFormatService
     , public fb: FormBuilder
     , private changeDetectorRef: ChangeDetectorRef
+    , public examTableModel: ExamTableModel
   ) {
     this.organization_id = userPreferencesService.getCurrentOrganizationId()
 
+    effect(() => {
+      this.updateList(this.examTableModel.examGradeList())
+    })
   }
 
   toFixed(num, fixed) {
@@ -111,275 +108,49 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     }
   }
 
+  get applicationDate(): Date | null {
+    return this.examTableModel.applicationDate()
+  }
+  set applicationDate(date: Date | null) {
+    // the datepicker's own [(value)] two-way binding writes here directly;
+    // route it through the model like every other filter change so it
+    // stays the single source of truth and dedupes/resubscribes correctly
+    this.examTableModel.setApplicationDate(date)
+  }
 
   ngOnInit() {
-    var saved_applicationDate = localStorage.getItem('applicationDate')
-    if (saved_applicationDate && saved_applicationDate != 'null') {
-      try {
-        this.applicationDate = new Date(saved_applicationDate)
-      }
-      catch (e) {
-        this.applicationDate == null
-      }
-    }
-    var studentUid = localStorage.getItem('studentUid')
-    if (studentUid) {
-      this.filterForm.controls.studentUid.setValue(studentUid)
-    }
-
-    this.update()
+    this.filterForm.controls.studentUid.setValue(this.examTableModel.studentUid())
   }
-  update() {
-    this.loadExamGrades().then(() => {
-      console.log("update completed")
-    })
+
+  ngAfterViewInit(): void {
+    // the model may already hold data (e.g. we navigated back to this
+    // screen) by the time the view -and the paginator/table ViewChilds- are
+    // ready, so make sure it gets attached at least once here too
+    this.updateList(this.examTableModel.examGradeList())
   }
-  updateList() {
-    //now sort all versions
-    this.examGradeList.sort((a, b) => {
-      if (this.dateFormatService.formatDate(a.obj["applicationDate"]) == this.dateFormatService.formatDate(b.obj["applicationDate"])) {
-        if (a.obj["title"]) {
-          return a.obj["title"] > b.obj["title"] ? 1 : -1
-        }
-        if (a.obj["label"]) {
-          return a.obj["label"] > b.obj["label"] ? 1 : -1
-        }
 
-      }
-      else {
-        return a.obj["applicationDate"] < b.obj["applicationDate"] ? 1 : -1
-      }
-    })
-
+  private updateList(rows: NodeTableRow[]) {
+    if (!this.table) {
+      // view not initialized yet; ngAfterViewInit will re-run this once it is
+      return
+    }
     this.changeDetectorRef.detectChanges()
-    let nodeTableDataSource = new NodeTableDataSource(this.examGradeList)
+    let nodeTableDataSource = new NodeTableDataSource(rows)
     this.dataSource.set(nodeTableDataSource);
-
-    this.dataSource().paginator = this.paginator;
+    if (this.paginator) {
+      this.dataSource().paginator = this.paginator;
+    }
     this.table.dataSource = this.dataSource();
-  }
-
-  loadExamGrades(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      var qry = db.collection("examGrades")
-        .where("organization_id", "==", this.organization_id)
-        .where("isDeleted", "==", false)
-
-      var saved_applicationDate = this.applicationDate?.toISOString()
-      if (saved_applicationDate && saved_applicationDate != 'null') {
-        var d: Date = new Date(saved_applicationDate)
-        var dateId = this.dateFormatService.getDayId(d)
-        qry = qry.where("applicationDay", "==", dateId)
-      }
-
-
-      var studentUid = this.filterForm.controls.studentUid.value
-      if (studentUid) { //if version = 1 and there is a search then add the query 
-        qry = qry.where("studentUids", "array-contains", studentUid)
-      }
-
-      if (!this.applicationDate && !studentUid) {
-        qry = qry.orderBy("applicationDate", "desc")
-        qry = qry.limit(1000)
-      }
-
-      this.submitting.set(true)
-      var unsubscribe = qry.onSnapshot(set => {
-        this.submitting.set(false)
-        this.examGradeList.length = 0
-
-        let transactions = []
-        set.docs.map(doc => {
-          let examGrade: ExamGrade = doc.data() as ExamGrade
-          var d: any = examGrade.applicationDate
-
-          let node: NodeTableRow = {
-            obj: {
-              "id": examGrade.id,
-              "exam_id": examGrade.exam_id,
-              "applicationDate": d.toDate(),
-              "materia_id": examGrade.materia_id,
-              "materia_name": null,
-              "student_uid": examGrade.student_uid,
-              "students": [],
-              "title": examGrade.title,
-              "score": this.toFixed(examGrade.score, 1),
-              "isReleased": examGrade.isReleased,
-              "isCompleted": examGrade.isCompleted
-            },
-            opened: false,
-            children: [],
-            nodeClass: "examGrade",
-            isLeaf: false
-
-
-          }
-          this.examGradeList.push(node)
-
-
-          let m = db.collection("materias").doc(examGrade.materia_id).get().then(doc => {
-            if (doc.exists) {
-              node.obj["materia_name"] = doc.data().materia_name
-            }
-          })
-          transactions.push(m)
-
-          examGrade.studentUids.forEach(e => {
-            let u = this.examImprovisacionService.getUser(e).then(user => {
-              if (user == null) {
-                let newUser: User = {
-                  uid: "",
-                  email: "desconocido",
-                  displayName: "desconocido",
-                }
-                node.obj['students'] = [newUser]
-              }
-              else {
-                user.displayName = this.userLoginService.getDisplayNameForUser(user)
-                node.obj['students'].push(user)
-              }
-            })
-            transactions.push(u)
-          })
-
-        })
-        Promise.all(transactions).then(() => {
-          this.updateList()
-          resolve()
-
-        })
-          .catch(reason => {
-            console.error("Error waiting for parameters:" + reason)
-            reject()
-          })
-      },
-        reason => {
-          console.log(reason)
-          alert("Error loading exams grades:" + reason)
-        })
-      this.snapshots.push(unsubscribe)
-    })
-
   }
 
   onExpandExamGrade(row: NodeTableRow) {
     if (row.nodeClass !== 'examGrade') return
+    const examGrade_id = row.obj['id']
     if (row.opened) {
-      row.opened = false
-      row.children.length = 0
-      this.updateList()
+      this.examTableModel.collapseExamGrade(examGrade_id)
     } else {
-      row.opened = true
-      Promise.all([
-        this.loadParameterGrades(row.obj['id'], row.children),
-        this.loadHomeworkGrades(row, row.children)
-      ]).then(() => {
-        this.updateList()
-      })
+      this.examTableModel.expandExamGrade(examGrade_id)
     }
-  }
-
-  loadParameterGrades(examGrade_id, parent: NodeTableRow[]): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let qry = db.collection("examGrades/" + examGrade_id + "/parameterGrades")
-        .where("isCurrentVersion", "==", true)
-
-
-      var unsubscribe = qry.onSnapshot(set => {
-        for (let i = parent.length - 1; i >= 0; i--) {
-          if (parent[i].nodeClass === 'parameterGrade') parent.splice(i, 1)
-        }
-        let m = set.docs.map(doc => {
-          console.log("loading ParameterGrades for:" + examGrade_id)
-          let parameterGrade = doc.data() as ParameterGrade
-
-          let node: NodeTableRow = {
-            obj: {
-              "examGrade_id": examGrade_id,
-              "parameterGrade_id": parameterGrade.id,
-              "label": parameterGrade.label,
-              "score": this.toFixed(parameterGrade.score, 1),
-              "isCompleted": parameterGrade.isCompleted,
-              "idx": parameterGrade.idx
-            },
-            opened: false,
-            children: [],
-            nodeClass: "parameterGrade",
-            isLeaf: true
-          }
-          parent.push(node)
-        })
-        parent.sort((a, b) => {
-          return a.obj["label"] > b.obj["label"] ? 1 : -1
-        })
-        console.log("End loading ParameterGrades")
-        resolve()
-
-      },
-        reason => {
-          alert("error reading exams:" + reason)
-          reject(reason)
-        })
-
-      this.snapshots.push(unsubscribe)
-    })
-
-  }
-
-
-  loadHomeworkGrades(row: NodeTableRow, parent: NodeTableRow[]): Promise<void> {
-    const materia_id = row.obj['materia_id']
-    const exam_id = row.obj['exam_id']
-    const students: User[] = row.obj['students'] as User[]
-
-    return db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks")
-      .get().then(homeworkSet => {
-        const homeworks = homeworkSet.docs.map(d => {
-          const data = d.data() as any
-          return { id: d.id, label: data.label ?? '', idx: data.idx ?? 0 }
-        })
-        homeworks.sort((a, b) => a.idx - b.idx)
-
-        return Promise.all(homeworks.map(homework => {
-          return Promise.all(students.map(student => {
-            return db.collection("materiaEnrollments")
-              .where("organization_id", "==", this.organization_id)
-              .where("isDeleted", "==", false)
-              .where("student_uid", "==", student.uid)
-              .where("materia_id", "==", materia_id)
-              .get().then(enrollSet => {
-                if (enrollSet.empty) return 0
-                const enrollmentId = enrollSet.docs[0].id
-                return db.collection("materiaEnrollments").doc(enrollmentId)
-                  .collection("homeworkScores").doc(homework.id).get().then(scoreDoc => {
-                    return scoreDoc.exists ? (scoreDoc.data().homework_score ?? 0) : 0
-                  })
-              })
-          })).then((scores: number[]) => {
-            const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
-            const node: NodeTableRow = {
-              obj: {
-                "label": homework.label,
-                "score": this.toFixed(avg, 1),
-                "idx": homework.idx,
-                "isCompleted": true
-              },
-              opened: false,
-              children: [],
-              nodeClass: "homeworkGrade",
-              isLeaf: true
-            }
-            parent.push(node)
-          })
-        })).then(() => {
-          const homeworkNodes = parent.filter(n => n.nodeClass === 'homeworkGrade')
-          homeworkNodes.sort((a, b) => a.obj['idx'] - b.obj['idx'])
-          for (let i = parent.length - 1; i >= 0; i--) {
-            if (parent[i].nodeClass === 'homeworkGrade') parent.splice(i, 1)
-          }
-          homeworkNodes.forEach(n => parent.push(n))
-        })
-      })
   }
 
   onDelete(title, examGrade_id) {
@@ -413,12 +184,11 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   }
 
   updateRelease(row: NodeTableRow, value: boolean) {
-    let examGrade = row.obj as ExamGrade
-    const examGradeId = examGrade["id"]
-    const materia_id = examGrade["materia_id"]
-    const exam_id = examGrade["exam_id"]
+    const examGradeId = row.obj["id"]
+    const materia_id = row.obj["materia_id"]
+    const exam_id = row.obj["exam_id"]
 
-    const studentUids: string[] = (examGrade["students"] as User[]).map(s => s.uid)
+    const studentUids: string[] = (row.obj["students"] as User[]).map(s => s.uid)
 
     db.collection("materias/" + materia_id + "/exams/" + exam_id + "/homeworks").get().then(homeworkSet => {
       const homeworks = homeworkSet.docs.map(d => ({ id: d.id, ...(d.data() as {label?:string, idx?:number}) }))
@@ -460,30 +230,27 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     return this.userLoginService.hasRole("role-admin-" + this.organization_id)
   }
 
-  applicationFilterChange(e) {
-    if (e instanceof MatDatepickerInputEvent) {
-      if (e.value == null) {
-        this.applicationDate = null
-      }
-      else this.applicationDate = e.value
+  private handleTokenError(error) {
+    if (error.status == 401) {
+      this.router.navigate(['/loginForm']);
     }
-    console.log("date changed to:" + this.applicationDate)
-    localStorage.setItem('released', this.released.toString())
-    localStorage.setItem('applicationDate', this.applicationDate ? this.applicationDate.toISOString() : null)
+    else {
+      alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
+    }
+  }
 
+  applicationFilterChange(e) {
+    let newDate: Date | null = null
+    if (e instanceof MatDatepickerInputEvent) {
+      newDate = e.value ?? null
+    }
+    console.log("date changed to:" + newDate)
 
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.update()
+        this.examTableModel.setApplicationDate(newDate)
       },
-      error => {
-        if (error.status == 401) {
-          this.router.navigate(['/loginForm']);
-        }
-        else {
-          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
-        }
-      }
+      error => this.handleTokenError(error)
     )
   }
 
@@ -494,11 +261,6 @@ export class ExamTableComponent implements OnInit, OnDestroy {
 
   onEditParameterGrade(examGrade_id, parameterGrade_id) {
     this.router.navigate(['/examGrade-parameterGrade-apply', { examGrade_id: examGrade_id, parameterGrade_id: parameterGrade_id }]);
-  }
-  ngOnDestroy(): void {
-    this.snapshots.map(func => {
-      func()
-    })
   }
   onReset(examGrade_id, parameterGrade_id, title) {
     if (!confirm("Esta seguro de querer limpiar:" + title)) {
@@ -617,19 +379,11 @@ export class ExamTableComponent implements OnInit, OnDestroy {
   }
   examStudentChange(studentUid) {
     console.log("student selection:" + studentUid)
-    localStorage.setItem('studentUid', studentUid ? studentUid : "",)
     this.userLoginService.getUserIdToken().then(
       token => {
-        this.update()
+        this.examTableModel.setStudentUid(studentUid ? studentUid : "")
       },
-      error => {
-        if (error.status == 401) {
-          this.router.navigate(['/loginForm']);
-        }
-        else {
-          alert("ERROR al leer lista de improvisacion:" + error.errorCode + " " + error.errorMessage)
-        }
-      }
+      error => this.handleTokenError(error)
     )
   }
 
@@ -638,7 +392,6 @@ export class ExamTableComponent implements OnInit, OnDestroy {
     this.examStudentChange("")
   }
   onClearDate() {
-    this.applicationDate = null
     this.applicationFilterChange(null)
   }
 }
