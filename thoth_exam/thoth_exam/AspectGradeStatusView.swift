@@ -29,7 +29,6 @@ struct AspectGradeStatusView: View {
                 ForEach(gradeOptions, id: \.score) { option in
                     Button {
                         aspectGrade.score = option.score
-                        aspectGrade.isGraded = option.score > 0
                         onChanged()
                     } label: {
                         Image(systemName: option.icon)

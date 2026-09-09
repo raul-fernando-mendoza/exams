@@ -55,7 +55,6 @@ struct AspectGradeDTO: Codable, Identifiable {
     var idx: Int?
     var label: String?
     var description: String?
-    var isGraded: Bool?
     var score: Double?
     var hasMedal: Bool?
     var missingElements: String?

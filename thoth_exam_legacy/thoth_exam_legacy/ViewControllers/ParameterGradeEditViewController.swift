@@ -14,6 +14,7 @@ class ParameterGradeEditViewController: UIViewController {
 
     private let parameterGrade: ParameterGradeEntity
     private var studentNames: [String] = []
+    private let commentCharacterLimit = 200
 
     // MARK: - UI Components
 
@@ -120,6 +121,15 @@ class ParameterGradeEditViewController: UIViewController {
         return tv
     }()
 
+    private let commentCounterLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.textColor = .gray
+        label.textAlignment = .right
+        return label
+    }()
+
     // Submit button
     private let submitButton: UIButton = {
         let button = UIButton(type: .system)
@@ -195,7 +205,9 @@ class ParameterGradeEditViewController: UIViewController {
         commentContainer.translatesAutoresizingMaskIntoConstraints = false
         commentContainer.addSubview(commentLabel)
         commentContainer.addSubview(commentTextView)
+        commentContainer.addSubview(commentCounterLabel)
         stackView.addArrangedSubview(commentContainer)
+        commentTextView.delegate = self
 
         NSLayoutConstraint.activate([
             commentLabel.topAnchor.constraint(equalTo: commentContainer.topAnchor),
@@ -206,7 +218,11 @@ class ParameterGradeEditViewController: UIViewController {
             commentTextView.leadingAnchor.constraint(equalTo: commentContainer.leadingAnchor, constant: 16),
             commentTextView.trailingAnchor.constraint(equalTo: commentContainer.trailingAnchor, constant: -16),
             commentTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
-            commentTextView.bottomAnchor.constraint(equalTo: commentContainer.bottomAnchor)
+
+            commentCounterLabel.topAnchor.constraint(equalTo: commentTextView.bottomAnchor, constant: 4),
+            commentCounterLabel.leadingAnchor.constraint(equalTo: commentContainer.leadingAnchor, constant: 16),
+            commentCounterLabel.trailingAnchor.constraint(equalTo: commentContainer.trailingAnchor, constant: -16),
+            commentCounterLabel.bottomAnchor.constraint(equalTo: commentContainer.bottomAnchor)
         ])
 
         // Add submit button
@@ -296,6 +312,13 @@ class ParameterGradeEditViewController: UIViewController {
 
         completedLabel.isHidden = !parameterGrade.isCompleted
         commentTextView.text = parameterGrade.evaluator_comment ?? ""
+        updateCommentCounter()
+    }
+
+    private func updateCommentCounter() {
+        let remaining = commentCharacterLimit - commentTextView.text.count
+        commentCounterLabel.text = "\(remaining) characters remaining"
+        commentCounterLabel.textColor = remaining < 0 ? .systemRed : .gray
     }
 
     private func addInfoRow(label: String, value: String) {
@@ -454,5 +477,20 @@ class ParameterGradeEditViewController: UIViewController {
         }
 
         navigationController?.popViewController(animated: true)
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension ParameterGradeEditViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard textView == commentTextView else { return true }
+        let currentText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+        return currentText.count <= commentCharacterLimit
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        guard textView == commentTextView else { return }
+        updateCommentCounter()
     }
 }

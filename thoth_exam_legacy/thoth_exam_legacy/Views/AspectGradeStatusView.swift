@@ -142,7 +142,6 @@ class AspectGradeStatusView: UIView {
     @objc private func optionTapped(_ sender: UIButton) {
         let option = gradeOptions[sender.tag]
         aspectGrade.score = option.score
-        aspectGrade.isGraded = option.score > 0
         updateSelection()
         onChanged?()
     }

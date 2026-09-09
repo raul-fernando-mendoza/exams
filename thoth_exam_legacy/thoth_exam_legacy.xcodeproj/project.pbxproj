@@ -340,7 +340,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,7 +416,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -554,7 +554,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -574,7 +574,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 96T37Y3JXY;
 				INFOPLIST_FILE = thoth_exam_legacy/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -598,7 +598,7 @@
 				3D826ACE3033F11B00831794 /* Release qa */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		E08000002 /* Build configuration list for PBXProject "thoth_exam_legacy" */ = {
 			isa = XCConfigurationList;
@@ -609,7 +609,7 @@
 				3D826ACD3033F11B00831794 /* Release qa */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

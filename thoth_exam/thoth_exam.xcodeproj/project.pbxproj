@@ -603,7 +603,7 @@
 				3D4B8A86303022220084E46C /* Release-qa */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		3D9720BC3026A4DA00CE07BB /* Build configuration list for PBXNativeTarget "thoth_exam" */ = {
 			isa = XCConfigurationList;
@@ -614,7 +614,7 @@
 				3D4B8A87303022220084E46C /* Release-qa */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

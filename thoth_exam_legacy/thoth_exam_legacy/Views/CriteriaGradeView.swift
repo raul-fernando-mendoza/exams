@@ -119,7 +119,7 @@ class CriteriaGradeView: UIView {
 
     private func recalculatePoints() {
         let aspects = criteriaGrade.sortedAspectGrades
-        let earned = aspects.reduce(0.0) { $0 + ($1.isGraded ? $1.score : 0) }
+        let earned = aspects.reduce(0.0) { $0 + $1.score }
         let available = Double(aspects.count)
         criteriaGrade.earnedPoints = earned
         criteriaGrade.availablePoints = available

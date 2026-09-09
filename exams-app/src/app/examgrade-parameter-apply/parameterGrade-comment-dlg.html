@@ -9,10 +9,10 @@
   </mat-form-field>
 
   <app-soundfile-edit [collection]="data.collection" [id]="data.id" [property]="data.property" ></app-soundfile-edit>
-  
-  <div>{{ data.comentario.length }} caracteres de 200</div>
+
+  <div>{{ 200 - data.comentario.length }} caracteres restantes ({{ data.comentario.length }} de 200)</div>
   <div class="error-message" *ngIf="data.comentario.length > 200">ERROR comentario excede el numero de caracteres permitido</div>
 </div>
-<div mat-dialog-actions *ngIf="data.comentario.length <= 200" >  
+<div mat-dialog-actions *ngIf="data.comentario.length <= 200" >
   <button  mat-button [mat-dialog-close]=data.comentario cdkFocusInitial>Ok</button>
 </div>

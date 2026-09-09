@@ -12,7 +12,6 @@ extension AspectGradeEntity {
     @NSManaged public var idx: Int32
     @NSManaged public var label: String?
     @NSManaged public var aspectDescription: String?
-    @NSManaged public var isGraded: Bool
     @NSManaged public var score: Double
     @NSManaged public var hasMedal: Bool
     @NSManaged public var missingElements: String?

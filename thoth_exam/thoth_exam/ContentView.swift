@@ -143,9 +143,10 @@ struct ParameterGradeRow: View {
         .padding(.vertical, 4)
     }
 }
-
-#Preview {
-    ContentView()
-        .environmentObject(AppState())
-        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-}
+/*
+ #Preview {
+ ContentView()
+ .environmentObject(AppState())
+ .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+ }
+ */

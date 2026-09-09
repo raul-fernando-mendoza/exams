@@ -39,7 +39,6 @@
         <attribute name="hasMedal" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String" defaultValueString=""/>
         <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="isGraded" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="label" optional="YES" attributeType="String"/>
         <attribute name="missingElements" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>

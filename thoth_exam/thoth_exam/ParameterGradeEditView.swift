@@ -9,6 +9,8 @@ struct ParameterGradeEditView: View {
     @State private var studentNames: [String] = []
     @Environment(\.dismiss) private var dismiss
 
+    private let commentCharacterLimit = 200
+
     init(parameterGrade: ParameterGradeEntity) {
         _parameterGrade = ObservedObject(wrappedValue: parameterGrade)
         _displayScore = State(initialValue: parameterGrade.score)
@@ -122,12 +124,19 @@ struct ParameterGradeEditView: View {
         .padding(.horizontal)
     }
 
+    private var commentCharactersRemaining: Int {
+        commentCharacterLimit - (parameterGrade.evaluator_comment?.count ?? 0)
+    }
+
     private var commentSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Evaluator Comment").font(.headline)
             TextEditor(text: Binding(
                 get: { parameterGrade.evaluator_comment ?? "" },
-                set: { parameterGrade.evaluator_comment = $0.isEmpty ? nil : $0 }
+                set: { newValue in
+                    let trimmed = String(newValue.prefix(commentCharacterLimit))
+                    parameterGrade.evaluator_comment = trimmed.isEmpty ? nil : trimmed
+                }
             ))
             .frame(minHeight: 80)
             .padding(4)
@@ -143,6 +152,9 @@ struct ParameterGradeEditView: View {
                     }
                 }
             }
+            Text("\(commentCharactersRemaining) characters remaining")
+                .font(.caption)
+                .foregroundColor(commentCharactersRemaining < 0 ? .red : .secondary)
         }
         .padding(.horizontal)
     }

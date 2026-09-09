@@ -36,7 +36,6 @@ struct PersistenceController {
             ag.idx = Int32(i)
             ag.label = "Aspect \(i + 1)"
             ag.score = 0.86
-            ag.isGraded = true
             cg.addToAspectGrades(ag)
         }
 

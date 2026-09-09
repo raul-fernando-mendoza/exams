@@ -95,7 +95,6 @@ class APIService {
                 aspectList.append([
                     "id": ag.id,
                     "score": ag.score,
-                    "isGraded": ag.isGraded,
                     "hasMedal": ag.hasMedal
                 ])
             }

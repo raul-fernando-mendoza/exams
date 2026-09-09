@@ -42,7 +42,15 @@
         </criteriagrade-apply>
     </div> 
 
-    <button mat-raised-button *ngIf="!parameterGrade().isCompleted" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button> 
+    <div *ngIf="!parameterGrade().isCompleted" [formGroup]="fg" class="evaluator-comment">
+        <mat-form-field appearance="fill">
+            <mat-label>Evaluator Comment</mat-label>
+            <textarea matInput maxlength="200" rows="3" formControlName="evaluator_comment" (change)="onCommentChange()" placeholder="comentario opcional"></textarea>
+        </mat-form-field>
+        <div>{{ 200 - (fg.controls.evaluator_comment.value?.length || 0) }} caracteres restantes</div>
+    </div>
+
+    <button mat-raised-button *ngIf="!parameterGrade().isCompleted" color="primary" (click)="submit()" [disabled]="submitting">Enviar</button>
     <div class="comment" *ngIf="parameterGrade().isCompleted == true" > 
         <b>score: {{ (parameterGrade().score ).toFixed(1) }} </b>
         <div  *ngIf="parameterGrade().evaluator_comment" >

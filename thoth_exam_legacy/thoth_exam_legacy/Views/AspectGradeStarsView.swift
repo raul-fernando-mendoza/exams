@@ -53,16 +53,6 @@ class AspectGradeStarsView: UIView {
 
     private var starButtons: [UIButton] = []
 
-    private let clearButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("✕", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 19)
-        button.setTitleColor(.gray, for: .normal)
-        button.isHidden = true
-        return button
-    }()
-
     // MARK: - Initialization
 
     init(aspectGrade: AspectGradeEntity) {
@@ -109,10 +99,6 @@ class AspectGradeStarsView: UIView {
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
         starsStackView.addArrangedSubview(spacer)
 
-        // Clear button
-        clearButton.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
-        starsStackView.addArrangedSubview(clearButton)
-
         stackView.addArrangedSubview(starsStackView)
 
         NSLayoutConstraint.activate([
@@ -127,7 +113,7 @@ class AspectGradeStarsView: UIView {
         // Score calculation: (star / 10) + 0.5
         // So 1 star = 0.55, 2 stars = 0.65, etc.
         // Reverse: star = (score - 0.5) * 10
-        let currentStars = aspectGrade.isGraded ? Int((aspectGrade.score - 0.5) * 10) : 0
+        let currentStars = Int((aspectGrade.score - 0.5) * 10)
 
         for (index, button) in starButtons.enumerated() {
             let starNumber = index + 1
@@ -137,8 +123,6 @@ class AspectGradeStarsView: UIView {
                 button.setTitle("☆", for: .normal)
             }
         }
-
-        clearButton.isHidden = !aspectGrade.isGraded
     }
 
     // MARK: - Actions
@@ -147,14 +131,6 @@ class AspectGradeStarsView: UIView {
         let star = sender.tag
         let newScore = (Double(star) / 10.0) + 0.5
         aspectGrade.score = newScore
-        aspectGrade.isGraded = true
-        updateStars()
-        onChanged?()
-    }
-
-    @objc private func clearTapped() {
-        aspectGrade.score = 0
-        aspectGrade.isGraded = false
         updateStars()
         onChanged?()
     }

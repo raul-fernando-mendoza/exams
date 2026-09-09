@@ -22,7 +22,6 @@ struct AspectGradeStarsView: View {
                     Button {
                         let newScore = (Double(star) / 10.0) + 0.5
                         aspectGrade.score = newScore
-                        aspectGrade.isGraded = true
                         onChanged()
                     } label: {
                         Image(systemName: star <= Int(aspectGrade.score * 10)-5 ? "star.fill" : "star")
@@ -33,10 +32,9 @@ struct AspectGradeStarsView: View {
 
                 Spacer()
 
-                if aspectGrade.isGraded {
+                if aspectGrade.score > 0 {
                     Button {
                         aspectGrade.score = 0
-                        aspectGrade.isGraded = false
                         onChanged()
                     } label: {
                         Image(systemName: "xmark.circle")

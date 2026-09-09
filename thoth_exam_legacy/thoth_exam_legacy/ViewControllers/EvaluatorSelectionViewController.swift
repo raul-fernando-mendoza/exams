@@ -289,7 +289,6 @@ class EvaluatorSelectionViewController: UIViewController {
                     ag.idx = Int32(agDTO.idx ?? 0)
                     ag.label = agDTO.label
                     ag.aspectDescription = agDTO.description
-                    ag.isGraded = agDTO.isGraded ?? false
                     ag.score = agDTO.score ?? 0
                     ag.hasMedal = agDTO.hasMedal ?? false
                     ag.missingElements = agDTO.missingElements

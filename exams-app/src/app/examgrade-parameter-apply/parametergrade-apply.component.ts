@@ -67,9 +67,12 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
 
   criteriaGrades = signal<CriteriaGrade[]>([])
 
+  commentCharacterLimit = 200
+
   fg = this.fb.group({
-    evaluator_uid:[""]
-  })  
+    evaluator_uid:[""],
+    evaluator_comment:[""]
+  })
 
   constructor(
     private activatedRoute: ActivatedRoute 
@@ -93,8 +96,9 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
 
     db.collection(this.collection).doc(this.parameterGrade_id).get().then( doc =>{
       this.parameterGrade.set(doc.data() as ParameterGrade)
+      this.fg.controls.evaluator_comment.setValue( this.parameterGrade().evaluator_comment || "" )
 
-      this.userLoginService.getUserIdToken().then( token => {   
+      this.userLoginService.getUserIdToken().then( token => {
         this.businessService.getEvaluators(this.organization_id, token).then( evaluators =>{
           this.evaluators.set(evaluators)        
           if( this.parameterGrade() ){
@@ -297,6 +301,22 @@ export class ParameterGradeApplyComponent implements OnInit, OnDestroy {
     }) 
         
   }  
+  onCommentChange(){
+    let comment:string = this.fg.controls.evaluator_comment.value || ""
+    comment = comment.slice(0, this.commentCharacterLimit)
+
+    // keep the in-memory parameterGrade in sync so a later submit (and its
+    // post-submit comment dialog) doesn't overwrite this with a stale value
+    this.parameterGrade().evaluator_comment = comment ? comment : null
+
+    db.collection(this.collection).doc(this.parameterGrade_id).update( { "evaluator_comment": comment ? comment : null } ).then( () =>{
+      console.log("updated evaluator_comment")
+    },
+    reason =>{
+      alert("ERROR saving comment:" + reason )
+    })
+  }
+
   evaluatorChange(event) {
     var evaluatorId = event.value
 

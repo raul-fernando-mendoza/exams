@@ -118,7 +118,6 @@ class SettingsViewController: UIViewController {
 
             // Reset all aspect grades
             for aspectGrade in criteriaGrade.sortedAspectGrades {
-                aspectGrade.isGraded = false
                 aspectGrade.score = 1
                 aspectGrade.hasMedal = false
                 aspectGrade.missingElements = nil
@@ -387,7 +386,6 @@ class SettingsViewController: UIViewController {
                     ag.idx = Int32(agDTO.idx ?? 0)
                     ag.label = agDTO.label
                     ag.aspectDescription = agDTO.description
-                    ag.isGraded = agDTO.isGraded ?? false
                     ag.score = agDTO.score ?? 0
                     ag.hasMedal = agDTO.hasMedal ?? false
                     ag.missingElements = agDTO.missingElements
@@ -583,7 +581,6 @@ class SettingsViewController: UIViewController {
                     ag.idx = Int32(agDTO.idx ?? 0)
                     ag.label = agDTO.label
                     ag.aspectDescription = agDTO.description
-                    ag.isGraded = agDTO.isGraded ?? false
                     ag.score = agDTO.score ?? 0
                     ag.hasMedal = agDTO.hasMedal ?? false
                     ag.missingElements = agDTO.missingElements
