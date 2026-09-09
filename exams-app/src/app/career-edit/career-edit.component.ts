@@ -1,6 +1,6 @@
 import { Component,  OnDestroy, OnInit, signal } from '@angular/core';
 import { Validators,  FormBuilder, FormArray } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserLoginService } from '../user-login.service';
 import { db } from 'src/environments/environment';
 import { Career, Cycle, Materia, OptionalContainer, Objective, Semester } from '../exams/exams.module';
@@ -41,8 +41,9 @@ import { CareerUserComponent } from '../career-user/career-user.component';
   imports: [
     CommonModule
     ,MatIconModule
-    ,MatButtonModule   
-   
+    ,MatButtonModule
+    ,RouterModule
+
     ,ReactiveFormsModule
     ,MatFormFieldModule
     ,MatInputModule

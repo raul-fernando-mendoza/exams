@@ -6,6 +6,14 @@ struct AspectGradeStarsView: View {
 
     private let maxStars = 5
 
+    // Score calculation: (star / 10) + 0.5, so 1 star = 0.6, 2 stars = 0.7, etc.
+    // Reverse: star = (score - 0.5) * 10, rounded to absorb floating-point
+    // imprecision (e.g. 0.6 - 0.5 isn't exactly 0.1) which otherwise
+    // truncates 1- and 2-star scores down by one star.
+    private var currentStars: Int {
+        Int(((aspectGrade.score - 0.5) * 10).rounded())
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(aspectGrade.label ?? "Aspect \(aspectGrade.idx)")
@@ -24,21 +32,9 @@ struct AspectGradeStarsView: View {
                         aspectGrade.score = newScore
                         onChanged()
                     } label: {
-                        Image(systemName: star <= Int(aspectGrade.score * 10)-5 ? "star.fill" : "star")
+                        Image(systemName: star <= currentStars ? "star.fill" : "star")
                             .foregroundColor(.yellow)
                             .font(.title3)
-                    }
-                }
-
-                Spacer()
-
-                if aspectGrade.score > 0 {
-                    Button {
-                        aspectGrade.score = 0
-                        onChanged()
-                    } label: {
-                        Image(systemName: "xmark.circle")
-                            .foregroundColor(.gray)
                     }
                 }
             }

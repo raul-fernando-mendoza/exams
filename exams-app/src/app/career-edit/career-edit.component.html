@@ -226,7 +226,7 @@ Carrera
                                                                     }
                                                                     @else{
                                                                         <span class="{{m.color1}} materia">
-                                                                            <span (click)="onOptionalClick(m,'label')">{{m.materia_name}}</span>
+                                                                            <a [routerLink]="['/materia', m.id]">{{m.materia_name}}</a>
                                                                             @if( this.materiasApproved().get(m.id) ){
                                                                                 <mat-icon>done</mat-icon>
                                                                             }                                                                           

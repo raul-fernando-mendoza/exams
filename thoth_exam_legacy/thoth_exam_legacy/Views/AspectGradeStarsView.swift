@@ -111,9 +111,11 @@ class AspectGradeStarsView: UIView {
 
     private func updateStars() {
         // Score calculation: (star / 10) + 0.5
-        // So 1 star = 0.55, 2 stars = 0.65, etc.
-        // Reverse: star = (score - 0.5) * 10
-        let currentStars = Int((aspectGrade.score - 0.5) * 10)
+        // So 1 star = 0.6, 2 stars = 0.7, etc.
+        // Reverse: star = (score - 0.5) * 10, rounded to absorb floating-point
+        // imprecision (e.g. 0.6 - 0.5 isn't exactly 0.1) which otherwise
+        // truncates 1- and 2-star scores down by one star.
+        let currentStars = Int(((aspectGrade.score - 0.5) * 10).rounded())
 
         for (index, button) in starButtons.enumerated() {
             let starNumber = index + 1
